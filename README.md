@@ -1,4 +1,4 @@
-# LibraList
+# Archivr
 Group F for CSci 150 Fall 2024
 
 # Project Description:
