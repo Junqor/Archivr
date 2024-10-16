@@ -2,9 +2,7 @@ const express = require('express')
 const app = express()
 const port = 8080
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app.use(express.static('fileserver'))
 
 app.listen(port, () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`)
