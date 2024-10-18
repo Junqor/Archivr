@@ -41,8 +41,19 @@ function mySqlQuery(query){
 	})	
 }
 
+
 app.post("/submit", (req,res) => {
   res.sendFile(__dirname + "/public/index.html");
+
+app.post("/signup", (req,res) => {
+  res.sendFile(__dirname + "/public/signup/index.html");
+  console.log(req.body);
+  console.log(req.body["username"]);
+  console.log(req.body["password"]);
+});
+
+app.post("/login", (req,res) => {
+  res.sendFile(__dirname + "/public/login/index.html");
   console.log(req.body);
   console.log(req.body["username"]);
   console.log(req.body["password"]);
