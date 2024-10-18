@@ -59,6 +59,7 @@ app.post("/login", (req,res) => {
   console.log(req.body["username"]);
   console.log(req.body["password"]);
 });
+
 app.use(express.static('public'))
 
 
