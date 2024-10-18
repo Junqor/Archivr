@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 // nodemon
 // url and path
 
+
 /* 
 const mysql = require('mysql2');
 const connection = mysql.createConnection({
@@ -32,6 +33,8 @@ app.post("/submit", (req,res) => {
   console.log(req.body["username"]);
   console.log(req.body["password"]);
 });
+app.use(express.static('fileserver'))
+
 
 app.listen(port, () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`)
