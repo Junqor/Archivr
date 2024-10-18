@@ -1,7 +1,7 @@
-const express = require('express')
-const path = require('node:path')
-const fs = require('node:fs')
-const mysql = require('mysql2')
+import express from "express"
+import path from "node:path"
+import fs from "node:fs"
+import mysql from "mysql2"
 import bodyParser from "body-parser";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
@@ -14,7 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true}));
 // nodemon
 // url and path
 
-
 /* 
 const mysql = require('mysql2');
 const connection = mysql.createConnection({
@@ -25,6 +24,22 @@ const connection = mysql.createConnection({
   ssl: { rejectUnauthorized: true }
 });
 */
+
+// simple shit -- TODO: add security
+// await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
+function mySqlQuery(query){
+	return new Promise(function(resolve, reject) {
+		connection.query(query, function(err, rows, fields){
+			if (err) reject(err)
+			if (rows != undefined) {
+				resolve(rows,fields)
+			}
+			else {
+				resolve(null)
+			}
+		})
+	})	
+}
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
@@ -37,7 +52,7 @@ app.post("/submit", (req,res) => {
   console.log(req.body["username"]);
   console.log(req.body["password"]);
 });
-app.use(express.static('fileserver'))
+app.use(express.static('public'))
 
 
 app.listen(port, () => {
