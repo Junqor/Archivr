@@ -1,6 +1,9 @@
 import express from "express"
 const app = express()
 const port = 8080
+//body parser 
+// nodemon
+// url and path
 
 app.use(express.static('fileserver'))
 
