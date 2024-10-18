@@ -1,15 +1,18 @@
-import express from "express";
+import express from "express"
+import path from "node:path"
+import fs from "node:fs"
+import mysql from "mysql2"
 import bodyParser from "body-parser";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
 const app = express()
+
 const port = 8080
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(bodyParser.urlencoded({ extended: true}));
 //body parser 
 // nodemon
 // url and path
-
 
 /* 
 const mysql = require('mysql2');
@@ -22,10 +25,21 @@ const connection = mysql.createConnection({
 });
 */
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-});
-
+// simple shit -- TODO: add security
+// await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
+function mySqlQuery(query){
+	return new Promise(function(resolve, reject) {
+		connection.query(query, function(err, rows, fields){
+			if (err) reject(err)
+			if (rows != undefined) {
+				resolve(rows,fields)
+			}
+			else {
+				resolve(null)
+			}
+		})
+	})	
+}
 
 app.post("/submit", (req,res) => {
   res.sendFile(__dirname + "/public/index.html");
@@ -33,8 +47,8 @@ app.post("/submit", (req,res) => {
   console.log(req.body["username"]);
   console.log(req.body["password"]);
 });
-app.use(express.static('fileserver'))
 
+app.use(express.static('public'))
 
 app.listen(port, () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`)
