@@ -41,19 +41,14 @@ function mySqlQuery(query){
 	})	
 }
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-});
-
-
 app.post("/submit", (req,res) => {
   res.sendFile(__dirname + "/public/index.html");
   console.log(req.body);
   console.log(req.body["username"]);
   console.log(req.body["password"]);
 });
-app.use(express.static('public'))
 
+app.use(express.static('public'))
 
 app.listen(port, () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`)
