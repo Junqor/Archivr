@@ -1,47 +1,38 @@
+import Logo from "@/assets/logo.svg";
+import SearchBar from "./searchBar";
 import { Button } from "./ui/button";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export const Header = () => {
   return (
-    <div className="flex flex-row w-full h-full bg-black max-h-16">
-      <div className="flex-row hidden w-full h-full md:flex">
-        <div className="flex flex-row w-1/4 h-full">
-          <div className="flex flex-row items-center justify-start w-full h-full bg-black">
-            <img
-              src="src/assets/penguin.png"
-              alt="archivr logo"
-              className="p-1 size-10"
-            />
-            <h2 className="text-2xl inter-bold"> Archiver </h2>
-          </div>
+    <div className="sticky top-0 left-0 flex flex-row w-full h-full px-5 py-3 bg-black max-h-16">
+      <div className="flex flex-row w-full h-full">
+        <div className="flex flex-row items-center justify-start h-full gap-3 mr-auto bg-black">
+          <img src={Logo} className="size-[35px]" />
+          <h3 className="font-bold"> Archivr </h3>
         </div>
-        <div className="flex-row hidden w-3/4 h-full md:flex">
-          <div className="flex flex-row items-center justify-end w-full h-full bg-black">
-            <Button variant="ghost">Home</Button>
-            <Button variant="ghost">Genre</Button>
-            <Button variant="ghost">Country</Button>
-            <Button variant="ghost">Trending</Button>
-            <Button variant="ghost">Popular</Button>
-            <Button variant="ghost">Member</Button>
-          </div>
-        </div>
-        <div className="flex-row items-center justify-end hidden w-1/4 h-full mr-3 bg-black md:flex">
+        <div className="flex-row items-center justify-end hidden h-full bg-black md:flex">
+          <Button variant="ghost" className="">
+            Home
+          </Button>
+          <Button variant="ghost" className="">
+            Genre
+          </Button>
+          <Button variant="ghost" className="">
+            Country
+          </Button>
+          <Button variant="ghost" className="">
+            Trending
+          </Button>
+          <Button variant="ghost" className="">
+            Popular
+          </Button>
+          <Button variant="ghost" className="">
+            Members
+          </Button>
+          <SearchBar />
           <Button variant="ghost" className="flex flex-row items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="mr-3"
-            >
-              <path d="M18 20a6 6 0 0 0-12 0" />
-              <circle cx="12" cy="10" r="4" />
-              <circle cx="12" cy="12" r="10" />
-            </svg>
+            <AccountCircleIcon className="mr-2" />
             <p>Sign in</p>
           </Button>
         </div>

@@ -7,7 +7,7 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 300;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.937);
@@ -35,34 +35,18 @@ body,
   }
 }
 
-/* ========================================================================== */
-/* Fonts
-/* ========================================================================== */
-
-.inter-thin {
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
+h1 {
+  font-size: 2.488rem;
 }
 
-.inter-light {
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
-  font-style: normal;
+h2 {
+  font-size: 2.074rem;
 }
 
-.inter-regular {
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
+h3 {
+  font-size: 1.728rem;
 }
 
-.inter-bold {
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
+h4 {
+  font-size: 1.2rem;
 }
