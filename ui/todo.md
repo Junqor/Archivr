@@ -1,0 +1,3 @@
+- mobile view for home page
+- sync with backend
+- add auth/sign in
