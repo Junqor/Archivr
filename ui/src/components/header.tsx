@@ -1,7 +1,7 @@
 import Logo from "@/assets/logo.svg";
 import SearchBar from "./searchBar";
 import { Button } from "./ui/button";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { LoginPopUp } from "./login";
 
 export const Header = () => {
   return (
@@ -31,10 +31,7 @@ export const Header = () => {
             Members
           </Button>
           <SearchBar />
-          <Button variant="ghost" className="flex flex-row items-center">
-            <AccountCircleIcon className="mr-2" />
-            <p>Sign in</p>
-          </Button>
+          <LoginPopUp />
         </div>
       </div>
     </div>
