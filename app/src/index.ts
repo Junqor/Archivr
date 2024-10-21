@@ -5,25 +5,22 @@ import mysql from "mysql2";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import { sqlConfigOptions } from "./configs/sql.config";
+
+dotenv.config();
+
 const app = express();
 
 const port = 8080;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
 //body parser
 // nodemon
 // url and path
 
-/* 
-const mysql = require('mysql2');
-const connection = mysql.createConnection({
-  host: 'your_digital_ocean_host',
-  user: 'your_mysql_user',
-  password: 'your_mysql_password',
-  database: 'archivr_db',
-  ssl: { rejectUnauthorized: true }
-});
-*/
+const connection = mysql.createConnection(sqlConfigOptions);
 
 // simple shit -- TODO: add security
 // await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
@@ -57,8 +54,6 @@ app.post("/login", (req, res) => {
   console.log(req.body["username"]);
   console.log(req.body["password"]);
 });
-
-app.use(express.static("public"));
 
 app.listen(port, () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`);
