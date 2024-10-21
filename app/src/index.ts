@@ -45,6 +45,7 @@ function mySqlQuery(query){
 app.post("/submit", (req,res) => {
   res.sendFile(__dirname + "/public/index.html");
 
+
 app.post("/signup", (req,res) => {
   res.sendFile(__dirname + "/public/signup/index.html");
   console.log(req.body);
