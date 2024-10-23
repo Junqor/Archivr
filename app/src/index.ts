@@ -21,20 +21,20 @@ app.use(express.static("public"));
 
 // const connection = mysql.createConnection(sqlConfigOptions);
 
-// // simple shit -- TODO: add security
-// // await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
-// function mySqlQuery(query) {
-//   return new Promise(function (resolve, reject) {
-//     connection.query(query, function (err, rows, fields) {
-//       if (err) reject(err);
-//       if (rows != undefined) {
-//         resolve(rows, fields);
-//       } else {
-//         resolve(null);
-//       }
-//     });
-//   });
-// }
+// simple shit -- TODO: add security
+// await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
+function mySqlQuery(query) {
+  return new Promise(function (resolve, reject) {
+    connection.query(query, function (err, rows, fields) {
+      if (err) reject(err);
+      if (rows != undefined) {
+        resolve(rows, fields);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
 
 app.post("/submit", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
