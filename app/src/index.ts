@@ -5,10 +5,9 @@ import mysql from "mysql2";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
 import { sqlConfigOptions } from "./configs/sql.config";
 
-dotenv.config();
+
 
 const app = express();
 
@@ -20,22 +19,22 @@ app.use(express.static("public"));
 // nodemon
 // url and path
 
-const connection = mysql.createConnection(sqlConfigOptions);
+// const connection = mysql.createConnection(sqlConfigOptions);
 
-// simple shit -- TODO: add security
-// await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
-function mySqlQuery(query) {
-  return new Promise(function (resolve, reject) {
-    connection.query(query, function (err, rows, fields) {
-      if (err) reject(err);
-      if (rows != undefined) {
-        resolve(rows, fields);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-}
+// // simple shit -- TODO: add security
+// // await mySqlQuery([query]).then((rows, fields)=>data = rows[0])
+// function mySqlQuery(query) {
+//   return new Promise(function (resolve, reject) {
+//     connection.query(query, function (err, rows, fields) {
+//       if (err) reject(err);
+//       if (rows != undefined) {
+//         resolve(rows, fields);
+//       } else {
+//         resolve(null);
+//       }
+//     });
+//   });
+// }
 
 app.post("/submit", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
