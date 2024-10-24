@@ -51,11 +51,11 @@ app.post("/login", (req, res) => {
   console.log(req.body["password"]);
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`);
-  let found_user = database.getUserFromEmail("skibidi");
+  let found_user = await database.getUserFromEmail("skibidi");
   if (found_user != null){
     console.log(found_user.email);
   }
-  database.addMedia({email:"grug",username:"grug",password:"grug",privilege_level:1});
+  await database.addMedia({email:"grug",username:"grug",password:"grug",privilege_level:1});
 });
