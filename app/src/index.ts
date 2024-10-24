@@ -6,10 +6,11 @@ import { ResultSetHeader } from "mysql2";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { getMedia } from "./tests/getMedia.test";
-import "./types/supabase";
-import { addMedia } from "./tests/addMedia.test";
-import { deleteMedia } from "./tests/deleteMedia.test";
+import { database } from "./database/database"
+//import { getMedia } from "./tests/getMedia.test";
+//import "./types/supabase";
+//import { addMedia } from "./tests/addMedia.test";
+//import { deleteMedia } from "./tests/deleteMedia.test";
 
 const app = express();
 
@@ -18,6 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+/*
 app.get("/test", async (req, res) => {
   try {
     await addMedia();
@@ -29,6 +31,7 @@ app.get("/test", async (req, res) => {
     res.status(500).send("Error fetching media");
   }
 });
+*/
 
 app.post("/submit", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
@@ -50,4 +53,9 @@ app.post("/login", (req, res) => {
 
 app.listen(port, () => {
   console.log(`ARCHIVR is active and listing on on port ${port}`);
+  let found_user = database.getUserFromEmail("skibidi");
+  if (found_user != null){
+    console.log(found_user.email);
+  }
+  database.addMedia({email:"grug",username:"grug",password:"grug",privilege_level:1});
 });
