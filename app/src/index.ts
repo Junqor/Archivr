@@ -21,13 +21,23 @@ app.use(express.static("public"));
 app.get("/test", async (req, res) => {
   try {
     await addMedia();
-    const result = await getMedia();
-    await deleteMedia();
-    res.send(result);
+    console.log("Test Case: Add media SUCCESS");
   } catch (error) {
-    console.error("Error fetching media:", error);
-    res.status(500).send("Error fetching media");
+    console.log("Test Case: Add media FAILED");
   }
+  try {
+    const result = await getMedia();
+    console.log("Test Case: Get media SUCCESS");
+  } catch (error) {
+    console.log("Test Case: Get media FAILED");
+  }
+  try {
+    await deleteMedia();
+    console.log("Test Case: Delete media SUCCESS");
+  } catch (error) {
+    console.log("Test Case: Delete media FAILED");
+  }
+  res.send("Finished Test Cases");
 });
 
 app.post("/submit", (req, res) => {
