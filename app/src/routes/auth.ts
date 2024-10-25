@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signUp } from "../services/auth.services";
+import { logIn, signUp } from "../services/auth.services";
 
 const authRouter = Router();
 
@@ -10,12 +10,19 @@ authRouter.post("/signup", async (req, res) => {
     res.status(200).json({ message: "Signed up successfully", data: data });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error signing up", error });
+    res.status(500).json({ message: "Error signing up" });
   }
 });
 
 authRouter.post("/login", async (req, res) => {
-  // Do stuff
+  try {
+    const { email, password } = req.body;
+    const data = await logIn(email, password);
+    res.status(200).json({ message: "Logged in successfully", data: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error logging in" });
+  }
 });
 
 export { authRouter };

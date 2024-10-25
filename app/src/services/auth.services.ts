@@ -37,7 +37,7 @@ export async function signUp(
   return data;
 }
 
-export async function signIn(
+export async function logIn(
   email: string | undefined,
   password: string | undefined
 ) {

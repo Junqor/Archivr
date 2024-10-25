@@ -1,11 +1,11 @@
-import { signIn } from "../services/auth.services";
+import { logIn } from "../services/auth.services";
 
 describe("User Sign-In", () => {
   test("should successfully sign in with correct email and password", async () => {
     const email = "testuser@example.com";
     const password = "password123"; // Same as the one used during signup
 
-    const data = await signIn(email, password);
+    const data = await logIn(email, password);
 
     expect(data).toBeDefined();
     expect(data).toHaveProperty("email", email);
@@ -16,22 +16,20 @@ describe("User Sign-In", () => {
     const email = "wronguser@example.com";
     const password = "password123";
 
-    await expect(signIn(email, password)).rejects.toThrow("User not found");
+    await expect(logIn(email, password)).rejects.toThrow("User not found");
   });
 
   test("should fail if the password is incorrect", async () => {
     const email = "testuser@example.com";
     const password = "wrongpassword";
 
-    await expect(signIn(email, password)).rejects.toThrow(
-      "Invalid credentials"
-    );
+    await expect(logIn(email, password)).rejects.toThrow("Invalid credentials");
   });
 
   test("should fail if the email is missing", async () => {
     const password = "password123";
 
-    await expect(signIn(undefined, password)).rejects.toThrow(
+    await expect(logIn(undefined, password)).rejects.toThrow(
       "Email and password are required"
     );
   });
@@ -39,7 +37,7 @@ describe("User Sign-In", () => {
   test("should fail if the password is missing", async () => {
     const email = "testuser@example.com";
 
-    await expect(signIn(email, undefined)).rejects.toThrow(
+    await expect(logIn(email, undefined)).rejects.toThrow(
       "Email and password are required"
     );
   });
