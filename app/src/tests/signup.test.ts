@@ -1,12 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import dotenv from "dotenv";
-import { Database } from "../types/supabase";
+import { supabase } from "../configs/supabase.config";
 dotenv.config();
-
-const supabaseUrl = "https://iytqjhvicbyuhxnoeqot.supabase.co";
-const supabaseKey = process.env.SUPABASE_KEY || "";
-const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 const generateSalt = (length: number = 16): string => {
   return crypto
