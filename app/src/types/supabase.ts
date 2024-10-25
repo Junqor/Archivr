@@ -34,11 +34,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      Likes: {
+        Row: {
+          id: string
+          liked_at: string
+          media_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          liked_at?: string
+          media_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          liked_at?: string
+          media_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Likes_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "Media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "Users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Media: {
         Row: {
           category: Database["public"]["Enums"]["category"]
           description: string | null
-          media_id: string
+          id: string
           release_date: string | null
           thumbnail_url: string | null
           title: string
@@ -46,7 +82,7 @@ export type Database = {
         Insert: {
           category: Database["public"]["Enums"]["category"]
           description?: string | null
-          media_id?: string
+          id?: string
           release_date?: string | null
           thumbnail_url?: string | null
           title: string
@@ -54,10 +90,37 @@ export type Database = {
         Update: {
           category?: Database["public"]["Enums"]["category"]
           description?: string | null
-          media_id?: string
+          id?: string
           release_date?: string | null
           thumbnail_url?: string | null
           title?: string
+        }
+        Relationships: []
+      }
+      Users: {
+        Row: {
+          email: string
+          id: string
+          password_hash: string
+          role: Database["public"]["Enums"]["role"]
+          salt: string
+          username: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          password_hash: string
+          role: Database["public"]["Enums"]["role"]
+          salt: string
+          username: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          password_hash?: string
+          role?: Database["public"]["Enums"]["role"]
+          salt?: string
+          username?: string
         }
         Relationships: []
       }
@@ -70,6 +133,7 @@ export type Database = {
     }
     Enums: {
       category: "movie" | "tv show" | "book" | "video game"
+      role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never

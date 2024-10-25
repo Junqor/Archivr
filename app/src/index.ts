@@ -6,39 +6,13 @@ import { ResultSetHeader } from "mysql2";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { getMedia } from "./tests/getMedia.test";
 import "./types/supabase";
-import { addMedia } from "./tests/addMedia.test";
-import { deleteMedia } from "./tests/deleteMedia.test";
-
 const app = express();
 
 const port = 8080;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
-app.get("/test", async (req, res) => {
-  try {
-    await addMedia();
-    console.log("Test Case: Add media SUCCESS");
-  } catch (error) {
-    console.log("Test Case: Add media FAILED");
-  }
-  try {
-    const result = await getMedia();
-    console.log("Test Case: Get media SUCCESS");
-  } catch (error) {
-    console.log("Test Case: Get media FAILED");
-  }
-  try {
-    await deleteMedia();
-    console.log("Test Case: Delete media SUCCESS");
-  } catch (error) {
-    console.log("Test Case: Delete media FAILED");
-  }
-  res.send("Finished Test Cases");
-});
 
 app.post("/submit", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
