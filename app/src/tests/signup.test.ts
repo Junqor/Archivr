@@ -1,16 +1,8 @@
-import crypto from "crypto";
 import dotenv from "dotenv";
 import { supabase } from "../configs/supabase.config";
+import { generateSalt } from "../utils/generateSalt";
 dotenv.config();
 
-const generateSalt = (length: number = 16): string => {
-  return crypto
-    .randomBytes(Math.ceil(length / 2))
-    .toString("hex")
-    .slice(0, length);
-}; // use salts later
-
-// Function under test
 async function signUp(
   email: string | undefined,
   username: string | undefined,
