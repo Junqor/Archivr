@@ -10,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || "8080";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
