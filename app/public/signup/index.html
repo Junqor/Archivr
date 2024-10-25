@@ -8,8 +8,14 @@
 <body>
     <h1>Sign up</h1>
     <form action="/signup" method="POST">
-        <input type="text" name="username" placeholder="Username">
-        <input type="text" name="password" placeholder="Password">
+        <span>Email: </span>
+        <input type="text" name="email" placeholder="Email"></br>
+        <span>Username: </span>
+        <input type="text" name="username" placeholder="Username"></br>
+        <span>Password: </span>
+        <input type="text" name="password" placeholder="Password"></br>
+        <span>Would you like to have administrator privileges? </span>
+        <input type="checkbox" name="admin" placeholder="Admin"></br>
         <input type="submit" value="Sign up">
     </form>
 </body>
