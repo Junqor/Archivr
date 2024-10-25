@@ -1,43 +1,6 @@
 import dotenv from "dotenv";
-import { supabase } from "../configs/supabase.config";
-import { generateSalt } from "../utils/generateSalt";
+import { signUp } from "../services/auth.services";
 dotenv.config();
-
-async function signUp(
-  email: string | undefined,
-  username: string | undefined,
-  password: string | undefined
-) {
-  if (!email) {
-    throw new Error("Email is required");
-  }
-  if (!username) {
-    throw new Error("Username is required");
-  }
-  if (!password) {
-    throw new Error("Password is required");
-  }
-  const id = crypto.randomUUID();
-  const { data, error } = await supabase
-    .from("Users")
-    .insert([
-      {
-        id,
-        email,
-        username,
-        password_hash: password,
-        salt: generateSalt(),
-        role: "user",
-      },
-    ])
-    .select();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-}
 
 // Test Suite
 describe("User Signup", () => {

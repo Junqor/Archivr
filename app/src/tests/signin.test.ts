@@ -1,27 +1,4 @@
-import { supabase } from "../configs/supabase.config";
-
-async function signIn(email: string | undefined, password: string | undefined) {
-  if (!email || !password) {
-    throw new Error("Email and password are required");
-  }
-
-  const { data, error } = await supabase
-    .from("Users")
-    .select("id, email, username, password_hash")
-    .eq("email", email)
-    .single(); // Expecting exactly one user
-
-  if (error) {
-    throw new Error("User not found");
-  }
-
-  // In a real-world app, you'd compare hashed passwords, but for now:
-  if (data.password_hash !== password) {
-    throw new Error("Invalid credentials");
-  }
-
-  return data;
-}
+import { signIn } from "../services/auth.services";
 
 describe("User Sign-In", () => {
   test("should successfully sign in with correct email and password", async () => {
