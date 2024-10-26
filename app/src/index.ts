@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { authRouter } from "./routes/auth";
+import { testConnection } from "./utils/testConnection";
 
 const app = express();
 
@@ -16,6 +17,13 @@ app.use(express.static("public"));
 
 app.use("/auth", authRouter);
 
-app.listen(PORT, () => {
-  console.log(`ARCHIVR is active and listing on on port ${PORT}`);
-});
+// Test db connection
+try {
+  await testConnection();
+  console.log("Database connection successful"); // Green text
+  app.listen(PORT, () => {
+    console.log(`ARCHIVR is active and listing on on port ${PORT}`);
+  });
+} catch (error) {
+  console.error("Database connection failed", error);
+}
