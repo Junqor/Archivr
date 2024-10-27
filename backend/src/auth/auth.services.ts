@@ -2,6 +2,7 @@ import { conn } from "../configs/digitalocean.config";
 import { TUser } from "../types/user";
 import { AuthErrorHandler } from "../utils/authErrorHandler";
 import { generateSalt, hashPassword } from "../utils/hashPassword";
+import { z } from "zod";
 
 export type TAuthResult = {
   status: "success" | "failed";
@@ -9,16 +10,46 @@ export type TAuthResult = {
 };
 
 export async function signUp(
-  email: string,
-  username: string,
-  password: string
+  inputEmail: string,
+  inputUsername: string,
+  inputPassword: string
 ): Promise<TAuthResult> {
-  if (!email || !username || !password) {
+  if (!inputEmail || !inputUsername || !inputPassword) {
     return {
       status: "failed",
       message: "Missing email, username, or password",
     };
   }
+
+  // Validate email
+  const parsedEmail = z.string().email().safeParse(inputEmail);
+  if (!parsedEmail.success) {
+    return {
+      status: "failed",
+      message: "Invalid email",
+    };
+  }
+  const email = parsedEmail.data;
+
+  // Validate username length
+  const parsedUsername = z.string().min(3).max(20).safeParse(inputUsername);
+  if (!parsedUsername.success) {
+    return {
+      status: "failed",
+      message: "Username must be between 3 and 20 characters",
+    };
+  }
+  const username = parsedUsername.data;
+
+  // Validate password length
+  const parsedPassword = z.string().min(6).max(24).safeParse(inputPassword);
+  if (!parsedPassword.success) {
+    return {
+      status: "failed",
+      message: "Password must be between 6 and 24 characters",
+    };
+  }
+  const password = parsedPassword.data;
 
   // Generate a random salt
   const salt = generateSalt();
