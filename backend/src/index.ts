@@ -3,8 +3,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { authRouter } from "./routes/auth";
+import { authRouter } from "./auth/auth.route";
 import { testConnection } from "./utils/testConnection";
+import cors from "cors";
 
 const app = express();
 
@@ -14,6 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(cors({ origin: "*" }));
 
 app.use("/auth", authRouter);
 
