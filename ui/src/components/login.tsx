@@ -7,13 +7,13 @@ import { useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
 export function LoginPopUp() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isOnLogin, setIsOnLogin] = useState(true);
 
   function handleLogInClick() {
-    setIsLogin(true);
+    setIsOnLogin(true);
   }
   function handleSignUpClick() {
-    setIsLogin(false);
+    setIsOnLogin(false);
   }
 
   return (
@@ -28,7 +28,7 @@ export function LoginPopUp() {
         <div className="flex flex-row w-full">
           <Button
             className={`${
-              isLogin ? "bg-purple" : "bg-black"
+              isOnLogin ? "bg-purple" : "bg-black"
             } w-1/2 m-0 rounded-none hover:bg-purple rounded-tl-lg h-10`}
             onClick={handleLogInClick}
           >
@@ -36,7 +36,7 @@ export function LoginPopUp() {
           </Button>
           <Button
             className={`${
-              isLogin ? "bg-black" : "bg-purple"
+              isOnLogin ? "bg-black" : "bg-purple"
             } w-1/2 m-0 rounded-none hover:bg-purple rounded-tr-lg h-10`}
             onClick={handleSignUpClick}
           >
@@ -45,7 +45,7 @@ export function LoginPopUp() {
         </div>
         <div className="flex flex-col px-6 pb-6 space-y-4">
           <DialogTitle className="self-center">
-            {isLogin ? (
+            {isOnLogin ? (
               <h2 className="text-center">
                 Welcome back to <span className="text-purple">Archivr</span>
               </h2>
@@ -70,7 +70,7 @@ export function LoginPopUp() {
               autoComplete="off"
             />
           </div>
-          {!isLogin && (
+          {!isOnLogin && (
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -85,13 +85,13 @@ export function LoginPopUp() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" />
           </div>
-          {!isLogin && (
+          {!isOnLogin && (
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
               <Input id="confirm-password" type="password" />
             </div>
           )}
-          {isLogin ? (
+          {isOnLogin ? (
             <>
               <Button type="submit" className="self-center w-full ">
                 Login

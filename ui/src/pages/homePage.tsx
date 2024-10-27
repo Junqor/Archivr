@@ -1,5 +1,6 @@
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import {
   TrendingUp,
   Heart,
@@ -200,6 +201,7 @@ export const HomePage = () => {
           </article>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };
