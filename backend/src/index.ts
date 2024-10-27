@@ -20,7 +20,7 @@ app.use("/auth", authRouter);
 // Test db connection
 try {
   await testConnection();
-  console.log("Database connection successful"); // Green text
+  console.log("Database connection successful");
   app.listen(PORT, () => {
     console.log(`ARCHIVR is active and listing on on port ${PORT}`);
   });
