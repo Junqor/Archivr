@@ -1,16 +1,23 @@
 import { conn } from "../configs/digitalocean.config";
 import { TUser } from "../types/user";
+import { AuthErrorHandler } from "../utils/authErrorHandler";
 import { generateSalt, hashPassword } from "../utils/hashPassword";
 
-export class SignUpError extends Error {}
+export type TAuthResult = {
+  status: "success" | "failed";
+  message: string;
+};
 
 export async function signUp(
-  email: string | undefined,
-  username: string | undefined,
-  password: string | undefined
-) {
+  email: string,
+  username: string,
+  password: string
+): Promise<TAuthResult> {
   if (!email || !username || !password) {
-    throw new SignUpError("Missing email, username, or password");
+    return {
+      status: "failed",
+      message: "Missing email, username, or password",
+    };
   }
 
   // Generate a random salt
@@ -24,40 +31,46 @@ export async function signUp(
     VALUES (?, ?, ?, ?)
   `;
 
-  const [result] = await conn.query(query, values);
+  const result = await conn
+    .query(query, values)
+    .then(
+      (_e) =>
+        ({
+          status: "success",
+          message: "Signed up successfully",
+        } as TAuthResult)
+    )
+    .catch((err) => AuthErrorHandler(err)); // Handle SQL errors
 
-  return true;
+  return result;
 }
 
-export class LogInError extends Error {}
-
 export async function logIn(
-  email: string | undefined,
-  password: string | undefined
-) {
-  if (!email || !password) {
-    throw new LogInError("Missing email or password");
+  username: string,
+  password: string
+): Promise<TAuthResult> {
+  if (!username || !password) {
+    return { status: "failed", message: "Missing username or password" };
   }
 
   // First retrieve the user with matching email from the database
-  const [rows] = await conn.query<TUser[]>(
-    "SELECT * FROM Users WHERE email = ?",
-    [email]
-  );
+  const [rows] = await conn
+    .query<TUser[]>("SELECT * FROM Users WHERE email = ?", [username])
+    .then((e) => e);
   const user = rows[0];
   if (!user) {
-    throw new LogInError("User not found");
+    return { status: "failed", message: "Username not found" };
   }
-  const { salt, password_hash } = user;
+  const { salt, password_hash } = user; // extract salt and hashed password in db
 
-  // Hash the password with the salt
+  // Hash the entered password with the salt
   const { hashedPassword } = await hashPassword(password, salt);
 
-  // Check if the password matches
+  // Check if the passwords match
   if (hashedPassword !== password_hash) {
-    throw new LogInError("Invalid credentials");
+    return { status: "failed", message: "Incorrect password" };
   }
 
   // Return the user object
-  return user;
+  return { status: "success", message: "Logged in successfully" };
 }
