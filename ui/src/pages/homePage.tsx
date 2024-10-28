@@ -201,7 +201,7 @@ export const HomePage = () => {
           </article>
         </div>
       </div>
-      <Toaster />
+      <Toaster position="top-center" toastOptions={{}} />
     </div>
   );
 };

@@ -2,8 +2,16 @@ import Logo from "@/assets/logo.svg";
 import SearchBar from "./searchBar";
 import { Button } from "./ui/button";
 import { LoginPopUp } from "./login";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const Header = () => {
+  const [auth] = useLocalStorage("auth");
+
+  function signOut() {
+    localStorage.removeItem("auth");
+    window.dispatchEvent(new Event("storage")); // Manually trigger the event for same-tab updates
+  }
+
   return (
     <div className="sticky top-0 left-0 flex flex-row w-full h-full px-5 py-3 bg-black max-h-16">
       <div className="flex flex-row w-full h-full">
@@ -31,7 +39,13 @@ export const Header = () => {
             Members
           </Button>
           <SearchBar />
-          <LoginPopUp />
+          {!!auth ? (
+            <Button onClick={signOut} variant="ghost">
+              Sign Out
+            </Button>
+          ) : (
+            <LoginPopUp />
+          )}
         </div>
       </div>
     </div>
