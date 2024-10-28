@@ -1,10 +1,13 @@
-import { logIn, LogInError } from "../auth/auth.services";
-import { signUp, SignUpError } from "../auth/auth.services";
+import { logIn, signUp } from "../auth/auth.services";
 import { conn } from "../configs/digitalocean.config";
 
 // Test Suite
 describe("Authentication Flow", () => {
+  // Delete test user and end db connection after running all tests
   afterAll(async () => {
+    await conn.execute(
+      `DELETE FROM Users where email = 'testuser@example.com'`
+    );
     await conn.end();
   });
 
@@ -13,9 +16,9 @@ describe("Authentication Flow", () => {
     const username = "testuser";
     const password = "password123";
 
-    const status = await signUp(email, username, password);
+    const result = await signUp(email, username, password);
 
-    expect(status).toBe(true);
+    expect(result.status).toBe("success");
   });
 
   test("should fail if email already exists", async () => {
@@ -23,9 +26,21 @@ describe("Authentication Flow", () => {
     const username = "newusername";
     const password = "newpassword123";
 
-    await expect(signUp(email, username, password)).rejects.toThrow(
-      `Duplicate entry 'testuser@example.com' for key 'Users.email'`
-    );
+    const result = await signUp(email, username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Email is already registered");
+  });
+
+  test("should fail if email is the same but in different case", async () => {
+    const email = "TESTUSER@EXAMPLE.COM";
+    const username = "newusername";
+    const password = "newpassword123";
+
+    const result = await signUp(email, username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Email is already registered");
   });
 
   test("should fail if username already exists", async () => {
@@ -33,36 +48,73 @@ describe("Authentication Flow", () => {
     const username = "testuser"; // Same as previous test
     const password = "password123";
 
-    await expect(signUp(email, username, password)).rejects.toThrow(
-      `Duplicate entry 'testuser' for key 'Users.username'`
-    );
+    const result = await signUp(email, username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Username is already taken");
   });
 
   test("should fail if email is missing", async () => {
     const username = "testuser2";
     const password = "password123";
 
-    await expect(signUp(undefined, username, password)).rejects.toThrow(
-      SignUpError
-    );
+    const result = await signUp("", username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Missing email, username, or password");
   });
 
   test("should fail if username is missing", async () => {
     const email = "anotheruser@example.com";
     const password = "password123";
 
-    await expect(signUp(email, undefined, password)).rejects.toThrow(
-      SignUpError
-    );
+    const result = await signUp(email, "", password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Missing email, username, or password");
   });
 
   test("should fail if password is missing", async () => {
     const email = "userwithoutpassword@example.com";
     const username = "nopassworduser";
 
-    await expect(signUp(email, username, undefined)).rejects.toThrow(
-      SignUpError
-    );
+    const result = await signUp(email, username, "");
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Missing email, username, or password");
+  });
+
+  test("should fail if email format is invalid", async () => {
+    const email = "invalidemail";
+    const username = "invalidemailuser";
+    const password = "validpassword123";
+
+    const result = await signUp(email, username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Invalid email");
+  });
+
+  test("should fail if username is too long", async () => {
+    const email = "longuser@example.com";
+    const username = "a".repeat(256); // Assuming a 255-char limit
+    const password = "password123";
+
+    const result = await signUp(email, username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Username must be between 3 and 20 characters");
+  });
+
+  test("should fail if password is too short", async () => {
+    const email = "weakpassworduser@example.com";
+    const username = "weakuser";
+    const password = "123";
+
+    const result = await signUp(email, username, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Password must be between 6 and 24 characters");
   });
 
   // --------------- SIGNING IN ---------------
@@ -71,36 +123,46 @@ describe("Authentication Flow", () => {
     const email = "testuser@example.com";
     const password = "password123"; // Same as the one used during signup
 
-    const user = await logIn(email, password);
+    const result = await logIn(email, password);
 
-    expect(user).toBeDefined();
-    expect(user).toHaveProperty("email", email);
-    expect(user).toHaveProperty("username");
+    expect(result.status).toBe("success");
   });
 
-  test("should fail if the email is incorrect", async () => {
+  test("should fail if the email does not exist", async () => {
     const email = "wronguser@example.com";
     const password = "password123";
 
-    await expect(logIn(email, password)).rejects.toThrow(LogInError);
+    const result = await logIn(email, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Username not found");
   });
 
   test("should fail if the password is incorrect", async () => {
     const email = "testuser@example.com";
     const password = "wrongpassword";
 
-    await expect(logIn(email, password)).rejects.toThrow(LogInError);
+    const result = await logIn(email, password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Incorrect password");
   });
 
   test("should fail if the email is missing", async () => {
     const password = "password123";
 
-    await expect(logIn(undefined, password)).rejects.toThrow(LogInError);
+    const result = await logIn("", password);
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Missing username or password");
   });
 
   test("should fail if the password is missing", async () => {
     const email = "testuser@example.com";
 
-    await expect(logIn(email, undefined)).rejects.toThrow(LogInError);
+    const result = await logIn(email, "");
+
+    expect(result.status).toBe("failed");
+    expect(result.message).toBe("Missing username or password");
   });
 });

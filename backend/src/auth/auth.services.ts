@@ -1,17 +1,55 @@
 import { conn } from "../configs/digitalocean.config";
 import { TUser } from "../types/user";
+import { AuthErrorHandler } from "../utils/authErrorHandler";
 import { generateSalt, hashPassword } from "../utils/hashPassword";
+import { z } from "zod";
 
-export class SignUpError extends Error {}
+export type TAuthResult = {
+  status: "success" | "failed";
+  message: string;
+};
 
 export async function signUp(
-  email: string | undefined,
-  username: string | undefined,
-  password: string | undefined
-) {
-  if (!email || !username || !password) {
-    throw new SignUpError("Missing email, username, or password");
+  inputEmail: string,
+  inputUsername: string,
+  inputPassword: string
+): Promise<TAuthResult> {
+  if (!inputEmail || !inputUsername || !inputPassword) {
+    return {
+      status: "failed",
+      message: "Missing email, username, or password",
+    };
   }
+
+  // Validate email
+  const parsedEmail = z.string().email().safeParse(inputEmail);
+  if (!parsedEmail.success) {
+    return {
+      status: "failed",
+      message: "Invalid email",
+    };
+  }
+  const email = parsedEmail.data;
+
+  // Validate username length
+  const parsedUsername = z.string().min(3).max(20).safeParse(inputUsername);
+  if (!parsedUsername.success) {
+    return {
+      status: "failed",
+      message: "Username must be between 3 and 20 characters",
+    };
+  }
+  const username = parsedUsername.data;
+
+  // Validate password length
+  const parsedPassword = z.string().min(6).max(24).safeParse(inputPassword);
+  if (!parsedPassword.success) {
+    return {
+      status: "failed",
+      message: "Password must be between 6 and 24 characters",
+    };
+  }
+  const password = parsedPassword.data;
 
   // Generate a random salt
   const salt = generateSalt();
@@ -24,40 +62,46 @@ export async function signUp(
     VALUES (?, ?, ?, ?)
   `;
 
-  const [result] = await conn.query(query, values);
+  const result = await conn
+    .query(query, values)
+    .then(
+      (_e) =>
+        ({
+          status: "success",
+          message: "Signed up successfully",
+        } as TAuthResult)
+    )
+    .catch((err) => AuthErrorHandler(err)); // Handle SQL errors
 
-  return true;
+  return result;
 }
 
-export class LogInError extends Error {}
-
 export async function logIn(
-  email: string | undefined,
-  password: string | undefined
-) {
-  if (!email || !password) {
-    throw new LogInError("Missing email or password");
+  username: string,
+  password: string
+): Promise<TAuthResult> {
+  if (!username || !password) {
+    return { status: "failed", message: "Missing username or password" };
   }
 
-  // First retrieve the user with matching email from the database
-  const [rows] = await conn.query<TUser[]>(
-    "SELECT * FROM Users WHERE email = ?",
-    [email]
-  );
+  // First retrieve the user with matching username from the database
+  const [rows] = await conn
+    .query<TUser[]>("SELECT * FROM Users WHERE username = ?", [username])
+    .then((e) => e);
   const user = rows[0];
   if (!user) {
-    throw new LogInError("User not found");
+    return { status: "failed", message: "Username not found" };
   }
-  const { salt, password_hash } = user;
+  const { salt, password_hash } = user; // extract salt and hashed password in db
 
-  // Hash the password with the salt
+  // Hash the entered password with the salt
   const { hashedPassword } = await hashPassword(password, salt);
 
-  // Check if the password matches
+  // Check if the passwords match
   if (hashedPassword !== password_hash) {
-    throw new LogInError("Invalid credentials");
+    return { status: "failed", message: "Incorrect password" };
   }
 
   // Return the user object
-  return user;
+  return { status: "success", message: "Logged in successfully" };
 }

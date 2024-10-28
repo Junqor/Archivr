@@ -1,3 +1,5 @@
 - mobile view for home page
-- sync with backend
-- add auth/sign in
+- ~~sync with backend~~
+- ~~add auth/sign in~~
+  - fix auth/sign up; use cookies instead of local storage
+- add red outline for incorrect sign in details
