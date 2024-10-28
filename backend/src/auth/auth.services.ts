@@ -84,9 +84,9 @@ export async function logIn(
     return { status: "failed", message: "Missing username or password" };
   }
 
-  // First retrieve the user with matching email from the database
+  // First retrieve the user with matching username from the database
   const [rows] = await conn
-    .query<TUser[]>("SELECT * FROM Users WHERE email = ?", [username])
+    .query<TUser[]>("SELECT * FROM Users WHERE username = ?", [username])
     .then((e) => e);
   const user = rows[0];
   if (!user) {
