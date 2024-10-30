@@ -120,29 +120,29 @@ describe("Authentication Flow", () => {
   // --------------- SIGNING IN ---------------
 
   test("should successfully sign in with correct email and password", async () => {
-    const email = "testuser@example.com";
+    const username = "testuser";
     const password = "password123"; // Same as the one used during signup
 
-    const result = await logIn(email, password);
+    const result = await logIn(username, password);
 
     expect(result.status).toBe("success");
   });
 
   test("should fail if the email does not exist", async () => {
-    const email = "wronguser@example.com";
+    const username = "wronguser";
     const password = "password123";
 
-    const result = await logIn(email, password);
+    const result = await logIn(username, password);
 
     expect(result.status).toBe("failed");
     expect(result.message).toBe("Username not found");
   });
 
   test("should fail if the password is incorrect", async () => {
-    const email = "testuser@example.com";
+    const username = "testuser";
     const password = "wrongpassword";
 
-    const result = await logIn(email, password);
+    const result = await logIn(username, password);
 
     expect(result.status).toBe("failed");
     expect(result.message).toBe("Incorrect password");
@@ -158,9 +158,9 @@ describe("Authentication Flow", () => {
   });
 
   test("should fail if the password is missing", async () => {
-    const email = "testuser@example.com";
+    const username = "testuser";
 
-    const result = await logIn(email, "");
+    const result = await logIn(username, "");
 
     expect(result.status).toBe("failed");
     expect(result.message).toBe("Missing username or password");
