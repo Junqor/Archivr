@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { FormEvent, useEffect, useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function LoginPopUp() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,12 +16,13 @@ export function LoginPopUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const url = useLocation();
   const navigate = useNavigate();
   const hash = window.location.hash;
 
   useEffect(() => {
     if (!isOpen) {
-      navigate("/");
+      navigate(url.pathname);
     } else if (isOnLogin) {
       navigate("#login");
     } else {
