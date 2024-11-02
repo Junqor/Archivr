@@ -3,6 +3,7 @@ import SearchBar from "./searchBar";
 import { Button } from "./ui/button";
 import { LoginPopUp } from "./login";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
   const [auth] = useLocalStorage("auth");
@@ -20,23 +21,24 @@ export const Header = () => {
           <h3 className="font-bold"> Archivr </h3>
         </div>
         <div className="flex-row items-center justify-end hidden h-full bg-black md:flex">
+          <Button variant="ghost" className="" asChild>
+            <Link to="/">Home</Link>
+          </Button>
+
           <Button variant="ghost" className="">
-            Home
+            <Link to="/Genre">Genre</Link>
           </Button>
           <Button variant="ghost" className="">
-            Genre
+            <Link to="/Country">Country</Link>
           </Button>
           <Button variant="ghost" className="">
-            Country
+            <Link to="/Trending">Trending</Link>
           </Button>
           <Button variant="ghost" className="">
-            Trending
+            <Link to="/Popular">Popular</Link>
           </Button>
           <Button variant="ghost" className="">
-            Popular
-          </Button>
-          <Button variant="ghost" className="">
-            Members
+            <Link to="/Members">Members</Link>
           </Button>
           <SearchBar />
           {!!auth ? (
