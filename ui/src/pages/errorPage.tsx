@@ -1,4 +1,5 @@
-import { useRouteError } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Link, useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
   const error = useRouteError();
@@ -14,6 +15,9 @@ export default function ErrorPage() {
       <p>
         <i>{error.statusText || error.message}</i>
       </p>
+      <Button asChild className="my-4">
+        <Link to="/">Go to Home</Link>
+      </Button>
     </div>
   );
 }
