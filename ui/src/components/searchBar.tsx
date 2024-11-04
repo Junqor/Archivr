@@ -10,6 +10,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 export type TMovie = {
   id: number;
@@ -63,7 +64,6 @@ export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const debouncedSearch = useDebouncedCallback(async (value) => {
-    setIsLoading(true);
     const searchResults = await searchMovies(value);
     setResults(searchResults);
     setIsLoading(false);
@@ -102,7 +102,10 @@ export default function SearchBar() {
         <Input
           placeholder="Search..."
           value={query}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={(e) => {
+            setIsLoading(true);
+            handleSearch(e.target.value);
+          }}
           className="pl-8 peer border-white/70 focus:border-white"
         />
         <Search className="text-white/70 peer peer-focus:text-white absolute left-2 top-2.5 h-4 w-4 transition-all" />
@@ -122,10 +125,16 @@ export default function SearchBar() {
                     {movie.title}
                   </CommandItem>
                 ))}
+                {isLoading && (
+                  <div className="flex justify-center pt-1.5">
+                    <LoadingSpinner
+                      className="items-center justify-center py-1 text-sm text-white/70"
+                      size="small"
+                    />
+                  </div>
+                )}
               </CommandGroup>
-              <CommandEmpty>
-                {isLoading ? "Searching..." : "No results found."}
-              </CommandEmpty>
+              <CommandEmpty>{!isLoading && "No results found."}</CommandEmpty>
             </CommandList>
           </Command>
         )}
