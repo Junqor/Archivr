@@ -8,7 +8,8 @@ const searchBodySchema = z.object({
 
 const searchRouter = Router();
 
-searchRouter.get("/", async (req, res) => {
+// (/movies/search)
+searchRouter.post("/", async (req, res) => {
   try {
     const parsed = searchBodySchema.safeParse(req.body);
     if (parsed.error) {
