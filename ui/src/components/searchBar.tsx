@@ -11,20 +11,10 @@ import {
 } from "@/components/ui/command";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "./ui/loading-spinner";
+import { TMedia } from "@/types/media";
 
-export type TMovie = {
-  id: number;
-  title: string;
-  description: string;
-  release_date: string;
-  age_rating: string;
-  thumbnail_url: string;
-  rating: number;
-  genre: string;
-};
-
-const searchMovies = async (query: string) => {
-  const url = import.meta.env.VITE_API_URL + "/movies/search";
+const searchMedia = async (query: string) => {
+  const url = import.meta.env.VITE_API_URL + "/search";
 
   try {
     const response = await fetch(url, {
@@ -36,19 +26,19 @@ const searchMovies = async (query: string) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch movies");
+      throw new Error("Failed to fetch media");
     }
 
     const data = (await response.json()) satisfies {
       status: string;
-      movies: TMovie[];
+      media: TMedia[];
     };
 
     if (data.status !== "success") {
-      throw new Error("Failed to fetch movies");
+      throw new Error("Failed to fetch media");
     }
 
-    return data.movies;
+    return data.media;
   } catch (error) {
     console.error(error);
     return [];
@@ -57,14 +47,16 @@ const searchMovies = async (query: string) => {
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<TMovie[]>([]);
+  const [results, setResults] = useState<TMedia[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  console.log(results);
+
   const debouncedSearch = useDebouncedCallback(async (value) => {
-    const searchResults = await searchMovies(value);
+    const searchResults = await searchMedia(value);
     setResults(searchResults);
     setIsLoading(false);
   }, 300);
@@ -112,17 +104,17 @@ export default function SearchBar() {
         {query && showResults && (
           <Command className="absolute right-0 mt-1 text-white bg-black border rounded-lg shadow-md h-max w-96 top-full">
             <CommandList>
-              <CommandGroup heading="Movies">
-                {results.map((movie) => (
+              <CommandGroup heading="Media">
+                {results.map((media) => (
                   <CommandItem
                     className="text-white bg-black"
-                    key={movie.id}
+                    key={media.id}
                     onSelect={() => {
                       setQuery("");
-                      navigate(`/movies/${movie.id}`);
+                      navigate(`/media/${media.id}`);
                     }}
                   >
-                    {movie.title}
+                    {media.title}
                   </CommandItem>
                 ))}
                 {isLoading && (
