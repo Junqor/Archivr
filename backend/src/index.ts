@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import { authRouter } from "./auth/auth.route";
 import { testConnection } from "./utils/testConnection";
 import cors from "cors";
+import { moviesRouter } from "./movies/movies.route";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.static("public"));
 app.use(cors({ origin: "*" }));
 
 app.use("/auth", authRouter);
+app.use("/movies", moviesRouter);
 
 // Test db connection
 try {
