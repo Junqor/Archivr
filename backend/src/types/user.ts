@@ -8,7 +8,7 @@ export type TUser = RowDataPacket & {
   salt: string;
 };
 
-export type TMovie = RowDataPacket & {
+export type TMedia = RowDataPacket & {
   id: number;
   title: string;
   description: string;

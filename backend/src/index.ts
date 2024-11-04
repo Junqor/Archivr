@@ -1,11 +1,11 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { authRouter } from "./auth/auth.route";
 import { testConnection } from "./utils/testConnection";
 import cors from "cors";
-import { moviesRouter } from "./movies/movies.route";
+import { searchRouter } from "./search/search.route";
 
 const app = express();
 
@@ -17,8 +17,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cors({ origin: "*" }));
 
+app.use("/search", searchRouter);
 app.use("/auth", authRouter);
-app.use("/movies", moviesRouter);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ status: "failed", message: err.message });
+});
 
 // Test db connection
 try {

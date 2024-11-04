@@ -1,7 +1,7 @@
 import ErrorPage from "@/pages/errorPage";
 import { HomePage } from "@/pages/homePage";
 import { Layout } from "@/pages/layout";
-import MovieCard from "@/pages/moviePage";
+import { MediaPage } from "@/pages/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -15,8 +15,8 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/movies/:id",
-        element: <MovieCard />,
+        path: "/media/:id",
+        element: <MediaPage />,
       },
     ],
   },

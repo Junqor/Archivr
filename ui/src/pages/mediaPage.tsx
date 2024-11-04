@@ -2,54 +2,71 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { TMedia } from "@/types/media";
 
-export default function MovieCard() {
+export function MediaPage() {
+  const { id } = useParams();
+  const { isPending, error, data } = useQuery<TMedia>({
+    queryKey: ["media", id],
+    queryFn: async () =>
+      await fetch(import.meta.env.VITE_API_URL + `/search/${id}`).then(
+        async (res) => {
+          const result = await res.json();
+          return result.media satisfies TMedia;
+        }
+      ),
+  });
+
+  if (isPending) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className="flex items-start justify-center w-full h-full px-4 py-8 text-gray-100 bg-black sm:px-6 lg:px-8">
       <Card className="w-full text-gray-100 bg-purple/20 bg-gradient-to-br from-black to-purple/30">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row">
-            {/* Movie Poster */}
+            {/* Media Poster */}
             <div className="mb-6 md:w-1/3 md:mb-0">
               <img
-                src="https://www.themoviedb.org/t/p/w1280/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-                alt="Movie Poster"
+                src={data.thumbnail_url}
+                alt="Media Poster"
                 className="w-full rounded-lg shadow-lg"
               />
             </div>
 
-            {/* Movie Information */}
+            {/* Media Information */}
             <div className="md:w-2/3 md:pl-6">
-              <h1 className="mb-2 text-3xl font-bold">Interstellar</h1>
+              <h1 className="mb-2 text-3xl font-bold">{data.title}</h1>
               <div className="flex items-center mb-4">
                 <span className="mr-2 text-yellow-500">
                   <Star className="inline" size={18} />
                 </span>
-                <span className="text-lg font-semibold">8.6/10</span>
+                <span className="text-lg font-semibold">
+                  {data.rating ? data.rating.toFixed(1) : "~"}/10
+                </span>
                 <Badge variant="secondary" className="ml-4">
-                  PG-13
+                  {data.age_rating}
                 </Badge>
               </div>
               <div className="mb-4">
                 <Badge variant="outline" className="mr-2">
-                  Sci-Fi
+                  {data.genre}
                 </Badge>
                 <Badge variant="outline" className="mr-2">
                   Adventure
                 </Badge>
                 <Badge variant="outline">Drama</Badge>
               </div>
-              <p className="mb-4 text-sm text-gray-300">
-                A team of explorers travel through a wormhole in space in an
-                attempt to ensure humanity's survival.
-              </p>
+              <p className="mb-4 text-sm text-gray-300">{data.description}</p>
               <div className="flex items-center mb-4 text-sm">
                 <Clock className="mr-2" size={16} />
                 <span>169 minutes</span>
               </div>
               <Button size="sm" className="mb-4" asChild>
                 <a
-                  href={`https://www.themoviedb.org/search?language=en-US&query=${"interstellar"}`}
+                  href={`https://www.themoviedb.org/search?language=en-US&query=${data.title}`}
                 >
                   TMDB
                 </a>
