@@ -3,6 +3,7 @@ import { logIn, signUp } from "./auth.services";
 
 const authRouter = Router();
 
+// (/auth/signup)
 authRouter.post("/signup", async (req, res) => {
   try {
     const { email, username, password } = req.body;
@@ -18,6 +19,7 @@ authRouter.post("/signup", async (req, res) => {
   }
 });
 
+// (/auth/login)
 authRouter.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;

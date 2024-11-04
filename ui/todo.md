@@ -3,3 +3,5 @@
 - ~~add auth/sign in~~
   - fix auth/sign up; use cookies instead of local storage
 - add red outline for incorrect sign in details
+- separate login and sign up pages
+- use react query for fetching movies
