@@ -6,6 +6,7 @@ import { authRouter } from "./auth/auth.route";
 import { testConnection } from "./utils/testConnection";
 import cors from "cors";
 import { searchRouter } from "./search/search.route";
+import { mediaRouter } from "./media/media.route";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(cors({ origin: "*" }));
 
 app.use("/search", searchRouter);
 app.use("/auth", authRouter);
+app.use("/media", mediaRouter);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ status: "failed", message: err.message });

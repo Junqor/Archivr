@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export function useLocalStorage(key: string) {
-  const [storedValue, setStoredValue] = useState(() => {
+  const [storedValue, setStoredValue] = useState<string | null>(() => {
     return localStorage.getItem(key);
   });
 
@@ -14,5 +14,5 @@ export function useLocalStorage(key: string) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key]);
 
-  return [storedValue, setStoredValue];
+  return [storedValue, setStoredValue] as const;
 }

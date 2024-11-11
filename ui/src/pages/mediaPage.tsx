@@ -5,9 +5,13 @@ import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { TMedia } from "@/types/media";
+import { useMedia } from "@/hooks/useMedia";
+import { useAuth } from "@/context/auth";
 
 export function MediaPage() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const { isLiked, updateLikes, numLikes } = useMedia(id as string, user.id);
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
     queryFn: async () =>
@@ -54,10 +58,6 @@ export function MediaPage() {
                 <Badge variant="outline" className="mr-2">
                   {data.genre}
                 </Badge>
-                <Badge variant="outline" className="mr-2">
-                  Adventure
-                </Badge>
-                <Badge variant="outline">Drama</Badge>
               </div>
               <p className="mb-4 text-sm text-gray-300">{data.description}</p>
               <div className="flex items-center mb-4 text-sm">
@@ -98,9 +98,15 @@ export function MediaPage() {
                 </div>
               </div>
               <div className="flex space-x-4">
-                <Button variant="outline" size="sm">
-                  <ThumbsUp className="w-4 h-4 mr-2" />
-                  Recommend
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateLikes()}
+                >
+                  <ThumbsUp
+                    className={(isLiked && "fill-white ") + "w-4 h-4 mr-2"}
+                  />
+                  {numLikes}
                 </Button>
                 <Button variant="outline" size="sm">
                   <MessageSquare className="w-4 h-4 mr-2" />
