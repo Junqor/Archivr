@@ -53,8 +53,6 @@ export default function SearchBar() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  console.log(results);
-
   const debouncedSearch = useDebouncedCallback(async (value) => {
     const searchResults = await searchMedia(value);
     setResults(searchResults);
