@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { conn } from "../configs/digitalocean.config";
 import { TUser } from "../types/user";
 import { AuthErrorHandler } from "../utils/authErrorHandler";
@@ -7,6 +8,7 @@ import { z } from "zod";
 export type TAuthResult = {
   status: "success" | "failed";
   message: string;
+  user?: Partial<TUser>;
 };
 
 export async function signUp(
@@ -86,7 +88,10 @@ export async function logIn(
 
   // First retrieve the user with matching username from the database
   const [rows] = await conn
-    .query<TUser[]>("SELECT * FROM Users WHERE username = ?", [username])
+    .query<(RowDataPacket & TUser)[]>(
+      "SELECT * FROM Users WHERE username = ?",
+      [username]
+    )
     .then((e) => e);
   const user = rows[0];
   if (!user) {
@@ -103,5 +108,9 @@ export async function logIn(
   }
 
   // Return the user object
-  return { status: "success", message: "Logged in successfully" };
+  return {
+    status: "success",
+    message: "Logged in successfully",
+    user: { id: user.id, username: user.username, email: user.email },
+  };
 }

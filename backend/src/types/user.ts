@@ -1,6 +1,4 @@
-import { RowDataPacket } from "mysql2";
-
-export type TUser = RowDataPacket & {
+export type TUser = {
   id: number;
   email: string;
   username: string;
@@ -8,7 +6,7 @@ export type TUser = RowDataPacket & {
   salt: string;
 };
 
-export type TMedia = RowDataPacket & {
+export type TMedia = {
   id: number;
   title: string;
   description: string;
