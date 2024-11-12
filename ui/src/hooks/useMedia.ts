@@ -1,123 +1,119 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+
+interface LikeResponse {
+  status: string;
+  likes: number;
+  liked?: boolean;
+}
 
 export const useMedia = (mediaId: string, userId: string) => {
   const queryClient = useQueryClient();
-  const [isLiked, setIsLiked] = useState(false);
-  console.log("userid", userId);
 
-  useQuery({
-    queryKey: ["media", mediaId, "liked"],
-    queryFn: () => checkIfMediaIsLiked(mediaId, userId),
-  });
-
-  const { data: numLikes } = useQuery({
+  const { data: mediaData } = useQuery({
     queryKey: ["media", mediaId, "likes"],
-    queryFn: () => fetchLikes(mediaId),
-  });
-
-  const { mutate: updateLikes } = useMutation({
-    mutationFn: () => updateMediaLikes(mediaId, userId),
-    onMutate: async () => {
-      // Cancel any previous queries to prevent overwriting the optimistic update
-      await queryClient.cancelQueries({
-        queryKey: ["media", mediaId, "liked"],
-      });
-
-      const prevLikes = await queryClient.getQueryData([
-        "media",
-        mediaId,
-        "likes",
+    queryFn: async (): Promise<{ isLiked: boolean; numLikes: number }> => {
+      const [likesResponse, likedStatusResponse] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL}/media/likes/${mediaId}`),
+        fetch(
+          `${import.meta.env.VITE_API_URL}/media/likes/${mediaId}/${userId}`
+        ),
       ]);
 
-      // Optimistically update to the new value
-      queryClient.setQueryData(
-        ["media", mediaId, "likes"],
-        (oldLikes: number) => (isLiked ? oldLikes - 1 : oldLikes + 1)
-      );
+      if (!likesResponse.ok || !likedStatusResponse.ok) {
+        throw new Error("Failed to fetch media data");
+      }
 
-      // Return a context object with the snapshotted value
-      return { prevLikes };
-    },
-    // If the mutation fails,
-    // use the context returned from onMutate to roll back
-    onError: (_err, _newTodo, context) => {
-      queryClient.setQueryData(["todos"], context?.prevLikes);
-    },
-    onSuccess: () => {
-      setIsLiked((isLiked) => !isLiked);
-    },
-    // Always refetch after error or success:
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["media", mediaId, "likes"] });
+      const [likesData, likedData] = await Promise.all([
+        likesResponse.json(),
+        likedStatusResponse.json(),
+      ]);
+
+      if (likesData.status !== "success") {
+        throw new Error("Failed to fetch likes");
+      }
+
+      return {
+        isLiked: likedData.liked,
+        numLikes: likesData.likes,
+      };
     },
   });
 
-  // Check if user has liked a given media
-  async function checkIfMediaIsLiked(mediaId: string, userId: string) {
-    try {
+  const mutation = useMutation({
+    mutationFn: async () => {
       const response = await fetch(
-        import.meta.env.VITE_API_URL + `/media/likes/${mediaId}/${userId}`
+        `${import.meta.env.VITE_API_URL}/media/like`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            media_id: parseInt(mediaId),
+            user_id: parseInt(userId),
+          }),
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch liked status");
+        throw new Error("Failed to update like status");
       }
-      const json = await response.json();
-      if (json.liked === "true") {
-        setIsLiked(true);
-      } else {
-        setIsLiked(false);
-      }
-    } catch (error) {
-      console.error(error);
-      setIsLiked(false);
-      return;
-    }
-  }
 
-  return { updateLikes, isLiked, numLikes };
+      const data: LikeResponse = await response.json();
+      if (data.status !== "success") {
+        throw new Error("Failed to update like status");
+      }
+
+      return data;
+    },
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["media", mediaId, "likes"],
+        exact: true,
+      });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData<{
+        isLiked: boolean;
+        numLikes: number;
+      }>(["media", mediaId, "likes"]);
+
+      // Optimistically update the cache
+      if (previousData) {
+        queryClient.setQueryData(["media", mediaId, "likes"], {
+          isLiked: !previousData.isLiked,
+          numLikes: previousData.isLiked
+            ? previousData.numLikes - 1
+            : previousData.numLikes + 1,
+        });
+      }
+
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      // If the mutation fails, roll back to the previous value
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ["media", mediaId, "likes"],
+          context.previousData
+        );
+      }
+    },
+    // Always refetch after error or success
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["media", mediaId, "likes"],
+        exact: true,
+      });
+    },
+  });
+
+  return {
+    isLiked: mediaData?.isLiked ?? false,
+    numLikes: mediaData?.numLikes ?? 0,
+    updateLikes: () => mutation.mutate(),
+    isLoading: mutation.isPending,
+    error: mutation.error,
+  };
 };
-
-// Get the number of likes for a given media
-async function fetchLikes(mediaId: string) {
-  try {
-    const response = await fetch(
-      import.meta.env.VITE_API_URL + `/media/likes/${mediaId}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch likes");
-    }
-    const json = await response.json();
-    if (json.status !== "success") {
-      throw new Error("Failed to fetch likes");
-    }
-    return json.likes;
-  } catch (error) {
-    console.error(error);
-    return 0;
-  }
-}
-
-// Like or unlike a media
-async function updateMediaLikes(mediaId: string, userId: string) {
-  try {
-    const response = await fetch(import.meta.env.VITE_API_URL + `/media/like`, {
-      body: JSON.stringify({ media_id: mediaId, user_id: userId }),
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update likes");
-    }
-    const json = await response.json();
-    if (json.status !== "success") {
-      throw new Error("Failed to update likes");
-    }
-    return;
-  } catch (error) {
-    console.error(error);
-    return;
-  }
-}

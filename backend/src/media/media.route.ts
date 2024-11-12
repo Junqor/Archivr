@@ -1,15 +1,29 @@
 import { Router } from "express";
 import { get_likes, is_liked, update_likes } from "./database";
+import { z } from "zod";
 
 export const mediaRouter = Router();
+
+const updateLikesBodySchema = z.object({
+  media_id: z.number(),
+  user_id: z.number(),
+});
 
 // (POST /media/like)
 mediaRouter.post("/like", async (req, res) => {
   try {
-    update_likes(req.body.media_id, req.body.user_id);
+    const body = req.body;
+    const parsed = updateLikesBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const { media_id, user_id } = parsed.data;
+    const result = await update_likes(media_id, user_id);
     res.json({ status: "success" });
   } catch (error) {
-    res.json({ status: "failed", message: (error as Error).message });
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
   }
 });
 
@@ -25,8 +39,8 @@ mediaRouter.get("/likes/:mediaId/:userId", async (req, res) => {
   const mediaId = parseInt(req.params.mediaId);
   const userId = parseInt(req.params.userId);
   try {
-    is_liked(mediaId, userId);
-    res.json({ status: "success", liked: true });
+    const liked = await is_liked(mediaId, userId);
+    res.json({ status: "success", liked });
   } catch (error) {
     res.json({ status: "failed", message: (error as Error).message });
   }
