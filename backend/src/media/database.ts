@@ -92,24 +92,18 @@ export async function get_user_review(
 // Try inserting the like; if it already exists, delete it instead.
 export async function update_likes(media_id: number, user_id: number) {
   const [result] = await conn.query<ResultSetHeader>(
-    `
-    INSERT INTO Likes (media_id, user_id) VALUES (?, ?)
-    ON DUPLICATE KEY UPDATE media_id = VALUES(media_id);
-  `,
+    `INSERT IGNORE INTO Likes (media_id, user_id) VALUES (?, ?)`,
     [media_id, user_id]
   );
 
   // Check if a row was inserted; if not, delete it instead.
-  if (result.affectedRows === 1) {
-    // Like was added, so we don't need to do anything further.
-    return;
+  if (result.affectedRows === 0) {
+    // If the row wasn’t inserted (it already exists), delete it to "toggle" the like.
+    await conn.query("DELETE FROM Likes WHERE media_id = ? AND user_id = ?;", [
+      media_id,
+      user_id,
+    ]);
   }
-
-  // If the row wasn’t inserted (it already exists), delete it to "toggle" the like.
-  await conn.query("DELETE FROM Likes WHERE media_id = ? AND user_id = ?;", [
-    media_id,
-    user_id,
-  ]);
 }
 
 export async function is_liked(
