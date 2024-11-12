@@ -1,3 +1,4 @@
+import { LoginPopUp } from "@/components/login";
 import ErrorPage from "@/pages/errorPage";
 import { HomePage } from "@/pages/homePage";
 import { Layout } from "@/pages/layout";
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
         element: <MediaPage />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <LoginPopUp />,
   },
 ]);
 

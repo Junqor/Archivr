@@ -4,6 +4,7 @@ import { useState } from "react";
 export const useMedia = (mediaId: string, userId: string) => {
   const queryClient = useQueryClient();
   const [isLiked, setIsLiked] = useState(false);
+  console.log("userid", userId);
 
   useQuery({
     queryKey: ["media", mediaId, "liked"],
@@ -56,11 +57,7 @@ export const useMedia = (mediaId: string, userId: string) => {
   async function checkIfMediaIsLiked(mediaId: string, userId: string) {
     try {
       const response = await fetch(
-        import.meta.env.VITE_API_URL + `/media/likes`,
-        {
-          body: JSON.stringify({ media_id: mediaId, user_id: userId }),
-          method: "POST",
-        }
+        import.meta.env.VITE_API_URL + `/media/likes/${mediaId}/${userId}`
       );
 
       if (!response.ok) {
@@ -86,11 +83,7 @@ export const useMedia = (mediaId: string, userId: string) => {
 async function fetchLikes(mediaId: string) {
   try {
     const response = await fetch(
-      import.meta.env.VITE_API_URL + `/media/likes`,
-      {
-        body: JSON.stringify({ media_id: mediaId }),
-        method: "POST",
-      }
+      import.meta.env.VITE_API_URL + `/media/likes/${mediaId}`
     );
 
     if (!response.ok) {

@@ -1,17 +1,12 @@
 import Logo from "@/assets/logo.svg";
 import SearchBar from "./searchBar";
 import { Button } from "./ui/button";
-import { LoginPopUp } from "./login";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 
 export const Header = () => {
-  const [auth] = useLocalStorage("auth");
-
-  function signOut() {
-    localStorage.removeItem("auth");
-    window.dispatchEvent(new Event("storage")); // Manually trigger the event for same-tab updates
-  }
+  const { logout } = useAuth();
 
   return (
     <div className="sticky top-0 left-0 flex flex-row w-full h-full px-5 py-3 bg-black max-h-16">
@@ -41,13 +36,9 @@ export const Header = () => {
             <Link to="/Members">Members</Link>
           </Button>
           <SearchBar />
-          {!!auth ? (
-            <Button onClick={signOut} variant="ghost">
-              Sign Out
-            </Button>
-          ) : (
-            <LoginPopUp />
-          )}
+          <Button onClick={logout} variant="ghost" className="flex flex-row">
+            <AccountCircleIcon /> Sign Out
+          </Button>
         </div>
       </div>
     </div>

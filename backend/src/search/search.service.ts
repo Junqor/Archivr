@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { conn } from "../configs/digitalocean.config";
 import { TMedia } from "../types/user";
 
@@ -9,7 +10,9 @@ type TSearchResult = {
 // Search for media by name
 export async function searchMedia(query: string): Promise<TSearchResult> {
   const sql = `SELECT * FROM Media WHERE title LIKE ? LIMIT 3`;
-  const [rows] = await conn.query<TMedia[]>(sql, [`%${query}%`]);
+  const [rows] = await conn.query<(RowDataPacket & TMedia)[]>(sql, [
+    `%${query}%`,
+  ]);
 
   return {
     status: "success",
@@ -26,7 +29,7 @@ type TMediaResult = {
 // Returns a single media entry by its id
 export async function getMediaById(id: number): Promise<TMediaResult> {
   const sql = `SELECT * FROM Media WHERE id = ?`;
-  const [rows] = await conn.query<TMedia[]>(sql, [id]);
+  const [rows] = await conn.query<(RowDataPacket & TMedia)[]>(sql, [id]);
 
   if (rows.length === 0) {
     return {

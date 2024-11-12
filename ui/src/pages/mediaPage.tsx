@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { useAuth } from "@/context/auth";
@@ -11,6 +11,7 @@ import { useAuth } from "@/context/auth";
 export function MediaPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  if (!user) return <Navigate to="/login" />;
   const { isLiked, updateLikes, numLikes } = useMedia(id as string, user.id);
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
