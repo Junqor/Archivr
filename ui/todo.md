@@ -6,3 +6,4 @@
 - separate login and sign up pages
 - use react query for fetching movies
 - Loading screen
+- replace 'critic score' with user rating avg

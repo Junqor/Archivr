@@ -1,18 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { UseMutateFunction, useQuery } from "@tanstack/react-query";
 import { Navigate, useParams } from "react-router-dom";
 import { TMedia } from "@/types/media";
-import { useMedia } from "@/hooks/useMedia";
+import { TReview, TUpdateReviewArgs, useMedia } from "@/hooks/useMedia";
 import { useAuth } from "@/context/auth";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 export function MediaPage() {
   const { id } = useParams();
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" />;
-  const { isLiked, updateLikes, numLikes } = useMedia(id as string, user.id);
+  const { isLiked, updateLikes, numLikes, reviews, updateReview } = useMedia(
+    id as string,
+    user.id
+  );
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
     queryFn: async () =>
@@ -86,7 +106,7 @@ export function MediaPage() {
           </div>
 
           {/* Reviews Section */}
-          <div className="pt-6 mt-6 border-t border-gray-700">
+          <div className="py-6 my-6 border-gray-700 border-y">
             <h2 className="mb-4 text-xl font-semibold">Reviews</h2>
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
@@ -109,15 +129,111 @@ export function MediaPage() {
                   />
                   {numLikes}
                 </Button>
-                <Button variant="outline" size="sm">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Add Review
-                </Button>
+                <AddReviewButton
+                  updateReview={updateReview}
+                  mediaId={id as string}
+                  userId={user.id}
+                />
               </div>
             </div>
           </div>
+
+          {/* User Reviews */}
+          {reviews && (
+            <div className="flex flex-col mt-3 space-y-2">
+              <h3 className="self-start font-bold">
+                See What Others Are Saying
+              </h3>
+              {reviews?.map((review) => {
+                return (
+                  <Card
+                    key={crypto.randomUUID()}
+                    className="mb-4 bg-gray-800 border-gray-700"
+                  >
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{review.username}</span>
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < review.rating
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-400"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-300">{review.comment}</p>
+                    </CardContent>
+                    <CardFooter>
+                      <p className="text-sm text-gray-400">
+                        {new Date(review.created_at).toLocaleString()}
+                      </p>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
+
+type AddReviewButtonProps = {
+  updateReview: UseMutateFunction<TReview, Error, TUpdateReviewArgs, unknown>;
+  mediaId: string;
+  userId: string;
+};
+
+const AddReviewButton = ({
+  updateReview,
+  mediaId,
+  userId,
+}: AddReviewButtonProps) => {
+  const [newReview, setNewReview] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  function handleAddReview() {
+    updateReview({ media_id: mediaId, user_id: userId, comment: newReview });
+    setIsDialogOpen(false);
+  }
+
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <MessageSquare className="w-4 h-4 mr-2" />
+          Add Review
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="text-white bg-black">
+        <DialogHeader>
+          <DialogTitle>Add a New Review</DialogTitle>
+        </DialogHeader>
+        <DialogDescription className="text-sm text-left">
+          Share your thoughts and opinions for others to see.
+        </DialogDescription>
+        <div className="grid gap-4 py-4">
+          <Textarea
+            placeholder="Write your review here..."
+            value={newReview}
+            onChange={(e) => setNewReview(e.target.value)}
+            className="border-gray-600 bg-[rgb(22,22,22)]"
+          />
+        </div>
+        <DialogFooter>
+          <Button onClick={handleAddReview} variant="default">
+            Submit Review
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};

@@ -5,4 +5,4 @@
 
 ## Todo:
 
--
+- Secure Endpoints ... use tokens and/or cookies for auth
