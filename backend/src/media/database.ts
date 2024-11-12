@@ -64,15 +64,17 @@ export async function get_media_reviews(
   media_id: number,
   amount: number,
   offset: number
-): Promise<TReview> {
+): Promise<TReview[]> {
   let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    "SELECT * FROM Reviews WHERE media_id=? LIMIT ? OFFSET ?;",
+    `SELECT Users.username, Reviews.comment, Reviews.created_at 
+    FROM Reviews 
+    INNER JOIN Users ON Reviews.user_id = Users.id 
+    WHERE Reviews.media_id = ? 
+    ORDER BY Reviews.created_at DESC
+    LIMIT ? OFFSET ?;`,
     [media_id, amount, offset]
   );
-  if (rows[0].length == 0) {
-    throw Error("REVIEWS AREN'T REAL");
-  }
-  return rows[0];
+  return rows;
 }
 
 export async function get_user_review(

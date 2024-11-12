@@ -1,10 +1,24 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface LikeResponse {
+export type TLikeResponse = {
   status: string;
   likes: number;
   liked?: boolean;
-}
+};
+
+export type TReview = {
+  username: string;
+  comment: string;
+  created_at: string;
+  rating: number;
+};
+
+export type TUpdateReviewArgs = {
+  media_id: string;
+  user_id: string;
+  comment: string;
+  rating?: number;
+};
 
 export const useMedia = (mediaId: string, userId: string) => {
   const queryClient = useQueryClient();
@@ -39,7 +53,7 @@ export const useMedia = (mediaId: string, userId: string) => {
     },
   });
 
-  const mutation = useMutation({
+  const { mutate: updateLikes } = useMutation({
     mutationFn: async () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/media/like`,
@@ -59,7 +73,7 @@ export const useMedia = (mediaId: string, userId: string) => {
         throw new Error("Failed to update like status");
       }
 
-      const data: LikeResponse = await response.json();
+      const data: TLikeResponse = await response.json();
       if (data.status !== "success") {
         throw new Error("Failed to update like status");
       }
@@ -109,11 +123,74 @@ export const useMedia = (mediaId: string, userId: string) => {
     },
   });
 
+  const { data: reviewsData } = useQuery({
+    queryKey: ["media", mediaId, "reviews"],
+    queryFn: async () => {
+      const [reviewsResponse] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL}/media/reviews/${mediaId}`),
+      ]);
+
+      if (!reviewsResponse.ok) {
+        throw new Error("Failed to fetch review data");
+      }
+
+      const reviewsData = await reviewsResponse.json();
+
+      if (reviewsData.status !== "success") {
+        throw new Error("Failed to fetch reviews");
+      }
+
+      return reviewsData.reviews as TReview[];
+    },
+  });
+
+  const { mutate: updateReview } = useMutation({
+    mutationFn: async ({
+      media_id,
+      user_id,
+      comment,
+      rating = 0,
+    }: TUpdateReviewArgs) => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/media/review`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            media_id: parseInt(media_id),
+            user_id: parseInt(user_id),
+            comment: comment,
+            rating: rating,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update review");
+      }
+
+      const data = await response.json();
+      if (data.status !== "success") {
+        throw new Error("Failed to update review");
+      }
+
+      return data.review as TReview;
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["media", mediaId, "reviews"],
+        exact: true,
+      });
+    },
+  });
+
   return {
     isLiked: mediaData?.isLiked ?? false,
     numLikes: mediaData?.numLikes ?? 0,
-    updateLikes: () => mutation.mutate(),
-    isLoading: mutation.isPending,
-    error: mutation.error,
+    updateLikes,
+    reviews: reviewsData,
+    updateReview,
   };
 };
