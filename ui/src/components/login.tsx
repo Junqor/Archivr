@@ -1,4 +1,3 @@
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -6,29 +5,29 @@ import { Button } from "./ui/button";
 import { FormEvent, useEffect, useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useLogin } from "@/hooks/useLogin";
+import { useAuth } from "@/context/auth";
 
 export function LoginPopUp() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+  if (user?.id) return <Navigate to="/" />;
   const [isOnLogin, setIsOnLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { mutate: login } = useLogin();
   const [error, setError] = useState("");
-  const url = useLocation();
   const navigate = useNavigate();
-  const hash = window.location.hash;
 
   useEffect(() => {
-    if (!isOpen) {
-      navigate(url.pathname);
-    } else if (isOnLogin) {
+    if (isOnLogin) {
       navigate("#login");
     } else {
       navigate("#signup");
     }
-  }, [isOnLogin, isOpen]);
+  }, [isOnLogin]);
 
   useEffect(() => {
     if (error) {
@@ -40,26 +39,7 @@ export function LoginPopUp() {
   async function handleLogInSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
-      const response = await fetch(
-        import.meta.env.VITE_API_URL + "/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.status === "success") {
-        localStorage.setItem("auth", "true");
-        window.dispatchEvent(new Event("storage"));
-        toast.success("Logged in successfully");
-        navigate("/");
-      } else {
-        toast.error(data.message);
-      }
+      login({ username, password });
     } catch (err) {
       console.error(err);
       toast.error("An unexpected error occurred");
@@ -90,7 +70,7 @@ export function LoginPopUp() {
         localStorage.setItem("auth", "true");
         window.dispatchEvent(new Event("storage"));
         toast.success("Registered successfully");
-        navigate("/");
+        login({ username, password });
       } else {
         toast.error(data.message);
       }
@@ -101,16 +81,8 @@ export function LoginPopUp() {
   }
 
   return (
-    <Dialog
-      open={hash === "#login" || hash === "#signup"}
-      onOpenChange={(open) => setIsOpen(open)}
-    >
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="flex flex-row items-center">
-          <AccountCircleIcon className="mr-2" />
-          <p>Sign in</p>
-        </Button>
-      </DialogTrigger>
+    <Dialog open={true}>
+      <DialogTrigger>{null}</DialogTrigger>
       <DialogContent className="max-w-sm p-0">
         <div className="flex flex-row w-full">
           <Button

@@ -2,39 +2,31 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { createContext, useContext } from "react";
 
 type TUser = {
-  userName: string;
+  name: string;
   id: string;
 };
 
 export type TUserContext = {
-  user: TUser;
-  login: (userName: string) => void;
+  user: TUser | null;
+  login: (user: TUser) => void;
   logout: () => void;
 };
 export type AuthProviderProps = React.PropsWithChildren<{}>;
 
-const AuthContext = createContext<TUserContext>({
-  user: { userName: "", id: "" },
-  login: () => {},
-  logout: () => {},
-});
+const AuthContext = createContext<TUserContext | undefined>(undefined);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useLocalStorage("user");
 
-  const login = (user: string) => {
-    setUser(user);
+  const login = (user: TUser) => {
+    setUser(JSON.stringify(user));
   };
 
   const logout = () => {
     setUser(null);
   };
 
-  let userObject = { userName: "", id: "" };
-
-  if (user) {
-    userObject = JSON.parse(user) as TUser;
-  }
+  const userObject = user ? (JSON.parse(user) as TUser) : null;
 
   return (
     <AuthContext.Provider value={{ user: userObject, login, logout }}>
