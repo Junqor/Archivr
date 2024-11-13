@@ -1,4 +1,4 @@
-import { LoginPopUp } from "@/components/login";
+import { LoginPopUp } from "@/pages/login";
 import ErrorPage from "@/pages/errorPage";
 import { HomePage } from "@/pages/homePage";
 import { Layout } from "@/pages/layout";
