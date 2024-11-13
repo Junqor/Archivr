@@ -1,21 +1,12 @@
 import Logo from "@/assets/logo.svg";
 import SearchBar from "./searchBar";
-import { LoginPopUp } from "./login";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Button } from "./ui/button";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 
-// Header component
 export default function Header() {
-  // Get the auth state from local storage
-  const [auth] = useLocalStorage("auth");
-
-  // Sign out function
-  function signOut() {
-    // Remove the auth state from local storage
-    localStorage.removeItem("auth");
-    // Trigger the storage event
-    window.dispatchEvent(new Event("storage"));
-  }
+  const { logout } = useAuth();
 
   // Return the header component
   return (
@@ -65,11 +56,9 @@ export default function Header() {
         </div>
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
-          {!!auth ? (
-            <button onClick={signOut}>Sign Out</button>
-          ) : (
-            <LoginPopUp />
-          )}
+          <Button onClick={logout} variant="ghost" className="flex flex-row">
+            <AccountCircleIcon /> Sign Out
+          </Button>
         </div>
       </div>
     </header>

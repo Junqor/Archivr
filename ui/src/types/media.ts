@@ -1,11 +1,3 @@
-export type TUser = {
-  id: number;
-  email: string;
-  username: string;
-  password_hash: string;
-  salt: string;
-};
-
 export type TMedia = {
   id: number;
   title: string;

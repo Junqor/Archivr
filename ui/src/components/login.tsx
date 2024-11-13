@@ -8,7 +8,6 @@
   - Maybe not use hash to control the dialog
 */
 
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -16,46 +15,32 @@ import { Button } from "./ui/button";
 import { FormEvent, useEffect, useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useLogin } from "@/hooks/useLogin";
+import { useAuth } from "@/context/auth";
 
 // LoginPopUp component
 export function LoginPopUp() {
-  const [isOpen, setIsOpen] = useState(false); // State to control the dialog
-  const [isOnLogin, setIsOnLogin] = useState(true); // State to control the login/signup form
-  const [username, setUsername] = useState(""); // State to store the username
-  const [email, setEmail] = useState(""); // State to store the email
-  const [password, setPassword] = useState(""); // State to store the password
-  const [confirmPassword, setConfirmPassword] = useState(""); // State to store the confirm password
-  const [error, setError] = useState(""); // State to store the error message
-  const url = useLocation(); // Get the current URL
-  const navigate = useNavigate(); // Get the navigate function
-  const hash = window.location.hash; // Get the hash from the URL
+  const { user } = useAuth();
+  if (user?.id) return <Navigate to="/" />;
+  const [isOnLogin, setIsOnLogin] = useState(true);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { mutate: login } = useLogin();
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  // Check if the dialog is open
   useEffect(() => {
-    if (!isOpen) {
-      // If the dialog is closed
-      navigate(url.pathname);
-    } else if (isOnLogin) {
-      // If the dialog is open and the user is on the login form
+    if (isOnLogin) {
       navigate("#login");
     } else {
       // If the dialog is open and the user is on the signup form
       navigate("#signup");
     }
-  }, [isOnLogin, isOpen]);
+  }, [isOnLogin]);
 
-  // Reset form fields when the dialog is closed
-  useEffect(() => {
-    if (!isOpen) {
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-    }
-  }, [isOpen]);
-
-  // Show error message and reset form fields
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -71,27 +56,7 @@ export function LoginPopUp() {
   async function handleLogInSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
-      const response = await fetch(
-        import.meta.env.VITE_API_URL + "/auth/login", // Send a POST request to the login endpoint
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }), // Send the username and password
-        }
-      );
-
-      const data = await response.json(); // Get the response data
-      if (data.status === "success") {
-        // If the response status is success
-        localStorage.setItem("auth", "true"); // Set the auth state to true
-        window.dispatchEvent(new Event("storage")); // Trigger the storage event
-        toast.success("Logged in successfully"); // Show a success message
-        setIsOpen(false); // Close the dialog
-      } else {
-        setError(data.message); // Set the error message
-      }
+      login({ username, password });
     } catch (err) {
       console.error(err); // Log the error
       setError("An unexpected error occurred"); // Set the error message
@@ -123,11 +88,10 @@ export function LoginPopUp() {
 
       const data = await response.json(); // Get the response data
       if (data.status === "success") {
-        // If the response status is success
-        localStorage.setItem("auth", "true"); // Set the auth state to true
-        window.dispatchEvent(new Event("storage")); // Trigger the storage event
-        toast.success("Registered successfully"); // Show a success message
-        setIsOpen(false); // Close the dialog
+        localStorage.setItem("auth", "true");
+        window.dispatchEvent(new Event("storage"));
+        toast.success("Registered successfully");
+        login({ username, password });
       } else {
         // If the response status is not success
         setError(data.message); // Set the error message
@@ -141,16 +105,8 @@ export function LoginPopUp() {
 
   // Return the login popup component
   return (
-    <Dialog
-      open={hash === "#login" || hash === "#signup"}
-      onOpenChange={(open) => setIsOpen(open)}
-    >
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="flex flex-row items-center">
-          <AccountCircleIcon className="mr-2" />
-          <p>Sign in</p>
-        </Button>
-      </DialogTrigger>
+    <Dialog open={true}>
+      <DialogTrigger>{null}</DialogTrigger>
       <DialogContent className="max-w-sm p-0">
         <div className="flex flex-row w-full">
           <Button

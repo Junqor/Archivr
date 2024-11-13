@@ -1,7 +1,8 @@
+import { LoginPopUp } from "@/components/login";
 import ErrorPage from "@/pages/errorPage";
 import HomePage from "@/pages/homePage";
 import { Layout } from "@/pages/layout";
-import MovieCard from "@/pages/moviePage";
+import { MediaPage } from "@/pages/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
 
 // Define the router configuration
@@ -18,8 +19,8 @@ const router = createBrowserRouter([
       },
       // Movie Page
       {
-        path: "/movies/:id",
-        element: <MovieCard />,
+        path: "/media/:id",
+        element: <MediaPage />,
       },
       // Error Pages
       {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
         },
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <LoginPopUp />,
   },
 ]);
 
