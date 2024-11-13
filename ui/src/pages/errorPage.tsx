@@ -13,6 +13,7 @@ export default function ErrorPage() {
       <h1 className="font-bold text-purple">Oops!</h1>
       <h2>Sorry, an unexpected error has occurred. :(</h2>
       <p>
+        {/* @ts-expect-error  */}
         <i>{error.statusText || error.message}</i>
       </p>
       <Button asChild className="my-4">
