@@ -1,55 +1,77 @@
 import Logo from "@/assets/logo.svg";
 import SearchBar from "./searchBar";
-import { Button } from "./ui/button";
 import { LoginPopUp } from "./login";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Link } from "react-router-dom";
 
-export const Header = () => {
+// Header component
+export default function Header() {
+  // Get the auth state from local storage
   const [auth] = useLocalStorage("auth");
 
+  // Sign out function
   function signOut() {
+    // Remove the auth state from local storage
     localStorage.removeItem("auth");
-    window.dispatchEvent(new Event("storage")); // Manually trigger the event for same-tab updates
+    // Trigger the storage event
+    window.dispatchEvent(new Event("storage"));
   }
 
+  // Return the header component
   return (
-    <div className="sticky top-0 left-0 flex flex-row w-full h-full px-5 py-3 bg-black max-h-16">
-      <div className="flex flex-row w-full h-full">
-        <div className="flex flex-row items-center justify-start h-full gap-3 mr-auto bg-black">
-          <img src={Logo} className="size-[35px]" />
-          <h3 className="font-bold"> Archivr </h3>
+    <header className="sticky top-0 left-0 flex flex-row w-full h-auto px-6 py-3 bg-black justify-between items-center z-50">
+      <div className="flex flex-row items-center justify-start h-full gap-3">
+        <img src={Logo} className="size-[35px]" />
+        <h3 className="font-bold"> Archivr </h3>
+      </div>
+      <div className="flex flex-row items-center justify-end h-full gap-11">
+        <div className="flex flex-row items-center justify-center gap-6">
+          <Link
+            to="/"
+            className="text-white transition-colors hover:text-purple"
+          >
+            Home
+          </Link>
+          <Link
+            to="/genre"
+            className="text-white transition-colors hover:text-purple"
+          >
+            Genre
+          </Link>
+          <Link
+            to="/country"
+            className="text-white transition-colors hover:text-purple"
+          >
+            Country
+          </Link>
+          <Link
+            to="/trending"
+            className="text-white transition-colors hover:text-purple"
+          >
+            Trending
+          </Link>
+          <Link
+            to="/popular"
+            className="text-white transition-colors hover:text-purple"
+          >
+            Popular
+          </Link>
+          <Link
+            to="/members"
+            className="text-white transition-colors hover:text-purple"
+          >
+            Members
+          </Link>
         </div>
-        <div className="flex-row items-center justify-end hidden h-full bg-black md:flex">
-          <Button variant="ghost" className="" asChild>
-            <Link to="/">Home</Link>
-          </Button>
-
-          <Button variant="ghost" className="">
-            <Link to="/Genre">Genre</Link>
-          </Button>
-          <Button variant="ghost" className="">
-            <Link to="/Country">Country</Link>
-          </Button>
-          <Button variant="ghost" className="">
-            <Link to="/Trending">Trending</Link>
-          </Button>
-          <Button variant="ghost" className="">
-            <Link to="/Popular">Popular</Link>
-          </Button>
-          <Button variant="ghost" className="">
-            <Link to="/Members">Members</Link>
-          </Button>
+        <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
           {!!auth ? (
-            <Button onClick={signOut} variant="ghost">
-              Sign Out
-            </Button>
+            <button onClick={signOut}>Sign Out</button>
           ) : (
             <LoginPopUp />
           )}
         </div>
       </div>
-    </div>
+    </header>
   );
-};
+}
