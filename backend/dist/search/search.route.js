@@ -1,6 +1,6 @@
 import { Router } from "express";
 import z from "zod";
-import { getMediaById, searchMedia } from "./search.service";
+import { getMediaById, searchMedia } from "./search.service.js";
 const searchBodySchema = z.object({
     query: z.string().min(1),
 });

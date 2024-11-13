@@ -1,4 +1,4 @@
-import { conn } from "../configs/digitalocean.config";
+import { conn } from "../configs/digitalocean.config.js";
 export async function update_rating(media_id, user_id, new_rating) {
     let [rows] = await conn.query("INSERT INTO Ratings (media_id, user_id, rating) VALUES (?, ?, ?) " +
         "ON DUPLICATE KEY UPDATE rating = ?", [media_id, user_id, new_rating, new_rating]);

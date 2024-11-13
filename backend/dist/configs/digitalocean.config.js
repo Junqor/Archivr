@@ -1,6 +1,6 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
-import { validateEnv } from "../utils/validateEnv";
+import { validateEnv } from "../utils/validateEnv.js";
 dotenv.config();
 const access = {
     host: validateEnv(process.env.DB_HOST),

@@ -2,11 +2,11 @@ import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { authRouter } from "./auth/auth.route";
-import { testConnection } from "./utils/testConnection";
+import { authRouter } from "./auth/auth.route.js";
+import { testConnection } from "./utils/testConnection.js";
 import cors from "cors";
-import { searchRouter } from "./search/search.route";
-import { mediaRouter } from "./media/media.route";
+import { searchRouter } from "./search/search.route.js";
+import { mediaRouter } from "./media/media.route.js";
 
 const app = express();
 

@@ -1,4 +1,4 @@
-import { conn } from "../configs/digitalocean.config";
+import { conn } from "../configs/digitalocean.config.js";
 // Search for media by name
 export async function searchMedia(query) {
     const sql = `SELECT * FROM Media WHERE title LIKE ? LIMIT 3`;

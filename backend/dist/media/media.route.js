@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { get_likes, get_media_reviews, is_liked, update_likes, update_review, } from "./database";
+import { get_likes, get_media_reviews, is_liked, update_likes, update_review, } from "./database.js";
 import { z } from "zod";
 export const mediaRouter = Router();
 const updateLikesBodySchema = z.object({

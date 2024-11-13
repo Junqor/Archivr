@@ -1,6 +1,6 @@
-import { conn } from "../configs/digitalocean.config";
-import { AuthErrorHandler } from "../utils/authErrorHandler";
-import { generateSalt, hashPassword } from "../utils/hashPassword";
+import { conn } from "../configs/digitalocean.config.js";
+import { AuthErrorHandler } from "../utils/authErrorHandler.js";
+import { generateSalt, hashPassword } from "../utils/hashPassword.js";
 import { z } from "zod";
 export async function signUp(inputEmail, inputUsername, inputPassword) {
     if (!inputEmail || !inputUsername || !inputPassword) {

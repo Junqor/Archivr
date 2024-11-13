@@ -1,4 +1,4 @@
-import { conn } from "../configs/digitalocean.config";
+import { conn } from "../configs/digitalocean.config.js";
 
 export async function testConnection() {
   const [rows] = await conn.query(
