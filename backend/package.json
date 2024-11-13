@@ -4,8 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "test": "jest"
+    "dev": "tsx watch api/index.ts",
+    "test": "jest",
+    "build": "echo 'ready to deploy!'"
   },
   "author": "",
   "license": "ISC",
