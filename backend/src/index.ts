@@ -18,6 +18,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cors({ origin: "*" }));
 
+app.get("/", (req, res) => {
+  res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
+});
 app.use("/search", searchRouter);
 app.use("/auth", authRouter);
 app.use("/media", mediaRouter);

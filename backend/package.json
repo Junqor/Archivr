@@ -4,10 +4,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch api/index.ts",
+    "dev": "tsx watch src/index.ts",
     "test": "jest",
-    "build": "echo 'ready to deploy!'"
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist"
   },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",
@@ -25,6 +32,8 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.7",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^6.0.1",
     "typescript": "^5.6.3"
   }
 }

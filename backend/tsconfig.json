@@ -8,9 +8,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "api",
+    "rootDir": "src",
     "types": ["node", "jest", "express"]
   },
-  "include": ["api/**/*.ts", "jest"],
+  "include": ["src/**/*.ts", "jest"],
   "exclude": ["node_modules"]
 }
