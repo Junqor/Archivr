@@ -5,7 +5,7 @@ import {
   is_liked,
   update_likes,
   update_review,
-} from "./database";
+} from "./database.js";
 import { z } from "zod";
 
 export const mediaRouter = Router();

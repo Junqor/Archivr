@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
 import { PoolOptions } from "mysql2";
 import dotenv from "dotenv";
-import { validateEnv } from "../utils/validateEnv";
+import { validateEnv } from "../utils/validateEnv.js";
 dotenv.config();
 
 const access: PoolOptions = {

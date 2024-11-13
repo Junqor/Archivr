@@ -8,10 +8,15 @@
   - Maybe not use hash to control the dialog
 */
 
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
 import { FormEvent, useEffect, useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
@@ -32,6 +37,7 @@ export function LoginPopUp() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Should Remove This
   useEffect(() => {
     if (isOnLogin) {
       navigate("#login");

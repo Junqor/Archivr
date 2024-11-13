@@ -1,4 +1,4 @@
-import { conn } from "../configs/digitalocean.config";
+import { conn } from "../configs/digitalocean.config.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 export type TReview = {

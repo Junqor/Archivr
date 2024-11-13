@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
-import { conn } from "../configs/digitalocean.config";
-import { TMedia } from "../types/user";
+import { conn } from "../configs/digitalocean.config.js";
+import { TMedia } from "../types/user.js";
 
 type TSearchResult = {
   status: "success" | "failed";

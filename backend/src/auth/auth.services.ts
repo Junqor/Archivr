@@ -1,8 +1,8 @@
 import { RowDataPacket } from "mysql2";
-import { conn } from "../configs/digitalocean.config";
-import { TUser } from "../types/user";
-import { AuthErrorHandler } from "../utils/authErrorHandler";
-import { generateSalt, hashPassword } from "../utils/hashPassword";
+import { conn } from "../configs/digitalocean.config.js";
+import { TUser } from "../types/user.js";
+import { AuthErrorHandler } from "../utils/authErrorHandler.js";
+import { generateSalt, hashPassword } from "../utils/hashPassword.js";
 import { z } from "zod";
 
 export type TAuthResult = {

@@ -1,5 +1,5 @@
-import { logIn, signUp } from "../auth/auth.services";
-import { conn } from "../configs/digitalocean.config";
+import { logIn, signUp } from "../auth/auth.services.js";
+import { conn } from "../configs/digitalocean.config.js";
 
 // Test Suite
 describe("Authentication Flow", () => {
