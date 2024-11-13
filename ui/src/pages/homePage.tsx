@@ -16,12 +16,11 @@ export const HomePage = () => {
         <div className="flex flex-col w-full h-full gap-3 py-2 md:w-1/2">
           <h1 className="w-full font-[800] leading-[normal]">
             Track What You Love, <br />
-            Discover what's next{" "}
+            Discover what's next
           </h1>
           <h4 className="">
-            {" "}
             From your favorite classics to the latest hits, find it all in one
-            place{" "}
+            place
           </h4>
           <div className="flex flex-row items-start gap-3">
             <Button className="hover:bg-purple/80 ">Join the Community</Button>
@@ -33,17 +32,14 @@ export const HomePage = () => {
         {/* Posters */}
         <div className="flex-row hidden w-1/2 h-[210px] gap-6 overflow-hidden md:flex">
           <img
-            src="src/assets/posters/barbie.jpeg"
+            src="./posters/barbie.jpeg"
             className="object-scale-down h-full"
           />
           <img
-            src="src/assets/posters/agatha.jpeg"
+            src="./posters/agatha.jpeg"
             className="object-scale-down h-full"
           />
-          <img
-            src="src/assets/posters/MandM.jpg"
-            className="object-scale-down h-full"
-          />
+          <img src="./posters/MandM.jpg" className="object-scale-down h-full" />
         </div>
       </article>
       {/* Discover section */}
@@ -125,7 +121,7 @@ export const HomePage = () => {
             (poster) => (
               <img
                 key={crypto.randomUUID()}
-                src={`src/assets/posters/${poster}`}
+                src={`./posters/${poster}`}
                 className="object-scale-down h-full"
               />
             )
@@ -134,7 +130,7 @@ export const HomePage = () => {
             (poster) => (
               <img
                 key={crypto.randomUUID()}
-                src={`src/assets/posters/${poster}`}
+                src={`./posters/${poster}`}
                 className="object-scale-down h-full"
               />
             )
@@ -143,7 +139,7 @@ export const HomePage = () => {
             (poster) => (
               <img
                 key={crypto.randomUUID()}
-                src={`src/assets/posters/${poster}`}
+                src={`./posters/${poster}`}
                 className="object-scale-down h-full"
               />
             )
@@ -152,7 +148,7 @@ export const HomePage = () => {
             (poster) => (
               <img
                 key={crypto.randomUUID()}
-                src={`src/assets/posters/${poster}`}
+                src={`./posters/${poster}`}
                 className="object-scale-down h-full"
               />
             )
@@ -162,12 +158,10 @@ export const HomePage = () => {
       {/* Explore section */}
       <article className="flex flex-col items-center justify-center gap-3">
         <h3 className="font-[200] leading-tight text-center">
-          {" "}
           Explore trending hits and hidden gems in movies, shows, and books -
           just for you!
         </h3>
         <h4>
-          {" "}
           Check out top-rated picks from this week. Sign up to start curating
           your own!
         </h4>
@@ -176,7 +170,7 @@ export const HomePage = () => {
             (poster) => (
               <img
                 key={crypto.randomUUID()}
-                src={`src/assets/posters/${poster}`}
+                src={`./posters/${poster}`}
                 className="object-scale-down h-full"
               />
             )
@@ -185,7 +179,7 @@ export const HomePage = () => {
             (poster) => (
               <img
                 key={crypto.randomUUID()}
-                src={`src/assets/posters/${poster}`}
+                src={`./posters/${poster}`}
                 className="object-scale-down h-full"
               />
             )
