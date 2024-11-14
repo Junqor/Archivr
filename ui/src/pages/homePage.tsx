@@ -36,12 +36,9 @@ export default function HomePage() {
                 From your favorite classics to the latest hits, find it all in
                 one place.
               </h4>
-              {/* 
-                We need to write the logic for the Sign Up dialog because just #signup won't work.
-                */}
               <div className="flex flex-row gap-3">
                 <Link
-                  to="#"
+                  to="/login"
                   className="flex justify-center items-center bg-purple text-white py-2 px-6 rounded-full transition-colors hover:bg-purple/75"
                 >
                   Join the Community

@@ -1,6 +1,5 @@
 import Logo from "@/assets/logo.svg";
 import SearchBar from "./searchBar";
-import { Button } from "./ui/button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -56,9 +55,27 @@ export default function Header() {
         </div>
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
-          <Button onClick={logout} variant="ghost" className="flex flex-row">
-            <AccountCircleIcon /> Sign Out
-          </Button>
+          {/*
+            If the user is logged in, display the logout button
+            Otherwise, display the login button
+          */}
+          {localStorage.getItem("auth") === "true" ? (
+            <button
+              className="text-white transition-colors hover:text-purple flex flex-row items-center gap-2"
+              onClick={logout}
+            >
+              <AccountCircleIcon />
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="text-white transition-colors hover:text-purple flex flex-row items-center gap-2"
+            >
+              <AccountCircleIcon />
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </header>

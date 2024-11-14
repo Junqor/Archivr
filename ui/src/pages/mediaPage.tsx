@@ -1,3 +1,9 @@
+// mediaPage.tsx
+/*
+  To-Do:
+  - Users don't have to be logged in to view media details
+  - Update UI
+ */
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {

@@ -1,3 +1,4 @@
+// router.tsx
 import { LoginPopUp } from "@/pages/login";
 import ErrorPage from "@/pages/errorPage";
 import HomePage from "@/pages/homePage";
