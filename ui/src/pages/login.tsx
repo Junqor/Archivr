@@ -12,7 +12,7 @@ import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useLogin } from "@/hooks/useLogin";
 import { useAuth } from "@/context/auth";
 
@@ -27,17 +27,6 @@ export function LoginPopUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const { mutate: login } = useLogin();
   const [error, setError] = useState("");
-  const navigate = useNavigate();
-
-  // Should Remove This
-  useEffect(() => {
-    if (isOnLogin) {
-      navigate("#login");
-    } else {
-      // If the dialog is open and the user is on the signup form
-      navigate("#signup");
-    }
-  }, [isOnLogin]);
 
   useEffect(() => {
     if (error) {
@@ -104,8 +93,8 @@ export function LoginPopUp() {
   // Return the login popup component
   return (
     <main className="flex flex-row w-screen h-screen overflow-y-auto font-normal bg-black">
-      <section className="h-full w-full bg-black">
-        <div className="flex flex-col items-center justify-center h-full w-full gap-4">
+      <section className="w-full h-full bg-black">
+        <div className="flex flex-col items-center justify-center w-full h-full gap-4">
           <div className="flex flex-col items-center">
             <h1 className="font-bold">
               Welcome to <span className="text-purple">Archivr</span>
@@ -115,13 +104,13 @@ export function LoginPopUp() {
           <div className="flex flex-row space-x-4">
             <Link
               to="/" // Link to the home page
-              className="bg-purple py-2 px-6 rounded-full transition-colors hover:bg-purple/75"
+              className="px-6 py-2 transition-colors rounded-full bg-purple hover:bg-purple/75"
             >
               Back to Home
             </Link>
             <Link
               to="/random" // Link to the random media page
-              className="flex justify-center items-center bg-transparent border border-white py-1 px-6 rounded-full transition-colors hover:bg-white hover:text-black box-border"
+              className="box-border flex items-center justify-center px-6 py-1 transition-colors bg-transparent border border-white rounded-full hover:bg-white hover:text-black"
             >
               Random Media
             </Link>
@@ -129,8 +118,8 @@ export function LoginPopUp() {
           <h3>I haven't designed this page yet, so it's just a placeholder.</h3>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center h-full w-fit bg-login-bg bg-cover bg-no-repeat bg-left py-8 px-32 border-l-2 border-gray">
-        <div className="max-w-sm p-0 w-max bg-black rounded-lg overflow-hidden">
+      <section className="flex flex-col items-center justify-center h-full px-32 py-8 bg-left bg-no-repeat bg-cover border-l-2 w-fit bg-login-bg border-gray">
+        <div className="max-w-sm p-0 overflow-hidden bg-black rounded-lg w-max">
           <div className="flex flex-row w-full">
             <button
               className={`${
@@ -153,7 +142,7 @@ export function LoginPopUp() {
             onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
             className="flex flex-col px-6 py-6 space-y-4"
           >
-            <h2 className="text-center font-bold leading-tight">
+            <h2 className="font-bold leading-tight text-center">
               {isOnLogin ? (
                 <>
                   Welcome back
@@ -222,7 +211,7 @@ export function LoginPopUp() {
               <>
                 <button
                   type="submit"
-                  className="flex justify-center items-center bg-purple py-2 px-6 rounded-full transition-colors hover:bg-purple/75 w-fit self-center"
+                  className="flex items-center self-center justify-center px-6 py-2 transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
                 >
                   Continue to Archivr
                 </button>
@@ -234,7 +223,7 @@ export function LoginPopUp() {
               <>
                 <button
                   type="submit"
-                  className="flex justify-center items-center bg-purple py-2 px-6 rounded-full transition-colors hover:bg-purple/75 w-fit self-center"
+                  className="flex items-center self-center justify-center px-6 py-2 transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
                 >
                   Start on Archivr
                 </button>
