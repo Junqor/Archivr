@@ -17,7 +17,7 @@ import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
 import { UseMutateFunction, useQuery } from "@tanstack/react-query";
 import { Navigate, useParams } from "react-router-dom";
 import { TMedia } from "@/types/media";
-import { TReview, TUpdateReviewArgs, useMedia } from "@/hooks/useMedia";
+import { useMedia } from "@/hooks/useMedia";
 import { useAuth } from "@/context/auth";
 import {
   Dialog,
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
+import { searchMedia, TReview } from "@/api/media";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -41,13 +42,7 @@ export function MediaPage() {
   );
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
-    queryFn: async () =>
-      await fetch(import.meta.env.VITE_API_URL + `/search/${id}`).then(
-        async (res) => {
-          const result = await res.json();
-          return result.media satisfies TMedia;
-        }
-      ),
+    queryFn: () => searchMedia({ id } as { id: string }),
   });
 
   if (isPending) return <div>Loading...</div>;
@@ -135,11 +130,7 @@ export function MediaPage() {
                   />
                   {numLikes}
                 </Button>
-                <AddReviewButton
-                  updateReview={updateReview}
-                  mediaId={id as string}
-                  userId={user.id}
-                />
+                <AddReviewButton updateReview={updateReview} />
               </div>
             </div>
           </div>
@@ -193,21 +184,22 @@ export function MediaPage() {
 }
 
 type AddReviewButtonProps = {
-  updateReview: UseMutateFunction<TReview, Error, TUpdateReviewArgs, unknown>;
-  mediaId: string;
-  userId: string;
+  updateReview: UseMutateFunction<
+    TReview,
+    Error,
+    {
+      comment: string;
+    },
+    unknown
+  >;
 };
 
-const AddReviewButton = ({
-  updateReview,
-  mediaId,
-  userId,
-}: AddReviewButtonProps) => {
+const AddReviewButton = ({ updateReview }: AddReviewButtonProps) => {
   const [newReview, setNewReview] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   function handleAddReview() {
-    updateReview({ media_id: mediaId, user_id: userId, comment: newReview });
+    updateReview({ comment: newReview });
     setIsDialogOpen(false);
   }
 
