@@ -27,7 +27,7 @@ export default function HomePage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-6 w-full">
+          <div className="grid w-full grid-cols-2 gap-6">
             <section className="flex flex-col gap-3">
               <h1 className="font-[800] leading-[normal]">
                 Track What You Love, Discover What's Next.
@@ -39,13 +39,13 @@ export default function HomePage() {
               <div className="flex flex-row gap-3">
                 <Link
                   to="/login"
-                  className="flex justify-center items-center bg-purple text-white py-2 px-6 rounded-full transition-colors hover:bg-purple/75"
+                  className="flex items-center justify-center px-6 py-2 text-white transition-colors rounded-full bg-purple hover:bg-purple/75"
                 >
                   Join the Community
                 </Link>
                 <Link
                   to="#"
-                  className="flex justify-center items-center bg-transparent border border-white py-1 px-6 rounded-full transition-colors hover:bg-white hover:text-black"
+                  className="flex items-center justify-center px-6 py-1 transition-colors bg-transparent border border-white rounded-full hover:bg-white hover:text-black"
                 >
                   View the Collection
                 </Link>
@@ -53,7 +53,7 @@ export default function HomePage() {
             </section>
             {/* Add trending media carousel */}
           </div>
-          <section className="flex flex-col gap-3 w-full justify-start">
+          <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Discover on Archivr...</h4>
             <div className="grid grid-cols-3 gap-3">
               <IconBox
@@ -82,11 +82,11 @@ export default function HomePage() {
               />
             </div>
           </section>
-          <section className="flex flex-col gap-3 w-full justify-start">
+          <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             {/* Get the latest reviews */}
           </section>
-          <section className="flex flex-col gap-3 w-full justify-start">
+          <section className="flex flex-col justify-start w-full gap-3">
             <h3>
               Explore trending hits and hidden gems in movies, shows, music, and
               more - just for you!

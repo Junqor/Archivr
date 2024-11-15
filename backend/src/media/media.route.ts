@@ -2,10 +2,11 @@ import { Router } from "express";
 import {
   get_likes,
   get_media_reviews,
+  get_top_rated,
   is_liked,
   update_likes,
   update_review,
-} from "./database.js";
+} from "./media.service.js";
 import { z } from "zod";
 
 export const mediaRouter = Router();
@@ -92,4 +93,11 @@ mediaRouter.post("/review", async (req, res) => {
       .status(400)
       .json({ status: "failed", message: (error as Error).message });
   }
+});
+
+// (GET /media/top)
+// Get the top rated media
+mediaRouter.get("/top", async (req, res) => {
+  const result = await get_top_rated();
+  res.json({ status: "success", media: result.media });
 });

@@ -1,5 +1,6 @@
 import { conn } from "../configs/digitalocean.config.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { TMedia } from "../types/user.js";
 
 export type TReview = {
   id: number;
@@ -125,4 +126,15 @@ export async function get_likes(media_id: number): Promise<number> {
     [media_id]
   );
   return rows[0].num ?? 0;
+}
+
+export async function get_top_rated() {
+  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+    "SELECT * FROM Media ORDER BY Rating DESC, Title DESC LIMIT 15"
+  );
+
+  return {
+    status: "success",
+    media: rows,
+  };
 }
