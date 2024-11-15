@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Link, Navigate } from "react-router-dom";
 import { useLogin } from "@/hooks/useLogin";
 import { useAuth } from "@/context/auth";
+import { motion } from "framer-motion";
 
 // LoginPopUp component
 export function LoginPopUp() {
@@ -119,8 +120,12 @@ export function LoginPopUp() {
         </div>
       </section>
       <section className="flex flex-col items-center justify-center h-full px-32 py-8 bg-left bg-no-repeat bg-cover border-l-2 w-fit bg-login-bg border-gray">
-        <div className="max-w-sm p-0 overflow-hidden bg-black rounded-lg w-max">
-          <div className="flex flex-row w-full">
+        <motion.div
+          className="max-w-sm p-0 overflow-hidden bg-black rounded-lg w-max"
+          layout
+          transition={{ duration: 0.1 }}
+        >
+          <motion.div layout className="flex flex-row w-full">
             <button
               className={`${
                 isOnLogin ? "bg-purple" : "bg-black"
@@ -137,8 +142,10 @@ export function LoginPopUp() {
             >
               Sign Up
             </button>
-          </div>
-          <form
+          </motion.div>
+          <motion.form
+            layout
+            transition={{ duration: 0.1 }}
             onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
             className="flex flex-col px-6 py-6 space-y-4"
           >
@@ -231,12 +238,12 @@ export function LoginPopUp() {
                   Free to join. By clicking Sign Up, you agree to our{" "}
                   <Link to="#" className="underline">
                     Terms of Service
-                  </Link>{" "}
+                  </Link>
                 </p>
               </>
             )}
-          </form>
-        </div>
+          </motion.form>
+        </motion.div>
       </section>
     </main>
   );
