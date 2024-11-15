@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 
 export default function Header() {
-  const { logout } = useAuth();
+  const { removeLoginDataFromLocalStorage } = useAuth();
 
   // Return the header component
   return (
-    <header className="sticky top-0 left-0 flex flex-row w-full h-auto px-6 py-3 bg-black justify-between items-center z-50">
+    <header className="sticky top-0 left-0 z-50 flex flex-row items-center justify-between w-full h-auto px-6 py-3 bg-black">
       <div className="flex flex-row items-center justify-start h-full gap-3">
         <img src={Logo} className="size-[35px]" />
         <h3 className="font-bold"> Archivr </h3>
@@ -61,8 +61,8 @@ export default function Header() {
           */}
           {localStorage.getItem("auth") === "true" ? (
             <button
-              className="text-white transition-colors hover:text-purple flex flex-row items-center gap-2"
-              onClick={logout}
+              className="flex flex-row items-center gap-2 text-white transition-colors hover:text-purple"
+              onClick={removeLoginDataFromLocalStorage}
             >
               <AccountCircleIcon />
               Logout
@@ -70,7 +70,7 @@ export default function Header() {
           ) : (
             <Link
               to="/login"
-              className="text-white transition-colors hover:text-purple flex flex-row items-center gap-2"
+              className="flex flex-row items-center gap-2 text-white transition-colors hover:text-purple"
             >
               <AccountCircleIcon />
               Login

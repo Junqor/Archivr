@@ -5,29 +5,41 @@
   - Add a loading spinner
   - Add message under the component so the user knows how to close the dialog
     - "Press anywhere outside the dialog to close"
-  - Maybe not use hash to control the dialog
 */
 
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Link, Navigate } from "react-router-dom";
-import { useLogin } from "@/hooks/useLogin";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
+import { tryLogin, trySignup } from "@/api/auth";
 
 // LoginPopUp component
 export function LoginPopUp() {
-  const { user } = useAuth();
+  const { user, addLoginDataToLocalStorage } = useAuth();
   if (user?.id) return <Navigate to="/" />;
   const [isOnLogin, setIsOnLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { mutate: login } = useLogin();
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const { mutate: login } = useMutation({
+    mutationFn: tryLogin,
+    onSuccess: (data) => {
+      addLoginDataToLocalStorage(data);
+      toast.success("Logged in successfully");
+      navigate("/");
+    },
+    onError: (err) => {
+      setError(err.message);
+    },
+  });
 
   useEffect(() => {
     if (error) {
@@ -61,33 +73,12 @@ export function LoginPopUp() {
     }
 
     try {
-      // Try to sign up
-      const response = await fetch(
-        // Send a POST request to the signup endpoint
-        import.meta.env.VITE_API_URL + "/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, email, password }), // Send the username, email, and password
-        }
-      );
-
-      const data = await response.json(); // Get the response data
-      if (data.status === "success") {
-        localStorage.setItem("auth", "true");
-        window.dispatchEvent(new Event("storage"));
-        toast.success("Registered successfully");
-        login({ username, password });
-      } else {
-        // If the response status is not success
-        setError(data.message); // Set the error message
-      }
+      await trySignup({ username, email, password });
+      toast.success("Registered successfully");
+      login({ username, password }); // TODO: should we automatically sign users in after registering?
     } catch (err) {
-      // Catch any errors
       console.error(err); // Log the error
-      setError("An unexpected error occurred"); // Set the error message
+      setError((err as Error).message);
     }
   }
 
