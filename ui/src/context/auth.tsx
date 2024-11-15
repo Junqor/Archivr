@@ -24,6 +24,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("auth");
+    window.location.reload();
   };
 
   const userObject = user ? (JSON.parse(user) as TUser) : null;
