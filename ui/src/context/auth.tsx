@@ -8,8 +8,8 @@ type TUser = {
 
 export type TUserContext = {
   user: TUser | null;
-  login: (user: TUser) => void;
-  logout: () => void;
+  addLoginDataToLocalStorage: (user: TUser) => void;
+  removeLoginDataFromLocalStorage: () => void;
 };
 export type AuthProviderProps = React.PropsWithChildren<{}>;
 
@@ -18,11 +18,13 @@ const AuthContext = createContext<TUserContext | undefined>(undefined);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useLocalStorage("user");
 
-  const login = (user: TUser) => {
+  const addLoginDataToLocalStorage = (user: TUser) => {
+    localStorage.setItem("auth", "true");
+    window.dispatchEvent(new Event("storage"));
     setUser(JSON.stringify(user));
   };
 
-  const logout = () => {
+  const removeLoginDataFromLocalStorage = () => {
     setUser(null);
     localStorage.removeItem("auth");
     window.location.reload();
@@ -31,7 +33,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const userObject = user ? (JSON.parse(user) as TUser) : null;
 
   return (
-    <AuthContext.Provider value={{ user: userObject, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user: userObject,
+        addLoginDataToLocalStorage,
+        removeLoginDataFromLocalStorage,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
