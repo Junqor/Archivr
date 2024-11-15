@@ -45,7 +45,7 @@ export default function HomePage() {
                 </Link>
                 <Link
                   to="#"
-                  className="flex justify-center items-center bg-transparent border border-white py-2 px-6 rounded-full transition-colors hover:bg-white hover:text-black"
+                  className="flex justify-center items-center bg-transparent border border-white py-1 px-6 rounded-full transition-colors hover:bg-white hover:text-black"
                 >
                   View the Collection
                 </Link>

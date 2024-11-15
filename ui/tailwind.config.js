@@ -28,6 +28,10 @@ export const theme = {
       md: "calc(var(--radius) - 2px)",
       sm: "calc(var(--radius) - 4px)",
     },
+    backgroundImage: {
+      "login-bg":
+        "linear-gradient(rgba(13, 13, 13, 0.35), rgba(13, 13, 13, 0.35)), url('../assets/login-bg.png')",
+    },
   },
 };
 export const plugins = [
