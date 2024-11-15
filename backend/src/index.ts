@@ -6,6 +6,7 @@ import cors from "cors";
 import { searchRouter } from "./search/search.route.js";
 import { mediaRouter } from "./media/media.route.js";
 
+
 const app = express();
 
 const PORT = process.env.PORT || "8080";
