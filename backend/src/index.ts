@@ -7,6 +7,7 @@ import { testConnection } from "./utils/testConnection.js";
 import cors from "cors";
 import { searchRouter } from "./search/search.route.js";
 import { mediaRouter } from "./media/media.route.js";
+import { emailRouter } from "./recoverEmail/email.route.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 app.use("/search", searchRouter);
 app.use("/auth", authRouter);
 app.use("/media", mediaRouter);
+app.use("/email", emailRouter);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ status: "failed", message: err.message });
