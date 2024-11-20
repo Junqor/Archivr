@@ -130,7 +130,29 @@ export async function get_likes(media_id: number): Promise<number> {
 
 export async function get_top_rated() {
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    "SELECT * FROM Media ORDER BY Rating DESC, Title DESC LIMIT 15"
+    `SELECT 
+      Media.id,
+      Media.category,
+      Media.title,
+      Media.description,
+      Media.release_date,
+      Media.age_rating,
+      Media.thumbnail_url,
+      Media.genre,
+      Media.Rating as rating,
+      AVG(Ratings.rating) as average_rating,
+      COUNT(Ratings.rating) as num_ratings,
+      (
+        (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
+        (50 / (COUNT(Ratings.rating) + 50)) * (
+          SELECT AVG(rating) FROM Ratings
+        )
+      ) AS weighted_rating
+    FROM Media
+    LEFT JOIN Ratings ON Media.id = Ratings.media_id
+    GROUP BY Media.id
+    ORDER BY weighted_rating DESC
+    LIMIT 15;`
   );
 
   return {
