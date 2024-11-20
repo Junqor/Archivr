@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import { Link } from "react-router-dom";
-import { getTopRated } from "@/api/media";
+import { getTopRated, getRecentlyReviewed, getTrending } from "@/api/media";
 import { TMedia } from "@/types/media";
+import ThumbnailPreview from "@/components/ThumbnailPreview";
 import MediaCarousel from "@/components/MediaCarousel";
 
 export default function HomePage() {
@@ -33,6 +34,10 @@ export default function HomePage() {
             </span>
             ! Here's what's new for you.
           </h1>
+          <section className="flex flex-col justify-start w-full gap-3">
+            <h4 className="uppercase">Recently Reviewed...</h4>
+            <RecentlyReviewed />
+          </section>
         </>
       ) : (
         <>
@@ -95,7 +100,7 @@ export default function HomePage() {
           </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
-            {/* Get the latest reviews */}
+            <RecentlyReviewed />
           </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h3>
@@ -106,8 +111,15 @@ export default function HomePage() {
               Check out top-rated picks from this week. Sign up to start
               curating your own!
             </h4>
-            {/* Carousel of trending media */}
-            {/* CTA to sign up button */}
+            <section className="h-full">
+              <TrendingCarousel />
+            </section>
+            <Link
+              to="/login"
+              className="flex items-center justify-center px-6 py-2 text-white transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
+            >
+              Sign Up to Discover More
+            </Link>
           </section>
         </>
       )}
@@ -127,6 +139,42 @@ function TopRatedCarousel() {
       media={media}
       slidesPerViewMobile={3}
       slidesPerViewDesktop={3}
+      spaceBetweenMobile={8}
+      spaceBetweenDesktop={16}
+    />
+  );
+}
+
+function RecentlyReviewed() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  useEffect(() => {
+    getRecentlyReviewed().then((data) => setMedia(data));
+  }, []);
+
+  return (
+    <div className="grid sm:grid-cols-8 grid-cols-4 gap-3">
+      {media.map((item) => (
+        <ThumbnailPreview key={item.id} media={item} />
+      ))}
+    </div>
+  );
+}
+
+function TrendingCarousel() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  useEffect(() => {
+    getTrending().then((data) => setMedia(data));
+  }, []);
+
+  console.log(media);
+
+  return (
+    <MediaCarousel
+      media={media}
+      slidesPerViewMobile={5}
+      slidesPerViewDesktop={6}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
     />

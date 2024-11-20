@@ -3,6 +3,8 @@ import {
   get_likes,
   get_media_reviews,
   get_top_rated,
+  get_trending,
+  get_recently_reviewed,
   is_liked,
   update_likes,
   update_review,
@@ -99,5 +101,19 @@ mediaRouter.post("/review", async (req, res) => {
 // Get the top rated media
 mediaRouter.get("/top", async (req, res) => {
   const result = await get_top_rated();
+  res.json({ status: "success", media: result.media });
+});
+
+// (GET /media/recent-reviews)
+// Get the most recent reviews
+mediaRouter.get("/recent-reviews", async (req, res) => {
+  const result = await get_recently_reviewed();
+  res.json({ status: "success", media: result.media });
+});
+
+// (GET /media/trending)
+// Get the trending media
+mediaRouter.get("/trending", async (req, res) => {
+  const result = await get_trending();
   res.json({ status: "success", media: result.media });
 });

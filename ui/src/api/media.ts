@@ -20,6 +20,22 @@ export const getTopRated = async (): Promise<TMedia[]> => {
   return data.media as TMedia[];
 };
 
+export const getRecentlyReviewed = async (): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/media/recent-reviews"
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
+};
+
+export const getTrending = async (): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/media/trending"
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
+};
+
 type GetLikesArgs = {
   mediaId: string;
 };

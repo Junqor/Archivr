@@ -160,3 +160,84 @@ export async function get_top_rated() {
     media: rows,
   };
 }
+
+export async function get_recently_reviewed() {
+  let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
+    `SELECT DISTINCT
+      Media.id,
+      Media.title,
+      Media.thumbnail_url,
+      Media.Rating as rating,
+      MAX(Reviews.created_at) AS created_at
+    FROM Media
+    INNER JOIN Reviews ON Media.id = Reviews.media_id
+    GROUP BY Media.id, Media.title, Media.thumbnail_url
+    ORDER BY created_at DESC
+    LIMIT 8;`
+  );
+
+  return {
+    status: "success",
+    media: rows,
+  };
+}
+
+export async function get_trending() {
+  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+    `WITH WeightedMovies AS (
+      SELECT 
+        Media.id,
+        Media.category,
+        Media.title,
+        Media.description,
+        Media.release_date,
+        Media.age_rating,
+        Media.thumbnail_url,
+        Media.genre,
+        Media.rating AS base_rating,
+        AVG(Ratings.rating) AS average_rating,
+        COUNT(Ratings.rating) AS num_ratings,
+        (
+          -- Weighted average rating based on number of ratings
+          (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
+          (50 / (COUNT(Ratings.rating) + 50)) * (
+            SELECT AVG(rating) FROM Ratings
+          )
+        ) AS weighted_rating,
+        -- Calculate the age of the movie in years
+        TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) AS age,
+        -- Apply a time-decay weight (linear decay, modify factor if needed)
+        (
+          (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
+          (50 / (COUNT(Ratings.rating) + 50)) * (
+            SELECT AVG(rating) FROM Ratings
+          )
+        ) * (1 - LEAST(TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) / 50, 1)) AS final_weighted_score
+      FROM Media
+      LEFT JOIN Ratings ON Media.id = Ratings.media_id
+      GROUP BY Media.id
+    )
+    SELECT 
+      id,
+      category,
+      title,
+      description,
+      release_date,
+      age_rating,
+      thumbnail_url,
+      genre,
+      base_rating as rating,
+      average_rating,
+      num_ratings,
+      weighted_rating,
+      final_weighted_score
+    FROM WeightedMovies
+    ORDER BY final_weighted_score DESC
+    LIMIT 15;`
+  );
+
+  return {
+    status: "success",
+    media: rows,
+  };
+}
