@@ -28,7 +28,7 @@ export default function IconBox({
   return link ? (
     <Link
       to={link}
-      className="flex flex-row items-center justify-center w-full h-auto px-5 py-3 gap-6 bg-gray rounded-md transition-colors cursor-pointer hover:bg-purple"
+      className="flex sm:flex-row flex-col items-center justify-center w-full h-auto px-5 py-3 sm:gap-6 gap-4 bg-gray rounded-lg transition-colors cursor-pointer hover:bg-purple"
     >
       <div className="flex items-center justify-center text-5xl">
         {getIcon(iconName)}
@@ -39,7 +39,7 @@ export default function IconBox({
       </div>
     </Link>
   ) : (
-    <div className="flex flex-row items-center justify-center w-full h-auto px-5 py-3 gap-6 bg-gray rounded-md transition-colors cursor-default hover:bg-purple">
+    <div className="flex sm:flex-row flex-col items-center justify-center w-full h-auto px-5 py-3 sm:gap-6 gap-4 bg-gray rounded-lg transition-colors cursor-default hover:bg-purple">
       <div className="flex items-center justify-center text-5xl">
         {getIcon(iconName)}
       </div>

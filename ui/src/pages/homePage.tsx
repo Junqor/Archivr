@@ -2,6 +2,10 @@
 import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import { Link } from "react-router-dom";
+import { getTopRated, getRecentlyReviewed, getTrending } from "@/api/media";
+import { TMedia } from "@/types/media";
+import ThumbnailPreview from "@/components/ThumbnailPreview";
+import MediaCarousel from "@/components/MediaCarousel";
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -17,19 +21,29 @@ export default function HomePage() {
     return () => window.removeEventListener("storage", handleStorageChange); // Remove the listener
   }, []);
 
+  const user = localStorage.getItem("user");
+
   return (
     <>
       {isLoggedIn ? (
-        <div>
-          <section>
-            <h1>Welcome to the secret page! You are logged in. 🎉</h1>
+        <>
+          <h1>
+            Welcome back,{" "}
+            <span className="text-purple font-bold">
+              {user ? JSON.parse(user).username : "User"}
+            </span>
+            ! Here's what's new for you.
+          </h1>
+          <section className="flex flex-col justify-start w-full gap-3">
+            <h4 className="uppercase">Recently Reviewed...</h4>
+            <RecentlyReviewed />
           </section>
-        </div>
+        </>
       ) : (
         <>
-          <div className="grid w-full grid-cols-2 gap-6">
-            <section className="flex flex-col gap-3">
-              <h1 className="font-[800] leading-[normal]">
+          <div className="grid sm:grid-cols-2 grid-cols-1 gap-6 w-full">
+            <section className="flex flex-col gap-3 sm:order-1 order-2">
+              <h1 className="font-extrabold leading-[normal]">
                 Track What You Love, Discover What's Next.
               </h1>
               <h4>
@@ -51,11 +65,13 @@ export default function HomePage() {
                 </Link>
               </div>
             </section>
-            {/* Add trending media carousel */}
+            <section className="h-full sm:order-2 order-1">
+              <TopRatedCarousel />
+            </section>
           </div>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Discover on Archivr...</h4>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid sm:grid-cols-3 grid-cols-2 gap-3">
               <IconBox
                 iconName="TrendingUp"
                 description="Discover what's popular with real-time trending media across movies, shows, and more."
@@ -84,7 +100,7 @@ export default function HomePage() {
           </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
-            {/* Get the latest reviews */}
+            <RecentlyReviewed />
           </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h3>
@@ -95,11 +111,72 @@ export default function HomePage() {
               Check out top-rated picks from this week. Sign up to start
               curating your own!
             </h4>
-            {/* Carousel of trending media */}
-            {/* CTA to sign up button */}
+            <section className="h-full">
+              <TrendingCarousel />
+            </section>
+            <Link
+              to="/login"
+              className="flex items-center justify-center px-6 py-2 text-white transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
+            >
+              Sign Up to Discover More
+            </Link>
           </section>
         </>
       )}
     </>
+  );
+}
+
+function TopRatedCarousel() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  useEffect(() => {
+    getTopRated().then((data) => setMedia(data));
+  }, []);
+
+  return (
+    <MediaCarousel
+      media={media}
+      slidesPerViewMobile={3}
+      slidesPerViewDesktop={3}
+      spaceBetweenMobile={8}
+      spaceBetweenDesktop={16}
+    />
+  );
+}
+
+function RecentlyReviewed() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  useEffect(() => {
+    getRecentlyReviewed().then((data) => setMedia(data));
+  }, []);
+
+  return (
+    <div className="grid sm:grid-cols-8 grid-cols-4 gap-3">
+      {media.map((item) => (
+        <ThumbnailPreview key={item.id} media={item} />
+      ))}
+    </div>
+  );
+}
+
+function TrendingCarousel() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  useEffect(() => {
+    getTrending().then((data) => setMedia(data));
+  }, []);
+
+  console.log(media);
+
+  return (
+    <MediaCarousel
+      media={media}
+      slidesPerViewMobile={5}
+      slidesPerViewDesktop={6}
+      spaceBetweenMobile={8}
+      spaceBetweenDesktop={16}
+    />
   );
 }

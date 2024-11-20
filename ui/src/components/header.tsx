@@ -15,7 +15,7 @@ export default function Header() {
         <h3 className="font-bold"> Archivr </h3>
       </div>
       <div className="flex flex-row items-center justify-end h-full gap-11">
-        <div className="flex flex-row items-center justify-center gap-6">
+        <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-center sm:gap-6">
           <Link
             to="/"
             className="text-white transition-colors hover:text-purple"
@@ -55,10 +55,6 @@ export default function Header() {
         </div>
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
-          {/*
-            If the user is logged in, display the logout button
-            Otherwise, display the login button
-          */}
           {localStorage.getItem("auth") === "true" ? (
             <button
               className="flex flex-row items-center gap-2 text-white transition-colors hover:text-purple"
