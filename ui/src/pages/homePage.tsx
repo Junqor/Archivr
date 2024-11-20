@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import { Link } from "react-router-dom";
+import { getTopRated } from "@/api/media";
+import { TMedia } from "@/types/media";
+import MediaCarousel from "@/components/MediaCarousel";
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -17,19 +20,25 @@ export default function HomePage() {
     return () => window.removeEventListener("storage", handleStorageChange); // Remove the listener
   }, []);
 
+  const user = localStorage.getItem("user");
+
   return (
     <>
       {isLoggedIn ? (
-        <div>
-          <section>
-            <h1>Welcome to the secret page! You are logged in. 🎉</h1>
-          </section>
-        </div>
+        <>
+          <h1>
+            Welcome back,{" "}
+            <span className="text-purple font-bold">
+              {user ? JSON.parse(user).username : "User"}
+            </span>
+            ! Here's what's new for you.
+          </h1>
+        </>
       ) : (
         <>
-          <div className="grid w-full grid-cols-2 gap-6">
-            <section className="flex flex-col gap-3">
-              <h1 className="font-[800] leading-[normal]">
+          <div className="grid sm:grid-cols-2 grid-cols-1 gap-6 w-full">
+            <section className="flex flex-col gap-3 sm:order-1 order-2">
+              <h1 className="font-extrabold leading-[normal]">
                 Track What You Love, Discover What's Next.
               </h1>
               <h4>
@@ -51,11 +60,13 @@ export default function HomePage() {
                 </Link>
               </div>
             </section>
-            {/* Add trending media carousel */}
+            <section className="h-full sm:order-2 order-1">
+              <TopRatedCarousel />
+            </section>
           </div>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Discover on Archivr...</h4>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid sm:grid-cols-3 grid-cols-2 gap-3">
               <IconBox
                 iconName="TrendingUp"
                 description="Discover what's popular with real-time trending media across movies, shows, and more."
@@ -101,5 +112,23 @@ export default function HomePage() {
         </>
       )}
     </>
+  );
+}
+
+function TopRatedCarousel() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  useEffect(() => {
+    getTopRated().then((data) => setMedia(data));
+  }, []);
+
+  return (
+    <MediaCarousel
+      media={media}
+      slidesPerViewMobile={3}
+      slidesPerViewDesktop={3}
+      spaceBetweenMobile={8}
+      spaceBetweenDesktop={16}
+    />
   );
 }

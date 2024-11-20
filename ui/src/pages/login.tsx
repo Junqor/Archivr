@@ -85,8 +85,8 @@ export function LoginPopUp() {
   // Return the login popup component
   return (
     <main className="flex flex-row w-screen h-screen overflow-y-auto font-normal bg-black">
-      <section className="w-full h-full bg-black">
-        <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+      <section className="h-full w-full bg-black hidden sm:block">
+        <div className="flex flex-col items-center justify-center h-full w-full gap-4">
           <div className="flex flex-col items-center">
             <h1 className="font-bold">
               Welcome to <span className="text-purple">Archivr</span>
@@ -107,10 +107,9 @@ export function LoginPopUp() {
               Random Media
             </Link>
           </div>
-          <h3>I haven't designed this page yet, so it's just a placeholder.</h3>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center h-full px-32 py-8 bg-left bg-no-repeat bg-cover border-l-2 w-fit bg-login-bg border-gray">
+      <section className="flex flex-col items-center justify-center h-full sm:w-fit w-full bg-login-bg bg-cover bg-no-repeat bg-left sm:py-8 sm:px-32 py-4 px-8 sm:border-l-2 sm:border-gray gap-4">
         <motion.div
           className="max-w-sm p-0 overflow-hidden bg-black rounded-lg w-max"
           layout
@@ -235,6 +234,9 @@ export function LoginPopUp() {
             )}
           </motion.form>
         </motion.div>
+        <Link to="/" className="text-white underline block sm:hidden">
+          Go back to the home page
+        </Link>
       </section>
     </main>
   );

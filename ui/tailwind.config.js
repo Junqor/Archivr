@@ -32,6 +32,9 @@ export const theme = {
       "login-bg":
         "linear-gradient(rgba(13, 13, 13, 0.35), rgba(13, 13, 13, 0.35)), url('../assets/login-bg.png')",
     },
+    aspectRatio: {
+      "2/3": "2 / 3",
+    },
   },
 };
 export const plugins = [
