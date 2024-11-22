@@ -6,8 +6,10 @@ export type TUser = {
   salt: string;
 };
 
+// "users.ts" looks inside: "Media"
 export type TMedia = {
   id: number;
+  category: string;
   title: string;
   description: string;
   release_date: string;
