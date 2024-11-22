@@ -241,26 +241,3 @@ export async function get_trending() {
     media: rows,
   };
 }
-
-export async function get_new_for_you(user_id: number) {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT DISTINCT Media.*
-    FROM Media
-    WHERE Media.id NOT IN (
-      SELECT media_id FROM Ratings WHERE user_id = ?
-      UNION
-      SELECT media_id FROM Likes WHERE user_id = ?
-      UNION
-      SELECT media_id FROM Reviews WHERE user_id = ?
-    )
-    AND Media.release_date <= CURDATE()
-    ORDER BY RAND()
-    LIMIT 15;`,
-    [user_id, user_id, user_id]
-  );
-
-  return {
-    status: "success",
-    media: rows,
-  };
-}
