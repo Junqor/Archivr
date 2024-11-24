@@ -131,28 +131,28 @@ export async function get_likes(media_id: number): Promise<number> {
 export async function get_top_rated() {
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
     `SELECT 
-      Media.id,
-      Media.category,
-      Media.title,
-      Media.description,
-      Media.release_date,
-      Media.age_rating,
-      Media.thumbnail_url,
-      Media.genre,
-      Media.Rating as rating,
-      AVG(Ratings.rating) as average_rating,
-      COUNT(Ratings.rating) as num_ratings,
-      (
-        (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
+    Media.id,
+    Media.category,
+    Media.title,
+    Media.description,
+    Media.release_date,
+    Media.age_rating,
+    Media.thumbnail_url,
+    Media.genre,
+    Media.rating AS rating,
+    COALESCE(AVG(Ratings.rating), 0) AS average_rating,
+    COUNT(Ratings.rating) AS num_ratings,
+    (
+        (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
         (50 / (COUNT(Ratings.rating) + 50)) * (
-          SELECT AVG(rating) FROM Ratings
+            SELECT COALESCE(AVG(rating), 0) FROM Ratings
         )
-      ) AS weighted_rating
-    FROM Media
-    LEFT JOIN Ratings ON Media.id = Ratings.media_id
-    GROUP BY Media.id
-    ORDER BY weighted_rating DESC
-    LIMIT 15;`
+    ) AS weighted_rating
+FROM Media
+LEFT JOIN Ratings ON Media.id = Ratings.media_id
+GROUP BY Media.id
+ORDER BY weighted_rating DESC
+LIMIT 15;`
   );
 
   return {
@@ -234,6 +234,29 @@ export async function get_trending() {
     FROM WeightedMovies
     ORDER BY final_weighted_score DESC
     LIMIT 15;`
+  );
+
+  return {
+    status: "success",
+    media: rows,
+  };
+}
+
+export async function get_new_for_you(user_id: number) {
+  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+    `SELECT DISTINCT Media.*
+    FROM Media
+    WHERE Media.id NOT IN (
+      SELECT media_id FROM Ratings WHERE user_id = ?
+      UNION
+      SELECT media_id FROM Likes WHERE user_id = ?
+      UNION
+      SELECT media_id FROM Reviews WHERE user_id = ?
+    )
+    AND Media.release_date <= CURDATE()
+    ORDER BY RAND()
+    LIMIT 15;`,
+    [user_id, user_id, user_id]
   );
 
   return {

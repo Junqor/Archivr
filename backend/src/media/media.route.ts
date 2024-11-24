@@ -5,6 +5,7 @@ import {
   get_top_rated,
   get_trending,
   get_recently_reviewed,
+  get_new_for_you,
   is_liked,
   update_likes,
   update_review,
@@ -115,5 +116,13 @@ mediaRouter.get("/recent-reviews", async (req, res) => {
 // Get the trending media
 mediaRouter.get("/trending", async (req, res) => {
   const result = await get_trending();
+  res.json({ status: "success", media: result.media });
+});
+
+// (GET /media/new-for-you)
+// Get new media for the user
+mediaRouter.get("/new-for-you", async (req, res) => {
+  const userId = parseInt(req.query.user_id as string);
+  const result = await get_new_for_you(userId);
   res.json({ status: "success", media: result.media });
 });

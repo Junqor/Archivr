@@ -11,7 +11,7 @@ import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
@@ -21,6 +21,7 @@ import { tryLogin, trySignup } from "@/api/auth";
 export function LoginPopUp() {
   const { user, addLoginDataToLocalStorage } = useAuth();
   if (user?.id) return <Navigate to="/" />;
+
   const [isOnLogin, setIsOnLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -28,13 +29,17 @@ export function LoginPopUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation(); // Capture the current location
 
   const { mutate: login } = useMutation({
     mutationFn: tryLogin,
     onSuccess: (data) => {
       addLoginDataToLocalStorage(data);
       toast.success("Logged in successfully");
-      navigate("/");
+
+      // Redirect the user back to the page they were on before logging in
+      const from = location.state?.from?.pathname || "/";
+      navigate(from);
     },
     onError: (err) => {
       setError(err.message);
@@ -75,7 +80,7 @@ export function LoginPopUp() {
     try {
       await trySignup({ username, email, password });
       toast.success("Registered successfully");
-      login({ username, password }); // TODO: should we automatically sign users in after registering?
+      login({ username, password }); // Automatically log the user in after registration
     } catch (err) {
       console.error(err); // Log the error
       setError((err as Error).message);

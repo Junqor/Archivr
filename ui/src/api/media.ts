@@ -36,6 +36,14 @@ export const getTrending = async (): Promise<TMedia[]> => {
   return data.media as TMedia[];
 };
 
+export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/media/new-for-you" + `?user_id=${userId}`
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
+};
+
 type GetLikesArgs = {
   mediaId: string;
 };
