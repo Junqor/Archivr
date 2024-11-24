@@ -1,9 +1,3 @@
-// mediaPage.tsx
-/*
-  To-Do:
-  - Users don't have to be logged in to view media details
-  - Update UI
- */
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
 import { UseMutateFunction, useQuery } from "@tanstack/react-query";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { useAuth } from "@/context/auth";
@@ -35,10 +29,11 @@ import { searchMedia, TReview } from "@/api/media";
 export function MediaPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" />;
+  const navigate = useNavigate();
+
   const { isLiked, updateLikes, numLikes, reviews, updateReview } = useMedia(
     id as string,
-    user.id
+    user?.id ?? ""
   );
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
@@ -47,6 +42,15 @@ export function MediaPage() {
 
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  // Helper function to handle protected actions
+  const handleProtectedAction = (action: () => void) => {
+    if (!user) {
+      navigate("/login", { state: { from: location } });
+    } else {
+      action();
+    }
+  };
 
   return (
     <div className="flex items-start justify-center w-full h-full px-4 py-8 text-gray-100 bg-black sm:px-6 lg:px-8">
@@ -123,14 +127,17 @@ export function MediaPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => updateLikes()}
+                  onClick={() => handleProtectedAction(updateLikes)}
                 >
                   <ThumbsUp
                     className={(isLiked && "fill-white ") + "w-4 h-4 mr-2"}
                   />
                   {numLikes}
                 </Button>
-                <AddReviewButton updateReview={updateReview} />
+                <AddReviewButton
+                  updateReview={updateReview}
+                  handleProtectedAction={handleProtectedAction}
+                />
               </div>
             </div>
           </div>
@@ -192,15 +199,21 @@ type AddReviewButtonProps = {
     },
     unknown
   >;
+  handleProtectedAction: (action: () => void) => void;
 };
 
-const AddReviewButton = ({ updateReview }: AddReviewButtonProps) => {
+const AddReviewButton = ({
+  updateReview,
+  handleProtectedAction,
+}: AddReviewButtonProps) => {
   const [newReview, setNewReview] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   function handleAddReview() {
-    updateReview({ comment: newReview });
-    setIsDialogOpen(false);
+    handleProtectedAction(() => {
+      updateReview({ comment: newReview });
+      setIsDialogOpen(false);
+    });
   }
 
   return (

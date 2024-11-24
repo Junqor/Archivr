@@ -2,7 +2,12 @@
 import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import { Link } from "react-router-dom";
-import { getTopRated, getRecentlyReviewed, getTrending } from "@/api/media";
+import {
+  getTopRated,
+  getRecentlyReviewed,
+  getTrending,
+  getNewForYou,
+} from "@/api/media";
 import { TMedia } from "@/types/media";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
 import MediaCarousel from "@/components/MediaCarousel";
@@ -27,13 +32,21 @@ export default function HomePage() {
     <>
       {isLoggedIn ? (
         <>
-          <h1>
-            Welcome back,{" "}
-            <span className="text-purple font-bold">
-              {user ? JSON.parse(user).username : "User"}
-            </span>
-            ! Here's what's new for you.
-          </h1>
+          <section className="flex flex-col gap-3">
+            <h1>
+              Welcome back,{" "}
+              <span className="text-purple font-bold">
+                {user ? JSON.parse(user).username : "User"}
+              </span>
+              ! Here's what's new for you.
+            </h1>
+          </section>
+          <section className="flex flex-col justify-start w-full gap-3">
+            <h4 className="uppercase">New for you...</h4>
+            <section className="h-full">
+              <NewForYouCarousel />
+            </section>
+          </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
@@ -168,13 +181,33 @@ function TrendingCarousel() {
     getTrending().then((data) => setMedia(data));
   }, []);
 
-  console.log(media);
-
   return (
     <MediaCarousel
       media={media}
       slidesPerViewMobile={5}
       slidesPerViewDesktop={6}
+      spaceBetweenMobile={8}
+      spaceBetweenDesktop={16}
+    />
+  );
+}
+
+function NewForYouCarousel() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  const userId = JSON.parse(localStorage.getItem("user") ?? "{}").id;
+
+  useEffect(() => {
+    getNewForYou(userId).then((data) => setMedia(data));
+  }, []);
+
+  console.log(media);
+
+  return (
+    <MediaCarousel
+      media={media}
+      slidesPerViewMobile={4}
+      slidesPerViewDesktop={7}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
     />
