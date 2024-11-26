@@ -3,7 +3,9 @@
 - ~~add auth/sign in~~
   - fix auth/sign up; use cookies instead of local storage
 - add red outline for incorrect sign in details
-- separate login and sign up pages
+- ~~separate login and sign up pages~~
 - use react query for fetching movies
 - Loading screen
 - replace 'critic score' with user rating avg
+
+- replace protected route with auth guard on certain actions (e.g. like, review...)
