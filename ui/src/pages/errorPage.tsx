@@ -1,5 +1,6 @@
 // ErrorPage.tsx
 // Error page for handling 404, 403, 500, and 503 errors.
+import { Button } from "@/components/ui/button";
 import { Link, useRouteError } from "react-router-dom";
 
 // Define the error object interface
@@ -35,7 +36,7 @@ export default function ErrorPage() {
   }[error.status ?? 404];
 
   return (
-    <main className="flex flex-col items-center justify-center w-full h-screen text-white bg-black">
+    <main className="flex flex-col items-center justify-center w-full h-screen gap-2 text-white bg-black">
       <section className="flex flex-col items-center justify-center max-w-screen-sm gap-1">
         <section className="flex flex-col items-center justify-center gap-2">
           <h1 className="font-bold">
@@ -58,15 +59,28 @@ export default function ErrorPage() {
           </p>
           <div className="flex flex-row items-center justify-center gap-4">
             <p>
-              <Link to="/random">Random Recommendation</Link>
+              <Link
+                to="/random"
+                className="transition-colors hover:text-purple"
+              >
+                Random Recommendation
+              </Link>
             </p>
             <p>|</p>
             <p>
-              <Link to="/report-missing-content">Report Missing Content</Link>
+              <Link
+                to="/report-missing-content"
+                className="transition-colors hover:text-purple"
+              >
+                Report Missing Content
+              </Link>
             </p>
           </div>
         </section>
       </section>
+      <Button asChild>
+        <Link to="/">Home</Link>
+      </Button>
     </main>
   );
 }
