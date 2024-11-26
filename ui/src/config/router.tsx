@@ -5,6 +5,7 @@ import HomePage from "@/pages/homePage";
 import { Layout } from "@/pages/layout";
 import { MediaPage } from "@/pages/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
+import AdminPortal from "@/pages/admin-portal/adminPortal";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -47,6 +48,12 @@ const router = createBrowserRouter([
         loader: () => {
           throw { status: 503 };
         },
+      },
+      // Admin Portal
+      {
+        path: "/admin",
+        element: <AdminPortal />,
+        errorElement: <ErrorPage />,
       },
     ],
   },

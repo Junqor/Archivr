@@ -1,5 +1,39 @@
 import { TMedia } from "@/types/media";
 
+// Search for media(s) by title
+export const searchMedias = async (query: string, limit: number = 5) => {
+  const url = import.meta.env.VITE_API_URL + "/search";
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query, limit }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch media");
+    }
+
+    const data = (await response.json()) satisfies {
+      status: string;
+      media: TMedia[];
+    };
+
+    if (data.status !== "success") {
+      throw new Error("Failed to fetch media");
+    }
+
+    return data.media;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+// Search for a specific media by ID
 export const searchMedia = async ({ id }: { id: string }) =>
   await fetch(import.meta.env.VITE_API_URL + `/search/${id}`).then(
     async (res) => {
@@ -176,4 +210,45 @@ export const updateReview = async ({
   }
 
   return data.review as TReview;
+};
+
+export const deleteMedia = async (id: number) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/media/delete/${id}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete media");
+  }
+
+  const data = await response.json();
+  if (data.status !== "success") {
+    throw new Error("Failed to delete media");
+  }
+
+  return data;
+};
+
+export const editMedia = async (id: number, newData: Partial<TMedia>) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/media/edit/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newData),
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to edit media");
+  }
+  const data = await response.json();
+  if (data.status !== "success") {
+    throw new Error("Failed to edit media");
+  }
+  return data;
 };
