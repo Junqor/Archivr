@@ -233,16 +233,13 @@ export const deleteMedia = async (id: number) => {
 };
 
 export const editMedia = async (id: number, newData: Partial<TMedia>) => {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/media/edit/${id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newData),
-    }
-  );
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/update`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id, newData }),
+  });
   if (!response.ok) {
     throw new Error("Failed to edit media");
   }
@@ -250,5 +247,26 @@ export const editMedia = async (id: number, newData: Partial<TMedia>) => {
   if (data.status !== "success") {
     throw new Error("Failed to edit media");
   }
+  return data;
+};
+
+export const addMedia = async (newData: Partial<TMedia>) => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/insert`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newData),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to add media");
+  }
+
+  const data = await response.json();
+  if (data.status !== "success") {
+    throw new Error("Failed to add media");
+  }
+
   return data;
 };

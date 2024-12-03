@@ -123,7 +123,6 @@ mediaRouter.get("/trending", async (req, res) => {
 });
 
 const mediaBodySchema = z.object({
-  id: z.number(),
   category: z.string(),
   title: z.string(),
   description: z.string(),
@@ -142,7 +141,7 @@ mediaRouter.post("/insert", async (req, res) => {
     if (parsed.error) {
       throw new Error("Invalid body");
     }
-    const body: TMedia = parsed.data;
+    const body = parsed.data;
     const result = await insert_media(body);
     res.json({ status: "success", media: result });
   } catch (error) {
@@ -157,6 +156,8 @@ const updateMediaBodySchema = z.object({
   newData: mediaBodySchema,
 });
 
+// (POST /media/update)
+// Update a media
 mediaRouter.post("/update", async (req, res) => {
   try {
     const parsed = updateMediaBodySchema.safeParse(req.body);
@@ -173,9 +174,16 @@ mediaRouter.post("/update", async (req, res) => {
   }
 });
 
+const deleteMediaBodySchema = z.intersection(
+  z.object({ id: z.number() }), // hope no one has to touch this code sry : -)
+  mediaBodySchema
+);
+
+// (POST /media/delete)
+// Delete a media
 mediaRouter.post("/delete", async (req, res) => {
   try {
-    const parsed = mediaBodySchema.safeParse(req.body);
+    const parsed = deleteMediaBodySchema.safeParse(req.body);
     if (parsed.error) {
       throw new Error("Invalid body");
     }

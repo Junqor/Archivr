@@ -7,5 +7,17 @@
 - use react query for fetching movies
 - Loading screen
 - replace 'critic score' with user rating avg
+- make profile icon a clickable dropdown
+
+  - profile page
+  - admin page here
+
+- add toggle on admin page between searching media and users
+
+  - ability to change users role
+
+- add shield icon or sum indicator to admins when displayed on pages
+- add filters to admin page by media type
+- add confirmation popup before deleting media
 
 - replace protected route with auth guard on certain actions (e.g. like, review...)
