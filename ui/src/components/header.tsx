@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown";
 
 export default function Header() {
-  const { removeLoginDataFromLocalStorage } = useAuth();
+  const { user, removeLoginDataFromLocalStorage } = useAuth();
 
   const user = localStorage.getItem("user");
 
@@ -87,6 +87,15 @@ export default function Header() {
           >
             Members
           </Link>
+          {user && user.role === "admin" && (
+            // ! Temporary, will be removed and put in a dropdown from profile icon
+            <Link
+              to="/admin"
+              className="text-white transition-colors hover:text-purple"
+            >
+              Admin Portal
+            </Link>
+          )}
         </div>
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />

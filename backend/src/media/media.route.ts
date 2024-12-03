@@ -122,3 +122,70 @@ mediaRouter.get("/trending", async (req, res) => {
   const result = await get_trending();
   res.json({ status: "success", media: result.media });
 });
+
+const mediaBodySchema = z.object({
+  id: z.number(),
+  category: z.string(),
+  title: z.string(),
+  description: z.string(),
+  release_date: z.string(),
+  age_rating: z.string(),
+  thumbnail_url: z.string(),
+  rating: z.number(),
+  genre: z.string(),
+});
+
+// (POST /media/insert)
+// Insert a new media to the database
+mediaRouter.post("/insert", async (req, res) => {
+  try {
+    const parsed = mediaBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const body: TMedia = parsed.data;
+    const result = await insert_media(body);
+    res.json({ status: "success", media: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
+  }
+});
+
+const updateMediaBodySchema = z.object({
+  id: z.number(),
+  newData: mediaBodySchema,
+});
+
+mediaRouter.post("/update", async (req, res) => {
+  try {
+    const parsed = updateMediaBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const body = parsed.data;
+    const result = await update_media(body.id, body.newData);
+    res.json({ status: "success", media: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
+  }
+});
+
+mediaRouter.post("/delete", async (req, res) => {
+  try {
+    const parsed = mediaBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const body: TMedia = parsed.data;
+    const result = await delete_media(body.id);
+    res.json({ status: "success", media: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
+  }
+});

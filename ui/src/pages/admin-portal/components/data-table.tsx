@@ -23,10 +23,11 @@ export function DataTable({
   return (
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="hover:bg-transparent">
           <TableHead className="w-[50px]">Select</TableHead>
           <TableHead>ID</TableHead>
           <TableHead>Title</TableHead>
+          <TableHead>Poster</TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Release Date</TableHead>
         </TableRow>
@@ -43,6 +44,13 @@ export function DataTable({
             </TableCell>
             <TableCell>{item.id}</TableCell>
             <TableCell>{item.title}</TableCell>
+            <TableCell className="w-[50px]">
+              <img
+                src={item.thumbnail_url}
+                alt="poster"
+                className="w-10 h-auto rounded-md"
+              />
+            </TableCell>
             <TableCell>{item.description}</TableCell>
             <TableCell>
               {new Date(item.release_date).toLocaleDateString()}

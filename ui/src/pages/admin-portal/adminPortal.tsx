@@ -5,6 +5,7 @@ import { DataTable } from "@/pages/admin-portal/components/data-table";
 import { TMedia } from "@/types/media";
 import { searchMedias } from "@/api/media";
 import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
 
 export default function AdminPortal() {
   const [selectedItem, setSelectedItem] = useState<TMedia | null>(null); // Added state for selected items
@@ -17,12 +18,22 @@ export default function AdminPortal() {
 
   const handleSearch = async (query: string) => {
     setSelectedItem(null);
-    const response = await searchMedias(query, 10);
-    setSearchResults(response);
+    try {
+      const response = await searchMedias(query, 10);
+      setSearchResults(response);
+    } catch (error) {
+      toast.error("Error searching for media");
+      setSearchResults([]);
+    }
   };
 
   const handleSelectItem = (id: number) => {
-    setSelectedItem(searchResults.find((item) => item.id === id) || null);
+    const selection = searchResults.find((item) => item.id === id) || null;
+    if (selection === selectedItem) {
+      setSelectedItem(null); // for deselection
+    } else {
+      setSelectedItem(selection);
+    }
   };
 
   return (
