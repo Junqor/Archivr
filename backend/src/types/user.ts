@@ -4,6 +4,7 @@ export type TUser = {
   username: string;
   password_hash: string;
   salt: string;
+  role: "admin" | "user";
 };
 
 // "users.ts" looks inside: "Media"
