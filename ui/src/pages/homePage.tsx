@@ -1,6 +1,7 @@
 // homePage.tsx
 import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
+import StatsBox from "@/components/stats-box";
 import { Link } from "react-router-dom";
 import {
   getTopRated,
@@ -32,15 +33,20 @@ export default function HomePage() {
     <>
       {isLoggedIn ? (
         <>
-          <section className="flex flex-col gap-3">
-            <h1>
-              Welcome back,{" "}
-              <span className="text-purple font-bold">
-                {user ? JSON.parse(user).username : "User"}
-              </span>
-              ! Here's what's new for you.
-            </h1>
-          </section>
+          <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
+            <section className="flex flex-col gap-3 justify-center order-2 sm:order-1">
+              <h1>
+                Welcome back,{" "}
+                <span className="text-purple font-bold">
+                  {user ? JSON.parse(user).username : "User"}
+                </span>
+                ! <br /> Here's what's new for you.
+              </h1>
+            </section>
+            <section className="h-full w-full flex flex-col gap-3 justify-center order-1 sm:order-2">
+              <StatsBox userId={user ? JSON.parse(user).id : 0} />
+            </section>
+          </div>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">New for you...</h4>
             <section className="h-full">
@@ -52,7 +58,7 @@ export default function HomePage() {
             <RecentlyReviewed />
           </section>
           <section className="flex flex-col justify-start w-full gap-3 pb-10">
-            <h4>Top-rated picks this week.</h4>
+            <h4 className="uppercase">Top-rated picks this week...</h4>
             <section className="h-full">
               <TrendingCarousel />
             </section>
@@ -190,8 +196,8 @@ function TrendingCarousel() {
   return (
     <MediaCarousel
       media={media}
-      slidesPerViewMobile={5}
-      slidesPerViewDesktop={6}
+      slidesPerViewMobile={4}
+      slidesPerViewDesktop={7}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
     />
@@ -206,8 +212,6 @@ function NewForYouCarousel() {
   useEffect(() => {
     getNewForYou(userId).then((data) => setMedia(data));
   }, []);
-
-  console.log(media);
 
   return (
     <MediaCarousel

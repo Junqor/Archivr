@@ -78,6 +78,14 @@ export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
   return data.media as TMedia[];
 };
 
+export const getUserStats = async (userId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + `/media/stats/${userId}`
+  );
+  const data = await response.json();
+  return data;
+};
+
 type GetLikesArgs = {
   mediaId: string;
 };
