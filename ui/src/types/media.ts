@@ -7,4 +7,5 @@ export type TMedia = {
   thumbnail_url: string;
   rating: number;
   genre: string;
+  category: string;
 };

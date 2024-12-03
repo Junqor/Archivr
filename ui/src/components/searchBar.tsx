@@ -12,38 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "./ui/loading-spinner";
 import { TMedia } from "@/types/media";
-
-const searchMedia = async (query: string) => {
-  const url = import.meta.env.VITE_API_URL + "/search";
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch media");
-    }
-
-    const data = (await response.json()) satisfies {
-      status: string;
-      media: TMedia[];
-    };
-
-    if (data.status !== "success") {
-      throw new Error("Failed to fetch media");
-    }
-
-    return data.media;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
+import { searchMedias } from "@/api/media";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
@@ -54,7 +23,7 @@ export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const debouncedSearch = useDebouncedCallback(async (value) => {
-    const searchResults = await searchMedia(value);
+    const searchResults = await searchMedias(value);
     setResults(searchResults);
     setIsLoading(false);
   }, 300);

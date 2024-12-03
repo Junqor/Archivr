@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 type TUser = {
   name: string;
   id: string;
+  role: string;
 };
 
 export type TUserContext = {

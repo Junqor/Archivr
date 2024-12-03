@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Star, Clock, ThumbsUp, MessageSquare } from "lucide-react";
+import { Star, ThumbsUp, MessageSquare } from "lucide-react";
 import { UseMutateFunction, useQuery } from "@tanstack/react-query";
 import { Navigate, useParams } from "react-router-dom";
 import { TMedia } from "@/types/media";
@@ -31,6 +31,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { searchMedia, TReview } from "@/api/media";
+import empty from "@/assets/empty.jpg";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -49,7 +50,7 @@ export function MediaPage() {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="flex items-start justify-center w-full h-full px-4 py-8 text-gray-100 bg-black sm:px-6 lg:px-8">
+    <div className="flex items-start justify-center w-full px-4 py-8 text-gray-100 bg-black h-fit sm:px-6 lg:px-8">
       <Card className="w-full text-gray-100 bg-purple/20 bg-gradient-to-br from-black to-purple/30">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row">
@@ -81,11 +82,7 @@ export function MediaPage() {
                   {data.genre}
                 </Badge>
               </div>
-              <p className="mb-4 text-sm text-gray-300">{data.description}</p>
-              <div className="flex items-center mb-4 text-sm">
-                <Clock className="mr-2" size={16} />
-                <span>169 minutes</span>
-              </div>
+              <p className="mb-4 text-gray-300">{data.description}</p>
               <Button size="sm" className="mb-4" asChild>
                 <a
                   href={`https://www.themoviedb.org/search?language=en-US&query=${data.title}`}
@@ -93,7 +90,11 @@ export function MediaPage() {
                   TMDB
                 </a>
               </Button>
-              <div className="text-sm">
+              {/* <div className="flex items-center mb-4 text-sm">
+                <Clock className="mr-2" size={16} />
+                <span>169 minutes</span>
+              </div> */}
+              {/* <div className="text-sm">
                 <p>
                   <span className="font-semibold">Director:</span> Christopher
                   Nolan
@@ -102,7 +103,7 @@ export function MediaPage() {
                   <span className="font-semibold">Cast:</span> Matthew
                   McConaughey, Anne Hathaway, Jessica Chastain
                 </p>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -112,10 +113,10 @@ export function MediaPage() {
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <span className="mr-4 text-3xl font-bold text-yellow-500">
-                  92%
+                  {Math.floor(Math.random() * (100 - 70 + 1) + 70)}%
                 </span>
                 <div>
-                  <p className="font-semibold">Critic Score</p>
+                  <p className="font-semibold">User Score</p>
                   <p className="text-sm text-gray-400">Based on 350 reviews</p>
                 </div>
               </div>
@@ -141,40 +142,50 @@ export function MediaPage() {
               <h3 className="self-start font-bold">
                 See What Others Are Saying
               </h3>
-              {reviews?.map((review) => {
-                return (
-                  <Card
-                    key={crypto.randomUUID()}
-                    className="mb-4 bg-gray-800 border-gray-700"
-                  >
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{review.username}</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < review.rating
-                                  ? "text-yellow-400 fill-yellow-400"
-                                  : "text-gray-400"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-300">{review.comment}</p>
-                    </CardContent>
-                    <CardFooter>
-                      <p className="text-sm text-gray-400">
-                        {new Date(review.created_at).toLocaleString()}
-                      </p>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
+              {!reviews?.length ? (
+                <>
+                  <h4 className="self-center py-1">It's quiet here...</h4>
+                  <img
+                    src={empty}
+                    className="self-center w-1/2 rounded-lg h-1/2"
+                  />
+                </>
+              ) : (
+                reviews.map((review) => {
+                  return (
+                    <Card
+                      key={crypto.randomUUID()}
+                      className="mb-4 bg-gray-800 border-gray-700"
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>{review.username}</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                  i < review.rating
+                                    ? "text-yellow-400 fill-yellow-400"
+                                    : "text-gray-400"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-300">{review.comment}</p>
+                      </CardContent>
+                      <CardFooter>
+                        <p className="text-sm text-gray-400">
+                          {new Date(review.created_at).toLocaleString()}
+                        </p>
+                      </CardFooter>
+                    </Card>
+                  );
+                })
+              )}
             </div>
           )}
         </CardContent>
