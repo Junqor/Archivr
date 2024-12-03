@@ -9,8 +9,12 @@ import {
   is_liked,
   update_likes,
   update_review,
+  insert_media,
+  update_media,
+  delete_media,
 } from "./media.service.js";
 import { z } from "zod";
+import { TMedia } from "../types/user.js";
 
 export const mediaRouter = Router();
 
@@ -125,4 +129,79 @@ mediaRouter.get("/new-for-you", async (req, res) => {
   const userId = parseInt(req.query.user_id as string);
   const result = await get_new_for_you(userId);
   res.json({ status: "success", media: result.media });
+});
+
+const mediaBodySchema = z.object({
+  category: z.string(),
+  title: z.string(),
+  description: z.string(),
+  release_date: z.string(),
+  age_rating: z.string(),
+  thumbnail_url: z.string(),
+  rating: z.number(),
+  genre: z.string(),
+});
+
+// (POST /media/insert)
+// Insert a new media to the database
+mediaRouter.post("/insert", async (req, res) => {
+  try {
+    const parsed = mediaBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const body = parsed.data;
+    const result = await insert_media(body);
+    res.json({ status: "success", media: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
+  }
+});
+
+const updateMediaBodySchema = z.object({
+  id: z.number(),
+  newData: mediaBodySchema,
+});
+
+// (POST /media/update)
+// Update a media
+mediaRouter.post("/update", async (req, res) => {
+  try {
+    const parsed = updateMediaBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const body = parsed.data;
+    const result = await update_media(body.id, body.newData);
+    res.json({ status: "success", media: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
+  }
+});
+
+const deleteMediaBodySchema = z.intersection(
+  z.object({ id: z.number() }), // hope no one has to touch this code sry : -)
+  mediaBodySchema
+);
+
+// (POST /media/delete)
+// Delete a media
+mediaRouter.post("/delete", async (req, res) => {
+  try {
+    const parsed = deleteMediaBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      throw new Error("Invalid body");
+    }
+    const body: TMedia = parsed.data;
+    const result = await delete_media(body.id);
+    res.json({ status: "success", media: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message });
+  }
 });

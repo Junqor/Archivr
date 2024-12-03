@@ -51,11 +51,17 @@ export default function HomePage() {
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
           </section>
+          <section className="flex flex-col justify-start w-full gap-3 pb-10">
+            <h4>Top-rated picks this week.</h4>
+            <section className="h-full">
+              <TrendingCarousel />
+            </section>
+          </section>
         </>
       ) : (
         <>
-          <div className="grid sm:grid-cols-2 grid-cols-1 gap-6 w-full">
-            <section className="flex flex-col gap-3 sm:order-1 order-2">
+          <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
+            <section className="flex flex-col order-2 gap-3 sm:order-1">
               <h1 className="font-extrabold leading-[normal]">
                 Track What You Love, Discover What's Next.
               </h1>
@@ -78,13 +84,13 @@ export default function HomePage() {
                 </Link>
               </div>
             </section>
-            <section className="h-full sm:order-2 order-1">
+            <section className="order-1 h-full sm:order-2">
               <TopRatedCarousel />
             </section>
           </div>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Discover on Archivr...</h4>
-            <div className="grid sm:grid-cols-3 grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <IconBox
                 iconName="TrendingUp"
                 description="Discover what's popular with real-time trending media across movies, shows, and more."
@@ -166,7 +172,7 @@ function RecentlyReviewed() {
   }, []);
 
   return (
-    <div className="grid sm:grid-cols-8 grid-cols-4 gap-3">
+    <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
       {media.map((item) => (
         <ThumbnailPreview key={item.id} media={item} />
       ))}

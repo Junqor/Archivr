@@ -6,9 +6,9 @@ export const Layout = () => {
   return (
     <div className="flex flex-col justify-start w-full h-auto min-h-screen overflow-y-auto font-normal bg-black">
       <Header />
-      <main className="sm:max-w-[960px] max-w-2xl w-full h-full mx-auto mt-5 flex flex-col items-center justify-start gap-5 px-4 sm:px-0">
+      <div className="sm:max-w-[960px] max-w-2xl w-full h-full mx-auto mt-5 pb-5 flex flex-col items-center justify-start gap-5 px-4 sm:px-0">
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 };
