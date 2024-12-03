@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TMedia } from "@/types/media";
+import { Link } from "react-router-dom";
 
 interface DataTableProps {
   data: any[];
@@ -45,11 +46,13 @@ export function DataTable({
             <TableCell>{item.id}</TableCell>
             <TableCell>{item.title}</TableCell>
             <TableCell className="w-[50px]">
-              <img
-                src={item.thumbnail_url}
-                alt="poster"
-                className="w-10 h-auto rounded-md"
-              />
+              <Link to={`/media/${item.id}`}>
+                <img
+                  src={item.thumbnail_url}
+                  alt="poster"
+                  className="w-10 h-auto rounded-md"
+                />
+              </Link>
             </TableCell>
             <TableCell>{item.description}</TableCell>
             <TableCell>
