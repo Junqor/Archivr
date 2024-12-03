@@ -12,6 +12,7 @@ import {
   insert_media,
   update_media,
   delete_media,
+  get_user_stats,
 } from "./media.service.js";
 import { z } from "zod";
 import { TMedia } from "../types/user.js";
@@ -188,4 +189,12 @@ mediaRouter.post("/delete", async (req, res) => {
       .status(400)
       .json({ status: "failed", message: (error as Error).message });
   }
+});
+
+// (GET /media/stats/:userId)
+// Get stats for a user
+mediaRouter.get("/stats/:userId", async (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const result = await get_user_stats(userId);
+  res.json({ status: "success", stats: result });
 });

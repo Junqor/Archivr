@@ -281,3 +281,15 @@ export async function delete_media(media_id:number){
       throw Error("There was a problem.");
     }
 }
+
+// Get the users total number of likes, reviews, and ratings
+export async function get_user_stats(user_id: number) {
+  let [rows] = await conn.query<RowDataPacket[]>(
+    `SELECT 
+    (SELECT COUNT(*) FROM Likes WHERE user_id = ?) AS likes,
+    (SELECT COUNT(*) FROM Reviews WHERE user_id = ?) AS reviews,
+    (SELECT COUNT(*) FROM Ratings WHERE user_id = ?) AS ratings;`,
+    [user_id, user_id, user_id]
+  );
+  return rows[0];
+}

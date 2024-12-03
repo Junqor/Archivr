@@ -3,7 +3,7 @@ import {
   AccountCircle,
   LoginRounded,
   KeyboardArrowDownRounded,
-  ArchiveRounded,
+  DataObjectRounded,
 } from "@mui/icons-material";
 import { createSvgIcon } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -18,7 +18,7 @@ import {
 export default function Header() {
   const { user, removeLoginDataFromLocalStorage } = useAuth();
 
-  const user = localStorage.getItem("user");
+  const storedUser = localStorage.getItem("user");
 
   // Return the header component
   return (
@@ -37,7 +37,7 @@ export default function Header() {
             <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
               <AccountCircle sx={{ fontSize: "1.5rem" }} />
               <div className="flex flex-row items-center gap-1">
-                <h4>{user ? JSON.parse(user).username : "User"}</h4>
+                <h4>{storedUser ? JSON.parse(storedUser).username : "User"}</h4>
                 <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
               </div>
             </DropdownTrigger>
@@ -87,26 +87,19 @@ export default function Header() {
           >
             Members
           </Link>
-          {user && user.role === "admin" && (
-            // ! Temporary, will be removed and put in a dropdown from profile icon
-            <Link
-              to="/admin"
-              className="text-white transition-colors hover:text-purple"
-            >
-              Admin Portal
-            </Link>
-          )}
         </div>
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
           {localStorage.getItem("auth") === "true" ? (
-            <Link
-              to="/archive"
-              className="flex items-center justify-center px-6 py-2 text-white transition-colors rounded-full bg-purple hover:bg-purple/75 gap-4"
-            >
-              <ArchiveRounded />
-              Archive
-            </Link>
+            user && user.role === "admin" ? (
+              <Link
+                to="/admin"
+                className="text-white transition-colors hover:text-purple"
+              >
+                <DataObjectRounded sx={{ fontSize: "1.5rem" }} />
+                Admin Portal
+              </Link>
+            ) : null
           ) : (
             <Link
               to="/login"
