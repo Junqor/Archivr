@@ -1,8 +1,14 @@
 // homePage.tsx
 import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
+import StatsBox from "@/components/stats-box";
 import { Link } from "react-router-dom";
-import { getTopRated, getRecentlyReviewed, getTrending } from "@/api/media";
+import {
+  getTopRated,
+  getRecentlyReviewed,
+  getTrending,
+  getNewForYou,
+} from "@/api/media";
 import { TMedia } from "@/types/media";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
 import MediaCarousel from "@/components/MediaCarousel";
@@ -27,33 +33,32 @@ export default function HomePage() {
     <>
       {isLoggedIn ? (
         <>
-          <h1>
-            Welcome back,{" "}
-            <span className="font-bold text-purple">
-              {user ? JSON.parse(user).username : "User"}
-            </span>
-            ! Here's what's new for you.
-          </h1>
           <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-            <section className="flex flex-col justify-center order-2 gap-3 text-center sm:order-1">
-              <h1 className="font-extrabold leading-[normal]">
-                Track What You Love, Discover What's Next.
+            <section className="flex flex-col gap-3 justify-center order-2 sm:order-1">
+              <h1>
+                Welcome back,{" "}
+                <span className="text-purple font-bold">
+                  {user ? JSON.parse(user).username : "User"}
+                </span>
+                ! <br /> Here's what's new for you.
               </h1>
-              <h4>
-                From your favorite classics to the latest hits, find it all in
-                one place.
-              </h4>
             </section>
-            <section className="order-1 h-full sm:order-2">
-              <TopRatedCarousel />
+            <section className="h-full w-full flex flex-col gap-3 justify-center order-1 sm:order-2">
+              <StatsBox userId={user ? JSON.parse(user).id : 0} />
             </section>
           </div>
+          <section className="flex flex-col justify-start w-full gap-3">
+            <h4 className="uppercase">New for you...</h4>
+            <section className="h-full">
+              <NewForYouCarousel />
+            </section>
+          </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
           </section>
           <section className="flex flex-col justify-start w-full gap-3 pb-10">
-            <h4>Top-rated picks this week.</h4>
+            <h4 className="uppercase">Top-rated picks this week...</h4>
             <section className="h-full">
               <TrendingCarousel />
             </section>
@@ -188,13 +193,31 @@ function TrendingCarousel() {
     getTrending().then((data) => setMedia(data));
   }, []);
 
-  console.log(media);
+  return (
+    <MediaCarousel
+      media={media}
+      slidesPerViewMobile={4}
+      slidesPerViewDesktop={7}
+      spaceBetweenMobile={8}
+      spaceBetweenDesktop={16}
+    />
+  );
+}
+
+function NewForYouCarousel() {
+  const [media, setMedia] = useState<TMedia[]>([]);
+
+  const userId = JSON.parse(localStorage.getItem("user") ?? "{}").id;
+
+  useEffect(() => {
+    getNewForYou(userId).then((data) => setMedia(data));
+  }, []);
 
   return (
     <MediaCarousel
       media={media}
-      slidesPerViewMobile={5}
-      slidesPerViewDesktop={6}
+      slidesPerViewMobile={4}
+      slidesPerViewDesktop={7}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
     />

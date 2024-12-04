@@ -19,6 +19,7 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
 
   return (
     <div
+      title={media.title}
       style={{ backgroundImage: `url(${media.thumbnail_url})` }}
       className="aspect-2/3 bg-cover bg-center cursor-pointer relative"
     >
@@ -26,7 +27,13 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
         to={`/media/${media.id}`}
         className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white opacity-0 hover:opacity-100 transition-opacity duration-300"
       >
-        <h4 className="text-center">{media.title}</h4>
+        {/* If the media title is too long, truncate it */}
+        <h4 className="text-center">
+          {" "}
+          {media.title.length > 35
+            ? media.title.substring(0, 35) + "..."
+            : media.title}
+        </h4>
         <div className="grid grid-cols-2 gap-1 place-items-center">
           <StarRounded fontSize="large" />
           <p>{media.rating ? media.rating.toFixed(1) : "~"}/10</p>

@@ -5,12 +5,14 @@ import {
   get_top_rated,
   get_trending,
   get_recently_reviewed,
+  get_new_for_you,
   is_liked,
   update_likes,
   update_review,
   insert_media,
   update_media,
   delete_media,
+  get_user_stats,
 } from "./media.service.js";
 import { z } from "zod";
 import { TMedia } from "../types/user.js";
@@ -122,6 +124,14 @@ mediaRouter.get("/trending", async (req, res) => {
   res.json({ status: "success", media: result.media });
 });
 
+// (GET /media/new-for-you)
+// Get new media for the user
+mediaRouter.get("/new-for-you", async (req, res) => {
+  const userId = parseInt(req.query.user_id as string);
+  const result = await get_new_for_you(userId);
+  res.json({ status: "success", media: result.media });
+});
+
 const mediaBodySchema = z.object({
   category: z.string(),
   title: z.string(),
@@ -195,4 +205,12 @@ mediaRouter.post("/delete", async (req, res) => {
       .status(400)
       .json({ status: "failed", message: (error as Error).message });
   }
+});
+
+// (GET /media/stats/:userId)
+// Get stats for a user
+mediaRouter.get("/stats/:userId", async (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const result = await get_user_stats(userId);
+  res.json({ status: "success", stats: result });
 });
