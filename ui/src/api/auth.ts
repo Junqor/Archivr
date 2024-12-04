@@ -47,6 +47,6 @@ export const trySignup = async ({ username, email, password }: signupArgs) => {
   if (data.status === "success") {
     return data;
   } else {
-    throw data.message;
+    throw new Error(data.message);
   }
 };

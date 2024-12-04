@@ -189,16 +189,12 @@ const deleteMediaBodySchema = z.intersection(
   mediaBodySchema
 );
 
-// (POST /media/delete)
-// Delete a media
-mediaRouter.post("/delete", async (req, res) => {
+// (DELETE /media/delete/:id)
+// Delete a media with specified id
+mediaRouter.delete("/delete/:id", async (req, res) => {
   try {
-    const parsed = deleteMediaBodySchema.safeParse(req.body);
-    if (parsed.error) {
-      throw new Error("Invalid body");
-    }
-    const body: TMedia = parsed.data;
-    const result = await delete_media(body.id);
+    const id = parseInt(req.params.id);
+    const result = await delete_media(id);
     res.json({ status: "success", media: result });
   } catch (error) {
     res

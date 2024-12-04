@@ -10,6 +10,7 @@
 
 - add filters by media type
 - add confirmation popup before deleting media
+- add search to query params
 
 ### Media Page
 
@@ -34,3 +35,6 @@
 - add red outline for incorrect sign in details instead of erasing inputs
 - use react query for fetching movies
 - Loading screen
+
+- ~~FIX SIGN UP~~
+- ~~LIKING RERENDERING~~

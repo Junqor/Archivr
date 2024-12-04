@@ -2,7 +2,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { createContext, useContext } from "react";
 
 type TUser = {
-  name: string;
+  username: string;
   id: string;
   role: string;
 };
