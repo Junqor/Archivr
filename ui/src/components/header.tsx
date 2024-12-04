@@ -3,10 +3,9 @@ import {
   AccountCircle,
   LoginRounded,
   KeyboardArrowDownRounded,
-  DataObjectRounded,
 } from "@mui/icons-material";
 import { createSvgIcon } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import {
   Dropdown,
@@ -17,8 +16,7 @@ import {
 
 export default function Header() {
   const { user, removeLoginDataFromLocalStorage } = useAuth();
-
-  const storedUser = localStorage.getItem("user");
+  const navigate = useNavigate();
 
   // Return the header component
   return (
@@ -32,30 +30,6 @@ export default function Header() {
       </Link>
 
       <div className="flex flex-row items-center justify-end h-full gap-6">
-        {localStorage.getItem("auth") === "true" ? (
-          <Dropdown>
-            <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-              <AccountCircle sx={{ fontSize: "1.5rem" }} />
-              <div className="flex flex-row items-center gap-1">
-                <h4>{storedUser ? JSON.parse(storedUser).username : "User"}</h4>
-                <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
-              </div>
-            </DropdownTrigger>
-            <DropdownContent>
-              <DropdownItem onSelect={() => alert("Go to Profile")}>
-                Profile
-              </DropdownItem>
-              <DropdownItem onSelect={() => alert("Go to Settings")}>
-                Settings
-              </DropdownItem>
-              <DropdownItem onSelect={removeLoginDataFromLocalStorage}>
-                Logout
-              </DropdownItem>
-            </DropdownContent>
-          </Dropdown>
-        ) : (
-          <></>
-        )}
         <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-center sm:gap-6">
           <Link
             to="/"
@@ -91,15 +65,33 @@ export default function Header() {
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
           {localStorage.getItem("auth") === "true" ? (
-            user && user.role === "admin" ? (
-              <Link
-                to="/admin"
-                className="text-white transition-colors hover:text-purple"
-              >
-                <DataObjectRounded sx={{ fontSize: "1.5rem" }} />
-                Admin Portal
-              </Link>
-            ) : null
+            <Dropdown>
+              <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
+                <AccountCircle sx={{ fontSize: "1.5rem" }} />
+                <div className="flex flex-row items-center gap-1">
+                  <h4>{user ? user.username : "User"}</h4>
+                  <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
+                </div>
+              </DropdownTrigger>
+              <DropdownContent>
+                {localStorage.getItem("auth") === "true" &&
+                  user &&
+                  user.role === "admin" && (
+                    <DropdownItem onSelect={() => navigate("/admin")}>
+                      Admin Portal{" { }"}
+                    </DropdownItem>
+                  )}
+                <DropdownItem onSelect={() => navigate("/profile")}>
+                  Profile
+                </DropdownItem>
+                <DropdownItem onSelect={() => navigate("/settings")}>
+                  Settings
+                </DropdownItem>
+                <DropdownItem onSelect={removeLoginDataFromLocalStorage}>
+                  Logout
+                </DropdownItem>
+              </DropdownContent>
+            </Dropdown>
           ) : (
             <Link
               to="/login"
