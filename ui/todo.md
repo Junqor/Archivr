@@ -35,5 +35,5 @@
 - use react query for fetching movies
 - Loading screen
 
-- FIX SIGN UP
+- ~~FIX SIGN UP~~
 - LIKING RERENDERING

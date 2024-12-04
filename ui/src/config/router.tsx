@@ -6,6 +6,7 @@ import { Layout } from "@/pages/layout";
 import { MediaPage } from "@/pages/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
 import AdminPortal from "@/pages/admin-portal/adminPortal";
+import { UnderConstruction } from "@/pages/underConstruction";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -53,6 +54,30 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: <AdminPortal />,
+      },
+      {
+        path: "/profile",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/settings",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/genre",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/trending",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/popular",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/members",
+        element: <UnderConstruction />,
       },
     ],
   },
