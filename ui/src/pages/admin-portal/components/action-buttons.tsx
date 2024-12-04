@@ -15,12 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface ActionButtonsProps {
   selectedItem: TMedia | null;
 }
 
 export function ActionButtons({ selectedItem }: ActionButtonsProps) {
+  const navigate = useNavigate();
   const handleDelete = async () => {
     if (!selectedItem) return;
     await deleteMedia(selectedItem.id)
@@ -28,6 +30,7 @@ export function ActionButtons({ selectedItem }: ActionButtonsProps) {
       .catch((err) => {
         toast.error("Error deleting media", err.message);
       });
+    navigate(0); // hacky solution to refresh the page
     toast.success("Media deleted successfully");
   };
 
