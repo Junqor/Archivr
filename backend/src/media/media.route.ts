@@ -175,9 +175,16 @@ mediaRouter.post("/update", async (req, res) => {
   }
 });
 
+const deleteMediaBodySchema = z.intersection(
+  z.object({ id: z.number() }), // hope no one has to touch this code sry : -)
+  mediaBodySchema
+);
+
+// (POST /media/delete)
+// Delete a media
 mediaRouter.post("/delete", async (req, res) => {
   try {
-    const parsed = mediaBodySchema.safeParse(req.body);
+    const parsed = deleteMediaBodySchema.safeParse(req.body);
     if (parsed.error) {
       throw new Error("Invalid body");
     }

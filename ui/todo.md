@@ -10,6 +10,7 @@
 
 - add filters by media type
 - add confirmation popup before deleting media
+- add search to query params
 
 ### Media Page
 
@@ -36,4 +37,4 @@
 - Loading screen
 
 - ~~FIX SIGN UP~~
-- LIKING RERENDERING
+- ~~LIKING RERENDERING~~

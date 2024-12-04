@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { searchMedia, TReview } from "@/api/media";
 import empty from "@/assets/empty.jpg";
+import { formatDate } from "@/utils/formatDate";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -87,6 +88,12 @@ export function MediaPage() {
                 </Badge>
               </div>
               <p className="mb-4 text-gray-300">{data.description}</p>
+              <p className="mb-4 text-gray-400">
+                Released:{" "}
+                <span className="text-gray-400">
+                  {formatDate(new Date(data.release_date))}
+                </span>
+              </p>
               <Button size="sm" className="mb-4" asChild>
                 <a
                   href={`https://www.themoviedb.org/search?language=en-US&query=${data.title}`}
