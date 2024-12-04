@@ -117,11 +117,11 @@ export function MediaPage() {
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <span className="mr-4 text-3xl font-bold text-yellow-500">
-                  {Math.floor(Math.random() * (100 - 70 + 1) + 70)}%
+                  ~%
                 </span>
                 <div>
                   <p className="font-semibold">User Score</p>
-                  <p className="text-sm text-gray-400">Based on 350 reviews</p>
+                  <p className="text-sm text-gray-400">Based on ~ reviews</p>
                 </div>
               </div>
               <div className="flex space-x-4">
