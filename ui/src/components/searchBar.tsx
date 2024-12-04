@@ -81,7 +81,7 @@ export default function SearchBar() {
                       navigate(`/media/${media.id}`);
                     }}
                   >
-                    {media.title}
+                    {media.title} <span className="hidden">{media.id}</span>
                   </CommandItem>
                 ))}
                 {isLoading && (
