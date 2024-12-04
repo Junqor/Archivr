@@ -83,15 +83,15 @@ export function LoginPopUp() {
       login({ username, password }); // Automatically log the user in after registration
     } catch (err) {
       console.error(err); // Log the error
-      setError((err as Error).message);
+      toast.error((err as Error).message);
     }
   }
 
   // Return the login popup component
   return (
     <main className="flex flex-row w-screen h-screen overflow-y-auto font-normal bg-black">
-      <section className="h-full w-full bg-black hidden sm:block">
-        <div className="flex flex-col items-center justify-center h-full w-full gap-4">
+      <section className="hidden w-full h-full bg-black sm:block">
+        <div className="flex flex-col items-center justify-center w-full h-full gap-4">
           <div className="flex flex-col items-center">
             <h1 className="font-bold">
               Welcome to <span className="text-purple">Archivr</span>
@@ -114,7 +114,7 @@ export function LoginPopUp() {
           </div>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center h-full sm:w-fit w-full bg-login-bg bg-cover bg-no-repeat bg-left sm:py-8 sm:px-32 py-4 px-8 sm:border-l-2 sm:border-gray gap-4">
+      <section className="flex flex-col items-center justify-center w-full h-full gap-4 px-8 py-4 bg-left bg-no-repeat bg-cover sm:w-fit bg-login-bg sm:py-8 sm:px-32 sm:border-l-2 sm:border-gray">
         <motion.div
           className="max-w-sm p-0 overflow-hidden bg-black rounded-lg w-max"
           layout
@@ -239,7 +239,7 @@ export function LoginPopUp() {
             )}
           </motion.form>
         </motion.div>
-        <Link to="/" className="text-white underline block sm:hidden">
+        <Link to="/" className="block text-white underline sm:hidden">
           Go back to the home page
         </Link>
       </section>
