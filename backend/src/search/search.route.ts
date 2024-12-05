@@ -9,7 +9,8 @@ const searchBodySchema = z.object({
 
 const searchRouter = Router();
 
-// (/search)
+// (POST /api/search)
+// Search for media by name with specified limit
 searchRouter.post("/", async (req, res) => {
   const parsed = searchBodySchema.safeParse(req.body);
   if (parsed.error) {
@@ -21,6 +22,8 @@ searchRouter.post("/", async (req, res) => {
   res.status(200).json(result);
 });
 
+// (GET /api/search/:id)
+// Get a single media entry by its id
 searchRouter.get("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const result = await getMediaById(id);
