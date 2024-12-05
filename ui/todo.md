@@ -35,6 +35,7 @@
 - add red outline for incorrect sign in details instead of erasing inputs
 - use react query for fetching movies
 - Loading screen
+- show movie poster in search bar
 
 - ~~FIX SIGN UP~~
 - ~~LIKING RERENDERING~~

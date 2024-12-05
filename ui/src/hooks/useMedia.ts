@@ -26,7 +26,7 @@ export const useMedia = (mediaId: string, userId: string) => {
   });
 
   const { mutate: updateLikesMutation } = useMutation({
-    mutationFn: () => updateLikes({ mediaId, userId }),
+    mutationFn: () => updateLikes({ mediaId }),
     onMutate: async () => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
@@ -77,7 +77,7 @@ export const useMedia = (mediaId: string, userId: string) => {
 
   const { mutate: updateReviewMutation } = useMutation({
     mutationFn: ({ comment }: { comment: string }) =>
-      updateReview({ mediaId, userId, comment }),
+      updateReview({ mediaId, comment }),
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["media", mediaId, "reviews"],

@@ -3,8 +3,6 @@
   What to do:
   - Use REGEX to check if fields are valid
   - Add a loading spinner
-  - Add message under the component so the user knows how to close the dialog
-    - "Press anywhere outside the dialog to close"
 */
 
 import { Label } from "../components/ui/label";
@@ -18,7 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { tryLogin, trySignup } from "@/api/auth";
 
 // LoginPopUp component
-export function LoginPopUp() {
+export function Login() {
   const { user, addLoginDataToLocalStorage } = useAuth();
   if (user?.id) return <Navigate to="/" />;
 

@@ -1,20 +1,14 @@
 import { useState } from "react";
-import { SearchBar } from "@/pages/admin-portal/components/search-bar";
-import { ActionButtons } from "@/pages/admin-portal/components/action-buttons";
-import { DataTable } from "@/pages/admin-portal/components/data-table";
+import { SearchBar } from "@/pages/adminPortal/components/search-bar";
+import { ActionButtons } from "@/pages/adminPortal/components/action-buttons";
+import { DataTable } from "@/pages/adminPortal/components/data-table";
 import { TMedia } from "@/types/media";
 import { searchMedias } from "@/api/media";
-import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 
 export default function AdminPortal() {
   const [selectedItem, setSelectedItem] = useState<TMedia | null>(null); // Added state for selected items
   const [searchResults, setSearchResults] = useState<TMedia[]>([]);
-  const { user } = useAuth();
-  if (!user || user.role !== "admin") {
-    // CIA level security check fr
-    throw { status: 403 };
-  }
 
   const handleSearch = async (query: string) => {
     setSelectedItem(null);

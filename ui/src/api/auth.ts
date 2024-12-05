@@ -17,6 +17,7 @@ export const tryLogin = async ({ username, password }: loginArgs) => {
 
   const data = await response.json();
   if (data.status === "success") {
+    localStorage.setItem("access_token", data.token);
     return data.user;
   } else {
     throw new Error(data.message);
