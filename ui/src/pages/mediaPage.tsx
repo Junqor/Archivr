@@ -12,7 +12,6 @@ import { UseMutateFunction, useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
-import { useAuth } from "@/context/auth";
 import {
   Dialog,
   DialogContent,
@@ -27,32 +26,39 @@ import { useState } from "react";
 import { searchMedia, TReview } from "@/api/media";
 import empty from "@/assets/empty.jpg";
 import { formatDate } from "@/utils/formatDate";
+import { useAuth } from "@/context/auth";
 
 export function MediaPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const checkAuth = () => {
+    if (!localStorage.getItem("access_token")) {
+      navigate("/login");
+      return true;
+    }
+    return false;
+  };
+
   const { isLiked, updateLikes, numLikes, reviews, updateReview } = useMedia(
     id as string,
     user?.id ?? ""
   );
+
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
     queryFn: () => searchMedia({ id } as { id: string }),
   });
 
+  const handleLike = () => {
+    // First check if there is an existing auth token
+    if (checkAuth()) return;
+    updateLikes();
+  };
+
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-
-  // Helper function to handle protected actions
-  const handleProtectedAction = (action: () => void) => {
-    if (!user) {
-      navigate("/login", { state: { from: location } });
-    } else {
-      action();
-    }
-  };
 
   return (
     <div className="flex items-start justify-center w-full px-4 py-8 text-gray-100 bg-black h-fit sm:px-6 lg:px-8">
@@ -132,11 +138,7 @@ export function MediaPage() {
                 </div>
               </div>
               <div className="flex space-x-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleProtectedAction(updateLikes)}
-                >
+                <Button variant="outline" size="sm" onClick={handleLike}>
                   <ThumbsUp
                     className={(isLiked && "fill-white ") + "w-4 h-4 mr-2"}
                   />
@@ -144,7 +146,7 @@ export function MediaPage() {
                 </Button>
                 <AddReviewButton
                   updateReview={updateReview}
-                  handleProtectedAction={handleProtectedAction}
+                  checkAuth={checkAuth}
                 />
               </div>
             </div>
@@ -217,27 +219,22 @@ type AddReviewButtonProps = {
     },
     unknown
   >;
-  handleProtectedAction: (action: () => void) => void;
+  checkAuth: () => void;
 };
 
-const AddReviewButton = ({
-  updateReview,
-  handleProtectedAction,
-}: AddReviewButtonProps) => {
+const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
   const [newReview, setNewReview] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   function handleAddReview() {
-    handleProtectedAction(() => {
-      updateReview({ comment: newReview });
-      setIsDialogOpen(false);
-    });
+    updateReview({ comment: newReview });
+    setIsDialogOpen(false);
   }
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={checkAuth}>
           <MessageSquare className="w-4 h-4 mr-2" />
           Add Review
         </Button>

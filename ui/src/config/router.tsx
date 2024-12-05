@@ -1,12 +1,13 @@
 // router.tsx
-import { LoginPopUp } from "@/pages/login";
+import { Login } from "@/pages/login";
 import ErrorPage from "@/pages/errorPage";
 import HomePage from "@/pages/homePage";
 import { Layout } from "@/pages/layout";
 import { MediaPage } from "@/pages/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
-import AdminPortal from "@/pages/admin-portal/adminPortal";
+import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
+import ProtectedRoute from "@/components/protectedRoute";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -53,7 +54,11 @@ const router = createBrowserRouter([
       // Admin Portal
       {
         path: "/admin",
-        element: <AdminPortal />,
+        element: (
+          <ProtectedRoute>
+            <AdminPortal />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/profile",
@@ -79,11 +84,15 @@ const router = createBrowserRouter([
         path: "/members",
         element: <UnderConstruction />,
       },
+      {
+        path: "/random",
+        element: <UnderConstruction />,
+      },
     ],
   },
   {
     path: "/login",
-    element: <LoginPopUp />,
+    element: <Login />,
   },
 ]);
 
