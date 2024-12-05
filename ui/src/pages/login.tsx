@@ -90,6 +90,7 @@ export function LoginPopUp() {
   // Return the login popup component
   return (
     <main className="flex flex-row w-screen h-screen overflow-y-auto font-normal bg-black">
+      <link rel="preload" as="image" href="/assets/login-bg.png"></link>
       <section className="hidden w-full h-full bg-black sm:block">
         <div className="flex flex-col items-center justify-center w-full h-full gap-4">
           <div className="flex flex-col items-center">
