@@ -1,0 +1,21 @@
+# Allow all search engines access to the main pages
+User-agent: *
+Disallow:
+
+# Block crawlers from accessing under-construction and error pages
+Disallow: /forbidden
+Disallow: /internal-error
+Disallow: /maintenance
+Disallow: /profile
+Disallow: /settings
+Disallow: /genre
+Disallow: /trending
+Disallow: /popular
+Disallow: /members
+
+# Block crawlers from the admin portal
+Disallow: /admin
+
+# Allow access to media pages and home page
+Allow: /
+Allow: /media/
