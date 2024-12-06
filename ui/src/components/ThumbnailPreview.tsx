@@ -20,7 +20,9 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
   return (
     <div
       title={media.title}
-      style={{ backgroundImage: `url(${media.thumbnail_url})` }}
+      style={{
+        backgroundImage: `url(${media.thumbnail_url.replace("w500", "w342")})`,
+      }}
       className="aspect-2/3 bg-cover bg-center cursor-pointer relative"
     >
       <Link

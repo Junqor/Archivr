@@ -32,7 +32,7 @@ export default function MediaCarousel({
         slidesPerViewMobile ? slidesPerViewMobile : slidesPerViewDesktop
       }
       grabCursor={true}
-      scrollbar={{ draggable: true }}
+      scrollbar={{ draggable: false }}
       mousewheel={{
         forceToAxis: true,
       }}
