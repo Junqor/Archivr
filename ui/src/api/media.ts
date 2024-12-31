@@ -3,6 +3,10 @@ import { getAuthHeader } from "@/utils/authHeader";
 
 // Search for media(s) by title
 export const searchMedias = async (query: string, limit: number = 5) => {
+  if (!query) {
+    return []; // Do not search if no query is provided
+  }
+
   const url = import.meta.env.VITE_API_URL + "/search";
 
   try {

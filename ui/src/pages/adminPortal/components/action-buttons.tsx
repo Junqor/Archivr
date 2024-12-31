@@ -15,12 +15,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ActionButtonsProps {
   selectedItem: TMedia | null;
 }
 
 export function ActionButtons({ selectedItem }: ActionButtonsProps) {
+  const queryClient = useQueryClient();
+
   const handleDelete = async () => {
     if (!selectedItem) return;
     await deleteMedia(selectedItem.id)
@@ -28,6 +31,7 @@ export function ActionButtons({ selectedItem }: ActionButtonsProps) {
       .catch((err) => {
         toast.error("Error deleting media", err.message);
       });
+    queryClient.invalidateQueries({ queryKey: ["adminSearch"] }); // Invalidate query to refetch data
   };
 
   const handleEdit = async (newData: Partial<TMedia>) => {
@@ -37,6 +41,7 @@ export function ActionButtons({ selectedItem }: ActionButtonsProps) {
       .catch((err) => {
         toast.error("Error updating media", err.message);
       });
+    queryClient.invalidateQueries({ queryKey: ["adminSearch"] });
   };
 
   const handleAdd = async (newData: Partial<TMedia>) => {
@@ -44,6 +49,7 @@ export function ActionButtons({ selectedItem }: ActionButtonsProps) {
     await addMedia(newData)
       .then(() => toast.success("Media added successfully"))
       .catch((err) => toast.error("Error adding media", err.message));
+    queryClient.invalidateQueries({ queryKey: ["adminSearch"] });
   };
 
   return (

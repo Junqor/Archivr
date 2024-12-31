@@ -4,24 +4,24 @@ import { ActionButtons } from "@/pages/adminPortal/components/action-buttons";
 import { DataTable } from "@/pages/adminPortal/components/data-table";
 import { TMedia } from "@/types/media";
 import { searchMedias } from "@/api/media";
-import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { DataTableSkeleton } from "./components/data-table-skeleton";
 
 export default function AdminPortal() {
-  const [selectedItem, setSelectedItem] = useState<TMedia | null>(null); // Added state for selected items
-  const [searchResults, setSearchResults] = useState<TMedia[]>([]);
+  const [searchParams] = useSearchParams();
+  const [selectedItem, setSelectedItem] = useState<TMedia | null>(null);
 
-  const handleSearch = async (query: string) => {
-    setSelectedItem(null);
-    try {
-      const response = await searchMedias(query, 10);
-      setSearchResults(response);
-    } catch (error) {
-      toast.error("Error searching for media");
-      setSearchResults([]);
-    }
-  };
+  const { data: searchResults, isFetching } = useQuery<TMedia[]>({
+    queryKey: ["adminSearch", searchParams.get("q")],
+    queryFn: async () => {
+      const data = await searchMedias(searchParams.get("q") || "", 10);
+      return data;
+    },
+  });
 
   const handleSelectItem = (id: number) => {
+    if (!searchResults) return;
     const selection = searchResults.find((item) => item.id === id) || null;
     if (selection === selectedItem) {
       setSelectedItem(null); // for deselection
@@ -34,14 +34,18 @@ export default function AdminPortal() {
     <div className="container p-4 mx-auto">
       <h1 className="mb-4 text-2xl font-bold">Admin Portal</h1>
       <div className="flex mb-4 space-x-4">
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar />
         <ActionButtons selectedItem={selectedItem} />
       </div>
-      <DataTable
-        data={searchResults}
-        selectedItem={selectedItem}
-        onSelectItem={handleSelectItem}
-      />
+      {isFetching ? (
+        <DataTableSkeleton />
+      ) : (
+        <DataTable
+          data={searchResults || []}
+          selectedItem={selectedItem}
+          onSelectItem={handleSelectItem}
+        />
+      )}
     </div>
   );
 }
