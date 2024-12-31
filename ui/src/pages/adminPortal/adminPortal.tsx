@@ -12,10 +12,13 @@ export default function AdminPortal() {
   const [searchParams] = useSearchParams();
   const [selectedItem, setSelectedItem] = useState<TMedia | null>(null);
 
+  const pageNumber = parseInt(searchParams.get("page") || "1");
+  const query = searchParams.get("q") || "";
+
   const { data: searchResults, isFetching } = useQuery<TMedia[]>({
-    queryKey: ["adminSearch", searchParams.get("q")],
+    queryKey: ["adminSearch", query, pageNumber],
     queryFn: async () => {
-      const data = await searchMedias(searchParams.get("q") || "", 10);
+      const data = await searchMedias(query, 10, pageNumber);
       return data;
     },
   });
@@ -35,7 +38,11 @@ export default function AdminPortal() {
       <h1 className="mb-4 text-2xl font-bold">Admin Portal</h1>
       <div className="flex mb-4 space-x-4">
         <SearchBar />
-        <ActionButtons selectedItem={selectedItem} />
+        <ActionButtons
+          selectedItem={selectedItem}
+          pageNumber={pageNumber}
+          numResults={searchResults?.length || 0}
+        />
       </div>
       {isFetching ? (
         <DataTableSkeleton />

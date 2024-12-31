@@ -2,7 +2,7 @@ import { addMedia, deleteMedia, editMedia } from "@/api/admin";
 import { Button, ButtonProps } from "@/components/ui/button";
 import { TMedia } from "@/types/media";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { Edit, Trash, Plus } from "lucide-react";
+import { Edit, Trash, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -16,13 +16,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 interface ActionButtonsProps {
   selectedItem: TMedia | null;
+  pageNumber: number;
+  numResults: number;
 }
 
-export function ActionButtons({ selectedItem }: ActionButtonsProps) {
+export function ActionButtons({
+  selectedItem,
+  pageNumber,
+  numResults,
+}: ActionButtonsProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
 
   const handleDelete = async () => {
     if (!selectedItem) return;
@@ -52,8 +62,18 @@ export function ActionButtons({ selectedItem }: ActionButtonsProps) {
     queryClient.invalidateQueries({ queryKey: ["adminSearch"] });
   };
 
+  const handlePageUp = () => {
+    searchParams.set("page", `${pageNumber + 1}`);
+    navigate(`${location.pathname}?${searchParams.toString()}`);
+  };
+
+  const handlePageDown = () => {
+    searchParams.set("page", `${pageNumber - 1}`);
+    navigate(`${location.pathname}?${searchParams.toString()}`);
+  };
+
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-2 w-full">
       <MediaForm media={selectedItem as TMedia} handleSave={handleEdit}>
         <Button variant="outline" size="icon" disabled={!selectedItem}>
           <Edit className="w-4 h-4" />
@@ -76,6 +96,23 @@ export function ActionButtons({ selectedItem }: ActionButtonsProps) {
           <span className="sr-only">Add</span>
         </Button>
       </MediaForm>
+      <Button
+        variant="outline"
+        size="icon"
+        className="!ml-auto"
+        disabled={pageNumber <= 1}
+        onClick={handlePageDown}
+      >
+        <ChevronLeft className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        disabled={numResults < 10}
+        onClick={handlePageUp}
+      >
+        <ChevronRight className="w-4 h-4" />
+      </Button>
     </div>
   );
 }
