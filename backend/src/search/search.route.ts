@@ -5,6 +5,7 @@ import { getMediaById, searchMedia } from "./search.service.js";
 const searchBodySchema = z.object({
   query: z.string().min(1),
   limit: z.number().min(1).max(100),
+  offset: z.number().min(1),
 });
 
 const searchRouter = Router();
@@ -17,8 +18,8 @@ searchRouter.post("/", async (req, res) => {
     res.status(400).json({ message: "Bad Request", error: parsed.error });
     return;
   }
-  const { query, limit } = parsed.data;
-  const result = await searchMedia(query, limit);
+  const { query, limit, offset } = parsed.data;
+  const result = await searchMedia(query, limit, offset);
   res.status(200).json(result);
 });
 

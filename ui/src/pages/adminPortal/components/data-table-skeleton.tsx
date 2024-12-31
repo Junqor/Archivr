@@ -22,7 +22,7 @@ export function DataTableSkeleton() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {[...Array(5)].map((_, index) => (
+        {[...Array(10)].map((_, index) => (
           <TableRow key={index}>
             <TableCell>
               <Skeleton className="h-4 w-4" />

@@ -2,7 +2,12 @@ import { TMedia } from "@/types/media";
 import { getAuthHeader } from "@/utils/authHeader";
 
 // Search for media(s) by title
-export const searchMedias = async (query: string, limit: number = 5) => {
+export const searchMedias = async (
+  query: string,
+  limit: number = 5,
+  offset: number = 1
+) => {
+  console.log("args", query, limit, offset);
   if (!query) {
     return []; // Do not search if no query is provided
   }
@@ -15,7 +20,7 @@ export const searchMedias = async (query: string, limit: number = 5) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query, limit }),
+      body: JSON.stringify({ query, limit, offset }),
     });
 
     if (!response.ok) {
