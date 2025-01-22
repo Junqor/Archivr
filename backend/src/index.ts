@@ -2,19 +2,23 @@ import express from "express";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { testConnection } from "./utils/testConnection.js";
-import { router } from "./configs/router.js";
-import bodyParser from "body-parser";
 import cors from "cors";
+import bodyParser from "body-parser";
+import { errorHandler } from "./middleware/errorHandler.js";
+import { router } from "./configs/router.js";
 
 const app = express();
 
 const PORT = process.env.PORT || "8080";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(express.static("public"));
-router.use(cors({ origin: "*" }));
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(cors({ origin: "*" }));
+app.use(errorHandler); // Error logging middleware
 
 app.use("/api", router); // set base url to /api
 
