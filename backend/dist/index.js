@@ -3,9 +3,14 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { testConnection } from "./utils/testConnection.js";
 import { router } from "./configs/router.js";
+import bodyParser from "body-parser";
 const app = express();
 const PORT = process.env.PORT || "8080";
 const __dirname = dirname(fileURLToPath(import.meta.url));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(cors({ origin: "*" }));
 app.use("/api", router); // set base url to /api
 // Test db connection
 try {
@@ -17,4 +22,7 @@ try {
 }
 catch (error) {
     console.error("Database connection failed", error);
+}
+function cors(arg0) {
+    throw new Error("Function not implemented.");
 }
