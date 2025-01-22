@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { testConnection } from "./utils/testConnection.js";
 import { router } from "./configs/router.js";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 const app = express();
 
@@ -26,7 +27,4 @@ try {
   });
 } catch (error) {
   console.error("Database connection failed", error);
-}
-function cors(arg0: { origin: string }): any {
-  throw new Error("Function not implemented.");
 }
