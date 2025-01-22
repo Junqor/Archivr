@@ -1,7 +1,16 @@
 import { Router } from "express";
 import { logIn, signUp } from "./auth.services.js";
+import jwt from "jsonwebtoken";
+import { serverConfig } from "../configs/secrets.js";
+import { authenticateToken, } from "../middleware/authenticateToken.js";
 const authRouter = Router();
-// (/auth/signup)
+// (GET /api/auth)
+// Check if the user is authenticated, return the user object stored in the token
+authRouter.get("/", authenticateToken, (req, res) => {
+    const token = req.token;
+    res.status(200).json({ status: "success", user: token.user });
+});
+// (POST /api/auth/signup)
 authRouter.post("/signup", async (req, res) => {
     try {
         const { email, username, password } = req.body;
@@ -18,7 +27,7 @@ authRouter.post("/signup", async (req, res) => {
         res.status(500).json({ status: "failed", message: "Error signing up" });
     }
 });
-// (/auth/login)
+// (POST /api/auth/login)
 authRouter.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -27,7 +36,10 @@ authRouter.post("/login", async (req, res) => {
             res.status(401).json(result);
         }
         else {
-            res.status(200).json(result);
+            const token = jwt.sign({ user: result.user }, serverConfig.JWT_SECRET);
+            res
+                .status(200)
+                .json({ status: "success", user: result.user, token: token });
         }
     }
     catch (error) {

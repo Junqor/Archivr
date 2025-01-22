@@ -76,6 +76,11 @@ export async function logIn(username, password) {
     return {
         status: "success",
         message: "Logged in successfully",
-        user: { id: user.id, username: user.username, email: user.email },
+        user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+        },
     };
 }
