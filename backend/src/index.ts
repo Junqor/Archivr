@@ -11,10 +11,10 @@ const app = express();
 const PORT = process.env.PORT || "8080";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use(cors({ origin: "*" }));
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(express.static("public"));
+router.use(cors({ origin: "*" }));
 
 app.use("/api", router); // set base url to /api
 
