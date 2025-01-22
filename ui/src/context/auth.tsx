@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const removeLoginDataFromLocalStorage = () => {
     setUser(null);
     localStorage.removeItem("auth");
+    localStorage.removeItem("access_token");
     window.location.reload();
   };
 

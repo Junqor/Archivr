@@ -7,6 +7,16 @@ export type TUser = {
   role: "admin" | "user";
 };
 
+// Information in auth token
+export type TAuthToken = {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    role: "admin" | "user";
+  };
+};
+
 // "users.ts" looks inside: "Media"
 export type TMedia = {
   id: number;

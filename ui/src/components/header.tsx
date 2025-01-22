@@ -18,6 +18,11 @@ export default function Header() {
   const { user, removeLoginDataFromLocalStorage } = useAuth();
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    removeLoginDataFromLocalStorage();
+    navigate("/");
+  };
+
   // Return the header component
   return (
     <header className="sticky top-0 left-0 z-50 flex flex-row items-center justify-between w-full h-auto px-6 py-3 bg-black">
@@ -87,9 +92,7 @@ export default function Header() {
                 <DropdownItem onSelect={() => navigate("/settings")}>
                   Settings
                 </DropdownItem>
-                <DropdownItem onSelect={removeLoginDataFromLocalStorage}>
-                  Logout
-                </DropdownItem>
+                <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
               </DropdownContent>
             </Dropdown>
           ) : (

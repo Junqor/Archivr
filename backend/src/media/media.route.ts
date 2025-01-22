@@ -9,36 +9,35 @@ import {
   is_liked,
   update_likes,
   update_review,
-  insert_media,
-  update_media,
-  delete_media,
   get_user_stats,
 } from "./media.service.js";
-import { z } from "zod";
-import { TMedia } from "../types/user.js";
+import { z, ZodError } from "zod";
+import {
+  authenticateToken,
+  AuthRequest,
+} from "../middleware/authenticateToken.js";
+import { TAuthToken } from "../types/user.js";
 
 export const mediaRouter = Router();
 
 const updateLikesBodySchema = z.object({
   media_id: z.number(),
-  user_id: z.number(),
 });
 
 // (POST /media/like)
 // update likes for a media
-mediaRouter.post("/like", async (req, res) => {
+mediaRouter.post("/like", authenticateToken, async (req, res) => {
   try {
-    const parsed = updateLikesBodySchema.safeParse(req.body);
-    if (parsed.error) {
-      throw new Error("Invalid body");
-    }
-    const { media_id, user_id } = parsed.data;
-    const result = await update_likes(media_id, user_id);
+    const token = (req as AuthRequest).token as TAuthToken;
+    const { media_id } = updateLikesBodySchema.parse(req.body);
+    await update_likes(media_id, token.user.id);
     res.json({ status: "success" });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ status: "failed", message: (error as Error).message });
+  } catch (err) {
+    res.status(400).json({
+      status: "failed",
+      message:
+        err instanceof ZodError ? "Invalid body" : (err as Error).message,
+    });
   }
 });
 
@@ -80,21 +79,17 @@ mediaRouter.get("/reviews/:mediaId", async (req, res) => {
 
 const reviewBodySchema = z.object({
   media_id: z.number(),
-  user_id: z.number(),
   comment: z.string(),
-  rating: z.number().default(0),
+  rating: z.number().default(0), //TODO : make dis work
 });
 
 // (POST /media/review)
 // Update or add a review for a media
-mediaRouter.post("/review", async (req, res) => {
+mediaRouter.post("/review", authenticateToken, async (req, res) => {
   try {
-    const parsed = reviewBodySchema.safeParse(req.body);
-    if (parsed.error) {
-      throw new Error("Invalid body");
-    }
-    const { media_id, user_id, comment } = parsed.data;
-    const result = await update_review(media_id, user_id, comment);
+    const token = (req as AuthRequest).token as TAuthToken;
+    const { media_id, comment } = reviewBodySchema.parse(req.body);
+    await update_review(media_id, token.user.id, comment);
     res.json({ status: "success" });
   } catch (error) {
     res
@@ -130,77 +125,6 @@ mediaRouter.get("/new-for-you", async (req, res) => {
   const userId = parseInt(req.query.user_id as string);
   const result = await get_new_for_you(userId);
   res.json({ status: "success", media: result.media });
-});
-
-const mediaBodySchema = z.object({
-  category: z.string(),
-  title: z.string(),
-  description: z.string(),
-  release_date: z.string(),
-  age_rating: z.string(),
-  thumbnail_url: z.string(),
-  rating: z.number(),
-  genre: z.string(),
-});
-
-// (POST /media/insert)
-// Insert a new media to the database
-mediaRouter.post("/insert", async (req, res) => {
-  try {
-    const parsed = mediaBodySchema.safeParse(req.body);
-    if (parsed.error) {
-      throw new Error("Invalid body");
-    }
-    const body = parsed.data;
-    const result = await insert_media(body);
-    res.json({ status: "success", media: result });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ status: "failed", message: (error as Error).message });
-  }
-});
-
-const updateMediaBodySchema = z.object({
-  id: z.number(),
-  newData: mediaBodySchema,
-});
-
-// (POST /media/update)
-// Update a media
-mediaRouter.post("/update", async (req, res) => {
-  try {
-    const parsed = updateMediaBodySchema.safeParse(req.body);
-    if (parsed.error) {
-      throw new Error("Invalid body");
-    }
-    const body = parsed.data;
-    const result = await update_media(body.id, body.newData);
-    res.json({ status: "success", media: result });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ status: "failed", message: (error as Error).message });
-  }
-});
-
-const deleteMediaBodySchema = z.intersection(
-  z.object({ id: z.number() }), // hope no one has to touch this code sry : -)
-  mediaBodySchema
-);
-
-// (DELETE /media/delete/:id)
-// Delete a media with specified id
-mediaRouter.delete("/delete/:id", async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const result = await delete_media(id);
-    res.json({ status: "success", media: result });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ status: "failed", message: (error as Error).message });
-  }
 });
 
 // (GET /media/stats/:userId)

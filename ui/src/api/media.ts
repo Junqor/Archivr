@@ -1,7 +1,17 @@
 import { TMedia } from "@/types/media";
+import { getAuthHeader } from "@/utils/authHeader";
 
 // Search for media(s) by title
-export const searchMedias = async (query: string, limit: number = 5) => {
+export const searchMedias = async (
+  query: string,
+  limit: number = 5,
+  offset: number = 1
+) => {
+  console.log("args", query, limit, offset);
+  if (!query) {
+    return []; // Do not search if no query is provided
+  }
+
   const url = import.meta.env.VITE_API_URL + "/search";
 
   try {
@@ -10,7 +20,7 @@ export const searchMedias = async (query: string, limit: number = 5) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query, limit }),
+      body: JSON.stringify({ query, limit, offset }),
     });
 
     if (!response.ok) {
@@ -141,15 +151,15 @@ export type TLikeResponse = {
   liked?: boolean;
 };
 
-export const updateLikes = async ({ userId, mediaId }: GetLikedStatusArgs) => {
+export const updateLikes = async ({ mediaId }: { mediaId: string }) => {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/media/like`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeader(),
     },
     body: JSON.stringify({
       media_id: parseInt(mediaId),
-      user_id: parseInt(userId),
     }),
   });
 
@@ -192,14 +202,12 @@ export const getReviews = async ({ mediaId }: { mediaId: string }) => {
 
 export type TUpdateReviewArgs = {
   mediaId: string;
-  userId: string;
   comment: string;
   rating?: number;
 };
 
 export const updateReview = async ({
   mediaId,
-  userId,
   comment,
   rating = 0,
 }: TUpdateReviewArgs) => {
@@ -207,10 +215,10 @@ export const updateReview = async ({
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeader(),
     },
     body: JSON.stringify({
       media_id: parseInt(mediaId),
-      user_id: parseInt(userId),
       comment: comment,
       rating: rating,
     }),
@@ -226,63 +234,4 @@ export const updateReview = async ({
   }
 
   return data.review as TReview;
-};
-
-export const deleteMedia = async (id: number) => {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/media/delete/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to delete media");
-  }
-
-  const data = await response.json();
-  if (data.status !== "success") {
-    throw new Error("Failed to delete media");
-  }
-
-  return data;
-};
-
-export const editMedia = async (id: number, newData: Partial<TMedia>) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/update`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id, newData }),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to edit media");
-  }
-  const data = await response.json();
-  if (data.status !== "success") {
-    throw new Error("Failed to edit media");
-  }
-  return data;
-};
-
-export const addMedia = async (newData: Partial<TMedia>) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/insert`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(newData),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to add media");
-  }
-
-  const data = await response.json();
-  if (data.status !== "success") {
-    throw new Error("Failed to add media");
-  }
-
-  return data;
 };

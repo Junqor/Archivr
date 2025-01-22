@@ -10,12 +10,14 @@ type TSearchResult = {
 // Search for media by name
 export async function searchMedia(
   query: string,
-  limit: number
+  limit: number,
+  offset: number
 ): Promise<TSearchResult> {
-  const sql = `SELECT * FROM Media WHERE title LIKE ? LIMIT ?`;
+  const sql = `SELECT * FROM Media WHERE title LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?`;
   const [rows] = await conn.query<(RowDataPacket & TMedia)[]>(sql, [
     `%${query}%`,
     limit,
+    (offset - 1) * limit,
   ]);
 
   return {
