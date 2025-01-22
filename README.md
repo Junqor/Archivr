@@ -8,7 +8,7 @@ This idea is a website that serves a one-stop hub for tracking, rating, and disc
 # Team Members:
 
 - Roberto Ramirez
-- Nicholas Rodriguez :Nick Commit :D!
+- Nicholas Rodriguez
 - Joshua Andrew Sullivan
 - Jose Cortes
 - Ulysses Ochoa
