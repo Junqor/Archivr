@@ -41,7 +41,7 @@ export function MediaPage() {
     return false;
   };
 
-  const { isLiked, updateLikes, numLikes, reviews, updateReview } = useMedia(
+  const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } = useMedia(
     id as string,
     user?.id ?? ""
   );
@@ -130,11 +130,11 @@ export function MediaPage() {
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <span className="mr-4 text-3xl font-bold text-yellow-500">
-                  ~%
+                  {userRating != undefined ? Math.round(userRating*10)/10 : "N/A"}
                 </span>
                 <div>
                   <p className="font-semibold">User Score</p>
-                  <p className="text-sm text-gray-400">Based on ~ reviews</p>
+                  <p className="text-sm text-gray-400">{reviews != undefined ? `Based on ${reviews.length} review${reviews.length==1?"":"s"}` : "Based on ? reviews"}</p>
                 </div>
               </div>
               <div className="flex space-x-4">
@@ -210,6 +210,19 @@ export function MediaPage() {
   );
 }
 
+const AddReviewButtonStar = ({ i, filled, setNewRating, setNewRatingPreview }: { i:number, filled:boolean, setNewRating:(x:number)=>void, setNewRatingPreview:(x:number)=>void }) => {
+  return(
+    <div>
+      <Star
+        className={filled?`text-yellow-400 fill-yellow-400`:`text-gray-400`}
+        onMouseOver={()=>setNewRatingPreview(i+1)}
+        onMouseOut={()=>setNewRatingPreview(0)}
+        onClick={()=>setNewRating(i+1)}
+      />   
+    </div>
+  )
+}
+
 type AddReviewButtonProps = {
   updateReview: UseMutateFunction<
     TReview,
@@ -223,12 +236,20 @@ type AddReviewButtonProps = {
 };
 
 const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
+  const [newRating, setNewRating] = useState(0);
+  const [newRatingPreview, setNewRatingPreview] = useState(0);
   const [newReview, setNewReview] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [userWasSilly, setUserWasSilly] = useState(false);
 
   function handleAddReview() {
-    updateReview({ comment: newReview });
-    setIsDialogOpen(false);
+    if (newRating == 0){
+      setUserWasSilly(true);
+    }
+    else{
+      updateReview({ comment: newReview, rating: newRating});
+      setIsDialogOpen(false);
+    }
   }
 
   return (
@@ -246,6 +267,17 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
         <DialogDescription className="text-sm text-left">
           Share your thoughts and opinions for others to see.
         </DialogDescription>
+        <div className="flex">
+          {[...Array(5)].map((_, i) => (
+            <AddReviewButtonStar
+              key={i}
+              i={i}
+              filled={newRatingPreview!==0?newRatingPreview>i:newRating>i}
+              setNewRating={setNewRating}
+              setNewRatingPreview={setNewRatingPreview}
+            />
+          ))}
+        </div>
         <div className="grid gap-4 py-4">
           <Textarea
             placeholder="Write your review here..."
@@ -255,6 +287,11 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
           />
         </div>
         <DialogFooter>
+          {userWasSilly?(
+            <p>
+              You have to choose a rating silly!
+            </p>
+          ):(<></>)}
           <Button onClick={handleAddReview} variant="default">
             Submit Review
           </Button>

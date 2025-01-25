@@ -25,13 +25,13 @@ export async function update_rating(
 
 export async function get_media_rating(media_id: number): Promise<number> {
   let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "SELECT AVG(rating) as avg FROM Ratings WHERE media_id=?;",
+    "SELECT AVG(rating) as avg FROM Reviews WHERE media_id=?;",
     [media_id]
   );
   if (rows[0].length == 0) {
     throw Error("RATINGS AREN'T REAL");
   }
-  return rows[0][0].avg;
+  return rows[0].avg;
 }
 
 export async function get_user_rating(
@@ -51,12 +51,13 @@ export async function get_user_rating(
 export async function update_review(
   media_id: number,
   user_id: number,
-  new_comment: string
+  new_comment: string,
+  new_rating: number,
 ) {
   let [rows] = await conn.query(
-    "INSERT INTO Reviews (media_id,user_id,comment) VALUES (?,?,?) " +
-      "ON DUPLICATE KEY UPDATE comment = ?",
-    [media_id, user_id, new_comment, new_comment]
+    "INSERT INTO Reviews (media_id,user_id,comment,rating) VALUES (?,?,?,?) " +
+      "ON DUPLICATE KEY UPDATE comment = ?, rating = ?",
+    [media_id, user_id, new_comment, new_rating, new_comment, new_rating]
   );
   return;
 }
@@ -67,7 +68,7 @@ export async function get_media_reviews(
   offset: number
 ): Promise<TReview[]> {
   let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    `SELECT Users.username, Reviews.comment, Reviews.created_at 
+    `SELECT Users.username, Reviews.comment, Reviews.created_at, Reviews.rating 
     FROM Reviews 
     INNER JOIN Users ON Reviews.user_id = Users.id 
     WHERE Reviews.media_id = ? 
