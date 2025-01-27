@@ -56,7 +56,7 @@ export async function update_review(
 ) {
   let [rows] = await conn.query(
     "INSERT INTO Reviews (media_id,user_id,comment,rating) VALUES (?,?,?,?) " +
-      "ON DUPLICATE KEY UPDATE comment = ?, rating = ?",
+      "ON DUPLICATE KEY UPDATE comment = ?, rating = ?, created_at = CURRENT_TIMESTAMP",
     [media_id, user_id, new_comment, new_rating, new_comment, new_rating]
   );
   return;

@@ -134,7 +134,7 @@ export function MediaPage() {
                 </span>
                 <div>
                   <p className="font-semibold">User Score</p>
-                  <p className="text-sm text-gray-400">{reviews != undefined ? `Based on ${reviews.length} review${reviews.length==1?"":"s"}` : "Based on ? reviews"}</p>
+                  <p className="text-sm text-gray-400">{reviews != undefined ? `Based on ${reviews.length} ${reviews.length==1?"review":"reviews"}` : "Based on ? reviews"}</p>
                 </div>
               </div>
               <div className="flex space-x-4">
@@ -168,38 +168,43 @@ export function MediaPage() {
                 </>
               ) : (
                 reviews.map((review) => {
-                  return (
-                    <Card
-                      key={crypto.randomUUID()}
-                      className="mb-4 bg-gray-800 border-gray-700"
-                    >
-                      <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                          <span>{review.username}</span>
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating
-                                    ? "text-yellow-400 fill-yellow-400"
-                                    : "text-gray-400"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300">{review.comment}</p>
-                      </CardContent>
-                      <CardFooter>
-                        <p className="text-sm text-gray-400">
-                          {new Date(review.created_at).toLocaleString()}
-                        </p>
-                      </CardFooter>
-                    </Card>
-                  );
+                  if (review.comment != "" && review.comment != undefined){
+                    return (
+                      <Card
+                        key={crypto.randomUUID()}
+                        className="mb-4 bg-gray-800 border-gray-700"
+                      >
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span>{review.username}</span>
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < review.rating
+                                      ? "text-yellow-400 fill-yellow-400"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-300">{review.comment}</p>
+                        </CardContent>
+                        <CardFooter>
+                          <p className="text-sm text-gray-400">
+                            {new Date(review.created_at).toLocaleString()}
+                          </p>
+                        </CardFooter>
+                      </Card>
+                    );
+                  }
+                  else {
+                    return (<></>);
+                  }
                 })
               )}
             </div>
