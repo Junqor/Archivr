@@ -46,7 +46,7 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
           <StarRounded fontSize="large" />
           <p>{media.rating ? media.rating.toFixed(1) : "~"}/10</p>
           <PersonRounded fontSize="large" />
-          <p>{userRating !== null ? Math.round(userRating*10)/10+"/5" : "Loading..."}</p>
+          <p>{userRating ? Math.round(userRating*10)/10 : "~"}/5</p>
           <FavoriteRounded fontSize="large" />
           <p>{likes !== null ? likes.toString() : "Loading..."}</p>
         </div>
