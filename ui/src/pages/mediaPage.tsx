@@ -27,6 +27,7 @@ import { searchMedia, TReview } from "@/api/media";
 import empty from "@/assets/empty.jpg";
 import { formatDate } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
+import { truncate } from "fs";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -169,40 +170,9 @@ export function MediaPage() {
               ) : (
                 reviews.map((review) => {
                   if (review.comment != "" && review.comment != undefined){
-                    return (
-                      <Card
-                        key={crypto.randomUUID()}
-                        className="mb-4 bg-gray-800 border-gray-700"
-                      >
-                        <CardHeader>
-                          <CardTitle className="flex items-center justify-between">
-                            <span>{review.username}</span>
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? "text-yellow-400 fill-yellow-400"
-                                      : "text-gray-400"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-gray-300">{review.comment}</p>
-                        </CardContent>
-                        <CardFooter>
-                          <p className="text-sm text-gray-400">
-                            {new Date(review.created_at).toLocaleString()}
-                          </p>
-                        </CardFooter>
-                      </Card>
-                    );
+                    return (<ReviewCard review={review}></ReviewCard>);
                   }
-                  else {
+                  else{
                     return (<></>);
                   }
                 })
@@ -212,6 +182,56 @@ export function MediaPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+const ReviewCard = ({review} : {review:TReview}) => {
+  const [expanded, setExpanded] = useState(false);
+  const maxUnexpandedCommentCharacters = 400;
+  const isTooLong = () => {
+    return review.comment.length > maxUnexpandedCommentCharacters;
+  };
+  const truncatedComment = () => {
+    return review.comment.substring(0,maxUnexpandedCommentCharacters) + "...";
+  }
+
+  return (
+    <Card
+      key={crypto.randomUUID()}
+      className="mb-4 bg-gray-800 border-gray-700"
+    >
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>{review.username}</span>
+          <div className="flex">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`w-4 h-4 ${
+                  i < review.rating
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-400"
+                }`}
+              />
+            ))}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-300">{expanded || !isTooLong() ? review.comment : truncatedComment()}</p>
+      </CardContent>
+      {
+        isTooLong() ?
+        (<CardFooter><u onClick={()=>{setExpanded(!expanded);}}>{expanded?"Show less":"Show more"}</u></CardFooter>)
+        :
+        (<></>)
+      }
+      <CardFooter>
+        <p className="text-sm text-gray-400">
+          {new Date(review.created_at).toLocaleString()}
+        </p>
+      </CardFooter>
+    </Card>
   );
 }
 

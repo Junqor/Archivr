@@ -43,11 +43,11 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
             : media.title}
         </h4>
         <div className="grid grid-cols-2 gap-1 place-items-center">
-          <StarRounded fontSize="large" />
+          <StarRounded fontSize="medium" />
           <p>{media.rating ? media.rating.toFixed(1) : "~"}/10</p>
-          <PersonRounded fontSize="large" />
+          <PersonRounded fontSize="medium" />
           <p>{userRating ? Math.round(userRating*10)/10 : "~"}/5</p>
-          <FavoriteRounded fontSize="large" />
+          <FavoriteRounded fontSize="medium" />
           <p>{likes !== null ? likes.toString() : "Loading..."}</p>
         </div>
       </Link>
