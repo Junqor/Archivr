@@ -129,30 +129,34 @@ export async function get_likes(media_id: number): Promise<number> {
   return rows[0].num ?? 0;
 }
 
-export async function get_top_rated() {
+export async function getMostPopular() {
+  //   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+  //     `SELECT
+  //     Media.id,
+  //     Media.category,
+  //     Media.title,
+  //     Media.description,
+  //     Media.release_date,
+  //     Media.age_rating,
+  //     Media.thumbnail_url,
+  //     Media.rating AS rating,
+  //     COALESCE(AVG(Ratings.rating), 0) AS average_rating,
+  //     COUNT(Ratings.rating) AS num_ratings,
+  //     (
+  //         (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
+  //         (50 / (COUNT(Ratings.rating) + 50)) * (
+  //             SELECT COALESCE(AVG(rating), 0) FROM Ratings
+  //         )
+  //     ) AS weighted_rating
+  // FROM Media
+  // LEFT JOIN Ratings ON Media.id = Ratings.media_id
+  // GROUP BY Media.id
+  // ORDER BY weighted_rating DESC
+  // LIMIT 15;`
+  //   );
+
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT 
-    Media.id,
-    Media.category,
-    Media.title,
-    Media.description,
-    Media.release_date,
-    Media.age_rating,
-    Media.thumbnail_url,
-    Media.rating AS rating,
-    COALESCE(AVG(Ratings.rating), 0) AS average_rating,
-    COUNT(Ratings.rating) AS num_ratings,
-    (
-        (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
-        (50 / (COUNT(Ratings.rating) + 50)) * (
-            SELECT COALESCE(AVG(rating), 0) FROM Ratings
-        )
-    ) AS weighted_rating
-FROM Media
-LEFT JOIN Ratings ON Media.id = Ratings.media_id
-GROUP BY Media.id
-ORDER BY weighted_rating DESC
-LIMIT 15;`
+    `SELECT * FROM Media ORDER BY rating DESC LIMIT 15;`
   );
 
   return {

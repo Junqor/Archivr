@@ -4,7 +4,7 @@ import IconBox from "@/components/icon-box";
 import StatsBox from "@/components/stats-box";
 import { Link } from "react-router-dom";
 import {
-  getTopRated,
+  getMostPopular,
   getRecentlyReviewed,
   getTrending,
   getNewForYou,
@@ -53,15 +53,20 @@ export default function HomePage() {
               <NewForYouCarousel />
             </section>
           </section>
+          <section className="flex flex-col justify-start w-full gap-3 pb-10">
+            <h4 className="uppercase">All time most popular...</h4>
+            <section className="h-full">
+              <MostPopularCarousel
+                slidesPerViewMobile={4}
+                slidesPerViewDesktop={7}
+                spaceBetweenMobile={8}
+                spaceBetweenDesktop={16}
+              />
+            </section>
+          </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
-          </section>
-          <section className="flex flex-col justify-start w-full gap-3 pb-10">
-            <h4 className="uppercase">Top-rated picks this week...</h4>
-            <section className="h-full">
-              <TrendingCarousel />
-            </section>
           </section>
         </>
       ) : (
@@ -91,7 +96,7 @@ export default function HomePage() {
               </div>
             </section>
             <section className="order-1 h-full sm:order-2">
-              <TopRatedCarousel />
+              <MostPopularCarousel />
             </section>
           </div>
           <section className="flex flex-col justify-start w-full gap-3">
@@ -152,11 +157,11 @@ export default function HomePage() {
   );
 }
 
-function TopRatedCarousel() {
+function MostPopularCarousel({ ...props }) {
   const [media, setMedia] = useState<TMedia[]>([]);
 
   useEffect(() => {
-    getTopRated().then((data) => setMedia(data));
+    getMostPopular().then((data) => setMedia(data));
   }, []);
 
   return (
@@ -166,6 +171,7 @@ function TopRatedCarousel() {
       slidesPerViewDesktop={3}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
+      {...props}
     />
   );
 }
@@ -186,7 +192,7 @@ function RecentlyReviewed() {
   );
 }
 
-function TrendingCarousel() {
+function TrendingCarousel({ ...props }) {
   const [media, setMedia] = useState<TMedia[]>([]);
 
   useEffect(() => {
@@ -200,6 +206,7 @@ function TrendingCarousel() {
       slidesPerViewDesktop={7}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
+      {...props}
     />
   );
 }

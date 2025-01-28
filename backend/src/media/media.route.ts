@@ -3,7 +3,6 @@ import {
   get_likes,
   get_media_reviews,
   get_media_rating,
-  get_top_rated,
   get_trending,
   get_recently_reviewed,
   get_new_for_you,
@@ -11,6 +10,7 @@ import {
   update_likes,
   update_review,
   get_user_stats,
+  getMostPopular,
 } from "./media.service.js";
 import { z, ZodError } from "zod";
 import {
@@ -82,16 +82,16 @@ mediaRouter.get("/reviews/:mediaId", async (req, res) => {
 // Get the user rating (total average) for a media
 mediaRouter.get("/user-rating/:mediaId", async (req, res) => {
   const mediaId = parseInt(req.params.mediaId);
-  try{
+  try {
     const rating = await get_media_rating(mediaId);
-    res.json({ status: "success", rating: rating});
+    res.json({ status: "success", rating: rating });
   } catch (error) {
     console.error(error);
     res
       .status(400)
-      .json({ status: "failed", message: (error as Error).message});
+      .json({ status: "failed", message: (error as Error).message });
   }
-})
+});
 
 const reviewBodySchema = z.object({
   media_id: z.number(),
@@ -114,11 +114,11 @@ mediaRouter.post("/review", authenticateToken, async (req, res) => {
   }
 });
 
-// (GET /media/top)
-// Get the top rated media
-mediaRouter.get("/top", async (req, res) => {
-  const result = await get_top_rated();
-  res.json({ status: "success", media: result.media });
+// (GET /media/popular)
+// Get the most popular media as defined by the data retrieved from the api
+mediaRouter.get("/popular", async (req, res) => {
+  const { media } = await getMostPopular();
+  res.json({ status: "success", media: media });
 });
 
 // (GET /media/recent-reviews)
