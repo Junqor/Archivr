@@ -87,9 +87,11 @@ export function MediaPage() {
                 </Badge>
               </div>
               <div className="mb-4">
-                <Badge variant="outline" className="mr-2">
-                  {data.genre}
-                </Badge>
+                {data.genres.map((genre, i) => (
+                  <Badge variant="outline" className="mr-2" key={i}>
+                    {genre}
+                  </Badge>
+                ))}
               </div>
               <p className="mb-4 text-gray-300">{data.description}</p>
               <p className="mb-4 text-gray-400">

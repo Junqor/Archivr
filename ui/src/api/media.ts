@@ -7,7 +7,6 @@ export const searchMedias = async (
   limit: number = 5,
   offset: number = 1
 ) => {
-  console.log("args", query, limit, offset);
   if (!query) {
     return []; // Do not search if no query is provided
   }

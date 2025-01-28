@@ -13,16 +13,22 @@ export async function searchMedia(
   limit: number,
   offset: number
 ): Promise<TSearchResult> {
-  const sql = `SELECT * FROM Media WHERE title LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?`;
-  const [rows] = await conn.query<(RowDataPacket & TMedia)[]>(sql, [
-    `%${query}%`,
-    limit,
-    (offset - 1) * limit,
-  ]);
+  const [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+    `SELECT * FROM Media WHERE title LIKE ? ORDER BY rating DESC LIMIT ? OFFSET ?`,
+    [`%${query}%`, limit, (offset - 1) * limit]
+  );
+
+  // Get genres for the media
+  const media = await Promise.all(
+    rows.map(async (row) => {
+      const genres = await getGenres(row.id);
+      return { ...row, genres: genres };
+    })
+  );
 
   return {
     status: "success",
-    media: rows,
+    media: media,
   };
 }
 
@@ -45,8 +51,22 @@ export async function getMediaById(id: number): Promise<TMediaResult> {
     };
   }
 
+  const genres = await getGenres(id);
+
+  const media = { ...rows[0], genres: genres };
+
   return {
     status: "success",
-    media: rows[0],
+    media: media,
   };
+}
+
+// Helper function for getting a media's genres
+async function getGenres(mediaId: number) {
+  const [genreRows] = await conn.query<(RowDataPacket & string[])[]>(
+    `SELECT * FROM Media_Genre WHERE media_id = ?`,
+    [mediaId]
+  );
+  const genres = genreRows.map((row) => row.genre as string);
+  return genres;
 }
