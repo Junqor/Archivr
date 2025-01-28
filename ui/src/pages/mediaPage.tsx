@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Star, ThumbsUp, MessageSquare } from "lucide-react";
+import { Star, ThumbsUp, MessageSquare, Clock } from "lucide-react";
 import { UseMutateFunction, useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
@@ -27,6 +27,7 @@ import { searchMedia, TReview } from "@/api/media";
 import empty from "@/assets/empty.jpg";
 import { formatDate } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
+import { formatInteger } from "@/utils/formatInteger";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -80,7 +81,7 @@ export function MediaPage() {
                   <Star className="inline" size={18} />
                 </span>
                 <span className="text-lg font-semibold">
-                  {data.rating ? data.rating.toFixed(1) : "~"}/10
+                  {data.rating ? formatInteger(data.rating) : "~"}
                 </span>
                 <Badge variant="secondary" className="ml-4">
                   {data.age_rating}
@@ -100,6 +101,10 @@ export function MediaPage() {
                   {formatDate(new Date(data.release_date))}
                 </span>
               </p>
+              <div className="flex items-center mb-4 text-sm">
+                <Clock className="mr-2" size={16} />
+                <span>{data.runtime} minutes</span>
+              </div>
               <Button size="sm" className="mb-4" asChild>
                 <a
                   href={`https://www.themoviedb.org/search?language=en-US&query=${data.title}`}
@@ -107,10 +112,6 @@ export function MediaPage() {
                   TMDB
                 </a>
               </Button>
-              {/* <div className="flex items-center mb-4 text-sm">
-                <Clock className="mr-2" size={16} />
-                <span>169 minutes</span>
-              </div> */}
               {/* <div className="text-sm">
                 <p>
                   <span className="font-semibold">Director:</span> Christopher

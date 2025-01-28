@@ -8,4 +8,5 @@ export type TMedia = {
   rating: number;
   genres: string[];
   category: string;
+  runtime: number;
 };

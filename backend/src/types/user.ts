@@ -28,4 +28,5 @@ export type TMedia = {
   thumbnail_url: string;
   rating: number;
   genres: string[];
+  runtime: number;
 };
