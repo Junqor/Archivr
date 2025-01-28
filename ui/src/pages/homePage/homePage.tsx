@@ -3,15 +3,10 @@ import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import StatsBox from "@/components/stats-box";
 import { Link } from "react-router-dom";
-import {
-  getMostPopular,
-  getRecentlyReviewed,
-  getTrending,
-  getNewForYou,
-} from "@/api/media";
-import { TMedia } from "@/types/media";
-import ThumbnailPreview from "@/components/ThumbnailPreview";
-import MediaCarousel from "@/components/MediaCarousel";
+import { NewForYouCarousel } from "./components/newForYouCarousel";
+import { MostPopularCarousel } from "./components/mostPopularCarousel";
+import { RecentlyReviewed } from "./components/recentlyReviewed";
+import { TrendingCarousel } from "./components/trendingCarousel";
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -154,79 +149,5 @@ export default function HomePage() {
         </>
       )}
     </>
-  );
-}
-
-function MostPopularCarousel({ ...props }) {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getMostPopular().then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <MediaCarousel
-      media={media}
-      slidesPerViewMobile={3}
-      slidesPerViewDesktop={3}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
-      {...props}
-    />
-  );
-}
-
-function RecentlyReviewed() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getRecentlyReviewed().then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
-      {media.map((item) => (
-        <ThumbnailPreview key={item.id} media={item} />
-      ))}
-    </div>
-  );
-}
-
-function TrendingCarousel({ ...props }) {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getTrending().then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <MediaCarousel
-      media={media}
-      slidesPerViewMobile={4}
-      slidesPerViewDesktop={7}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
-      {...props}
-    />
-  );
-}
-
-function NewForYouCarousel() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  const userId = JSON.parse(localStorage.getItem("user") ?? "{}").id;
-
-  useEffect(() => {
-    getNewForYou(userId).then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <MediaCarousel
-      media={media}
-      slidesPerViewMobile={4}
-      slidesPerViewDesktop={7}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
-    />
   );
 }

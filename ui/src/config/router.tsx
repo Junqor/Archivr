@@ -1,7 +1,7 @@
 // router.tsx
 import { Login } from "@/pages/login";
 import ErrorPage from "@/pages/errorPage";
-import HomePage from "@/pages/homePage";
+import HomePage from "@/pages/homePage/homePage";
 import { Layout } from "@/pages/layout";
 import { MediaPage } from "@/pages/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
