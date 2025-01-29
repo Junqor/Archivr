@@ -3,15 +3,10 @@ import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import StatsBox from "@/components/stats-box";
 import { Link } from "react-router-dom";
-import {
-  getTopRated,
-  getRecentlyReviewed,
-  getTrending,
-  getNewForYou,
-} from "@/api/media";
-import { TMedia } from "@/types/media";
-import ThumbnailPreview from "@/components/ThumbnailPreview";
-import MediaCarousel from "@/components/MediaCarousel";
+import { NewForYouCarousel } from "./components/newForYouCarousel";
+import { MostPopularCarousel } from "./components/mostPopularCarousel";
+import { RecentlyReviewed } from "./components/recentlyReviewed";
+import { TrendingCarousel } from "./components/trendingCarousel";
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -53,15 +48,20 @@ export default function HomePage() {
               <NewForYouCarousel />
             </section>
           </section>
+          <section className="flex flex-col justify-start w-full gap-3 pb-10">
+            <h4 className="uppercase">All time most popular...</h4>
+            <section className="h-full">
+              <MostPopularCarousel
+                slidesPerViewMobile={4}
+                slidesPerViewDesktop={7}
+                spaceBetweenMobile={8}
+                spaceBetweenDesktop={16}
+              />
+            </section>
+          </section>
           <section className="flex flex-col justify-start w-full gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
-          </section>
-          <section className="flex flex-col justify-start w-full gap-3 pb-10">
-            <h4 className="uppercase">Top-rated picks this week...</h4>
-            <section className="h-full">
-              <TrendingCarousel />
-            </section>
           </section>
         </>
       ) : (
@@ -91,7 +91,7 @@ export default function HomePage() {
               </div>
             </section>
             <section className="order-1 h-full sm:order-2">
-              <TopRatedCarousel />
+              <MostPopularCarousel />
             </section>
           </div>
           <section className="flex flex-col justify-start w-full gap-3">
@@ -149,77 +149,5 @@ export default function HomePage() {
         </>
       )}
     </>
-  );
-}
-
-function TopRatedCarousel() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getTopRated().then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <MediaCarousel
-      media={media}
-      slidesPerViewMobile={3}
-      slidesPerViewDesktop={3}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
-    />
-  );
-}
-
-function RecentlyReviewed() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getRecentlyReviewed().then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
-      {media.map((item) => (
-        <ThumbnailPreview key={item.id} media={item} />
-      ))}
-    </div>
-  );
-}
-
-function TrendingCarousel() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getTrending().then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <MediaCarousel
-      media={media}
-      slidesPerViewMobile={4}
-      slidesPerViewDesktop={7}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
-    />
-  );
-}
-
-function NewForYouCarousel() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  const userId = JSON.parse(localStorage.getItem("user") ?? "{}").id;
-
-  useEffect(() => {
-    getNewForYou(userId).then((data) => setMedia(data));
-  }, []);
-
-  return (
-    <MediaCarousel
-      media={media}
-      slidesPerViewMobile={4}
-      slidesPerViewDesktop={7}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
-    />
   );
 }

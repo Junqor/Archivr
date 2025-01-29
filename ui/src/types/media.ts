@@ -6,6 +6,7 @@ export type TMedia = {
   age_rating: string;
   thumbnail_url: string;
   rating: number;
-  genre: string;
+  genres: string[];
   category: string;
+  runtime: number;
 };

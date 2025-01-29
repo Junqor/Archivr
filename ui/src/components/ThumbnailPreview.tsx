@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { TMedia } from "@/types/media";
 import { getLikes, getUserRating } from "@/api/media";
 import { Link } from "react-router-dom";
-import { StarRounded, FavoriteRounded, PersonRounded } from "@mui/icons-material";
+import {
+  StarRounded,
+  FavoriteRounded,
+  PersonRounded,
+} from "@mui/icons-material";
+import { formatInteger } from "@/utils/formatInteger";
 
 function ThumbnailPreview({ media }: { media: TMedia }) {
   const [likes, setLikes] = useState<number | null>(null);
@@ -44,9 +49,9 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
         </h4>
         <div className="grid grid-cols-2 gap-1 place-items-center">
           <StarRounded fontSize="medium" />
-          <p>{media.rating ? media.rating.toFixed(1) : "~"}/10</p>
+          <p>{media.rating ? formatInteger(media.rating) : "~"}</p>
           <PersonRounded fontSize="medium" />
-          <p>{userRating ? Math.round(userRating*10)/10 : "~"}/5</p>
+          <p>{userRating ? Math.round(userRating * 10) / 10 : "~"}/5</p>
           <FavoriteRounded fontSize="medium" />
           <p>{likes !== null ? likes.toString() : "Loading..."}</p>
         </div>

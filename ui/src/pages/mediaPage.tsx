@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Star, ThumbsUp, MessageSquare } from "lucide-react";
+import { Star, ThumbsUp, MessageSquare, Clock } from "lucide-react";
 import { UseMutateFunction, useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
@@ -27,7 +27,7 @@ import { searchMedia, TReview } from "@/api/media";
 import empty from "@/assets/empty.jpg";
 import { formatDate } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
-import { truncate } from "fs";
+import { formatInteger } from "@/utils/formatInteger";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -42,10 +42,8 @@ export function MediaPage() {
     return false;
   };
 
-  const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } = useMedia(
-    id as string,
-    user?.id ?? ""
-  );
+  const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } =
+    useMedia(id as string, user?.id ?? "");
 
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
@@ -83,16 +81,18 @@ export function MediaPage() {
                   <Star className="inline" size={18} />
                 </span>
                 <span className="text-lg font-semibold">
-                  {data.rating ? data.rating.toFixed(1) : "~"}/10
+                  {data.rating ? formatInteger(data.rating) : "~"}
                 </span>
                 <Badge variant="secondary" className="ml-4">
                   {data.age_rating}
                 </Badge>
               </div>
               <div className="mb-4">
-                <Badge variant="outline" className="mr-2">
-                  {data.genre}
-                </Badge>
+                {data.genres.map((genre, i) => (
+                  <Badge variant="outline" className="mr-2" key={i}>
+                    {genre}
+                  </Badge>
+                ))}
               </div>
               <p className="mb-4 text-gray-300">{data.description}</p>
               <p className="mb-4 text-gray-400">
@@ -101,6 +101,10 @@ export function MediaPage() {
                   {formatDate(new Date(data.release_date))}
                 </span>
               </p>
+              <div className="flex items-center mb-4 text-sm">
+                <Clock className="mr-2" size={16} />
+                <span>{data.runtime} minutes</span>
+              </div>
               <Button size="sm" className="mb-4" asChild>
                 <a
                   href={`https://www.themoviedb.org/search?language=en-US&query=${data.title}`}
@@ -108,10 +112,6 @@ export function MediaPage() {
                   TMDB
                 </a>
               </Button>
-              {/* <div className="flex items-center mb-4 text-sm">
-                <Clock className="mr-2" size={16} />
-                <span>169 minutes</span>
-              </div> */}
               {/* <div className="text-sm">
                 <p>
                   <span className="font-semibold">Director:</span> Christopher
@@ -131,11 +131,19 @@ export function MediaPage() {
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <span className="mr-4 text-3xl font-bold text-yellow-500">
-                  {userRating != undefined ? Math.round(userRating*10)/10 : "N/A"}
+                  {userRating != undefined
+                    ? Math.round(userRating * 10) / 10
+                    : "N/A"}
                 </span>
                 <div>
                   <p className="font-semibold">User Score</p>
-                  <p className="text-sm text-gray-400">{reviews != undefined ? `Based on ${reviews.length} ${reviews.length==1?"review":"reviews"}` : "Based on ? reviews"}</p>
+                  <p className="text-sm text-gray-400">
+                    {reviews != undefined
+                      ? `Based on ${reviews.length} ${
+                          reviews.length == 1 ? "review" : "reviews"
+                        }`
+                      : "Based on ? reviews"}
+                  </p>
                 </div>
               </div>
               <div className="flex space-x-4">
@@ -169,11 +177,10 @@ export function MediaPage() {
                 </>
               ) : (
                 reviews.map((review) => {
-                  if (review.comment != "" && review.comment != undefined){
-                    return (<ReviewCard review={review}></ReviewCard>);
-                  }
-                  else{
-                    return (<></>);
+                  if (review.comment != "" && review.comment != undefined) {
+                    return <ReviewCard review={review}></ReviewCard>;
+                  } else {
+                    return <></>;
                   }
                 })
               )}
@@ -185,15 +192,15 @@ export function MediaPage() {
   );
 }
 
-const ReviewCard = ({review} : {review:TReview}) => {
+const ReviewCard = ({ review }: { review: TReview }) => {
   const [expanded, setExpanded] = useState(false);
   const maxUnexpandedCommentCharacters = 400;
   const isTooLong = () => {
     return review.comment.length > maxUnexpandedCommentCharacters;
   };
   const truncatedComment = () => {
-    return review.comment.substring(0,maxUnexpandedCommentCharacters) + "...";
-  }
+    return review.comment.substring(0, maxUnexpandedCommentCharacters) + "...";
+  };
 
   return (
     <Card
@@ -218,14 +225,23 @@ const ReviewCard = ({review} : {review:TReview}) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-300">{expanded || !isTooLong() ? review.comment : truncatedComment()}</p>
+        <p className="text-gray-300">
+          {expanded || !isTooLong() ? review.comment : truncatedComment()}
+        </p>
       </CardContent>
-      {
-        isTooLong() ?
-        (<CardFooter><u onClick={()=>{setExpanded(!expanded);}}>{expanded?"Show less":"Show more"}</u></CardFooter>)
-        :
-        (<></>)
-      }
+      {isTooLong() ? (
+        <CardFooter>
+          <u
+            onClick={() => {
+              setExpanded(!expanded);
+            }}
+          >
+            {expanded ? "Show less" : "Show more"}
+          </u>
+        </CardFooter>
+      ) : (
+        <></>
+      )}
       <CardFooter>
         <p className="text-sm text-gray-400">
           {new Date(review.created_at).toLocaleString()}
@@ -233,20 +249,30 @@ const ReviewCard = ({review} : {review:TReview}) => {
       </CardFooter>
     </Card>
   );
-}
+};
 
-const AddReviewButtonStar = ({ i, filled, setNewRating, setNewRatingPreview }: { i:number, filled:boolean, setNewRating:(x:number)=>void, setNewRatingPreview:(x:number)=>void }) => {
-  return(
+const AddReviewButtonStar = ({
+  i,
+  filled,
+  setNewRating,
+  setNewRatingPreview,
+}: {
+  i: number;
+  filled: boolean;
+  setNewRating: (x: number) => void;
+  setNewRatingPreview: (x: number) => void;
+}) => {
+  return (
     <div>
       <Star
-        className={filled?`text-yellow-400 fill-yellow-400`:`text-gray-400`}
-        onMouseOver={()=>setNewRatingPreview(i+1)}
-        onMouseOut={()=>setNewRatingPreview(0)}
-        onClick={()=>setNewRating(i+1)}
-      />   
+        className={filled ? `text-yellow-400 fill-yellow-400` : `text-gray-400`}
+        onMouseOver={() => setNewRatingPreview(i + 1)}
+        onMouseOut={() => setNewRatingPreview(0)}
+        onClick={() => setNewRating(i + 1)}
+      />
     </div>
-  )
-}
+  );
+};
 
 type AddReviewButtonProps = {
   updateReview: UseMutateFunction<
@@ -254,6 +280,7 @@ type AddReviewButtonProps = {
     Error,
     {
       comment: string;
+      rating: number;
     },
     unknown
   >;
@@ -268,11 +295,10 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
   const [userWasSilly, setUserWasSilly] = useState(false);
 
   function handleAddReview() {
-    if (newRating == 0){
+    if (newRating == 0) {
       setUserWasSilly(true);
-    }
-    else{
-      updateReview({ comment: newReview, rating: newRating});
+    } else {
+      updateReview({ comment: newReview, rating: newRating });
       setIsDialogOpen(false);
     }
   }
@@ -297,7 +323,9 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
             <AddReviewButtonStar
               key={i}
               i={i}
-              filled={newRatingPreview!==0?newRatingPreview>i:newRating>i}
+              filled={
+                newRatingPreview !== 0 ? newRatingPreview > i : newRating > i
+              }
               setNewRating={setNewRating}
               setNewRatingPreview={setNewRatingPreview}
             />
@@ -312,11 +340,7 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
           />
         </div>
         <DialogFooter>
-          {userWasSilly?(
-            <p>
-              You have to choose a rating silly!
-            </p>
-          ):(<></>)}
+          {userWasSilly && <p>You have to choose a rating silly!</p>}
           <Button onClick={handleAddReview} variant="default">
             Submit Review
           </Button>

@@ -133,13 +133,14 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
       release_date: form.get("release_date") as string,
       age_rating: form.get("age_rating") as string,
       thumbnail_url: form.get("thumbnail_url") as string,
-      genre: form.get("genre") as string,
+      genres: (form.get("genre") as string).split(","),
       rating: parseFloat(form.get("rating") as string),
     };
 
     await handleSave(updatedMedia);
   };
 
+  console.log(media);
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -237,7 +238,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 <Input
                   id="genre"
                   name="genre"
-                  defaultValue={media?.genre}
+                  defaultValue={media?.genres?.join(",")}
                   className="col-span-3"
                 />
               </div>

@@ -7,7 +7,6 @@ export const searchMedias = async (
   limit: number = 5,
   offset: number = 1
 ) => {
-  console.log("args", query, limit, offset);
   if (!query) {
     return []; // Do not search if no query is provided
   }
@@ -58,8 +57,8 @@ export const searchMedia = async ({ id }: { id: string }) =>
     }
   );
 
-export const getTopRated = async (): Promise<TMedia[]> => {
-  const response = await fetch(import.meta.env.VITE_API_URL + "/media/top");
+export const getMostPopular = async (): Promise<TMedia[]> => {
+  const response = await fetch(import.meta.env.VITE_API_URL + "/media/popular");
   const data = await response.json();
   return data.media as TMedia[];
 };
