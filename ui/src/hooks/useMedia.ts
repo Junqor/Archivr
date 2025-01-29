@@ -2,6 +2,7 @@ import {
   getLikedStatus,
   getLikes,
   getReviews,
+  getUserRating,
   updateLikes,
   updateReview,
 } from "@/api/media";
@@ -76,8 +77,8 @@ export const useMedia = (mediaId: string, userId: string) => {
   });
 
   const { mutate: updateReviewMutation } = useMutation({
-    mutationFn: ({ comment }: { comment: string }) =>
-      updateReview({ mediaId, comment }),
+    mutationFn: ({ comment, rating }: { comment: string, rating: number }) =>
+      updateReview({ mediaId, comment, rating }),
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["media", mediaId, "reviews"],
@@ -86,11 +87,17 @@ export const useMedia = (mediaId: string, userId: string) => {
     },
   });
 
+  const { data: ratingData } = useQuery({
+    queryKey: ["media", mediaId, "rating"],
+    queryFn: () => getUserRating({ mediaId })
+  })
+
   return {
     isLiked: mediaData?.isLiked ?? false,
     numLikes: mediaData?.numLikes ?? 0,
     updateLikes: updateLikesMutation,
     reviews: reviewsData,
     updateReview: updateReviewMutation,
+    userRating: ratingData,
   };
 };

@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   get_likes,
   get_media_reviews,
+  get_media_rating,
   get_top_rated,
   get_trending,
   get_recently_reviewed,
@@ -77,6 +78,21 @@ mediaRouter.get("/reviews/:mediaId", async (req, res) => {
   }
 });
 
+// (GET /media/user-rating/:mediaId)
+// Get the user rating (total average) for a media
+mediaRouter.get("/user-rating/:mediaId", async (req, res) => {
+  const mediaId = parseInt(req.params.mediaId);
+  try{
+    const rating = await get_media_rating(mediaId);
+    res.json({ status: "success", rating: rating});
+  } catch (error) {
+    console.error(error);
+    res
+      .status(400)
+      .json({ status: "failed", message: (error as Error).message});
+  }
+})
+
 const reviewBodySchema = z.object({
   media_id: z.number(),
   comment: z.string(),
@@ -88,8 +104,8 @@ const reviewBodySchema = z.object({
 mediaRouter.post("/review", authenticateToken, async (req, res) => {
   try {
     const token = (req as AuthRequest).token as TAuthToken;
-    const { media_id, comment } = reviewBodySchema.parse(req.body);
-    await update_review(media_id, token.user.id, comment);
+    const { media_id, comment, rating } = reviewBodySchema.parse(req.body);
+    await update_review(media_id, token.user.id, comment, rating);
     res.json({ status: "success" });
   } catch (error) {
     res

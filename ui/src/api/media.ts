@@ -200,6 +200,24 @@ export const getReviews = async ({ mediaId }: { mediaId: string }) => {
   return reviewsData.reviews as TReview[];
 };
 
+export const getUserRating = async ({ mediaId }: { mediaId: string }) => {
+  const [ratingResponse] = await Promise.all([
+    fetch(`${import.meta.env.VITE_API_URL}/media/user-rating/${mediaId}`),
+  ])
+
+  if (!ratingResponse.ok) {
+    throw new Error("Failed to fetch user rating");
+  }
+
+  const ratingData = await ratingResponse.json();
+
+  if (ratingData.status !== "success") {
+    throw new Error("failde to fetch user rating");
+  }
+
+  return ratingData.rating as number;
+}
+
 export type TUpdateReviewArgs = {
   mediaId: string;
   comment: string;
@@ -209,7 +227,7 @@ export type TUpdateReviewArgs = {
 export const updateReview = async ({
   mediaId,
   comment,
-  rating = 0,
+  rating = 5,
 }: TUpdateReviewArgs) => {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/media/review`, {
     method: "POST",

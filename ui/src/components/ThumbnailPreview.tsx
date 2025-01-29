@@ -2,19 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { TMedia } from "@/types/media";
-import { getLikes } from "@/api/media";
+import { getLikes, getUserRating } from "@/api/media";
 import { Link } from "react-router-dom";
-import { StarRounded, FavoriteRounded } from "@mui/icons-material";
+import { StarRounded, FavoriteRounded, PersonRounded } from "@mui/icons-material";
 
 function ThumbnailPreview({ media }: { media: TMedia }) {
   const [likes, setLikes] = useState<number | null>(null);
+  const [userRating, setUserRating] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchLikes() {
       const likes = await getLikes({ mediaId: media.id.toString() });
       setLikes(likes);
     }
+    async function fetchUserRating() {
+      const userRating = await getUserRating({ mediaId: media.id.toString() });
+      setUserRating(userRating);
+    }
     fetchLikes();
+    fetchUserRating();
   }, [media.id]);
 
   return (
@@ -37,9 +43,11 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
             : media.title}
         </h4>
         <div className="grid grid-cols-2 gap-1 place-items-center">
-          <StarRounded fontSize="large" />
+          <StarRounded fontSize="medium" />
           <p>{media.rating ? media.rating.toFixed(1) : "~"}/10</p>
-          <FavoriteRounded fontSize="large" />
+          <PersonRounded fontSize="medium" />
+          <p>{userRating ? Math.round(userRating*10)/10 : "~"}/5</p>
+          <FavoriteRounded fontSize="medium" />
           <p>{likes !== null ? likes.toString() : "Loading..."}</p>
         </div>
       </Link>

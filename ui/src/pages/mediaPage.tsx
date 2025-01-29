@@ -27,6 +27,7 @@ import { searchMedia, TReview } from "@/api/media";
 import empty from "@/assets/empty.jpg";
 import { formatDate } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
+import { truncate } from "fs";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -41,7 +42,7 @@ export function MediaPage() {
     return false;
   };
 
-  const { isLiked, updateLikes, numLikes, reviews, updateReview } = useMedia(
+  const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } = useMedia(
     id as string,
     user?.id ?? ""
   );
@@ -130,11 +131,11 @@ export function MediaPage() {
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <span className="mr-4 text-3xl font-bold text-yellow-500">
-                  ~%
+                  {userRating != undefined ? Math.round(userRating*10)/10 : "N/A"}
                 </span>
                 <div>
                   <p className="font-semibold">User Score</p>
-                  <p className="text-sm text-gray-400">Based on ~ reviews</p>
+                  <p className="text-sm text-gray-400">{reviews != undefined ? `Based on ${reviews.length} ${reviews.length==1?"review":"reviews"}` : "Based on ? reviews"}</p>
                 </div>
               </div>
               <div className="flex space-x-4">
@@ -168,38 +169,12 @@ export function MediaPage() {
                 </>
               ) : (
                 reviews.map((review) => {
-                  return (
-                    <Card
-                      key={crypto.randomUUID()}
-                      className="mb-4 bg-gray-800 border-gray-700"
-                    >
-                      <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                          <span>{review.username}</span>
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating
-                                    ? "text-yellow-400 fill-yellow-400"
-                                    : "text-gray-400"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300">{review.comment}</p>
-                      </CardContent>
-                      <CardFooter>
-                        <p className="text-sm text-gray-400">
-                          {new Date(review.created_at).toLocaleString()}
-                        </p>
-                      </CardFooter>
-                    </Card>
-                  );
+                  if (review.comment != "" && review.comment != undefined){
+                    return (<ReviewCard review={review}></ReviewCard>);
+                  }
+                  else{
+                    return (<></>);
+                  }
                 })
               )}
             </div>
@@ -208,6 +183,69 @@ export function MediaPage() {
       </Card>
     </div>
   );
+}
+
+const ReviewCard = ({review} : {review:TReview}) => {
+  const [expanded, setExpanded] = useState(false);
+  const maxUnexpandedCommentCharacters = 400;
+  const isTooLong = () => {
+    return review.comment.length > maxUnexpandedCommentCharacters;
+  };
+  const truncatedComment = () => {
+    return review.comment.substring(0,maxUnexpandedCommentCharacters) + "...";
+  }
+
+  return (
+    <Card
+      key={crypto.randomUUID()}
+      className="mb-4 bg-gray-800 border-gray-700"
+    >
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>{review.username}</span>
+          <div className="flex">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`w-4 h-4 ${
+                  i < review.rating
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-400"
+                }`}
+              />
+            ))}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-300">{expanded || !isTooLong() ? review.comment : truncatedComment()}</p>
+      </CardContent>
+      {
+        isTooLong() ?
+        (<CardFooter><u onClick={()=>{setExpanded(!expanded);}}>{expanded?"Show less":"Show more"}</u></CardFooter>)
+        :
+        (<></>)
+      }
+      <CardFooter>
+        <p className="text-sm text-gray-400">
+          {new Date(review.created_at).toLocaleString()}
+        </p>
+      </CardFooter>
+    </Card>
+  );
+}
+
+const AddReviewButtonStar = ({ i, filled, setNewRating, setNewRatingPreview }: { i:number, filled:boolean, setNewRating:(x:number)=>void, setNewRatingPreview:(x:number)=>void }) => {
+  return(
+    <div>
+      <Star
+        className={filled?`text-yellow-400 fill-yellow-400`:`text-gray-400`}
+        onMouseOver={()=>setNewRatingPreview(i+1)}
+        onMouseOut={()=>setNewRatingPreview(0)}
+        onClick={()=>setNewRating(i+1)}
+      />   
+    </div>
+  )
 }
 
 type AddReviewButtonProps = {
@@ -223,12 +261,20 @@ type AddReviewButtonProps = {
 };
 
 const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
+  const [newRating, setNewRating] = useState(0);
+  const [newRatingPreview, setNewRatingPreview] = useState(0);
   const [newReview, setNewReview] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [userWasSilly, setUserWasSilly] = useState(false);
 
   function handleAddReview() {
-    updateReview({ comment: newReview });
-    setIsDialogOpen(false);
+    if (newRating == 0){
+      setUserWasSilly(true);
+    }
+    else{
+      updateReview({ comment: newReview, rating: newRating});
+      setIsDialogOpen(false);
+    }
   }
 
   return (
@@ -246,6 +292,17 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
         <DialogDescription className="text-sm text-left">
           Share your thoughts and opinions for others to see.
         </DialogDescription>
+        <div className="flex">
+          {[...Array(5)].map((_, i) => (
+            <AddReviewButtonStar
+              key={i}
+              i={i}
+              filled={newRatingPreview!==0?newRatingPreview>i:newRating>i}
+              setNewRating={setNewRating}
+              setNewRatingPreview={setNewRatingPreview}
+            />
+          ))}
+        </div>
         <div className="grid gap-4 py-4">
           <Textarea
             placeholder="Write your review here..."
@@ -255,6 +312,11 @@ const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
           />
         </div>
         <DialogFooter>
+          {userWasSilly?(
+            <p>
+              You have to choose a rating silly!
+            </p>
+          ):(<></>)}
           <Button onClick={handleAddReview} variant="default">
             Submit Review
           </Button>
