@@ -8,6 +8,7 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
+import { ProfileSettings } from "@/pages/profileSettings";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -66,7 +67,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings",
-        element: <UnderConstruction />,
+        element: <ProfileSettings />,
       },
       {
         path: "/genre",
