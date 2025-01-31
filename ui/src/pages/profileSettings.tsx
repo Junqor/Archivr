@@ -1,5 +1,5 @@
 import { Frame } from "lucide-react";
-
+import { useState } from "react";
 
 function ProfileSettingsSelect(){
     return (
@@ -9,6 +9,8 @@ function ProfileSettingsSelect(){
 }
 
 export function ProfileSettings(){
+    const [changedSettings, setChangedSettings] = useState(null);
+    let currentSettings = {};
     return (
         <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
             <ProfileSettingsSelect></ProfileSettingsSelect>
