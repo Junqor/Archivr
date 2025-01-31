@@ -9,13 +9,8 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
-import { PopularPage } from "@/pages/popularPage/popularPage";
-import TermsOfServicePage from "@/pages/termsOfService";
-import { TrendingPage } from "@/pages/trendingPage/trendingPage";
-import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
-import { ResetPassword } from "@/pages/resetPassword";
+import { ProfileSettings } from "@/pages/profileSettings";
 import BrowsePage from "@/pages/browsePage/browsePage";
-
 // Define the router configuration
 const router = createBrowserRouter([
   {
@@ -82,7 +77,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings",
-        element: <UnderConstruction />,
+        element: <ProfileSettings />,
       },
       {
         path: "/genre",
