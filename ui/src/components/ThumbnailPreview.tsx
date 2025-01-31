@@ -32,7 +32,10 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
     <div
       title={media.title}
       style={{
-        backgroundImage: `url(${media.thumbnail_url.replace("w500", "w342")})`,
+        backgroundImage: `url(${media.thumbnail_url.replace(
+          ".jpg",
+          "_t.jpg"
+        )})`,
       }}
       className="aspect-2/3 bg-cover bg-center cursor-pointer relative"
     >
