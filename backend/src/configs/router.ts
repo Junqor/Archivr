@@ -6,6 +6,7 @@ import { searchRouter } from "../search/search.route.js";
 import { mediaRouter } from "../media/media.route.js";
 import { errorHandler } from "../middleware/errorHandler.js";
 import { adminRouter } from "../admin/admin.route.js";
+import { emailRouter } from "../recoverEmail/email.route.js";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use("/search", searchRouter);
 router.use("/auth", authRouter);
 router.use("/media", mediaRouter);
 router.use("/admin", adminRouter);
+router.use("/email", emailRouter)
 
 router.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");

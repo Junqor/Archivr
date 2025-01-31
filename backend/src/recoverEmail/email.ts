@@ -4,6 +4,9 @@ import nodemailer  from "nodemailer";
 import { generateSalt, hashPassword } from "../utils/hashPassword.js";
 import { z } from "zod";
 import { conn } from "../configs/digitalocean.config.js";
+import jwt from 'jsonwebtoken';
+var fs = require('fs');
+
 
 const html = `<h1>Hello</h1> 
 <p>Please click this link to change your password</p>`; //<--html
@@ -16,7 +19,7 @@ export async function emailVer(email: string){
         secure: true,
         auth: {
             user: 'archivrnoreply@gmail.com',
-            pass: 'cmpn qlsd dmsb gera'
+            pass: process.env.EM_PASS,
         }
     });
 
@@ -27,7 +30,12 @@ export async function emailVer(email: string){
         html: html,
     });
 
+   // sign with RSA SHA256
+  var privateKey = fs.readFileSync('private.key');
+  var token = jwt.sign({ email: email }, privateKey, { algorithm: 'RS256' }); //store token in data base
+
     console.log("Message sent: " + info.messageId);
+    */
 }
 
 
