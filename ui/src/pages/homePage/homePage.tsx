@@ -10,7 +10,7 @@ import { TrendingCarousel } from "./components/trendingCarousel";
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("auth") === "true" // Check if user is logged in
+    localStorage.getItem("auth") === "true", // Check if user is logged in
   );
 
   useEffect(() => {
@@ -29,26 +29,26 @@ export default function HomePage() {
       {isLoggedIn ? (
         <>
           <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-            <section className="flex flex-col gap-3 justify-center order-2 sm:order-1">
-              <h1>
+            <section className="order-2 flex flex-col justify-center gap-3 sm:order-1">
+              <h1 className="font-extrabold">
                 Welcome back,{" "}
-                <span className="text-purple font-bold">
+                <span className="font-bold text-purple">
                   {user ? JSON.parse(user).username : "User"}
                 </span>
                 ! <br /> Here's what's new for you.
               </h1>
             </section>
-            <section className="h-full w-full flex flex-col gap-3 justify-center order-1 sm:order-2">
+            <section className="order-1 flex h-full w-full flex-col justify-center gap-3 sm:order-2">
               <StatsBox userId={user ? JSON.parse(user).id : 0} />
             </section>
           </div>
-          <section className="flex flex-col justify-start w-full gap-3">
+          <section className="flex w-full flex-col justify-start gap-3">
             <h4 className="uppercase">New for you...</h4>
             <section className="h-full">
               <NewForYouCarousel />
             </section>
           </section>
-          <section className="flex flex-col justify-start w-full gap-3 pb-10">
+          <section className="flex w-full flex-col justify-start gap-3 pb-10">
             <h4 className="uppercase">All time most popular...</h4>
             <section className="h-full">
               <MostPopularCarousel
@@ -59,7 +59,7 @@ export default function HomePage() {
               />
             </section>
           </section>
-          <section className="flex flex-col justify-start w-full gap-3">
+          <section className="flex w-full flex-col justify-start gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
           </section>
@@ -67,7 +67,7 @@ export default function HomePage() {
       ) : (
         <>
           <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-            <section className="flex flex-col order-2 gap-3 sm:order-1">
+            <section className="order-2 flex flex-col gap-3 sm:order-1">
               <h1 className="font-extrabold leading-[normal]">
                 Track What You Love, Discover What's Next.
               </h1>
@@ -78,13 +78,13 @@ export default function HomePage() {
               <div className="flex flex-row gap-3">
                 <Link
                   to="/login"
-                  className="flex items-center justify-center px-6 py-2 text-white transition-colors rounded-full bg-purple hover:bg-purple/75"
+                  className="flex items-center justify-center rounded-full bg-purple px-6 py-2 text-white transition-colors hover:bg-purple/75"
                 >
                   Join the Community
                 </Link>
                 <Link
                   to="#"
-                  className="flex items-center justify-center px-6 py-1 transition-colors bg-transparent border border-white rounded-full hover:bg-white hover:text-black"
+                  className="flex items-center justify-center rounded-full border border-white bg-transparent px-6 py-1 transition-colors hover:bg-white hover:text-black"
                 >
                   View the Collection
                 </Link>
@@ -94,7 +94,7 @@ export default function HomePage() {
               <MostPopularCarousel />
             </section>
           </div>
-          <section className="flex flex-col justify-start w-full gap-3">
+          <section className="flex w-full flex-col justify-start gap-3">
             <h4 className="uppercase">Discover on Archivr...</h4>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <IconBox
@@ -123,11 +123,11 @@ export default function HomePage() {
               />
             </div>
           </section>
-          <section className="flex flex-col justify-start w-full gap-3">
+          <section className="flex w-full flex-col justify-start gap-3">
             <h4 className="uppercase">Recently Reviewed...</h4>
             <RecentlyReviewed />
           </section>
-          <section className="flex flex-col justify-start w-full gap-3">
+          <section className="flex w-full flex-col justify-start gap-3">
             <h3>
               Explore trending hits and hidden gems in movies, shows, music, and
               more - just for you!
@@ -141,7 +141,7 @@ export default function HomePage() {
             </section>
             <Link
               to="/login"
-              className="flex items-center justify-center px-6 py-2 text-white transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
+              className="flex w-fit items-center justify-center rounded-full bg-purple px-6 py-2 text-white transition-colors hover:bg-purple/75"
             >
               Sign Up to Discover More
             </Link>
