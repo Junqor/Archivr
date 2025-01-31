@@ -8,8 +8,42 @@ import jwt from 'jsonwebtoken';
 var fs = require('fs');
 
 
-const html = `<h1>Hello</h1> 
-<p>Please click this link to change your password</p>`; //<--html
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<div style="  margin: auto;
+width: 100%;
+text-align: center;
+background-color: #5616EC;
+padding-bottom: 600px;">
+    <img style=" width: 150px;
+    height: 150px;" src="https://www.cabq.gov/artsculture/biopark/news/10-cool-facts-about-penguins/@@images/1a36b305-412d-405e-a38b-0947ce6709ba.jpeg" alt="penguin">  
+    <h1 style="color: #F2F2F0;">Hello lets reset your password</h1>
+    <p style="color: #F2F2F0;">Please clicked the link to change your password.</p>
+    <button style="
+    border: none;
+    color: #0D0D0D;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    width: 150px;
+    border-radius: 15%;
+    cursor: pointer;
+    background-color: #F2F2F0; "type="button">Reset</button>
+</div>
+
+</body>
+</html>`; //<--html
 
 export async function emailVer(email: string){
 
@@ -31,11 +65,11 @@ export async function emailVer(email: string){
     });
 
    // sign with RSA SHA256
-  var privateKey = fs.readFileSync('private.key');
-  var token = jwt.sign({ email: email }, privateKey, { algorithm: 'RS256' }); //store token in data base
+ // var privateKey = fs.readFileSync('private.key');
+ // var token = jwt.sign({ email: email }, privateKey, { algorithm: 'RS256' }); //store token in data base
 
-    console.log("Message sent: " + info.messageId);
-    */
+   // console.log("Message sent: " + info.messageId);
+    
 }
 
 
