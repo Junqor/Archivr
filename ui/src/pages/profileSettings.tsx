@@ -11,7 +11,7 @@ export function ProfileSettings(){
     const [selectedMenu, setSelectedMenu] = useState("Profile");
     return (
         <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
-            <ProfileSettingsMenu></ProfileSettingsMenu>
+            <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
             <line className="bg-white w-[1px] h-[733px]"></line>
             <div className="flex w-[640px] p-5 flex-col items-start gap-3 flex-shrink-0">
                 <div className="flex flex-col items-start gap-1 self-stretch">
@@ -25,7 +25,7 @@ export function ProfileSettings(){
     )
 }
 
-function ProfileSettingsMenu(){
+function ProfileSettingsMenu({selectedMenu, setSelectedMenu}:{selectedMenu:string,setSelectedMenu:(a:string)=>void}){
     return (
         <div className="flex flex-col flex-shrink-0 w-[320px]">
             <div className="flex py-5 px-3 justify-between items-center self-stretch border-b border-white">
