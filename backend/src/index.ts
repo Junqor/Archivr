@@ -12,20 +12,10 @@ const app = express();
 const PORT = process.env.PORT || "8080";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use(cors({ origin: "*" }));
+
 
 app.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
-});
-app.use("/search", searchRouter);
-app.use("/auth", authRouter);
-app.use("/media", mediaRouter);
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ status: "failed", message: err.message });
 });
 
 // Test db connection
