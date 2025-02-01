@@ -1,4 +1,4 @@
-import { conn } from "../configs/digitalocean.config.js";
+import { conn } from "../db/database.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { TMedia } from "../types/user.js";
 
@@ -52,7 +52,7 @@ export async function update_review(
   media_id: number,
   user_id: number,
   new_comment: string,
-  new_rating: number,
+  new_rating: number
 ) {
   let [rows] = await conn.query(
     "INSERT INTO Reviews (media_id,user_id,comment,rating) VALUES (?,?,?,?) " +

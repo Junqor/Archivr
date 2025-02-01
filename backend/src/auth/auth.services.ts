@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import { conn } from "../configs/digitalocean.config.js";
+import { conn } from "../db/database.js";
 import { TUser } from "../types/user.js";
 import { AuthErrorHandler } from "../utils/authErrorHandler.js";
 import { generateSalt, hashPassword } from "../utils/hashPassword.js";
