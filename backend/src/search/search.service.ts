@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 import { conn } from "../db/database.js";
-import { TMedia } from "../types/user.js";
+import { TMedia } from "../types/index.js";
 import { db } from "../db/database.js";
 import { users as UsersTable, media as MediaTable } from "../db/schema.js";
 import { ilike, desc } from "drizzle-orm/expressions";

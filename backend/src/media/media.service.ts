@@ -1,6 +1,6 @@
 import { conn } from "../db/database.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { TMedia } from "../types/user.js";
+import { TMedia } from "../types/index.js";
 
 export type TReview = {
   id: number;

@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 import { conn } from "../db/database.js";
-import { TUser } from "../types/user.js";
+import { TUser } from "../types/index.js";
 import { AuthErrorHandler } from "../utils/authErrorHandler.js";
 import { generateSalt, hashPassword } from "../utils/hashPassword.js";
 import { z } from "zod";

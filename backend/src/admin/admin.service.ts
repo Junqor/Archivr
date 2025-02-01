@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2/promise";
 import { conn } from "../db/database.js";
-import { TMedia } from "../types/user.js";
+import { TMedia } from "../types/index.js";
 
 export async function insert_media(media: Partial<TMedia>) {
   try {
