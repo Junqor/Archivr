@@ -1,22 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MessageSquare, Heart, MessagesSquare, Send } from "lucide-react";
-import { UseMutateFunction, useQuery } from "@tanstack/react-query";
+import { Star, Heart, MessagesSquare, Send } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { searchMedia, TReview } from "@/api/media";
+import { searchMedia } from "@/api/media";
 import empty from "@/assets/empty.png";
 import { formatDateYear } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
@@ -32,6 +23,21 @@ export function MediaPage() {
   const navigate = useNavigate();
   const [rating, setRating] = useState(0);
   const [ratingPreview, setRatingPreview] = useState(0);
+  const [review, setReview] = useState("");
+  const [userWasSilly, setUserWasSilly] = useState(false);
+
+  function handleAddReview() {
+    if (rating === 0) {
+      setUserWasSilly(true);
+    } else {
+      updateReview({ comment: review, rating: rating });
+    }
+  }
+
+  function handleType(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setUserWasSilly(false);
+    setReview(e.target.value);
+  }
 
   const checkAuth = () => {
     if (!localStorage.getItem("access_token")) {
@@ -87,7 +93,7 @@ export function MediaPage() {
               {formatDateYear(new Date(data.release_date))}
             </h3>
           </div>
-          <div className="flex flex-row overflow-x-scroll">
+          <div className="flex max-w-full flex-row overflow-x-auto no-scrollbar">
             <Badge variant="secondary" className="mr-2" title="Age Rating">
               {data.age_rating}
             </Badge>
@@ -148,11 +154,22 @@ export function MediaPage() {
           <p>Share your thoughts</p>
           <Textarea
             placeholder={"Write your thoughts and opinions for others to see"}
-            className="h-full resize-none border-neutral-500 focus:border-white"
+            className={cn(
+              "h-full resize-none border-neutral-500 focus:border-white",
+              userWasSilly && "border-red-500",
+            )}
+            value={review}
+            onChange={handleType}
           />
+          {userWasSilly && (
+            <p className="text-xs text-red-500">
+              You have to choose a rating silly!
+            </p>
+          )}
           <Button
             variant="outline"
             className="flex-row gap-x-2 self-end justify-self-end bg-transparent"
+            onClick={handleAddReview}
           >
             Submit Review <Send size="10" />
           </Button>
@@ -223,81 +240,5 @@ export const AddReviewButtonStar = ({
       onMouseOut={() => setRatingPreview(0)}
       onClick={() => setRating(i + 1)}
     />
-  );
-};
-
-type AddReviewButtonProps = {
-  updateReview: UseMutateFunction<
-    TReview,
-    Error,
-    {
-      comment: string;
-      rating: number;
-    },
-    unknown
-  >;
-  checkAuth: () => void;
-};
-
-const AddReviewButton = ({ updateReview, checkAuth }: AddReviewButtonProps) => {
-  const [newRating, setNewRating] = useState(0);
-  const [newRatingPreview, setNewRatingPreview] = useState(0);
-  const [newReview, setNewReview] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [userWasSilly, setUserWasSilly] = useState(false);
-
-  function handleAddReview() {
-    if (newRating == 0) {
-      setUserWasSilly(true);
-    } else {
-      updateReview({ comment: newReview, rating: newRating });
-      setIsDialogOpen(false);
-    }
-  }
-
-  return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" onClick={checkAuth}>
-          <MessageSquare className="mr-2 h-4 w-4" />
-          Add Review
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="bg-black text-white">
-        <DialogHeader>
-          <DialogTitle>Add a New Review</DialogTitle>
-        </DialogHeader>
-        <DialogDescription className="text-left text-sm">
-          Share your thoughts and opinions for others to see.
-        </DialogDescription>
-        <div className="flex">
-          {[...Array(5)].map((_, i) => (
-            <AddReviewButtonStar
-              key={i}
-              i={i}
-              filled={
-                newRatingPreview !== 0 ? newRatingPreview > i : newRating > i
-              }
-              setRating={setNewRating}
-              setRatingPreview={setNewRatingPreview}
-            />
-          ))}
-        </div>
-        <div className="grid gap-4 py-4">
-          <Textarea
-            placeholder="Write your review here..."
-            value={newReview}
-            onChange={(e) => setNewReview(e.target.value)}
-            className="border-gray-600 bg-[rgb(22,22,22)]"
-          />
-        </div>
-        <DialogFooter>
-          {userWasSilly && <p>You have to choose a rating silly!</p>}
-          <Button onClick={handleAddReview} variant="default">
-            Submit Review
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 };
