@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Heart, MessagesSquare, Send } from "lucide-react";
+import { Heart, MessagesSquare, Send } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
@@ -208,8 +208,8 @@ export function MediaPage() {
               ) : (
                 reviews.map(
                   (review) =>
-                    review.comment != "" &&
-                    review.comment != undefined && (
+                    review.comment !== "" &&
+                    review.comment !== undefined && (
                       <ReviewCard review={review} key={crypto.randomUUID()} />
                     ),
                 )
@@ -221,24 +221,3 @@ export function MediaPage() {
     </div>
   );
 }
-
-export const AddReviewButtonStar = ({
-  i,
-  filled,
-  setRating,
-  setRatingPreview,
-}: {
-  i: number;
-  filled: boolean;
-  setRating: (x: number) => void;
-  setRatingPreview: (x: number) => void;
-}) => {
-  return (
-    <Star
-      className={filled ? `fill-primary text-primary` : `text-gray-400`}
-      onMouseOver={() => setRatingPreview(i + 1)}
-      onMouseOut={() => setRatingPreview(0)}
-      onClick={() => setRating(i + 1)}
-    />
-  );
-};
