@@ -16,13 +16,13 @@ export const ReviewCard = ({ review }: { review: TReview }) => {
   const truncatedComment = () => {
     return review.comment.substring(0, maxUnexpandedCommentCharacters) + "...";
   };
-  // ! Replace with liked state
+  // todo: Replace with liked state
   const isLiked = true;
   const numLikes = 0;
   return (
-    <section className="bg-gray-secondary review-gradient mb-4 flex flex-col gap-y-2 rounded-xl border-none p-4">
+    <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4 review-gradient">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
-        {/* !Replace with avatar image */}
+        {/* // todo: Replace with avatar image */}
         <img
           src={
             "https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=cheeseball&backgroundColor=c0aede"
@@ -51,7 +51,7 @@ export const ReviewCard = ({ review }: { review: TReview }) => {
             />
           ))}
         </div>
-        <ReviewKebab />
+        <ReviewKebab review={review} />
       </div>
       <p className="min-h-8 text-gray-300">
         {expanded || !isTooLong() ? review.comment : truncatedComment()}

@@ -32,3 +32,12 @@ export type TMedia = {
   genres: string[];
   runtime: number;
 };
+
+export type TReview = {
+  id: number;
+  user_id: number;
+  media_id: number;
+  comment: string | null;
+  created_at: string | null;
+  rating: number | null;
+};

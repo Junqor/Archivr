@@ -67,8 +67,8 @@ export const remoteId = mysqlTable("RemoteId", {
 
 export const reviews = mysqlTable("Reviews", {
 	id: int().autoincrement().notNull(),
-	userId: int("user_id").references(() => users.id, { onDelete: "cascade", onUpdate: "restrict" } ),
-	mediaId: int("media_id").references(() => media.id, { onDelete: "cascade", onUpdate: "restrict" } ),
+	userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade", onUpdate: "restrict" } ),
+	mediaId: int("media_id").notNull().references(() => media.id, { onDelete: "cascade", onUpdate: "restrict" } ),
 	comment: text(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	rating: int(),
@@ -90,6 +90,6 @@ export const users = mysqlTable("Users", {
 },
 (table) => [
 	primaryKey({ columns: [table.id], name: "Users_id"}),
-	unique("username").on(table.username),
 	unique("email").on(table.email),
+	unique("username").on(table.username),
 ]);

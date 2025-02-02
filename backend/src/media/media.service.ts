@@ -1,14 +1,8 @@
-import { conn } from "../db/database.js";
+import { conn, db } from "../db/database.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { TMedia } from "../types/index.js";
-
-export type TReview = {
-  id: number;
-  user_id: number;
-  media_id: number;
-  comment: string;
-  created_at: Date;
-};
+import { TMedia, TReview } from "../types/index.js";
+import { reviews as ReviewsTable, users as UsersTable } from "../db/schema.js";
+import { desc, eq } from "drizzle-orm/expressions";
 
 export async function update_rating(
   media_id: number,
@@ -66,17 +60,33 @@ export async function get_media_reviews(
   media_id: number,
   amount: number,
   offset: number
-): Promise<TReview[]> {
-  let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    `SELECT Users.username, Reviews.comment, Reviews.created_at, Reviews.rating 
-    FROM Reviews 
-    INNER JOIN Users ON Reviews.user_id = Users.id 
-    WHERE Reviews.media_id = ? 
-    ORDER BY Reviews.created_at DESC
-    LIMIT ? OFFSET ?;`,
-    [media_id, amount, offset]
-  );
-  return rows;
+) {
+  let rows = await db
+    .select({
+      id: ReviewsTable.id,
+      user_id: UsersTable.id,
+      media_id: ReviewsTable.mediaId,
+      username: UsersTable.username,
+      comment: ReviewsTable.comment,
+      created_at: ReviewsTable.createdAt,
+      rating: ReviewsTable.rating,
+    })
+    .from(ReviewsTable)
+    .innerJoin(UsersTable, eq(ReviewsTable.userId, UsersTable.id))
+    .where(eq(ReviewsTable.mediaId, media_id))
+    .orderBy(desc(ReviewsTable.createdAt))
+    .limit(amount)
+    .offset(offset);
+  // let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
+  //   `SELECT Users.username, Reviews.comment, Reviews.created_at, Reviews.rating
+  //   FROM Reviews
+  //   INNER JOIN Users ON Reviews.user_id = Users.id
+  //   WHERE Reviews.media_id = ?
+  //   ORDER BY Reviews.created_at DESC
+  //   LIMIT ? OFFSET ?;`,
+  //   [media_id, amount, offset]
+  // );
+  return rows satisfies TReview[];
 }
 
 export async function get_user_review(
