@@ -1,14 +1,12 @@
 import { getTrending } from "@/api/media";
 import MediaCarousel from "@/components/MediaCarousel";
-import { TMedia } from "@/types/media";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export function TrendingCarousel({ ...props }) {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  useEffect(() => {
-    getTrending().then((data) => setMedia(data));
-  }, []);
+  const { data: media } = useQuery({
+    queryKey: ["trending"],
+    queryFn: () => getTrending(),
+  });
 
   return (
     <MediaCarousel
