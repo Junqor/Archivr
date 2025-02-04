@@ -5,7 +5,7 @@ import { getAuthHeader } from "@/utils/authHeader";
 export const searchMedias = async (
   query: string,
   limit: number = 5,
-  offset: number = 1
+  offset: number = 1,
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided
@@ -54,7 +54,7 @@ export const searchMedia = async ({ id }: { id: string }) =>
         throw new Error("Failed to fetch media");
       }
       return result.media as TMedia;
-    }
+    },
   );
 
 export const getMostPopular = async (): Promise<TMedia[]> => {
@@ -65,7 +65,7 @@ export const getMostPopular = async (): Promise<TMedia[]> => {
 
 export const getRecentlyReviewed = async (): Promise<TMedia[]> => {
   const response = await fetch(
-    import.meta.env.VITE_API_URL + "/media/recent-reviews"
+    import.meta.env.VITE_API_URL + "/media/recent-reviews",
   );
   const data = await response.json();
   return data.media as TMedia[];
@@ -73,7 +73,7 @@ export const getRecentlyReviewed = async (): Promise<TMedia[]> => {
 
 export const getTrending = async (): Promise<TMedia[]> => {
   const response = await fetch(
-    import.meta.env.VITE_API_URL + "/media/trending"
+    import.meta.env.VITE_API_URL + "/media/trending",
   );
   const data = await response.json();
   return data.media as TMedia[];
@@ -81,7 +81,7 @@ export const getTrending = async (): Promise<TMedia[]> => {
 
 export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
   const response = await fetch(
-    import.meta.env.VITE_API_URL + "/media/new-for-you" + `?user_id=${userId}`
+    import.meta.env.VITE_API_URL + "/media/new-for-you" + `?user_id=${userId}`,
   );
   const data = await response.json();
   return data.media as TMedia[];
@@ -89,7 +89,7 @@ export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
 
 export const getUserStats = async (userId: number) => {
   const response = await fetch(
-    import.meta.env.VITE_API_URL + `/media/stats/${userId}`
+    import.meta.env.VITE_API_URL + `/media/stats/${userId}`,
   );
   const data = await response.json();
   return data;
@@ -101,7 +101,7 @@ type GetLikesArgs = {
 
 export const getLikes = async ({ mediaId }: GetLikesArgs): Promise<number> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/media/likes/${mediaId}`
+    `${import.meta.env.VITE_API_URL}/media/likes/${mediaId}`,
   );
 
   if (!response.ok) {
@@ -128,7 +128,7 @@ export const getLikedStatus = async ({
   userId,
 }: GetLikedStatusArgs): Promise<boolean> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/media/likes/${mediaId}/${userId}`
+    `${import.meta.env.VITE_API_URL}/media/likes/${mediaId}/${userId}`,
   );
 
   if (!response.ok) {
@@ -163,6 +163,9 @@ export const updateLikes = async ({ mediaId }: { mediaId: string }) => {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
     throw new Error("Failed to update like status");
   }
 
@@ -174,35 +177,10 @@ export const updateLikes = async ({ mediaId }: { mediaId: string }) => {
   return data;
 };
 
-export type TReview = {
-  username: string;
-  comment: string;
-  created_at: string;
-  rating: number;
-};
-
-export const getReviews = async ({ mediaId }: { mediaId: string }) => {
-  const [reviewsResponse] = await Promise.all([
-    fetch(`${import.meta.env.VITE_API_URL}/media/reviews/${mediaId}`),
-  ]);
-
-  if (!reviewsResponse.ok) {
-    throw new Error("Failed to fetch reviews");
-  }
-
-  const reviewsData = await reviewsResponse.json();
-
-  if (reviewsData.status !== "success") {
-    throw new Error("Failed to fetch reviews");
-  }
-
-  return reviewsData.reviews as TReview[];
-};
-
 export const getUserRating = async ({ mediaId }: { mediaId: string }) => {
   const [ratingResponse] = await Promise.all([
     fetch(`${import.meta.env.VITE_API_URL}/media/user-rating/${mediaId}`),
-  ])
+  ]);
 
   if (!ratingResponse.ok) {
     throw new Error("Failed to fetch user rating");
@@ -215,40 +193,4 @@ export const getUserRating = async ({ mediaId }: { mediaId: string }) => {
   }
 
   return ratingData.rating as number;
-}
-
-export type TUpdateReviewArgs = {
-  mediaId: string;
-  comment: string;
-  rating?: number;
-};
-
-export const updateReview = async ({
-  mediaId,
-  comment,
-  rating = 5,
-}: TUpdateReviewArgs) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/review`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify({
-      media_id: parseInt(mediaId),
-      comment: comment,
-      rating: rating,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to update review");
-  }
-
-  const data = await response.json();
-  if (data.status !== "success") {
-    throw new Error("Failed to update review");
-  }
-
-  return data.review as TReview;
 };

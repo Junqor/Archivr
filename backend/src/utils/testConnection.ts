@@ -1,7 +1,10 @@
-import { conn } from "../configs/digitalocean.config.js";
+import { db } from "../db/database.js";
+import { users as UsersTable } from "../db/schema.js";
+import { eq } from "drizzle-orm/expressions";
 
 export async function testConnection() {
-  const [rows] = await conn.query(
-    "SELECT * FROM Users WHERE username = 'testuser';"
-  );
+  const user = await db
+    .select()
+    .from(UsersTable)
+    .where(eq(UsersTable.username, "testuser"));
 }

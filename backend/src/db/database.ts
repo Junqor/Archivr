@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise";
 import { PoolOptions } from "mysql2";
-import { serverConfig } from "./secrets.js";
+import { serverConfig } from "../configs/secrets.js";
+import { drizzle } from "drizzle-orm/mysql2";
 
 const access: PoolOptions = {
   host: serverConfig.DB_HOST,
@@ -15,4 +16,6 @@ const access: PoolOptions = {
 
 const conn = mysql.createPool(access);
 
-export { conn };
+const db = drizzle({ client: conn });
+
+export { conn, db };
