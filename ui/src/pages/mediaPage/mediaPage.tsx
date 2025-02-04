@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessagesSquare, Send } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,9 +16,14 @@ import { StarRatings } from "./components/starRatings";
 import { ReviewCard } from "./components/reviewCard";
 import { cn } from "@/lib/utils";
 import { SignalCellularAlt, StarRounded } from "@mui/icons-material";
+import { checkLikes } from "@/api/reviews";
 
 export function MediaPage() {
   const { id } = useParams();
+  const match = id?.match(/\d+/); // Check that the id is an integer
+  if (!match) {
+    return <Navigate to="/404" />;
+  }
   const { user } = useAuth();
   const navigate = useNavigate();
   const [rating, setRating] = useState(0);
@@ -49,6 +54,11 @@ export function MediaPage() {
 
   const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } =
     useMedia(id as string, user?.id ?? "");
+
+  const { data: reviewsLikedByUser } = useQuery({
+    queryKey: ["media", id, "reviews/check-likes"],
+    queryFn: () => checkLikes(parseInt(id as string)),
+  });
 
   const { isPending, error, data } = useQuery<TMedia>({
     queryKey: ["media", id],
@@ -210,7 +220,14 @@ export function MediaPage() {
                   (review) =>
                     review.comment !== "" &&
                     review.comment !== undefined && (
-                      <ReviewCard review={review} key={crypto.randomUUID()} />
+                      <ReviewCard
+                        review={review}
+                        isLiked={
+                          !!reviewsLikedByUser &&
+                          reviewsLikedByUser.includes(review.id)
+                        }
+                        key={crypto.randomUUID()}
+                      />
                     ),
                 )
               )}

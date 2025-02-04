@@ -1,16 +1,14 @@
 import { getNewForYou } from "@/api/media";
 import MediaCarousel from "@/components/MediaCarousel";
-import { TMedia } from "@/types/media";
-import { useState, useEffect } from "react";
+import { useAuth } from "@/context/auth";
+import { useQuery } from "@tanstack/react-query";
 
 export function NewForYouCarousel() {
-  const [media, setMedia] = useState<TMedia[]>([]);
-
-  const userId = JSON.parse(localStorage.getItem("user") ?? "{}").id;
-
-  useEffect(() => {
-    getNewForYou(userId).then((data) => setMedia(data));
-  }, []);
+  const { user } = useAuth();
+  const { data: media } = useQuery({
+    queryKey: ["newForYou"],
+    queryFn: () => getNewForYou(parseInt(user?.id || "-1")),
+  });
 
   return (
     <MediaCarousel

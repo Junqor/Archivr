@@ -22,6 +22,6 @@ export const authenticateToken: RequestHandler = (
 
     next();
   } catch (error) {
-    res.status(403).json({ status: "failed", message: "Unauthorized" });
+    res.status(401).json({ status: "failed", message: "Unauthorized" });
   }
 };

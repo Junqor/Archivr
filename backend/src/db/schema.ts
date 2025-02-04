@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, foreignKey, primaryKey, unique, int, timestamp, mysqlEnum, varchar, text, date, float, check, smallint } from "drizzle-orm/mysql-core"
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, foreignKey, primaryKey, unique, int, timestamp, datetime, mysqlEnum, varchar, text, date, float, check, smallint } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const likes = mysqlTable("Likes", {
@@ -12,6 +12,17 @@ export const likes = mysqlTable("Likes", {
 	index("user_id").on(table.userId),
 	primaryKey({ columns: [table.id], name: "Likes_id"}),
 	unique("unique_media_user").on(table.mediaId, table.userId),
+]);
+
+export const likesReviews = mysqlTable("Likes_Reviews", {
+	id: int().autoincrement().notNull(),
+	userId: int("user_id").notNull().references(() => users.id),
+	reviewId: int("review_id").notNull().references(() => reviews.id),
+	createdAt: datetime("created_at", { mode: 'string'}).default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+},
+(table) => [
+	primaryKey({ columns: [table.id], name: "Likes_Reviews_id"}),
+	unique("Likes_Reviews_UNIQUE").on(table.userId, table.reviewId),
 ]);
 
 export const media = mysqlTable("Media", {
@@ -90,6 +101,6 @@ export const users = mysqlTable("Users", {
 },
 (table) => [
 	primaryKey({ columns: [table.id], name: "Users_id"}),
-	unique("email").on(table.email),
 	unique("username").on(table.username),
+	unique("email").on(table.email),
 ]);

@@ -163,6 +163,9 @@ export const updateLikes = async ({ mediaId }: { mediaId: string }) => {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
     throw new Error("Failed to update like status");
   }
 
@@ -172,34 +175,6 @@ export const updateLikes = async ({ mediaId }: { mediaId: string }) => {
   }
 
   return data;
-};
-
-export type TReview = {
-  id: number;
-  user_id: number;
-  media_id: number;
-  username: string;
-  comment: string;
-  created_at: string;
-  rating: number;
-};
-
-export const getReviews = async ({ mediaId }: { mediaId: string }) => {
-  const [reviewsResponse] = await Promise.all([
-    fetch(`${import.meta.env.VITE_API_URL}/media/reviews/${mediaId}`),
-  ]);
-
-  if (!reviewsResponse.ok) {
-    throw new Error("Failed to fetch reviews");
-  }
-
-  const reviewsData = await reviewsResponse.json();
-
-  if (reviewsData.status !== "success") {
-    throw new Error("Failed to fetch reviews");
-  }
-
-  return reviewsData.reviews as TReview[];
 };
 
 export const getUserRating = async ({ mediaId }: { mediaId: string }) => {
@@ -218,40 +193,4 @@ export const getUserRating = async ({ mediaId }: { mediaId: string }) => {
   }
 
   return ratingData.rating as number;
-};
-
-export type TUpdateReviewArgs = {
-  mediaId: string;
-  comment: string;
-  rating?: number;
-};
-
-export const updateReview = async ({
-  mediaId,
-  comment,
-  rating = 5,
-}: TUpdateReviewArgs) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/review`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify({
-      media_id: parseInt(mediaId),
-      comment: comment,
-      rating: rating,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to update review");
-  }
-
-  const data = await response.json();
-  if (data.status !== "success") {
-    throw new Error("Failed to update review");
-  }
-
-  return data.review as TReview;
 };

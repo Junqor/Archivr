@@ -1,6 +1,9 @@
 import { db } from "../db/database.js";
-import { reviews as ReviewsTable } from "../db/schema.js";
-import { eq } from "drizzle-orm/expressions";
+import {
+  reviews as ReviewsTable,
+  likesReviews as likesReviewsTable,
+} from "../db/schema.js";
+import { and, eq } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../utils/error.class.js";
 
 export const deleteReview = async (reviewId: number, userId: number) => {
@@ -16,4 +19,34 @@ export const deleteReview = async (reviewId: number, userId: number) => {
 
   await db.delete(ReviewsTable).where(eq(ReviewsTable.id, reviewId));
 };
-export { UnauthorizedError };
+
+export const likeReview = async (reviewId: number, userId: number) => {
+  try {
+    await db.insert(likesReviewsTable).values({ userId, reviewId });
+  } catch (error) {
+    // If the like already exists for this review+user, unlike/delete it
+    await db
+      .delete(likesReviewsTable)
+      .where(
+        and(
+          eq(likesReviewsTable.reviewId, reviewId),
+          eq(likesReviewsTable.userId, userId)
+        )
+      );
+  }
+};
+
+export const checkLikes = async (mediaId: number, userId: number) => {
+  const rows = await db
+    .select({ reviewId: likesReviewsTable.reviewId })
+    .from(likesReviewsTable)
+    .innerJoin(ReviewsTable, eq(ReviewsTable.id, likesReviewsTable.reviewId))
+    .where(
+      and(
+        eq(ReviewsTable.mediaId, mediaId),
+        eq(likesReviewsTable.userId, userId)
+      )
+    );
+
+  return rows;
+};
