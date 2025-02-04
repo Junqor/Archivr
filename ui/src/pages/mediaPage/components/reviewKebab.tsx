@@ -1,4 +1,4 @@
-import { TReview } from "@/api/media";
+import { TReview } from "@/api/reviews";
 import { deleteReview } from "@/api/reviews";
 import { Button } from "@/components/ui/button";
 import {

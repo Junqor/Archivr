@@ -1,8 +1,13 @@
 import { conn, db } from "../db/database.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { TMedia, TReview } from "../types/index.js";
-import { reviews as ReviewsTable, users as UsersTable } from "../db/schema.js";
+import {
+  reviews as ReviewsTable,
+  users as UsersTable,
+  likesReviews as likesReviewsTable,
+} from "../db/schema.js";
 import { desc, eq } from "drizzle-orm/expressions";
+import { count } from "drizzle-orm";
 
 export async function update_rating(
   media_id: number,
@@ -70,22 +75,20 @@ export async function get_media_reviews(
       comment: ReviewsTable.comment,
       created_at: ReviewsTable.createdAt,
       rating: ReviewsTable.rating,
+      likes: count(likesReviewsTable.id).as("likes_count"),
     })
     .from(ReviewsTable)
     .innerJoin(UsersTable, eq(ReviewsTable.userId, UsersTable.id))
+    .leftJoin(
+      likesReviewsTable,
+      eq(ReviewsTable.id, likesReviewsTable.reviewId)
+    )
     .where(eq(ReviewsTable.mediaId, media_id))
+    .groupBy(ReviewsTable.id)
     .orderBy(desc(ReviewsTable.createdAt))
     .limit(amount)
     .offset(offset);
-  // let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-  //   `SELECT Users.username, Reviews.comment, Reviews.created_at, Reviews.rating
-  //   FROM Reviews
-  //   INNER JOIN Users ON Reviews.user_id = Users.id
-  //   WHERE Reviews.media_id = ?
-  //   ORDER BY Reviews.created_at DESC
-  //   LIMIT ? OFFSET ?;`,
-  //   [media_id, amount, offset]
-  // );
+
   return rows satisfies TReview[];
 }
 

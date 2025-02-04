@@ -1,4 +1,4 @@
-import { TReview } from "@/api/media";
+import { TReview } from "@/api/reviews";
 import { useState } from "react";
 import { StarRatings } from "./starRatings";
 import { Heart } from "lucide-react";
@@ -6,19 +6,79 @@ import { cn } from "@/lib/utils";
 import { ReviewKebab } from "./reviewKebab";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/formatDate";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { likeReview } from "@/api/reviews";
+import { toast } from "sonner";
+import { useNavigate, useParams } from "react-router-dom";
 
-export const ReviewCard = ({ review }: { review: TReview }) => {
+export const ReviewCard = ({
+  review,
+  isLiked,
+}: {
+  review: TReview;
+  isLiked: boolean;
+}) => {
   const [expanded, setExpanded] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { mutate: handleLikeReview } = useMutation({
+    mutationFn: () => likeReview(review.id),
+    onMutate: async () => {
+      // Optimistic update
+      await queryClient.cancelQueries({
+        queryKey: ["media", id, "reviews/check-likes"],
+        exact: true,
+      });
+
+      const previousData = queryClient.getQueryData<number[]>([
+        "media",
+        id,
+        "reviews/check-likes",
+      ]);
+
+      if (previousData) {
+        queryClient.setQueryData(
+          ["media", id, "reviews/check-likes"],
+          previousData.includes(review.id)
+            ? previousData.filter((id) => id !== review.id)
+            : [...previousData, review.id],
+        );
+      }
+
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      // If the mutation fails, roll back to the previous value
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ["media", id, "reviews/check-likes"],
+          context.previousData,
+        );
+      }
+      if (_err.message === "Unauthorized") return navigate("/login");
+      toast.error("An unexpected error occurred");
+    },
+    // Always refetch after error or success
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["media", id, "reviews/check-likes"],
+        exact: true,
+      });
+    },
+  });
+
   const maxUnexpandedCommentCharacters = 400;
+
   const isTooLong = () => {
     return review.comment.length > maxUnexpandedCommentCharacters;
   };
+
   const truncatedComment = () => {
     return review.comment.substring(0, maxUnexpandedCommentCharacters) + "...";
   };
-  // todo: Replace with liked state
-  const isLiked = true;
-  const numLikes = 0;
+
   return (
     <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4 review-gradient">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
@@ -31,12 +91,12 @@ export const ReviewCard = ({ review }: { review: TReview }) => {
         />
         <h5>{review.username}</h5>
         <div className="ml-auto flex items-center">
-          <Heart
+          {/* <Heart
             className={cn(
               isLiked ? "fill-primary text-primary" : "text-gray-200",
               "mr-2 size-5",
             )}
-          />
+          /> */}
           {[...Array(10)].map((_, i) => (
             <StarRatings
               key={i}
@@ -73,9 +133,18 @@ export const ReviewCard = ({ review }: { review: TReview }) => {
           {formatDate(new Date(review.created_at))}
         </p>
 
-        <Button variant="ghost" className="group ml-auto p-0 hover:text-white">
-          <Heart className="size-4 group-hover:fill-purple group-hover:text-purple" />
-          <p className="ml-2">{numLikes} Likes</p>
+        <Button
+          variant="ghost"
+          className="group ml-auto p-0 hover:text-white"
+          onClick={() => handleLikeReview()}
+        >
+          <Heart
+            className={cn(
+              isLiked && "fill-white",
+              "size-4 group-hover:fill-white group-hover:text-purple",
+            )}
+          />
+          <p className="ml-2">{review.likes} Likes</p>
         </Button>
       </div>
     </section>
