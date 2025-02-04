@@ -51,7 +51,7 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
           <SignalCellularAlt fontSize="medium" />
           <p>{media.rating ? formatInteger(media.rating) : "~"}</p>
           <StarRounded fontSize="medium" />
-          <p>{userRating ? Math.round(userRating * 10) / 10 : "~"}/5</p>
+          <p>{userRating ? userRating / 2 : "~"}/5</p>
           <FavoriteRounded fontSize="medium" />
           <p>{likes !== null ? likes.toString() : "Loading..."}</p>
         </div>
