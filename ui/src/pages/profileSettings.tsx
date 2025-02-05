@@ -1,10 +1,18 @@
 import { Search, ChevronDown, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
+
+/*
+usernames
+email
+every other generic stuff
+somethin for PFP
+*/
+
 
 export function ProfileSettings(){
     const updateSetting = (key:string, value:string) => {
@@ -109,7 +117,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                 <p className="text-base font-medium leading-normal">
                     Bio
                 </p>
-                <Textarea className="min-h-[67px] flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                <Textarea className="resize-none min-h-[67px] flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                 </Textarea>
             </div>
             <div className="flex justify-center items-start gap-2 self-stretch">
@@ -288,62 +296,27 @@ function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateS
 function ProfileSettingsCategoryActivity({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
     return (
         <div className="flex flex-col gap-2 self-stretch flex-1">
-            <div className="flex gap-2 items-start self-stretch">
-                <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
+            <div className="flex flex-col items-start gap-3 self-stretch">
+                <div className="flex items-start gap-3">
+                    <Checkbox className="self-center"></Checkbox>
                     <p className="text-base font-medium leading-normal">
-                        Theme
+                        Allow Archivr employees to see where you live
                     </p>
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
-                                <p className="text-base font-medium leading-normal">
-                                    Dark
-                                </p>
-                                <ChevronDown></ChevronDown>
-                            </div>
-                        </DropdownTrigger>
-                    <DropdownContent>
-                        <DropdownItem>
-                            Dark
-                        </DropdownItem>
-                        <DropdownItem>
-                            Light
-                        </DropdownItem>
-                    </DropdownContent>
-                    </Dropdown>
                 </div>
-                <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
+                <div className="flex items-start gap-3">
+                    <Checkbox className="self-center"></Checkbox>
                     <p className="text-base font-medium leading-normal">
-                        Font
+                        Personalized content
                     </p>
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
-                                <p className="text-base font-medium leading-normal">
-                                    Normal
-                                </p>
-                                <ChevronDown></ChevronDown>
-                            </div>
-                        </DropdownTrigger>
-                    <DropdownContent>
-                        <DropdownItem>
-                            Tiny
-                        </DropdownItem>
-                        <DropdownItem>
-                            Normal
-                        </DropdownItem>
-                        <DropdownItem>
-                            Gigagantic
-                        </DropdownItem>
-                    </DropdownContent>
-                    </Dropdown>
                 </div>
-            </div>
+            </div>   
         </div>
     )
 }
 
 function ProfileSettingsCategoryHelpAndSupport({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
+    const feedback = useRef(null);
+    
     return (
         <div className="flex flex-col gap-2">
             <p className="text-base font-medium leading-normal">
@@ -361,8 +334,8 @@ function ProfileSettingsCategoryHelpAndSupport({updateSetting, findSetting}:{upd
                 Give us Feedback 
             </p>
             <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
-            <Textarea></Textarea>
-            <Button className="max-w-[150px]" variant={"destructive"}><Trash2></Trash2> Submit</Button>
+            <Textarea ref={feedback} className="resize-none"></Textarea>
+            <Button onClick={()=>{feedback.current.value = ""}} className="max-w-[150px]" variant={"destructive"}><Trash2></Trash2> Submit</Button>
         </div>
     )
 }
