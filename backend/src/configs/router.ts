@@ -4,6 +4,7 @@ import { searchRouter } from "../search/search.route.js";
 import { mediaRouter } from "../media/media.route.js";
 import { adminRouter } from "../admin/admin.route.js";
 import { reviewsRouter } from "../reviews/reviews.route.js";
+import { watchRouter } from "../watch/watch.route.js";
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use("/auth", authRouter);
 router.use("/media", mediaRouter);
 router.use("/admin", adminRouter);
 router.use("/reviews", reviewsRouter);
+router.use("/watch", watchRouter);
 
 router.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
