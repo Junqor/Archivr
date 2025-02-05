@@ -24,6 +24,7 @@ export function ProfileSettings(){
     const [changedSettings, setChangedSettings] = useState(null);
     const [currentSettings, setCurrentSettings] = useState(null);
     const [selectedMenu, setSelectedMenu] = useState("Profile");
+
     return (
         <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
             <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
