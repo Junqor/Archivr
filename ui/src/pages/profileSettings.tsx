@@ -1,4 +1,4 @@
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -196,17 +196,17 @@ function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{updateSett
             <p className="text-base font-medium leading-normal">
                 Current Password
             </p>
-            <Input placeholder="Enter current password" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+            <Input type="password" placeholder="Enter current password" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
             <p className="text-base font-medium leading-normal">
                 New Password
             </p>
-            <Input placeholder="Enter new password"className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+            <Input type="password" placeholder="Enter new password"className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
             <p className="text-base font-medium leading-normal">
                 Confirm New Password
             </p>
-            <Input placeholder="Enter new password again" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+            <Input type="password" placeholder="Enter new password again" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
             <Button className="max-w-[130px]">Save Changes</Button>
             <p className="text-white text-2xl font-light leading-normal">
@@ -223,54 +223,61 @@ function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{updateSett
         </div>
     )
 }
+/*
+
+*/
 
 function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
     return (
         <div className="flex flex-col gap-2 self-stretch flex-1">
-            <div className="flex gap-2 self-start items-start">
-                <div className="flex flex-col gap-2 self-start items-start">
+            <div className="flex gap-2 items-start self-stretch">
+                <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
                     <p className="text-base font-medium leading-normal">
                         Theme
                     </p>
                     <Dropdown>
                         <DropdownTrigger>
-                            <div className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black flex-1">
-                                <p className="self-center text-base">Dark</p>
-                                <ChevronDown className="m-auto"></ChevronDown>
+                            <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                                <p className="text-base font-medium leading-normal">
+                                    Dark
+                                </p>
+                                <ChevronDown></ChevronDown>
                             </div>
                         </DropdownTrigger>
-                        <DropdownContent>
-                            <DropdownItem>
-                                Dark
-                            </DropdownItem>
-                            <DropdownItem>
-                                Light
-                            </DropdownItem>
-                        </DropdownContent>
+                    <DropdownContent>
+                        <DropdownItem>
+                            Dark
+                        </DropdownItem>
+                        <DropdownItem>
+                            Light
+                        </DropdownItem>
+                    </DropdownContent>
                     </Dropdown>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
                     <p className="text-base font-medium leading-normal">
-                        Font Size
+                        Font
                     </p>
                     <Dropdown>
                         <DropdownTrigger>
-                            <div className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black flex-1">
-                                <p className="self-center text-base">Normal</p>
-                                <ChevronDown className="m-auto"></ChevronDown>
+                            <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                                <p className="text-base font-medium leading-normal">
+                                    Normal
+                                </p>
+                                <ChevronDown></ChevronDown>
                             </div>
                         </DropdownTrigger>
-                        <DropdownContent>
-                            <DropdownItem>
-                                Tiny
-                            </DropdownItem>
-                            <DropdownItem>
-                                Normal
-                            </DropdownItem>
-                            <DropdownItem>
-                                Gigantic
-                            </DropdownItem>
-                        </DropdownContent>
+                    <DropdownContent>
+                        <DropdownItem>
+                            Tiny
+                        </DropdownItem>
+                        <DropdownItem>
+                            Normal
+                        </DropdownItem>
+                        <DropdownItem>
+                            Gigagantic
+                        </DropdownItem>
+                    </DropdownContent>
                     </Dropdown>
                 </div>
             </div>
@@ -281,50 +288,54 @@ function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateS
 function ProfileSettingsCategoryActivity({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
     return (
         <div className="flex flex-col gap-2 self-stretch flex-1">
-            <div className="flex gap-2 self-start items-start">
-                <div className="flex flex-col gap-2 self-start items-start">
+            <div className="flex gap-2 items-start self-stretch">
+                <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
                     <p className="text-base font-medium leading-normal">
                         Theme
                     </p>
                     <Dropdown>
                         <DropdownTrigger>
-                            <div className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black flex-1">
-                                <p className="self-center text-base">Dark</p>
-                                <ChevronDown className="m-auto"></ChevronDown>
+                            <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                                <p className="text-base font-medium leading-normal">
+                                    Dark
+                                </p>
+                                <ChevronDown></ChevronDown>
                             </div>
                         </DropdownTrigger>
-                        <DropdownContent>
-                            <DropdownItem>
-                                Dark
-                            </DropdownItem>
-                            <DropdownItem>
-                                Light
-                            </DropdownItem>
-                        </DropdownContent>
+                    <DropdownContent>
+                        <DropdownItem>
+                            Dark
+                        </DropdownItem>
+                        <DropdownItem>
+                            Light
+                        </DropdownItem>
+                    </DropdownContent>
                     </Dropdown>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
                     <p className="text-base font-medium leading-normal">
-                        Font Size
+                        Font
                     </p>
                     <Dropdown>
                         <DropdownTrigger>
-                            <div className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black flex-1">
-                                <p className="self-center text-base">Normal</p>
-                                <ChevronDown className="m-auto"></ChevronDown>
+                            <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                                <p className="text-base font-medium leading-normal">
+                                    Normal
+                                </p>
+                                <ChevronDown></ChevronDown>
                             </div>
                         </DropdownTrigger>
-                        <DropdownContent>
-                            <DropdownItem>
-                                Tiny
-                            </DropdownItem>
-                            <DropdownItem>
-                                Normal
-                            </DropdownItem>
-                            <DropdownItem>
-                                Gigantic
-                            </DropdownItem>
-                        </DropdownContent>
+                    <DropdownContent>
+                        <DropdownItem>
+                            Tiny
+                        </DropdownItem>
+                        <DropdownItem>
+                            Normal
+                        </DropdownItem>
+                        <DropdownItem>
+                            Gigagantic
+                        </DropdownItem>
+                    </DropdownContent>
                     </Dropdown>
                 </div>
             </div>
@@ -350,6 +361,8 @@ function ProfileSettingsCategoryHelpAndSupport({updateSetting, findSetting}:{upd
                 Give us Feedback 
             </p>
             <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
+            <Textarea></Textarea>
+            <Button className="max-w-[150px]" variant={"destructive"}><Trash2></Trash2> Submit</Button>
         </div>
     )
 }
