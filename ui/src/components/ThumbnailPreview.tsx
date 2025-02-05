@@ -5,9 +5,9 @@ import { TMedia } from "@/types/media";
 import { getLikes, getUserRating } from "@/api/media";
 import { Link } from "react-router-dom";
 import {
-  StarRounded,
   FavoriteRounded,
-  PersonRounded,
+  SignalCellularAlt,
+  StarRounded,
 } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
 
@@ -37,11 +37,11 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
           "_t.jpg"
         )})`,
       }}
-      className="aspect-2/3 bg-cover bg-center cursor-pointer relative"
+      className="relative aspect-2/3 cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10"
     >
       <Link
         to={`/media/${media.id}`}
-        className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white opacity-0 hover:opacity-100 transition-opacity duration-300"
+        className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white opacity-0 transition-opacity duration-300 hover:opacity-100"
       >
         {/* If the media title is too long, truncate it */}
         <h4 className="text-center">
@@ -50,11 +50,11 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
             ? media.title.substring(0, 35) + "..."
             : media.title}
         </h4>
-        <div className="grid grid-cols-2 gap-1 place-items-center">
-          <StarRounded fontSize="medium" />
+        <div className="grid grid-cols-2 place-items-center gap-1">
+          <SignalCellularAlt fontSize="medium" />
           <p>{media.rating ? formatInteger(media.rating) : "~"}</p>
-          <PersonRounded fontSize="medium" />
-          <p>{userRating ? Math.round(userRating * 10) / 10 : "~"}/5</p>
+          <StarRounded fontSize="medium" />
+          <p>{userRating ? userRating / 2 : "~"}/5</p>
           <FavoriteRounded fontSize="medium" />
           <p>{likes !== null ? likes.toString() : "Loading..."}</p>
         </div>

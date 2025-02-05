@@ -8,13 +8,15 @@ export type TUser = {
 };
 
 // Information in auth token
+export type TPayload = {
+  id: number;
+  username: string;
+  email: string;
+  role: "admin" | "user";
+};
+
 export type TAuthToken = {
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    role: "admin" | "user";
-  };
+  user: TPayload;
 };
 
 // "users.ts" looks inside: "Media"
@@ -29,4 +31,13 @@ export type TMedia = {
   rating: number;
   genres: string[];
   runtime: number;
+};
+
+export type TReview = {
+  id: number;
+  user_id: number;
+  media_id: number;
+  comment: string | null;
+  created_at: string | null;
+  rating: number | null;
 };

@@ -13,11 +13,8 @@ import {
   getMostPopular,
 } from "./media.service.js";
 import { z, ZodError } from "zod";
-import {
-  authenticateToken,
-  AuthRequest,
-} from "../middleware/authenticateToken.js";
-import { TAuthToken } from "../types/user.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
+import { TAuthToken } from "../types/index.js";
 
 export const mediaRouter = Router();
 
@@ -29,9 +26,9 @@ const updateLikesBodySchema = z.object({
 // update likes for a media
 mediaRouter.post("/like", authenticateToken, async (req, res) => {
   try {
-    const token = (req as AuthRequest).token as TAuthToken;
+    const { user } = res.locals;
     const { media_id } = updateLikesBodySchema.parse(req.body);
-    await update_likes(media_id, token.user.id);
+    await update_likes(media_id, user.id);
     res.json({ status: "success" });
   } catch (err) {
     res.status(400).json({
@@ -103,9 +100,9 @@ const reviewBodySchema = z.object({
 // Update or add a review for a media
 mediaRouter.post("/review", authenticateToken, async (req, res) => {
   try {
-    const token = (req as AuthRequest).token as TAuthToken;
+    const { user } = res.locals;
     const { media_id, comment, rating } = reviewBodySchema.parse(req.body);
-    await update_review(media_id, token.user.id, comment, rating);
+    await update_review(media_id, user.id, comment, rating);
     res.json({ status: "success" });
   } catch (error) {
     res

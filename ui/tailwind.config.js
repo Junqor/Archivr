@@ -13,6 +13,7 @@ export const theme = {
       },
       gray: {
         DEFAULT: "#7f7f7e",
+        secondary: "#44444f",
       },
       black: {
         DEFAULT: "#0d0d0d",
@@ -20,6 +21,7 @@ export const theme = {
       purple: {
         DEFAULT: "#5616EC",
       },
+      primary: "#5616EC",
       dark: "#242424",
       pill: "#242424",
     },
@@ -50,6 +52,18 @@ export const plugins = [
       ".no-scrollbar": {
         "-ms-overflow-style": "none" /* IE and Edge */,
         "scrollbar-width": "none" /* Firefox */,
+      },
+
+      ".flip-y": {
+        transform: "scaleY(-1)",
+      },
+      ".flip-x": {
+        transform: "scaleX(-1)",
+      },
+
+      ".review-gradient": {
+        background:
+          "linear-gradient(152deg, rgba(68,68,79,1) 50%, rgba(68,68,79,1) 100%);",
       },
     });
   }),

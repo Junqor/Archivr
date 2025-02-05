@@ -2,19 +2,15 @@ import { Router } from "express";
 import { logIn, signUp } from "./auth.services.js";
 import jwt from "jsonwebtoken";
 import { serverConfig } from "../configs/secrets.js";
-import {
-  authenticateToken,
-  AuthRequest,
-} from "../middleware/authenticateToken.js";
-import { TAuthToken } from "../types/user.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 
 const authRouter = Router();
 
 // (GET /api/auth)
 // Check if the user is authenticated, return the user object stored in the token
 authRouter.get("/", authenticateToken, (req, res) => {
-  const token = (req as AuthRequest).token as TAuthToken;
-  res.status(200).json({ status: "success", user: token.user });
+  const { user } = res.locals;
+  res.status(200).json({ status: "success", user: user });
 });
 
 // (POST /api/auth/signup)

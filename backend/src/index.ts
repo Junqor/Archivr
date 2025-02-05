@@ -1,6 +1,4 @@
 import express from "express";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { testConnection } from "./utils/testConnection.js";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -10,8 +8,6 @@ import { router } from "./configs/router.js";
 const app = express();
 
 const PORT = process.env.PORT || "8080";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Middleware
 app.use(bodyParser.json());
