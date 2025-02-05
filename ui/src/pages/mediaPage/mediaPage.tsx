@@ -247,6 +247,10 @@ export function MediaPage() {
             </Select>
             {regionData && (
               <div className="flex h-full flex-col space-y-2 overflow-y-auto py-3">
+                <img
+                  src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg"
+                  className="aspect-auto max-h-4 self-start pl-2"
+                />
                 {regionData.providers.map(([offer, providers]) => (
                   <div key={crypto.randomUUID()} className="flex flex-col">
                     <h5 className="ml-2 font-bold first-letter:capitalize">
