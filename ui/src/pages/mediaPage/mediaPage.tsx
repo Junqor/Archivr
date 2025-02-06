@@ -62,7 +62,7 @@ export function MediaPage() {
   };
 
   const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } =
-    useMedia(id as string, user?.id ?? "");
+    useMedia(id as string, user ? `${user.id}` : "");
 
   const { data: reviewsLikedByUser } = useQuery({
     queryKey: ["media", id, "reviews/check-likes"],

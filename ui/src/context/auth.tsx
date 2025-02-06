@@ -1,45 +1,40 @@
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { createContext, useContext } from "react";
-
-type TUser = {
-  username: string;
-  id: string;
-  role: string;
-};
+import { getUserInfoFromToken } from "@/api/auth";
+import { TUser } from "@/types/user";
+import { createContext, useContext, useState } from "react";
 
 export type TUserContext = {
   user: TUser | null;
-  addLoginDataToLocalStorage: (user: TUser) => void;
-  removeLoginDataFromLocalStorage: () => void;
+  setLoginData: () => Promise<void>;
+  logout: () => void;
 };
 export type AuthProviderProps = React.PropsWithChildren<{}>;
 
 const AuthContext = createContext<TUserContext | undefined>(undefined);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useLocalStorage("user");
+  const [user, setUser] = useState<TUser | null>(null);
 
-  const addLoginDataToLocalStorage = (user: TUser) => {
-    localStorage.setItem("auth", "true");
-    window.dispatchEvent(new Event("storage"));
-    setUser(JSON.stringify(user));
+  const setLoginData = async () => {
+    try {
+      const userData = await getUserInfoFromToken();
+      setUser(userData);
+    } catch (e) {
+      localStorage.removeItem("access_token");
+      setUser(null);
+    }
   };
 
-  const removeLoginDataFromLocalStorage = () => {
-    setUser(null);
-    localStorage.removeItem("auth");
+  const logout = () => {
     localStorage.removeItem("access_token");
-    window.location.reload();
+    setUser(null);
   };
-
-  const userObject = user ? (JSON.parse(user) as TUser) : null;
 
   return (
     <AuthContext.Provider
       value={{
-        user: userObject,
-        addLoginDataToLocalStorage,
-        removeLoginDataFromLocalStorage,
+        user: user,
+        setLoginData: setLoginData,
+        logout: logout,
       }}
     >
       {children}
