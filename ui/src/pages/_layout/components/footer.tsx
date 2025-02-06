@@ -1,11 +1,10 @@
-// footer.tsx
 import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="flex flex-row justify-start items-center gap-6 w-full h-auto px-6 py-3 bg-gray-900 text-white">
+    <footer className="mt-auto flex h-auto w-full flex-row items-start justify-center gap-10 bg-gray-secondary/20 p-3 py-8 text-white outline outline-gray-secondary/50 sm:gap-20 lg:gap-40">
       <section className="flex flex-col gap-2">
-        <h4>Quick Links</h4>
+        <h4 className="font-bold">QUICK LINKS</h4>
         <Link to="/" className="text-white transition-colors hover:text-purple">
           Home
         </Link>
@@ -21,28 +20,15 @@ export default function Footer() {
         >
           Popular
         </Link>
-      </section>
-      <section className="flex flex-col gap-2">
-        <h4>Socials</h4>
-        {/* Add social media links here */}
-      </section>
-      <section className="flex flex-col gap-2">
-        <h4>Help & Support</h4>
         <Link
-          to="/contact"
+          to="/members"
           className="text-white transition-colors hover:text-purple"
         >
-          Contact Us
-        </Link>
-        <Link
-          to="/faq"
-          className="text-white transition-colors hover:text-purple"
-        >
-          FAQ
+          Members
         </Link>
       </section>
       <section className="flex flex-col gap-2">
-        <h4>Legal & Privacy</h4>
+        <h4 className="font-bold">LEGAL & PRIVACY</h4>
         <Link
           to="/privacy"
           className="text-white transition-colors hover:text-purple"
@@ -55,6 +41,21 @@ export default function Footer() {
         >
           Terms of Service
         </Link>
+      </section>
+      <section className="flex flex-col gap-2">
+        <h4 className="font-bold">POWERED BY</h4>
+        <a
+          href="https://www.thetvdb.com/"
+          className="size-10/12 text-white transition-colors hover:text-purple"
+        >
+          <img src="https://www.thetvdb.com/images/logo.svg" />
+        </a>
+        <a
+          href="https://www.themoviedb.org"
+          className="size-10/12 text-white transition-colors hover:text-purple"
+        >
+          <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg" />
+        </a>
       </section>
     </footer>
   );
