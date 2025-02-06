@@ -17,6 +17,14 @@ import { ReviewCard } from "./components/reviewCard";
 import { cn } from "@/lib/utils";
 import { SignalCellularAlt, StarRounded } from "@mui/icons-material";
 import { checkLikes } from "@/api/reviews";
+import { getWatchProviders } from "@/api/watch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -30,6 +38,7 @@ export function MediaPage() {
   const [ratingPreview, setRatingPreview] = useState(0);
   const [review, setReview] = useState("");
   const [userWasSilly, setUserWasSilly] = useState(false);
+  const [region, setRegion] = useState("US");
 
   function handleAddReview() {
     if (rating === 0) {
@@ -65,6 +74,11 @@ export function MediaPage() {
     queryFn: () => searchMedia({ id } as { id: string }),
   });
 
+  const { data: watchProviders } = useQuery({
+    queryKey: ["media", id, "watch-providers"],
+    queryFn: () => getWatchProviders(parseInt(id as string)),
+  });
+
   const handleLike = () => {
     // First check if there is an existing auth token
     if (checkAuth()) return;
@@ -73,6 +87,13 @@ export function MediaPage() {
 
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  // Get the watch provider data for the selected region
+  const regionData = watchProviders
+    ? Object.values(watchProviders).find(
+        (watchProvider) => watchProvider.region === region,
+      )
+    : null;
 
   return (
     <div className="flex h-fit w-full flex-col items-start justify-center bg-black px-4 py-8 text-gray-100 sm:px-6 lg:px-8">
@@ -186,21 +207,77 @@ export function MediaPage() {
         </section>
       </section>
       {/* Bottom Section Reviews */}
-      <section className="relative flex w-full flex-row">
-        <div className="flex h-full w-1/4 flex-row justify-center space-x-4 text-gray-300">
-          <div className="flex flex-row items-center justify-center space-x-1">
-            <SignalCellularAlt className="size-5 fill-gray-300" />
-            <h4>{formatInteger(data.rating)}</h4>
+      <section className="relative flex w-full flex-row gap-x-5">
+        <section className="flex h-full w-1/4 flex-col justify-start">
+          {/* Media Stats */}
+          <div className="flex flex-row justify-center space-x-4 text-gray-300">
+            <div className="flex flex-row items-center justify-center space-x-1">
+              <SignalCellularAlt className="size-5 fill-gray-300" />
+              <h4>{formatInteger(data.rating)}</h4>
+            </div>
+            <div className="flex flex-row items-center justify-center space-x-1">
+              <StarRounded className="size-4 fill-gray-300" />
+              <h4>{userRating ? userRating / 2 : "~"}</h4>
+            </div>
+            <div className="flex flex-row items-center justify-center space-x-1">
+              <Heart className="size-4 fill-gray-300" />
+              <h4>{formatInteger(numLikes)}</h4>
+            </div>
           </div>
-          <div className="flex flex-row items-center justify-center space-x-1">
-            <StarRounded className="size-4 fill-gray-300" />
-            <h4>{userRating ? userRating / 2 : "~"}</h4>
+          {/* Watch Providers */}
+          <div className="mt-2 flex max-h-64 flex-col rounded-md outline outline-gray-secondary">
+            <h4 className="rounded-t-md bg-gray-secondary p-2 font-bold">
+              Where to Watch
+            </h4>
+            <Select
+              onValueChange={(value) => setRegion(value)}
+              defaultValue="US"
+            >
+              <SelectTrigger className="text- w-full rounded-none border-gray-secondary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {watchProviders &&
+                  watchProviders.map(({ region }) => (
+                    <SelectItem value={region} key={crypto.randomUUID()}>
+                      {region}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            {regionData && (
+              <div className="flex h-full flex-col space-y-2 overflow-y-auto py-3">
+                <img
+                  src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg"
+                  className="aspect-auto max-h-4 self-start pl-2"
+                />
+                {regionData.providers.map(([offer, providers]) => (
+                  <div key={crypto.randomUUID()} className="flex flex-col">
+                    <h5 className="ml-2 font-bold first-letter:capitalize">
+                      {offer === "flatrate" ? "stream" : offer}
+                    </h5>
+                    <hr className="mx-2 border-neutral-500" />
+                    {providers.map((provider) => (
+                      <a
+                        className="ml-2 mt-1 flex flex-row items-center"
+                        key={crypto.randomUUID()}
+                        target="_blank"
+                        href={regionData.link as string}
+                      >
+                        <img
+                          src={`https://media.themoviedb.org/t/p/original/${provider.logo_path}`}
+                          alt="provider logo"
+                          className="mr-1 size-4 rounded-sm"
+                        />
+                        <p>{provider.provider_name}</p>
+                      </a>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex flex-row items-center justify-center space-x-1">
-            <Heart className="size-4 fill-gray-300" />
-            <h4>{formatInteger(numLikes)}</h4>
-          </div>
-        </div>
+        </section>
         <section className="flex h-full w-3/4 flex-col justify-start">
           <h3 className="font-light">See What Others Are Saying</h3>
           {reviews && (

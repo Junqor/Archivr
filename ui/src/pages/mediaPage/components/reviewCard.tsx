@@ -80,7 +80,7 @@ export const ReviewCard = ({
   };
 
   return (
-    <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4 review-gradient">
+    <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
         {/* // todo: Replace with avatar image */}
         <img
@@ -91,12 +91,6 @@ export const ReviewCard = ({
         />
         <h5>{review.username}</h5>
         <div className="ml-auto flex items-center">
-          {/* <Heart
-            className={cn(
-              isLiked ? "fill-primary text-primary" : "text-gray-200",
-              "mr-2 size-5",
-            )}
-          /> */}
           {[...Array(10)].map((_, i) => (
             <StarRatings
               key={i}

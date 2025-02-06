@@ -13,7 +13,7 @@ export const theme = {
       },
       gray: {
         DEFAULT: "#7f7f7e",
-        secondary: "#44444f",
+        secondary: "#595958",
       },
       black: {
         DEFAULT: "#0d0d0d",
@@ -59,11 +59,6 @@ export const plugins = [
       },
       ".flip-x": {
         transform: "scaleX(-1)",
-      },
-
-      ".review-gradient": {
-        background:
-          "linear-gradient(152deg, rgba(68,68,79,1) 50%, rgba(68,68,79,1) 100%);",
       },
     });
   }),
