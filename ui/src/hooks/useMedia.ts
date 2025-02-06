@@ -5,11 +5,13 @@ import {
   updateLikes,
 } from "@/api/media";
 import { getReviews, updateReview } from "@/api/reviews";
+import { useAuth } from "@/context/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useMedia = (mediaId: string, userId: string) => {
+  const { logout } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -63,7 +65,12 @@ export const useMedia = (mediaId: string, userId: string) => {
           context.previousData,
         );
       }
-      if (_err.message === "Unauthorized") return navigate("/login");
+      if (_err.message === "Unauthorized") {
+        logout();
+        return navigate("/login", {
+          state: { from: window.location.pathname },
+        });
+      }
       toast.error("An unexpected error occurred");
     },
     // Always refetch after error or success
@@ -84,7 +91,12 @@ export const useMedia = (mediaId: string, userId: string) => {
     mutationFn: ({ comment, rating }: { comment: string; rating: number }) =>
       updateReview({ mediaId, comment, rating }),
     onError: (_err, _variables, _context) => {
-      if (_err.message === "Unauthorized") return navigate("/login");
+      if (_err.message === "Unauthorized") {
+        logout();
+        return navigate("/login", {
+          state: { from: window.location.pathname },
+        });
+      }
       toast.error("An unexpected error occurred");
     },
     onSettled: () => {

@@ -1,3 +1,6 @@
+import { TUser } from "@/types/user";
+import { getAuthHeader } from "@/utils/authHeader";
+
 type loginArgs = {
   username: string;
   password: string;
@@ -41,7 +44,7 @@ export const trySignup = async ({ username, email, password }: signupArgs) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, email, password }), // Send the username, email, and password
-    }
+    },
   );
 
   const data = await response.json(); // Get the response data
@@ -50,4 +53,18 @@ export const trySignup = async ({ username, email, password }: signupArgs) => {
   } else {
     throw new Error(data.message);
   }
+};
+
+export const getUserInfoFromToken = async () => {
+  const response = await fetch(import.meta.env.VITE_API_URL + "/auth", {
+    headers: getAuthHeader(),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user info");
+  }
+
+  const data = await response.json();
+
+  return data.user as TUser;
 };

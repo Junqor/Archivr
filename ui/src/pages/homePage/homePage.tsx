@@ -1,5 +1,4 @@
 // homePage.tsx
-import { useEffect, useState } from "react";
 import IconBox from "@/components/icon-box";
 import StatsBox from "@/components/stats-box";
 import { Link } from "react-router-dom";
@@ -8,39 +7,25 @@ import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
 import { CalendarPlus, MessageCircleHeart, Sparkles } from "lucide-react";
+import { useAuth } from "@/context/auth";
 
 export default function HomePage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("auth") === "true", // Check if user is logged in
-  );
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setIsLoggedIn(localStorage.getItem("auth") === "true"); // Update the state
-    };
-
-    window.addEventListener("storage", handleStorageChange); // Listen for storage changes
-    return () => window.removeEventListener("storage", handleStorageChange); // Remove the listener
-  }, []);
-
-  const user = localStorage.getItem("user");
+  const { user } = useAuth();
 
   return (
     <>
-      {isLoggedIn ? (
+      {user ? (
         <>
           <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
             <section className="order-2 flex flex-col justify-center gap-3 sm:order-1">
               <h1 className="font-extrabold">
                 Welcome back,{" "}
-                <span className="font-bold text-purple">
-                  {user ? JSON.parse(user).username : "User"}
-                </span>
+                <span className="font-bold text-purple">{user.username}</span>
                 ! <br /> Here's what's new for you.
               </h1>
             </section>
             <section className="order-1 flex h-full w-full flex-col justify-center gap-3 sm:order-2">
-              <StatsBox userId={user ? JSON.parse(user).id : 0} />
+              <StatsBox userId={user.id} />
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">

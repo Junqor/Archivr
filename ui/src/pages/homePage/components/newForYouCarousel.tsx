@@ -7,7 +7,7 @@ export function NewForYouCarousel() {
   const { user } = useAuth();
   const { data: media } = useQuery({
     queryKey: ["newForYou"],
-    queryFn: () => getNewForYou(parseInt(user?.id || "-1")),
+    queryFn: () => getNewForYou(user ? user.id : -1),
   });
 
   return (
