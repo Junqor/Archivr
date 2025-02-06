@@ -7,6 +7,7 @@ import { NewForYouCarousel } from "./components/newForYouCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
+import { CalendarPlus, MessageCircleHeart, Sparkles } from "lucide-react";
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -43,13 +44,19 @@ export default function HomePage() {
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
-            <h4 className="uppercase">New for you...</h4>
+            <div className="flex flex-row space-x-4">
+              <CalendarPlus />
+              <h4 className="uppercase">New for you...</h4>
+            </div>
             <section className="h-full">
               <NewForYouCarousel />
             </section>
           </section>
-          <section className="flex w-full flex-col justify-start gap-3 pb-10">
-            <h4 className="uppercase">All time most popular...</h4>
+          <section className="flex w-full flex-col justify-start gap-3">
+            <div className="flex flex-row space-x-4">
+              <Sparkles />
+              <h4 className="uppercase">All time most popular...</h4>
+            </div>
             <section className="h-full">
               <MostPopularCarousel
                 slidesPerViewMobile={4}
@@ -60,7 +67,10 @@ export default function HomePage() {
             </section>
           </section>
           <section className="flex w-full flex-col justify-start gap-3">
-            <h4 className="uppercase">Recently Reviewed...</h4>
+            <div className="flex flex-row space-x-4">
+              <MessageCircleHeart />
+              <h4 className="uppercase">Recently Reviewed...</h4>
+            </div>
             <RecentlyReviewed />
           </section>
         </>
