@@ -18,7 +18,7 @@ import { tryLogin, trySignup } from "@/api/auth";
 // LoginPopUp component
 export function Login() {
   const { user, setLoginData } = useAuth();
-  if (user?.id) return <Navigate to="/" />;
+  if (user) return <Navigate to="/" />;
 
   const [isOnLogin, setIsOnLogin] = useState(true);
   const [username, setUsername] = useState("");
@@ -36,7 +36,7 @@ export function Login() {
       toast.success("Logged in successfully");
 
       // Redirect the user back to the page they were on before logging in
-      const from = location.state?.from?.pathname || "/";
+      const from = location.state.from || "/";
       navigate(from);
     },
     onError: (err) => {

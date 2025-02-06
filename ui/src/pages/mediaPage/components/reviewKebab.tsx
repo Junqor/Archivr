@@ -42,7 +42,7 @@ export const ReviewKebab = ({ review }: ReviewKebabProps) => {
         <EllipsisVertical className="size-5"></EllipsisVertical>
       </PopoverTrigger>
       <PopoverContent className="flex w-48 flex-col p-2" align="end">
-        {user && parseInt(user.id) === review.user_id && (
+        {user && user.id === review.user_id && (
           // ONLY show delete button if the user is the reviewer
           <>
             <Button
@@ -55,7 +55,7 @@ export const ReviewKebab = ({ review }: ReviewKebabProps) => {
             <hr className="my-1 w-10/12 self-center justify-self-center" />
           </>
         )}
-        {user && parseInt(user.id) !== review.user_id && (
+        {user && user.id !== review.user_id && (
           // DO NOT show follow button if the user is the reviewer
           <>
             <Button

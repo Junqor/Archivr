@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { likeReview } from "@/api/reviews";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 
 export const ReviewCard = ({
   review,
@@ -22,6 +23,7 @@ export const ReviewCard = ({
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { logout } = useAuth();
 
   const { mutate: handleLikeReview } = useMutation({
     mutationFn: () => likeReview(review.id),
@@ -57,7 +59,12 @@ export const ReviewCard = ({
           context.previousData,
         );
       }
-      if (_err.message === "Unauthorized") return navigate("/login");
+      if (_err.message === "Unauthorized") {
+        logout();
+        return navigate("/login", {
+          state: { from: window.location.pathname },
+        });
+      }
       toast.error("An unexpected error occurred");
     },
     // Always refetch after error or success
