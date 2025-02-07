@@ -194,3 +194,29 @@ export const getUserRating = async ({ mediaId }: { mediaId: string }) => {
 
   return ratingData.rating as number;
 };
+
+export const getMediaBackground = async (id: number) => {
+  const url = import.meta.env.VITE_API_URL + "/media/background/" + id;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch media background");
+  }
+
+  const data = await response.json();
+
+  return data.result as string;
+};
+
+export const getMediaTrailer = async (id: number) => {
+  const url = import.meta.env.VITE_API_URL + "/media/trailer/" + id;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch media trailer");
+  }
+
+  const data = await response.json();
+
+  return data.result as string;
+};
