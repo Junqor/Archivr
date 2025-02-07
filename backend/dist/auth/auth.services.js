@@ -1,4 +1,4 @@
-import { conn } from "../configs/digitalocean.config.js";
+import { conn } from "../db/database.js";
 import { AuthErrorHandler } from "../utils/authErrorHandler.js";
 import { generateSalt, hashPassword } from "../utils/hashPassword.js";
 import { z } from "zod";

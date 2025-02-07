@@ -1,15 +1,18 @@
-import { conn } from "../configs/digitalocean.config.js";
+import { conn, db } from "../db/database.js";
+import { reviews as ReviewsTable, users as UsersTable, likesReviews as likesReviewsTable, } from "../db/schema.js";
+import { desc, eq } from "drizzle-orm/expressions";
+import { count } from "drizzle-orm";
 export async function update_rating(media_id, user_id, new_rating) {
     let [rows] = await conn.query("INSERT INTO Ratings (media_id, user_id, rating) VALUES (?, ?, ?) " +
         "ON DUPLICATE KEY UPDATE rating = ?", [media_id, user_id, new_rating, new_rating]);
     return;
 }
 export async function get_media_rating(media_id) {
-    let [rows] = await conn.query("SELECT AVG(rating) as avg FROM Ratings WHERE media_id=?;", [media_id]);
+    let [rows] = await conn.query("SELECT AVG(rating) as avg FROM Reviews WHERE media_id=?;", [media_id]);
     if (rows[0].length == 0) {
         throw Error("RATINGS AREN'T REAL");
     }
-    return rows[0][0].avg;
+    return rows[0].avg;
 }
 export async function get_user_rating(media_id, user_id) {
     let [rows] = await conn.query("SELECT rating as rat FROM Ratings WHERE media_id=? AND user_id=?;", [media_id, user_id]);
@@ -18,18 +21,31 @@ export async function get_user_rating(media_id, user_id) {
     }
     return rows[0][0].rat;
 }
-export async function update_review(media_id, user_id, new_comment) {
-    let [rows] = await conn.query("INSERT INTO Reviews (media_id,user_id,comment) VALUES (?,?,?) " +
-        "ON DUPLICATE KEY UPDATE comment = ?", [media_id, user_id, new_comment, new_comment]);
+export async function update_review(media_id, user_id, new_comment, new_rating) {
+    let [rows] = await conn.query("INSERT INTO Reviews (media_id,user_id,comment,rating) VALUES (?,?,?,?) " +
+        "ON DUPLICATE KEY UPDATE comment = ?, rating = ?, created_at = CURRENT_TIMESTAMP", [media_id, user_id, new_comment, new_rating, new_comment, new_rating]);
     return;
 }
 export async function get_media_reviews(media_id, amount, offset) {
-    let [rows] = await conn.query(`SELECT Users.username, Reviews.comment, Reviews.created_at 
-    FROM Reviews 
-    INNER JOIN Users ON Reviews.user_id = Users.id 
-    WHERE Reviews.media_id = ? 
-    ORDER BY Reviews.created_at DESC
-    LIMIT ? OFFSET ?;`, [media_id, amount, offset]);
+    let rows = await db
+        .select({
+        id: ReviewsTable.id,
+        user_id: UsersTable.id,
+        media_id: ReviewsTable.mediaId,
+        username: UsersTable.username,
+        comment: ReviewsTable.comment,
+        created_at: ReviewsTable.createdAt,
+        rating: ReviewsTable.rating,
+        likes: count(likesReviewsTable.id).as("likes_count"),
+    })
+        .from(ReviewsTable)
+        .innerJoin(UsersTable, eq(ReviewsTable.userId, UsersTable.id))
+        .leftJoin(likesReviewsTable, eq(ReviewsTable.id, likesReviewsTable.reviewId))
+        .where(eq(ReviewsTable.mediaId, media_id))
+        .groupBy(ReviewsTable.id)
+        .orderBy(desc(ReviewsTable.createdAt))
+        .limit(amount)
+        .offset(offset);
     return rows;
 }
 export async function get_user_review(media_id, user_id) {
@@ -59,30 +75,32 @@ export async function get_likes(media_id) {
     let [rows] = await conn.query("SELECT COUNT(*) as num FROM Likes WHERE media_id=?;", [media_id]);
     return rows[0].num ?? 0;
 }
-export async function get_top_rated() {
-    let [rows] = await conn.query(`SELECT 
-    Media.id,
-    Media.category,
-    Media.title,
-    Media.description,
-    Media.release_date,
-    Media.age_rating,
-    Media.thumbnail_url,
-    Media.genre,
-    Media.rating AS rating,
-    COALESCE(AVG(Ratings.rating), 0) AS average_rating,
-    COUNT(Ratings.rating) AS num_ratings,
-    (
-        (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
-        (50 / (COUNT(Ratings.rating) + 50)) * (
-            SELECT COALESCE(AVG(rating), 0) FROM Ratings
-        )
-    ) AS weighted_rating
-FROM Media
-LEFT JOIN Ratings ON Media.id = Ratings.media_id
-GROUP BY Media.id
-ORDER BY weighted_rating DESC
-LIMIT 15;`);
+export async function getMostPopular() {
+    //   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+    //     `SELECT
+    //     Media.id,
+    //     Media.category,
+    //     Media.title,
+    //     Media.description,
+    //     Media.release_date,
+    //     Media.age_rating,
+    //     Media.thumbnail_url,
+    //     Media.rating AS rating,
+    //     COALESCE(AVG(Ratings.rating), 0) AS average_rating,
+    //     COUNT(Ratings.rating) AS num_ratings,
+    //     (
+    //         (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
+    //         (50 / (COUNT(Ratings.rating) + 50)) * (
+    //             SELECT COALESCE(AVG(rating), 0) FROM Ratings
+    //         )
+    //     ) AS weighted_rating
+    // FROM Media
+    // LEFT JOIN Ratings ON Media.id = Ratings.media_id
+    // GROUP BY Media.id
+    // ORDER BY weighted_rating DESC
+    // LIMIT 15;`
+    //   );
+    let [rows] = await conn.query(`SELECT * FROM Media ORDER BY rating DESC LIMIT 15;`);
     return {
         status: "success",
         media: rows,
@@ -115,7 +133,6 @@ export async function get_trending() {
         Media.release_date,
         Media.age_rating,
         Media.thumbnail_url,
-        Media.genre,
         Media.rating AS base_rating,
         AVG(Ratings.rating) AS average_rating,
         COUNT(Ratings.rating) AS num_ratings,
@@ -147,7 +164,6 @@ export async function get_trending() {
       release_date,
       age_rating,
       thumbnail_url,
-      genre,
       base_rating as rating,
       average_rating,
       num_ratings,

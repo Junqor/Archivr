@@ -1,7 +1,7 @@
-import { conn } from "../configs/digitalocean.config.js";
+import { conn } from "../db/database.js";
 export async function insert_media(media) {
     try {
-        await conn.query(`INSERT INTO Media (category, title, description, release_date, age_rating, thumbnail_url, rating, genre) VALUES (?,?,?,?,?,?,?,?);`, [
+        await conn.query(`INSERT INTO Media (category, title, description, release_date, age_rating, thumbnail_url, rating) VALUES (?,?,?,?,?,?,?,?);`, [
             media.category,
             media.title,
             media.description,
@@ -9,8 +9,9 @@ export async function insert_media(media) {
             media.age_rating,
             media.thumbnail_url,
             media.rating,
-            media.genre,
         ]);
+        await conn.query(`INSERT INTO archivr_db.Media_Genre (genre, media_id)
+      VALUES ${media.genres?.map(() => "(?, ?)").join(", ")}`, media.genres?.flatMap((genre) => [genre, media.id]));
     }
     catch (error) {
         console.error(error);
@@ -20,8 +21,7 @@ export async function insert_media(media) {
 // dont make it use the id property of media that would be stupid
 export async function update_media(media_id, media) {
     try {
-        console.log(media);
-        await conn.query(`UPDATE Media SET category=?, title=?, description=?, release_date=?, age_rating=?, thumbnail_url=?, rating=?, genre=? WHERE id=?;`, [
+        await conn.query(`UPDATE Media SET category=?, title=?, description=?, release_date=?, age_rating=?, thumbnail_url=?, rating=? WHERE id=?;`, [
             media.category,
             media.title,
             media.description,
@@ -29,9 +29,12 @@ export async function update_media(media_id, media) {
             media.age_rating,
             media.thumbnail_url,
             media.rating,
-            media.genre,
             media_id,
         ]);
+        await conn.query(`DELETE FROM archivr_db.Media_Genre
+      WHERE media_id = ?;`, [media.id]);
+        await conn.query(`INSERT INTO archivr_db.Media_Genre (genre, media_id)
+      VALUES ${media.genres?.map(() => "(?, ?)").join(", ")}`, media.genres?.flatMap((genre) => [genre, media.id]));
     }
     catch (error) {
         console.error(error);
