@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
+import { useAuth } from "@/context/auth";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { json } from "stream/consumers";
 
 /*
 usernames
@@ -82,6 +85,8 @@ function ProfileSettingsMenuButton({category, selectedMenu, setSelectedMenu}: {c
 }
 
 function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
+    const { user } = useAuth();
+    
     return (
         <div className="flex flex-col gap-2">
             <div className="flex items-center gap-5 self-stretch">
@@ -101,7 +106,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                         <p className="text-base font-medium leading-normal text-[#7F7F7E]">
                             Username
                         </p>
-                        <Input disabled className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
+                        <Input disabled value={user?.username} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
                         </Input>
                     </div>
 
@@ -191,12 +196,19 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
 }
 
 function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
+    const hash = localStorage.getItem("access_token")?.split('.')[1];
+    let email:string = "";
+    if (hash){
+        email = atob(hash);
+        email = JSON.parse(email).user.email;
+    }
+    
     return (
         <div className="flex flex-col gap-2 self-stretch">
             <p className="text-base font-medium leading-normal text-[#7F7F7E]">
                 Email
             </p>
-            <Input disabled className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
+            <Input disabled value={email?email:"???"} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
             </Input>
             <p className="text-white text-2xl font-light leading-normal">
                 Change Password
