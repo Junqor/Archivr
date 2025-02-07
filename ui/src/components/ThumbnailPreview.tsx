@@ -34,7 +34,7 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
       style={{
         backgroundImage: `url(${media.thumbnail_url.replace(
           ".jpg",
-          "_t.jpg"
+          "_t.jpg",
         )})`,
       }}
       className="relative aspect-2/3 cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10"
