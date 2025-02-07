@@ -5,7 +5,11 @@ import { generateSalt, hashPassword } from "../utils/hashPassword.js";
 import { z } from "zod";
 import { conn } from "../configs/digitalocean.config.js";
 import jwt from 'jsonwebtoken';
-var fs = require('fs');
+//var fs = require('fs');
+
+
+
+export async function emailVer(email: string, url: string){
 
 
 const html = `<!DOCTYPE html>
@@ -27,6 +31,7 @@ padding-bottom: 600px;">
     height: 150px;" src="https://www.cabq.gov/artsculture/biopark/news/10-cool-facts-about-penguins/@@images/1a36b305-412d-405e-a38b-0947ce6709ba.jpeg" alt="penguin">  
     <h1 style="color: #F2F2F0;">Hello lets reset your password</h1>
     <p style="color: #F2F2F0;">Please clicked the link to change your password.</p>
+    <a href="${url}">
     <button style="
     border: none;
     color: #0D0D0D;
@@ -40,12 +45,11 @@ padding-bottom: 600px;">
     border-radius: 15%;
     cursor: pointer;
     background-color: #F2F2F0; "type="button">Reset</button>
+    </a>
 </div>
 
 </body>
 </html>`; //<--html
-
-export async function emailVer(email: string){
 
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -64,11 +68,7 @@ export async function emailVer(email: string){
         html: html,
     });
 
-   // sign with RSA SHA256
- // var privateKey = fs.readFileSync('private.key');
- // var token = jwt.sign({ email: email }, privateKey, { algorithm: 'RS256' }); //store token in data base
-
-   // console.log("Message sent: " + info.messageId);
+   
     
 }
 
