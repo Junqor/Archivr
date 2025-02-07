@@ -1,4 +1,4 @@
-import SearchBar from "./searchBar";
+import SearchBar from "../../../components/searchBar";
 import {
   AccountCircle,
   LoginRounded,
@@ -15,26 +15,26 @@ import {
 } from "@/components/ui/dropdown";
 
 export default function Header() {
-  const { user, removeLoginDataFromLocalStorage } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    removeLoginDataFromLocalStorage();
+    logout();
     navigate("/");
   };
 
   // Return the header component
   return (
-    <header className="sticky top-0 left-0 z-50 flex flex-row items-center justify-between w-full h-auto px-6 py-3 bg-black">
+    <header className="sticky left-0 top-0 z-50 flex h-auto w-full flex-row items-center justify-between bg-black px-6 py-3 outline outline-gray-secondary/50">
       <Link
         to="/"
-        className="flex flex-row items-center justify-start h-full gap-3 text-white transition-colors hover:text-purple"
+        className="flex h-full flex-row items-center justify-start gap-3 text-white transition-colors hover:text-purple"
       >
         <ArchivrIcon sx={{ fontSize: "2.25rem" }} />
         <h3 className="font-bold"> Archivr </h3>
       </Link>
 
-      <div className="flex flex-row items-center justify-end h-full gap-6">
+      <div className="flex h-full flex-row items-center justify-end gap-6">
         <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-center sm:gap-6">
           <Link
             to="/"
@@ -69,23 +69,21 @@ export default function Header() {
         </div>
         <div className="flex flex-row items-center justify-center gap-6">
           <SearchBar />
-          {localStorage.getItem("auth") === "true" ? (
+          {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
                 <AccountCircle sx={{ fontSize: "1.5rem" }} />
                 <div className="flex flex-row items-center gap-1">
-                  <h4>{user ? user.username : "User"}</h4>
+                  <h4>{user.username}</h4>
                   <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
                 </div>
               </DropdownTrigger>
               <DropdownContent>
-                {localStorage.getItem("auth") === "true" &&
-                  user &&
-                  user.role === "admin" && (
-                    <DropdownItem onSelect={() => navigate("/admin")}>
-                      Admin Portal{" { }"}
-                    </DropdownItem>
-                  )}
+                {user.role === "admin" && (
+                  <DropdownItem onSelect={() => navigate("/admin")}>
+                    Admin Portal{" { }"}
+                  </DropdownItem>
+                )}
                 <DropdownItem onSelect={() => navigate("/profile")}>
                   Profile
                 </DropdownItem>
@@ -136,5 +134,5 @@ const ArchivrIcon = createSvgIcon(
       </clipPath>
     </defs>
   </svg>,
-  "ArchivrIcon"
+  "ArchivrIcon",
 );

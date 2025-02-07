@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessagesSquare, Send } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +33,6 @@ export function MediaPage() {
     return <Navigate to="/404" />;
   }
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [rating, setRating] = useState(0);
   const [ratingPreview, setRatingPreview] = useState(0);
   const [review, setReview] = useState("");
@@ -53,16 +52,8 @@ export function MediaPage() {
     setReview(e.target.value);
   }
 
-  const checkAuth = () => {
-    if (!localStorage.getItem("access_token")) {
-      navigate("/login");
-      return true;
-    }
-    return false;
-  };
-
   const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } =
-    useMedia(id as string, user?.id ?? "");
+    useMedia(id as string, user ? `${user.id}` : "");
 
   const { data: reviewsLikedByUser } = useQuery({
     queryKey: ["media", id, "reviews/check-likes"],
@@ -80,8 +71,6 @@ export function MediaPage() {
   });
 
   const handleLike = () => {
-    // First check if there is an existing auth token
-    if (checkAuth()) return;
     updateLikes();
   };
 

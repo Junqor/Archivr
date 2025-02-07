@@ -17,8 +17,8 @@ import { tryLogin, trySignup } from "@/api/auth";
 
 // LoginPopUp component
 export function Login() {
-  const { user, addLoginDataToLocalStorage } = useAuth();
-  if (user?.id) return <Navigate to="/" />;
+  const { user, setLoginData } = useAuth();
+  if (user) return <Navigate to="/" />;
 
   const [isOnLogin, setIsOnLogin] = useState(true);
   const [username, setUsername] = useState("");
@@ -31,12 +31,12 @@ export function Login() {
 
   const { mutate: login } = useMutation({
     mutationFn: tryLogin,
-    onSuccess: (data) => {
-      addLoginDataToLocalStorage(data);
+    onSuccess: async (_data) => {
+      await setLoginData();
       toast.success("Logged in successfully");
 
       // Redirect the user back to the page they were on before logging in
-      const from = location.state?.from?.pathname || "/";
+      const from = location.state.from || "/";
       navigate(from);
     },
     onError: (err) => {
@@ -47,8 +47,8 @@ export function Login() {
   useEffect(() => {
     if (error) {
       toast.error(error);
-      setUsername("");
-      setEmail("");
+      // setUsername("");
+      // setEmail("");
       setPassword("");
       setConfirmPassword("");
     }
@@ -87,10 +87,10 @@ export function Login() {
 
   // Return the login popup component
   return (
-    <main className="flex flex-row w-screen h-screen overflow-y-auto font-normal bg-black">
+    <main className="flex h-screen w-screen flex-row overflow-y-auto bg-black font-normal">
       <link rel="preload" as="image" href="/assets/login-bg.png"></link>
-      <section className="hidden w-full h-full bg-black sm:block">
-        <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+      <section className="hidden h-full w-full bg-black sm:block">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4">
           <div className="flex flex-col items-center">
             <h1 className="font-bold">
               Welcome to <span className="text-purple">Archivr</span>
@@ -100,30 +100,30 @@ export function Login() {
           <div className="flex flex-row space-x-4">
             <Link
               to="/" // Link to the home page
-              className="px-6 py-2 transition-colors rounded-full bg-purple hover:bg-purple/75"
+              className="rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
             >
               Back to Home
             </Link>
             <Link
               to="/random" // Link to the random media page
-              className="box-border flex items-center justify-center px-6 py-1 transition-colors bg-transparent border border-white rounded-full hover:bg-white hover:text-black"
+              className="box-border flex items-center justify-center rounded-full border border-white bg-transparent px-6 py-1 transition-colors hover:bg-white hover:text-black"
             >
               Random Media
             </Link>
           </div>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center w-full h-full gap-4 px-8 py-4 bg-left bg-no-repeat bg-cover sm:w-fit bg-login-bg sm:py-8 sm:px-32 sm:border-l-2 sm:border-gray">
+      <section className="flex h-full w-full flex-col items-center justify-center gap-4 bg-login-bg bg-cover bg-left bg-no-repeat px-8 py-4 sm:w-fit sm:border-l-2 sm:border-gray sm:px-32 sm:py-8">
         <motion.div
-          className="max-w-sm p-0 overflow-hidden bg-black rounded-lg w-max"
+          className="w-max max-w-sm overflow-hidden rounded-lg bg-black p-0"
           layout
           transition={{ duration: 0.1 }}
         >
-          <motion.div layout className="flex flex-row w-full">
+          <motion.div layout className="flex w-full flex-row">
             <button
               className={`${
                 isOnLogin ? "bg-purple" : "bg-black"
-              } w-1/2 m-0 rounded-none hover:bg-purple h-10 transition-colors`}
+              } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
               onClick={() => setIsOnLogin(true)}
             >
               Sign In
@@ -131,7 +131,7 @@ export function Login() {
             <button
               className={`${
                 isOnLogin ? "bg-black" : "bg-purple"
-              } w-1/2 m-0 rounded-none hover:bg-purple h-10 transition-colors`}
+              } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
               onClick={() => setIsOnLogin(false)}
             >
               Sign Up
@@ -141,9 +141,9 @@ export function Login() {
             layout
             transition={{ duration: 0.1 }}
             onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
-            className="flex flex-col px-6 py-6 space-y-4"
+            className="flex flex-col space-y-4 px-6 py-6"
           >
-            <h2 className="font-bold leading-tight text-center">
+            <h2 className="text-center font-bold leading-tight">
               {isOnLogin ? (
                 <>
                   Welcome back
@@ -212,7 +212,7 @@ export function Login() {
               <>
                 <button
                   type="submit"
-                  className="flex items-center self-center justify-center px-6 py-2 transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
+                  className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
                 >
                   Continue to Archivr
                 </button>
@@ -224,7 +224,7 @@ export function Login() {
               <>
                 <button
                   type="submit"
-                  className="flex items-center self-center justify-center px-6 py-2 transition-colors rounded-full bg-purple hover:bg-purple/75 w-fit"
+                  className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
                 >
                   Start on Archivr
                 </button>
