@@ -11,6 +11,7 @@ const schema = z.object({
   JWT_SECRET: z.string(),
   REFRESH_TOKEN_SECRET: z.string(),
   TMDB_API_KEY: z.string(),
+  TVDB_API_KEY: z.string(),
 });
 //
 const envVariables = {
@@ -21,6 +22,7 @@ const envVariables = {
   JWT_SECRET: process.env.JWT_SECRET,
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   TMDB_API_KEY: process.env.TMDB_API_KEY,
+  TVDB_API_KEY: process.env.TVDB_API_KEY,
 };
 
 const serverConfig = schema.parse(envVariables);
