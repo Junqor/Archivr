@@ -1,6 +1,6 @@
 // homePage.tsx
 import IconBox from "@/components/icon-box";
-import StatsBox from "@/components/stats-box";
+import StatsBox from "@/pages/homePage/components/statsBox";
 import { Link } from "react-router-dom";
 import { NewForYouCarousel } from "./components/newForYouCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
