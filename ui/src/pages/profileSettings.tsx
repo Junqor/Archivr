@@ -6,8 +6,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useAuth } from "@/context/auth";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { json } from "stream/consumers";
 
 /*
 usernames
