@@ -41,3 +41,9 @@ export type TReview = {
   created_at: string | null;
   rating: number | null;
 };
+
+export type TGenre = {
+  media_id: number;
+  genre: string;
+  id: number;
+};
