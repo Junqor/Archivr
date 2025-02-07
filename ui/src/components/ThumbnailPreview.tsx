@@ -1,7 +1,6 @@
 // ThumbnailPreview.tsx
 
 import { useEffect, useState } from "react";
-import { TMedia } from "@/types/media";
 import { getLikes, getUserRating } from "@/api/media";
 import { Link } from "react-router-dom";
 import {
@@ -11,7 +10,14 @@ import {
 } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
 
-function ThumbnailPreview({ media }: { media: TMedia }) {
+export type TThumbnailPreview = {
+  id: number;
+  title: string;
+  thumbnail_url: string;
+  rating: number | null;
+};
+
+function ThumbnailPreview({ media }: { media: TThumbnailPreview }) {
   const [likes, setLikes] = useState<number | null>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
 

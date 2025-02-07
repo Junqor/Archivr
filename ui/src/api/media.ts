@@ -63,12 +63,24 @@ export const getMostPopular = async (): Promise<TMedia[]> => {
   return data.media as TMedia[];
 };
 
-export const getRecentlyReviewed = async (): Promise<TMedia[]> => {
+export type TRecentlyReviewed = {
+  id: number;
+  title: string;
+  thumbnail_url: string;
+  rating: number;
+  userId: number;
+  userName: string;
+  review: string | null;
+  reviewRating: number;
+  created_at: string;
+}[];
+
+export const getRecentlyReviewed = async (): Promise<TRecentlyReviewed> => {
   const response = await fetch(
     import.meta.env.VITE_API_URL + "/media/recent-reviews",
   );
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media;
 };
 
 export const getTrending = async (): Promise<TMedia[]> => {

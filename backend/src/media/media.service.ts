@@ -5,10 +5,13 @@ import {
   reviews as ReviewsTable,
   users as UsersTable,
   likesReviews as likesReviewsTable,
+  media,
+  reviews,
+  users,
+  remoteId,
 } from "../db/schema.js";
 import { desc, eq } from "drizzle-orm/expressions";
-import { count } from "drizzle-orm";
-import { media, remoteId } from "../db/schema.js";
+import { count, sql } from "drizzle-orm";
 
 export async function update_rating(
   media_id: number,
@@ -180,19 +183,31 @@ export async function getMostPopular() {
 }
 
 export async function get_recently_reviewed() {
-  let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    `SELECT DISTINCT
-      Media.id,
-      Media.title,
-      Media.thumbnail_url,
-      Media.Rating as rating,
-      MAX(Reviews.created_at) AS created_at
-    FROM Media
-    INNER JOIN Reviews ON Media.id = Reviews.media_id
-    GROUP BY Media.id, Media.title, Media.thumbnail_url
-    ORDER BY created_at DESC
-    LIMIT 8;`
-  );
+  let rows = await db
+    .selectDistinct({
+      id: media.id,
+      title: media.title,
+      thumbnail_url: media.thumbnailUrl,
+      rating: media.rating,
+      userId: users.id,
+      userName: users.username,
+      review: reviews.comment,
+      reviewRating: reviews.rating,
+      created_at: reviews.createdAt,
+    })
+    .from(media)
+    .innerJoin(reviews, eq(media.id, reviews.mediaId))
+    .innerJoin(users, eq(users.id, reviews.userId))
+    .where(
+      // Ensure only the most recent reviews for each media is selected. Still have to write raw sql for this one 🤕
+      sql`Reviews.created_at = (
+        SELECT MAX(r.created_at)
+        FROM Reviews r
+        WHERE r.media_id = Reviews.media_id
+      )`
+    )
+    .orderBy(desc(reviews.createdAt))
+    .limit(8);
 
   return {
     status: "success",
