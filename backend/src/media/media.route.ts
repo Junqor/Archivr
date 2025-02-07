@@ -11,6 +11,8 @@ import {
   update_review,
   get_user_stats,
   getMostPopular,
+  getMediaBackground,
+  getMediaTrailer,
 } from "./media.service.js";
 import { z, ZodError } from "zod";
 import { authenticateToken } from "../middleware/authenticateToken.js";
@@ -146,4 +148,28 @@ mediaRouter.get("/stats/:userId", async (req, res) => {
   const userId = parseInt(req.params.userId);
   const result = await get_user_stats(userId);
   res.json({ status: "success", stats: result });
+});
+
+// (GET /media/background/:id)
+// get media background by id
+mediaRouter.get("/background/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await getMediaBackground(parseInt(id));
+    res.status(200).json({ status: "success", result });
+  } catch (error) {
+    res.status(500).json({ status: "failed", message: "Something went wrong" });
+  }
+});
+
+// (GET /media/trailer/:id)
+// get media trailer by id
+mediaRouter.get("/trailer/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await getMediaTrailer(parseInt(id));
+    res.status(200).json({ status: "success", result });
+  } catch (error) {
+    res.status(500).json({ status: "failed", message: "Something went wrong" });
+  }
 });
