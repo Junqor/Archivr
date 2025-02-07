@@ -16,15 +16,15 @@ export default function HomePage() {
     <>
       {user ? (
         <>
-          <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-            <section className="order-2 flex flex-col justify-center gap-3 sm:order-1">
+          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+            <section className="flex flex-col items-center justify-center gap-3 md:items-start">
               <h1 className="font-extrabold">
                 Welcome back,{" "}
                 <span className="font-bold text-purple">{user.username}</span>
                 ! <br /> Here's what's new for you.
               </h1>
             </section>
-            <section className="order-1 flex h-full w-full flex-col justify-center gap-3 sm:order-2">
+            <section className="order-1 flex h-full w-full flex-col items-center justify-center gap-3 md:order-2">
               <StatsBox userId={user.id} />
             </section>
           </div>
@@ -61,8 +61,8 @@ export default function HomePage() {
         </>
       ) : (
         <>
-          <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-            <section className="order-2 flex flex-col gap-3 sm:order-1">
+          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+            <section className="flex flex-col gap-3">
               <h1 className="font-extrabold leading-[normal]">
                 Track What You Love, Discover What's Next.
               </h1>
@@ -85,13 +85,13 @@ export default function HomePage() {
                 </Link>
               </div>
             </section>
-            <section className="order-1 h-full sm:order-2">
+            <section className="h-full">
               <MostPopularCarousel />
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
             <h4 className="uppercase">Discover on Archivr...</h4>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
               <IconBox
                 iconName="TrendingUp"
                 description="Discover what's popular with real-time trending media across movies, shows, and more."

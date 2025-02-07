@@ -13,7 +13,7 @@ export function RecentlyReviewed() {
   });
 
   return (
-    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <section className="grid grid-cols-1 gap-3 md:grid-cols-2">
       {media
         ? media.map((item) => (
             <div className="flex min-h-0 flex-row gap-3" key={item.id}>
