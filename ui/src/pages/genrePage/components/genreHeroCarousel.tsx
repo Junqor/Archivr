@@ -31,7 +31,9 @@ export default function HeroMediaCarousel({ media }: HeroMediaCarouselProps) {
       }}
       breakpoints={{
         640: {
-          navigation: true,
+          navigation: {
+            enabled: true,
+          },
         },
       }}
     >

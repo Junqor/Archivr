@@ -50,7 +50,7 @@ export async function get_media_genre(
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
     `SELECT * FROM Media WHERE id IN (
             SELECT media_id FROM Media_Genre WHERE genre = ?)
-            ORDER BY ${orderByClause} ${order.toUpperCase()} LIMIT 20 OFFSET ?;`,
+            ORDER BY ${orderByClause} ${order.toUpperCase()} LIMIT 30 OFFSET ?;`,
     [genre, offset]
   );
   return rows;

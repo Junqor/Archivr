@@ -13,10 +13,24 @@ import {
   DropdownContent,
   DropdownItem,
 } from "@/components/ui/dropdown";
+import { getGenres } from "@/api/genre";
+import { TGenre } from "@/types/genre";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch genres
+  const {
+    data: genres,
+    isLoading: isGenresLoading,
+    error: genresError,
+  } = useQuery({
+    queryKey: ["genres"],
+    queryFn: getGenres,
+    select: (data) => data as unknown as TGenre[],
+  });
 
   const handleLogout = () => {
     logout();
@@ -42,12 +56,24 @@ export default function Header() {
           >
             Home
           </Link>
-          <Link
-            to="/genre"
-            className="text-white transition-colors hover:text-purple"
-          >
-            Genre
-          </Link>
+          <Dropdown>
+            <DropdownTrigger className="flex flex-row items-center justify-center gap-1 text-base text-white transition-colors hover:text-purple">
+              Genre
+              <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
+            </DropdownTrigger>
+            <DropdownContent className="grid grid-cols-5 gap-2 bg-black p-2">
+              {isGenresLoading && <DropdownItem>Loading...</DropdownItem>}
+              {genresError && <DropdownItem>Error loading genres</DropdownItem>}
+              {genres?.map((genre) => (
+                <DropdownItem
+                  key={genre.slug}
+                  onSelect={() => navigate(`/genre/${genre.slug}`)}
+                >
+                  {genre.genre}
+                </DropdownItem>
+              ))}
+            </DropdownContent>
+          </Dropdown>
           <Link
             to="/trending"
             className="text-white transition-colors hover:text-purple"

@@ -37,7 +37,7 @@ function ThumbnailPreview({ media }: { media: TMedia }) {
           "_t.jpg",
         )})`,
       }}
-      className="relative aspect-2/3 cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10"
+      className="relative aspect-[2/3] cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10"
     >
       <Link
         to={`/media/${media.id}`}
