@@ -10,7 +10,8 @@ import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
 import { ProfileSettings } from "@/pages/profileSettings";
-import BrowsePage from "@/pages/browsePage/browsePage";
+import LoginRequiredRoute from "@/components/loginRequiredRoute";
+
 // Define the router configuration
 const router = createBrowserRouter([
   {
@@ -77,7 +78,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings",
-        element: <ProfileSettings />,
+        element: (
+          <LoginRequiredRoute>
+            <ProfileSettings />
+          </LoginRequiredRoute>
+        ),
       },
       {
         path: "/genre",
