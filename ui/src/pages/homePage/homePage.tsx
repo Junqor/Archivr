@@ -8,6 +8,7 @@ import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
 import { CalendarPlus, MessageCircleHeart, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/auth";
+import { Separator } from "@/components/ui/separator";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function HomePage() {
               <CalendarPlus />
               <h4 className="uppercase">New for you...</h4>
             </div>
+            <Separator />
             <section className="h-full">
               <NewForYouCarousel />
             </section>
@@ -42,6 +44,7 @@ export default function HomePage() {
               <Sparkles />
               <h4 className="uppercase">All time most popular...</h4>
             </div>
+            <Separator />
             <section className="h-full">
               <MostPopularCarousel
                 slidesPerViewMobile={4}
@@ -56,6 +59,7 @@ export default function HomePage() {
               <MessageCircleHeart />
               <h4 className="uppercase">Recently Reviewed...</h4>
             </div>
+            <Separator />
             <RecentlyReviewed />
           </section>
         </>
@@ -119,7 +123,11 @@ export default function HomePage() {
             </div>
           </section>
           <section className="flex w-full flex-col justify-start gap-3">
-            <h4 className="uppercase">Recently Reviewed...</h4>
+            <div className="flex flex-row space-x-4">
+              <MessageCircleHeart />
+              <h4 className="uppercase">Recently Reviewed...</h4>
+            </div>
+            <Separator />
             <RecentlyReviewed />
           </section>
           <section className="flex w-full flex-col justify-start gap-3">
@@ -127,6 +135,7 @@ export default function HomePage() {
               Explore trending hits and hidden gems in movies, shows, music, and
               more - just for you!
             </h3>
+            <Separator />
             <h4>
               Check out top-rated picks from this week. Sign up to start
               curating your own!
