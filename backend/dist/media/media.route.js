@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { get_likes, get_media_reviews, get_top_rated, get_trending, get_recently_reviewed, get_new_for_you, is_liked, update_likes, update_review, get_user_stats, } from "./media.service.js";
+import { get_likes, get_media_reviews, get_media_rating, get_trending, get_recently_reviewed, get_new_for_you, is_liked, update_likes, update_review, get_user_stats, getMostPopular, getMediaBackground, getMediaTrailer, } from "./media.service.js";
 import { z, ZodError } from "zod";
-import { authenticateToken, } from "../middleware/authenticateToken.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 export const mediaRouter = Router();
 const updateLikesBodySchema = z.object({
     media_id: z.number(),
@@ -10,9 +10,9 @@ const updateLikesBodySchema = z.object({
 // update likes for a media
 mediaRouter.post("/like", authenticateToken, async (req, res) => {
     try {
-        const token = req.token;
+        const { user } = res.locals;
         const { media_id } = updateLikesBodySchema.parse(req.body);
-        await update_likes(media_id, token.user.id);
+        await update_likes(media_id, user.id);
         res.json({ status: "success" });
     }
     catch (err) {
@@ -57,6 +57,21 @@ mediaRouter.get("/reviews/:mediaId", async (req, res) => {
             .json({ status: "failed", message: error.message });
     }
 });
+// (GET /media/user-rating/:mediaId)
+// Get the user rating (total average) for a media
+mediaRouter.get("/user-rating/:mediaId", async (req, res) => {
+    const mediaId = parseInt(req.params.mediaId);
+    try {
+        const rating = await get_media_rating(mediaId);
+        res.json({ status: "success", rating: rating });
+    }
+    catch (error) {
+        console.error(error);
+        res
+            .status(400)
+            .json({ status: "failed", message: error.message });
+    }
+});
 const reviewBodySchema = z.object({
     media_id: z.number(),
     comment: z.string(),
@@ -66,9 +81,9 @@ const reviewBodySchema = z.object({
 // Update or add a review for a media
 mediaRouter.post("/review", authenticateToken, async (req, res) => {
     try {
-        const token = req.token;
-        const { media_id, comment } = reviewBodySchema.parse(req.body);
-        await update_review(media_id, token.user.id, comment);
+        const { user } = res.locals;
+        const { media_id, comment, rating } = reviewBodySchema.parse(req.body);
+        await update_review(media_id, user.id, comment, rating);
         res.json({ status: "success" });
     }
     catch (error) {
@@ -77,11 +92,11 @@ mediaRouter.post("/review", authenticateToken, async (req, res) => {
             .json({ status: "failed", message: error.message });
     }
 });
-// (GET /media/top)
-// Get the top rated media
-mediaRouter.get("/top", async (req, res) => {
-    const result = await get_top_rated();
-    res.json({ status: "success", media: result.media });
+// (GET /media/popular)
+// Get the most popular media as defined by the data retrieved from the api
+mediaRouter.get("/popular", async (req, res) => {
+    const { media } = await getMostPopular();
+    res.json({ status: "success", media: media });
 });
 // (GET /media/recent-reviews)
 // Get the most recent reviews
@@ -108,4 +123,28 @@ mediaRouter.get("/stats/:userId", async (req, res) => {
     const userId = parseInt(req.params.userId);
     const result = await get_user_stats(userId);
     res.json({ status: "success", stats: result });
+});
+// (GET /media/background/:id)
+// get media background by id
+mediaRouter.get("/background/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await getMediaBackground(parseInt(id));
+        res.status(200).json({ status: "success", result });
+    }
+    catch (error) {
+        res.status(500).json({ status: "failed", message: "Something went wrong" });
+    }
+});
+// (GET /media/trailer/:id)
+// get media trailer by id
+mediaRouter.get("/trailer/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await getMediaTrailer(parseInt(id));
+        res.status(200).json({ status: "success", result });
+    }
+    catch (error) {
+        res.status(500).json({ status: "failed", message: "Something went wrong" });
+    }
 });

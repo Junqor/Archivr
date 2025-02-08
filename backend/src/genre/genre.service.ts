@@ -1,7 +1,7 @@
-import { conn } from "../db/database";
+import { conn } from "../db/database.js";
 import { RowDataPacket } from "mysql2";
 import { TGenre, TMedia } from "../types/index.js";
-import { slugify } from "../utils/slugify";
+import { slugify } from "../utils/slugify.js";
 
 // Get 5 most popular media of a certain genre
 export async function get_popular_media_genre(
@@ -19,7 +19,9 @@ export async function get_popular_media_genre(
       `SELECT genre FROM Media_Genre WHERE media_id = ?`,
       [media.id]
     );
-    media.genres = genres.map((row: { genre: string }) => row.genre);
+    media.genres = (genres as Array<RowDataPacket & { genre: string }>).map(
+      (row) => row.genre
+    );
   }
 
   return rows;
@@ -61,7 +63,7 @@ export async function get_genres(): Promise<{ genre: string; slug: string }[]> {
   let [rows] = await conn.query<RowDataPacket[]>(
     `SELECT DISTINCT genre FROM Media_Genre;`
   );
-  return rows.map((row: { genre: string }) => ({
+  return (rows as Array<{ genre: string }>).map((row) => ({
     genre: row.genre,
     slug: slugify(row.genre),
   }));

@@ -1,15 +1,19 @@
-import { conn } from "../configs/digitalocean.config.js";
+import { conn, db } from "../db/database.js";
+import { reviews as ReviewsTable, users as UsersTable, likesReviews as likesReviewsTable, } from "../db/schema.js";
+import { desc, eq } from "drizzle-orm/expressions";
+import { count } from "drizzle-orm";
+import { media, remoteId } from "../db/schema.js";
 export async function update_rating(media_id, user_id, new_rating) {
     let [rows] = await conn.query("INSERT INTO Ratings (media_id, user_id, rating) VALUES (?, ?, ?) " +
         "ON DUPLICATE KEY UPDATE rating = ?", [media_id, user_id, new_rating, new_rating]);
     return;
 }
 export async function get_media_rating(media_id) {
-    let [rows] = await conn.query("SELECT AVG(rating) as avg FROM Ratings WHERE media_id=?;", [media_id]);
+    let [rows] = await conn.query("SELECT AVG(rating) as avg FROM Reviews WHERE media_id=?;", [media_id]);
     if (rows[0].length == 0) {
         throw Error("RATINGS AREN'T REAL");
     }
-    return rows[0][0].avg;
+    return rows[0].avg;
 }
 export async function get_user_rating(media_id, user_id) {
     let [rows] = await conn.query("SELECT rating as rat FROM Ratings WHERE media_id=? AND user_id=?;", [media_id, user_id]);
@@ -18,18 +22,31 @@ export async function get_user_rating(media_id, user_id) {
     }
     return rows[0][0].rat;
 }
-export async function update_review(media_id, user_id, new_comment) {
-    let [rows] = await conn.query("INSERT INTO Reviews (media_id,user_id,comment) VALUES (?,?,?) " +
-        "ON DUPLICATE KEY UPDATE comment = ?", [media_id, user_id, new_comment, new_comment]);
+export async function update_review(media_id, user_id, new_comment, new_rating) {
+    let [rows] = await conn.query("INSERT INTO Reviews (media_id,user_id,comment,rating) VALUES (?,?,?,?) " +
+        "ON DUPLICATE KEY UPDATE comment = ?, rating = ?, created_at = CURRENT_TIMESTAMP", [media_id, user_id, new_comment, new_rating, new_comment, new_rating]);
     return;
 }
 export async function get_media_reviews(media_id, amount, offset) {
-    let [rows] = await conn.query(`SELECT Users.username, Reviews.comment, Reviews.created_at 
-    FROM Reviews 
-    INNER JOIN Users ON Reviews.user_id = Users.id 
-    WHERE Reviews.media_id = ? 
-    ORDER BY Reviews.created_at DESC
-    LIMIT ? OFFSET ?;`, [media_id, amount, offset]);
+    let rows = await db
+        .select({
+        id: ReviewsTable.id,
+        user_id: UsersTable.id,
+        media_id: ReviewsTable.mediaId,
+        username: UsersTable.username,
+        comment: ReviewsTable.comment,
+        created_at: ReviewsTable.createdAt,
+        rating: ReviewsTable.rating,
+        likes: count(likesReviewsTable.id).as("likes_count"),
+    })
+        .from(ReviewsTable)
+        .innerJoin(UsersTable, eq(ReviewsTable.userId, UsersTable.id))
+        .leftJoin(likesReviewsTable, eq(ReviewsTable.id, likesReviewsTable.reviewId))
+        .where(eq(ReviewsTable.mediaId, media_id))
+        .groupBy(ReviewsTable.id)
+        .orderBy(desc(ReviewsTable.createdAt))
+        .limit(amount)
+        .offset(offset);
     return rows;
 }
 export async function get_user_review(media_id, user_id) {
@@ -59,30 +76,32 @@ export async function get_likes(media_id) {
     let [rows] = await conn.query("SELECT COUNT(*) as num FROM Likes WHERE media_id=?;", [media_id]);
     return rows[0].num ?? 0;
 }
-export async function get_top_rated() {
-    let [rows] = await conn.query(`SELECT 
-    Media.id,
-    Media.category,
-    Media.title,
-    Media.description,
-    Media.release_date,
-    Media.age_rating,
-    Media.thumbnail_url,
-    Media.genre,
-    Media.rating AS rating,
-    COALESCE(AVG(Ratings.rating), 0) AS average_rating,
-    COUNT(Ratings.rating) AS num_ratings,
-    (
-        (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
-        (50 / (COUNT(Ratings.rating) + 50)) * (
-            SELECT COALESCE(AVG(rating), 0) FROM Ratings
-        )
-    ) AS weighted_rating
-FROM Media
-LEFT JOIN Ratings ON Media.id = Ratings.media_id
-GROUP BY Media.id
-ORDER BY weighted_rating DESC
-LIMIT 15;`);
+export async function getMostPopular() {
+    //   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
+    //     `SELECT
+    //     Media.id,
+    //     Media.category,
+    //     Media.title,
+    //     Media.description,
+    //     Media.release_date,
+    //     Media.age_rating,
+    //     Media.thumbnail_url,
+    //     Media.rating AS rating,
+    //     COALESCE(AVG(Ratings.rating), 0) AS average_rating,
+    //     COUNT(Ratings.rating) AS num_ratings,
+    //     (
+    //         (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
+    //         (50 / (COUNT(Ratings.rating) + 50)) * (
+    //             SELECT COALESCE(AVG(rating), 0) FROM Ratings
+    //         )
+    //     ) AS weighted_rating
+    // FROM Media
+    // LEFT JOIN Ratings ON Media.id = Ratings.media_id
+    // GROUP BY Media.id
+    // ORDER BY weighted_rating DESC
+    // LIMIT 15;`
+    //   );
+    let [rows] = await conn.query(`SELECT * FROM Media ORDER BY rating DESC LIMIT 15;`);
     return {
         status: "success",
         media: rows,
@@ -115,7 +134,6 @@ export async function get_trending() {
         Media.release_date,
         Media.age_rating,
         Media.thumbnail_url,
-        Media.genre,
         Media.rating AS base_rating,
         AVG(Ratings.rating) AS average_rating,
         COUNT(Ratings.rating) AS num_ratings,
@@ -147,7 +165,6 @@ export async function get_trending() {
       release_date,
       age_rating,
       thumbnail_url,
-      genre,
       base_rating as rating,
       average_rating,
       num_ratings,
@@ -187,3 +204,54 @@ export async function get_user_stats(user_id) {
     (SELECT COUNT(*) FROM Ratings WHERE user_id = ?) AS ratings;`, [user_id, user_id, user_id]);
     return rows[0];
 }
+export const getMediaBackground = async (id) => {
+    const [{ tvdbId, type }] = await db
+        .select({ tvdbId: remoteId.tvdbId, type: media.category })
+        .from(remoteId)
+        .leftJoin(media, eq(media.id, remoteId.id))
+        .where(eq(remoteId.id, id));
+    if (!tvdbId) {
+        throw new Error("Failed to fetch media background");
+    }
+    const url = `https://api4.thetvdb.com/v4/${type === "movie" ? "movies" : "series"}/${tvdbId}/extended`;
+    const response = await fetch(url, {
+        headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+        },
+    });
+    if (!response.ok) {
+        throw new Error("Failed to fetch media background");
+    }
+    const data = await response.json();
+    const background = data.data.artworks.find((artwork) => artwork.image && artwork.image.includes("backgrounds"));
+    // If no background is found, select the first image with fanart in the url
+    if (!background) {
+        return data.data.artworks.find((artwork) => artwork.image && artwork.image.includes("fanart"))?.image;
+    }
+    return background ? background.image : null;
+};
+// Get the first trailer link from thetvdb API for a media
+export const getMediaTrailer = async (id) => {
+    const [{ tvdbId, type }] = await db
+        .select({ tvdbId: remoteId.tvdbId, type: media.category })
+        .from(remoteId)
+        .leftJoin(media, eq(media.id, remoteId.id))
+        .where(eq(remoteId.id, id));
+    if (!tvdbId) {
+        throw new Error("Failed to fetch media trailer");
+    }
+    const url = `https://api4.thetvdb.com/v4/${type === "movie" ? "movies" : "series"}/${tvdbId}/extended`;
+    const response = await fetch(url, {
+        headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+        },
+    });
+    if (!response.ok) {
+        throw new Error("Failed to fetch media trailer");
+    }
+    const data = await response.json();
+    const trailer = data.data.trailers.find((trailer) => trailer.url);
+    return trailer ? trailer.url : null;
+};
