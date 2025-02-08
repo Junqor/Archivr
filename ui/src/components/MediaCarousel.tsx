@@ -41,7 +41,7 @@ export default function MediaCarousel({
         pauseOnMouseEnter: true,
       }}
       breakpoints={{
-        600: {
+        640: {
           spaceBetween: spaceBetweenDesktop,
           slidesPerView: slidesPerViewDesktop,
         },

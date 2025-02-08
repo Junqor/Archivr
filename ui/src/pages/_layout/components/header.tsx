@@ -49,7 +49,7 @@ export default function Header() {
       </Link>
 
       <div className="flex h-full flex-row items-center justify-end gap-6">
-        <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-center sm:gap-6">
+        <div className="hidden flex-row items-center justify-center gap-6 md:flex">
           <Link
             to="/"
             className="text-white transition-colors hover:text-purple"
