@@ -41,6 +41,7 @@ export const theme = {
 };
 export const plugins = [
   require("tailwindcss-animate"),
+  require("@tailwindcss/aspect-ratio"),
   plugin(function ({ addUtilities }) {
     addUtilities({
       /* Hide scrollbar for Chrome, Safari and Opera */

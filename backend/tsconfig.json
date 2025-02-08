@@ -11,6 +11,6 @@
     "rootDir": "src",
     "types": ["node", "jest", "express"]
   },
-  "include": ["src/**/*.ts", "jest"],
+  "include": ["src/**/*.ts", "jest", "src/utils/slugify.js"],
   "exclude": ["node_modules"]
 }

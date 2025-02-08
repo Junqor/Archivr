@@ -8,6 +8,7 @@ import {
 } from "../db/schema.js";
 import { desc, eq } from "drizzle-orm/expressions";
 import { count } from "drizzle-orm";
+import { media, remoteId } from "../db/schema.js";
 
 export async function update_rating(
   media_id: number,
@@ -291,3 +292,105 @@ export async function get_user_stats(user_id: number) {
   );
   return rows[0];
 }
+
+export const getMediaBackground = async (id: number) => {
+  const [{ tvdbId, type }] = await db
+    .select({ tvdbId: remoteId.tvdbId, type: media.category })
+    .from(remoteId)
+    .leftJoin(media, eq(media.id, remoteId.id))
+    .where(eq(remoteId.id, id));
+  if (!tvdbId) {
+    throw new Error("Failed to fetch media background");
+  }
+  const url = `https://api4.thetvdb.com/v4/${
+    type === "movie" ? "movies" : "series"
+  }/${tvdbId}/extended`;
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch media background");
+  }
+
+  const data = await response.json();
+  interface Artwork {
+    type: number;
+    image: string;
+  }
+
+  interface TvdbResponse {
+    data: {
+      artworks: Artwork[];
+    };
+  }
+
+  interface Artwork {
+    type: number;
+    image: string;
+  }
+
+  interface TvdbResponse {
+    data: {
+      artworks: Artwork[];
+    };
+  }
+
+  const background: Artwork | undefined = (
+    data as TvdbResponse
+  ).data.artworks.find(
+    (artwork: Artwork) => artwork.image && artwork.image.includes("backgrounds")
+  );
+  // If no background is found, select the first image with fanart in the url
+  if (!background) {
+    return (data as TvdbResponse).data.artworks.find(
+      (artwork: Artwork) => artwork.image && artwork.image.includes("fanart")
+    )?.image;
+  }
+  return background ? background.image : null;
+};
+
+// Get the first trailer link from thetvdb API for a media
+export const getMediaTrailer = async (id: number) => {
+  const [{ tvdbId, type }] = await db
+    .select({ tvdbId: remoteId.tvdbId, type: media.category })
+    .from(remoteId)
+    .leftJoin(media, eq(media.id, remoteId.id))
+    .where(eq(remoteId.id, id));
+  if (!tvdbId) {
+    throw new Error("Failed to fetch media trailer");
+  }
+  const url = `https://api4.thetvdb.com/v4/${
+    type === "movie" ? "movies" : "series"
+  }/${tvdbId}/extended`;
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch media trailer");
+  }
+
+  const data = await response.json();
+  interface Trailer {
+    type: number;
+    url: string;
+  }
+
+  interface TvdbResponse {
+    data: {
+      trailers: Trailer[];
+    };
+  }
+
+  const trailer: Trailer | undefined = (
+    data as TvdbResponse
+  ).data.trailers.find((trailer: Trailer) => trailer.url);
+  return trailer ? trailer.url : null;
+};
