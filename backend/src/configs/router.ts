@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { authRouter } from "../auth/auth.route.js";
-import { searchRouter } from "../search/search.route.js";
-import { mediaRouter } from "../media/media.route.js";
-import { adminRouter } from "../admin/admin.route.js";
-import { reviewsRouter } from "../reviews/reviews.route.js";
-import { watchRouter } from "../watch/watch.route.js";
-import { genreRouter } from "../genre/genre.route.js";
+import { authRouter } from "../api/auth/auth.route.js";
+import { searchRouter } from "../api/search/search.route.js";
+import { mediaRouter } from "../api/media/media.route.js";
+import { adminRouter } from "../api/admin/admin.route.js";
+import { reviewsRouter } from "../api/reviews/reviews.route.js";
+import { watchRouter } from "../api/watch/watch.route.js";
+import { genreRouter } from "../api/genre/genre.route.js";
 
 const router = Router();
 

@@ -1,4 +1,4 @@
-import { TAuthResult } from "../auth/auth.services.js";
+import { TAuthResult } from "../api/auth/auth.services.js";
 
 type TAuthError = Error & {
   code: string;
