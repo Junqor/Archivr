@@ -1,4 +1,5 @@
 import { TMedia } from "@/types/media";
+import { TGenre } from "@/types/genre";
 import { getAuthHeader } from "@/utils/authHeader";
 
 // Get 5 most popular media of a certain genre
@@ -69,7 +70,7 @@ export const getMediaGenre = async (
 };
 
 // Get a list of distinct genres
-export const getGenres = async (): Promise<string[]> => {
+export const getGenres = async (): Promise<TGenre[]> => {
   const url = import.meta.env.VITE_API_URL + "/genre";
 
   try {
@@ -83,7 +84,7 @@ export const getGenres = async (): Promise<string[]> => {
 
     const data = (await response.json()) as {
       status: string;
-      genres: string[];
+      genres: TGenre[];
     };
 
     if (data.status !== "success") {
