@@ -2,11 +2,11 @@ import { conn, db } from "../db/database.js";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { TMedia, TReview } from "../types/index.js";
 import {
-  reviews as ReviewsTable,
   users as UsersTable,
   likesReviews as likesReviewsTable,
   media,
-  reviews,
+  ratings,
+  userReviews,
   users,
   remoteId,
 } from "../db/schema.js";
@@ -28,7 +28,7 @@ export async function update_rating(
 
 export async function get_media_rating(media_id: number): Promise<number> {
   let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "SELECT AVG(rating) as avg FROM Reviews WHERE media_id=?;",
+    "SELECT AVG(rating) as avg FROM Ratings WHERE media_id=?;",
     [media_id]
   );
   if (rows[0].length == 0) {
@@ -57,11 +57,31 @@ export async function update_review(
   new_comment: string,
   new_rating: number
 ) {
-  let [rows] = await conn.query(
-    "INSERT INTO Reviews (media_id,user_id,comment,rating) VALUES (?,?,?,?) " +
-      "ON DUPLICATE KEY UPDATE comment = ?, rating = ?, created_at = CURRENT_TIMESTAMP",
-    [media_id, user_id, new_comment, new_rating, new_comment, new_rating]
-  );
+  const ratingId = await db
+    .insert(ratings)
+    .values({ mediaId: media_id, userId: user_id, rating: new_rating })
+    .onDuplicateKeyUpdate({
+      set: { rating: new_rating, ratedAt: sql`CURRENT_TIMESTAMP` },
+    })
+    .$returningId();
+
+  if (new_comment.length > 0) {
+    await db
+      .insert(userReviews)
+      .values({
+        mediaId: media_id,
+        userId: user_id,
+        comment: new_comment,
+        ratingId: new_rating,
+      })
+      .onDuplicateKeyUpdate({
+        set: {
+          comment: new_comment,
+          ratingId: ratingId[0].id,
+          createdAt: sql`CURRENT_TIMESTAMP`,
+        },
+      });
+  }
   return;
 }
 
@@ -72,24 +92,22 @@ export async function get_media_reviews(
 ) {
   let rows = await db
     .select({
-      id: ReviewsTable.id,
+      id: userReviews.id,
       user_id: UsersTable.id,
-      media_id: ReviewsTable.mediaId,
+      media_id: userReviews.mediaId,
       username: UsersTable.username,
-      comment: ReviewsTable.comment,
-      created_at: ReviewsTable.createdAt,
-      rating: ReviewsTable.rating,
+      comment: userReviews.comment,
+      created_at: userReviews.createdAt,
+      rating: ratings.rating,
       likes: count(likesReviewsTable.id).as("likes_count"),
     })
-    .from(ReviewsTable)
-    .innerJoin(UsersTable, eq(ReviewsTable.userId, UsersTable.id))
-    .leftJoin(
-      likesReviewsTable,
-      eq(ReviewsTable.id, likesReviewsTable.reviewId)
-    )
-    .where(eq(ReviewsTable.mediaId, media_id))
-    .groupBy(ReviewsTable.id)
-    .orderBy(desc(ReviewsTable.createdAt))
+    .from(userReviews)
+    .innerJoin(UsersTable, eq(userReviews.userId, UsersTable.id))
+    .leftJoin(likesReviewsTable, eq(userReviews.id, likesReviewsTable.reviewId))
+    .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
+    .where(eq(userReviews.mediaId, media_id))
+    .groupBy(userReviews.id)
+    .orderBy(desc(userReviews.createdAt))
     .limit(amount)
     .offset(offset);
 
@@ -101,7 +119,7 @@ export async function get_user_review(
   user_id: number
 ): Promise<TReview> {
   let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    "SELECT * FROM Reviews WHERE media_id=? AND user_id=?;",
+    "SELECT * FROM UserReviews WHERE media_id=? AND user_id=?;",
     [media_id, user_id]
   );
   if (rows[0].length == 0) {
@@ -147,31 +165,6 @@ export async function get_likes(media_id: number): Promise<number> {
 }
 
 export async function getMostPopular() {
-  //   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-  //     `SELECT
-  //     Media.id,
-  //     Media.category,
-  //     Media.title,
-  //     Media.description,
-  //     Media.release_date,
-  //     Media.age_rating,
-  //     Media.thumbnail_url,
-  //     Media.rating AS rating,
-  //     COALESCE(AVG(Ratings.rating), 0) AS average_rating,
-  //     COUNT(Ratings.rating) AS num_ratings,
-  //     (
-  //         (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * COALESCE(AVG(Ratings.rating), 0) +
-  //         (50 / (COUNT(Ratings.rating) + 50)) * (
-  //             SELECT COALESCE(AVG(rating), 0) FROM Ratings
-  //         )
-  //     ) AS weighted_rating
-  // FROM Media
-  // LEFT JOIN Ratings ON Media.id = Ratings.media_id
-  // GROUP BY Media.id
-  // ORDER BY weighted_rating DESC
-  // LIMIT 15;`
-  //   );
-
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
     `SELECT * FROM Media ORDER BY rating DESC LIMIT 15;`
   );
@@ -191,22 +184,23 @@ export async function get_recently_reviewed() {
       rating: media.rating,
       userId: users.id,
       userName: users.username,
-      review: reviews.comment,
-      reviewRating: reviews.rating,
-      created_at: reviews.createdAt,
+      review: userReviews.comment,
+      reviewRating: ratings.rating,
+      created_at: userReviews.createdAt,
     })
     .from(media)
-    .innerJoin(reviews, eq(media.id, reviews.mediaId))
-    .innerJoin(users, eq(users.id, reviews.userId))
+    .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
+    .innerJoin(users, eq(users.id, userReviews.userId))
+    .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
     .where(
       // Ensure only the most recent reviews for each media is selected. Still have to write raw sql for this one 🤕
-      sql`Reviews.created_at = (
+      sql`UserReviews.created_at = (
         SELECT MAX(r.created_at)
-        FROM Reviews r
-        WHERE r.media_id = Reviews.media_id
+        FROM UserReviews r
+        WHERE r.media_id = UserReviews.media_id
       )`
     )
-    .orderBy(desc(reviews.createdAt))
+    .orderBy(desc(userReviews.createdAt))
     .limit(8);
 
   return {
@@ -282,7 +276,7 @@ export async function get_new_for_you(user_id: number) {
       UNION
       SELECT media_id FROM Likes WHERE user_id = ?
       UNION
-      SELECT media_id FROM Reviews WHERE user_id = ?
+      SELECT media_id FROM UserReviews WHERE user_id = ?
     )
     AND Media.release_date <= CURDATE()
     ORDER BY RAND()
@@ -301,7 +295,7 @@ export async function get_user_stats(user_id: number) {
   let [rows] = await conn.query<RowDataPacket[]>(
     `SELECT 
     (SELECT COUNT(*) FROM Likes WHERE user_id = ?) AS likes,
-    (SELECT COUNT(*) FROM Reviews WHERE user_id = ?) AS reviews,
+    (SELECT COUNT(*) FROM UserReviews WHERE user_id = ?) AS reviews,
     (SELECT COUNT(*) FROM Ratings WHERE user_id = ?) AS ratings;`,
     [user_id, user_id, user_id]
   );

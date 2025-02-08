@@ -38,6 +38,8 @@ export const media = mysqlTable("Media", {
 	runtime: int(),
 },
 (table) => [
+	index("Media_category_IDX").on(table.category),
+	index("Media_rating_IDX").on(table.rating),
 	primaryKey({ columns: [table.id], name: "Media_id"}),
 	unique("unique_media").on(table.category, table.title, table.releaseDate),
 ]);
@@ -53,18 +55,19 @@ export const mediaGenre = mysqlTable("Media_Genre", {
 ]);
 
 export const ratings = mysqlTable("Ratings", {
-	id: int().autoincrement().notNull(),
-	userId: int("user_id").references(() => users.id, { onDelete: "cascade" } ),
-	mediaId: int("media_id").references(() => media.id, { onDelete: "cascade" } ),
-	rating: smallint({ unsigned: true }),
+	id: int().autoincrement().notNull().primaryKey(),
+	userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" } ),
+	mediaId: int("media_id").notNull().references(() => media.id, { onDelete: "cascade" } ),
+	rating: smallint({ unsigned: true }).notNull(),
 	ratedAt: timestamp("rated_at", { mode: 'string' }).defaultNow(),
 },
 (table) => [
 	index("media_index").on(table.mediaId, table.userId),
+	index("Ratings_media_id_IDX").on(table.mediaId),
 	index("user_id").on(table.userId),
 	primaryKey({ columns: [table.id], name: "Ratings_id"}),
 	unique("unique_media_user").on(table.mediaId, table.userId),
-	check("Ratings_chk_1", sql`((\`rating\` >= 1) and (\`rating\` <= 5))`),
+	check("Ratings_CHECK", sql`((\`rating\` >= 1) and (\`rating\` <= 10))`),
 ]);
 
 export const remoteId = mysqlTable("RemoteId", {
@@ -73,6 +76,7 @@ export const remoteId = mysqlTable("RemoteId", {
 	tmdbId: int("tmdb_id"),
 },
 (table) => [
+	index("RemoteId_tmdb_id_IDX").on(table.tmdbId),
 	primaryKey({ columns: [table.id], name: "RemoteId_id"}),
 ]);
 
@@ -86,8 +90,25 @@ export const reviews = mysqlTable("Reviews", {
 },
 (table) => [
 	index("media_index").on(table.mediaId, table.userId),
+	index("Reviews_media_id_IDX").on(table.mediaId),
 	index("user_id").on(table.userId),
 	primaryKey({ columns: [table.id], name: "Reviews_id"}),
+	unique("unique_media_user").on(table.mediaId, table.userId),
+]);
+
+export const userReviews = mysqlTable("UserReviews", {
+	id: int().autoincrement().notNull().primaryKey(),
+	userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade", onUpdate: "restrict" } ),
+	mediaId: int("media_id").notNull().references(() => media.id, { onDelete: "cascade", onUpdate: "restrict" } ),
+	comment: text(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	ratingId: int("rating_id").notNull().references(() => ratings.id),
+},
+(table) => [
+	index("media_index").on(table.mediaId, table.userId),
+	index("Reviews_media_id_IDX").on(table.mediaId),
+	index("user_id").on(table.userId),
+	primaryKey({ columns: [table.id], name: "UserReviews_id"}),
 	unique("unique_media_user").on(table.mediaId, table.userId),
 ]);
 
@@ -101,6 +122,6 @@ export const users = mysqlTable("Users", {
 },
 (table) => [
 	primaryKey({ columns: [table.id], name: "Users_id"}),
-	unique("username").on(table.username),
 	unique("email").on(table.email),
+	unique("username").on(table.username),
 ]);

@@ -1,6 +1,6 @@
 import { db } from "../db/database.js";
 import {
-  reviews as ReviewsTable,
+  userReviews,
   likesReviews as likesReviewsTable,
 } from "../db/schema.js";
 import { and, eq } from "drizzle-orm/expressions";
@@ -8,16 +8,16 @@ import { UnauthorizedError } from "../utils/error.class.js";
 
 export const deleteReview = async (reviewId: number, userId: number) => {
   const [{ reviewUserId }] = await db
-    .select({ reviewUserId: ReviewsTable.userId })
-    .from(ReviewsTable)
-    .where(eq(ReviewsTable.id, reviewId));
+    .select({ reviewUserId: userReviews.userId })
+    .from(userReviews)
+    .where(eq(userReviews.id, reviewId));
 
   // Check if the user is the reviewer
   if (reviewUserId !== userId) {
     throw new UnauthorizedError("Unauthorized");
   }
 
-  await db.delete(ReviewsTable).where(eq(ReviewsTable.id, reviewId));
+  await db.delete(userReviews).where(eq(userReviews.id, reviewId));
 };
 
 export const likeReview = async (reviewId: number, userId: number) => {
@@ -40,10 +40,10 @@ export const checkLikes = async (mediaId: number, userId: number) => {
   const rows = await db
     .select({ reviewId: likesReviewsTable.reviewId })
     .from(likesReviewsTable)
-    .innerJoin(ReviewsTable, eq(ReviewsTable.id, likesReviewsTable.reviewId))
+    .innerJoin(userReviews, eq(userReviews.id, likesReviewsTable.reviewId))
     .where(
       and(
-        eq(ReviewsTable.mediaId, mediaId),
+        eq(userReviews.mediaId, mediaId),
         eq(likesReviewsTable.userId, userId)
       )
     );
