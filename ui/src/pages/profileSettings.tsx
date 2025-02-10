@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useAuth } from "@/context/auth";
+import { getAuthHeader } from "@/utils/authHeader";
 
 /*
 usernames
@@ -22,12 +23,14 @@ export function ProfileSettings(){
     const findSetting = (key:string) => {
         return ("dont commit this)");
     }
-    const [changedSettings, setChangedSettings] = useState(null);
-    const [currentSettings, setCurrentSettings] = useState(null);
+    const [currentSettings, setCurrentSettings] = useState<Map<string,string>|null>(null);
+    const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map());
+    
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
     return (
         <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
+            <button onClick={()=>{fetch("http://localhost:8080/api/user/set-user-settings",{method:"POST",headers:getAuthHeader(),body:JSON.stringify({ yo: "example" })})}}>I'm a button. Yo, I'm a button!</button>
             <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
             <line className="bg-white w-[1px] h-[733px]"></line>
             <div className="flex w-[640px] p-5 flex-col items-start gap-3">
@@ -326,7 +329,7 @@ function ProfileSettingsCategoryActivity({updateSetting, findSetting}:{updateSet
 }
 
 function ProfileSettingsCategoryHelpAndSupport({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
-    const feedback = useRef(null);
+    const feedback = useRef<HTMLTextAreaElement>(null);
     
     return (
         <div className="flex flex-col gap-2">
@@ -346,7 +349,7 @@ function ProfileSettingsCategoryHelpAndSupport({updateSetting, findSetting}:{upd
             </p>
             <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
             <Textarea ref={feedback} className="resize-none"></Textarea>
-            <Button onClick={()=>{feedback.current.value = ""}} className="max-w-[150px]" variant={"destructive"}><Trash2></Trash2> Submit</Button>
+            <Button onClick={()=>{if (feedback.current){feedback.current.value = ""}}} className="max-w-[150px]" variant={"destructive"}><Trash2></Trash2> Submit</Button>
         </div>
     )
 }
