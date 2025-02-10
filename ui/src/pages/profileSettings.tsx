@@ -1,12 +1,13 @@
 import { Search, ChevronDown, Trash2 } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
-import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
+import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from "@/components/ui/dropdown";
 import { useAuth } from "@/context/auth";
-import { getAuthHeader } from "@/utils/authHeader";
+import { getUserSettings, getUserProfileSettings, setUserSettings } from "@/api/user";
+import { useQuery } from "@tanstack/react-query";
 
 /*
 usernames
@@ -17,35 +18,56 @@ somethin for PFP
 
 
 export function ProfileSettings(){
+    //const [currentSettings, setCurrentSettings] = useState<Map<string,string>|null>(null);
+    const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map());
+
+    const [selectedMenu, setSelectedMenu] = useState("Profile");
+
+    const { data:currentSettings } = useQuery({
+        queryKey: ['currentSettings'],
+        queryFn: async () => {
+            const a = await getUserSettings();
+            const b = new Map<string,string>();
+            for (const [key, value] of Object.entries(a)) {
+                b.set(key,String(value));
+            }
+            return b;
+        }
+    })
+
     const updateSetting = (key:string, value:string) => {
 
     }
     const findSetting = (key:string) => {
         return ("dont commit this)");
     }
-    const [currentSettings, setCurrentSettings] = useState<Map<string,string>|null>(null);
-    const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map());
-    
-    const [selectedMenu, setSelectedMenu] = useState("Profile");
+
+    console.log(currentSettings);
 
     return (
-        <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
-            <button onClick={()=>{fetch("http://localhost:8080/api/user/set-user-settings",{method:"POST",headers:getAuthHeader(),body:JSON.stringify({ yo: "example" })})}}>I'm a button. Yo, I'm a button!</button>
-            <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
-            <line className="bg-white w-[1px] h-[733px]"></line>
-            <div className="flex w-[640px] p-5 flex-col items-start gap-3">
-                <div className="flex flex-col items-start gap-1 self-stretch">
-                    <p className="text-white text-2xl font-light leading-normal">
-                        {selectedMenu}
-                    </p>
-                    <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
-                    {selectedMenu=="Profile"?<ProfileSettingsCategoryProfile updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryProfile>:null}
-                    {selectedMenu=="Account"?<ProfileSettingsCategoryAccount updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAccount>:null}
-                    {selectedMenu=="Appearance"?<ProfileSettingsCategoryAppearance updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAppearance>:null}
-                    {selectedMenu=="Activity"?<ProfileSettingsCategoryActivity updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryActivity>:null}
-                    {selectedMenu=="Help & Support"?<ProfileSettingsCategoryHelpAndSupport updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryHelpAndSupport>:null}
+        <div className="flex flex-col">
+            <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
+                <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
+                <line className="bg-white w-[1px] h-[733px]"></line>
+                <div className="flex w-[640px] p-5 flex-col items-start gap-3">
+                    <div className="flex flex-col items-start gap-1 self-stretch">
+                        <p className="text-white text-2xl font-light leading-normal">
+                            {selectedMenu}
+                        </p>
+                        <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
+                        {selectedMenu=="Profile"?<ProfileSettingsCategoryProfile updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryProfile>:null}
+                        {selectedMenu=="Account"?<ProfileSettingsCategoryAccount updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAccount>:null}
+                        {selectedMenu=="Appearance"?<ProfileSettingsCategoryAppearance updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAppearance>:null}
+                        {selectedMenu=="Activity"?<ProfileSettingsCategoryActivity updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryActivity>:null}
+                        {selectedMenu=="Help & Support"?<ProfileSettingsCategoryHelpAndSupport updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryHelpAndSupport>:null}
+                    </div>
                 </div>
             </div>
+            <Button variant={"default"} onClick={async ()=>{
+                console.log("!!!");
+            }}>
+                !!!
+            </Button>
         </div>
     )
 }

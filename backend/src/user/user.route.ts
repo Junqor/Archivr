@@ -20,14 +20,10 @@ userRouter.get("/get-user-settings", authenticateToken, async (req, res) => {
     }
 });
 
-const getProfileSettingsSchema = z.object({
-    user_id: z.number(),
-});
-
-userRouter.get("/get-user-profile-settings", async (req, res) => {
+userRouter.get("/get-user-profile-settings/:userId", async (req, res) => {
     try {
-        const body = getProfileSettingsSchema.parse(req.body);
-        const values = await getUserProfileSettings(body.user_id);
+        const user_id = parseInt(req.params.userId);
+        const values = await getUserProfileSettings(user_id);
         res.json({ status:"success", settings:values });
     } catch (error) {
         console.error(error);
