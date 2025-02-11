@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from "@/components/ui/dropdown";
 import { useAuth } from "@/context/auth";
 import { getUserSettings, getUserProfileSettings, setUserSettings } from "@/api/user";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 /*
 usernames
@@ -19,33 +19,65 @@ somethin for PFP
 
 export function ProfileSettings(){
     //const [currentSettings, setCurrentSettings] = useState<Map<string,string>|null>(null);
-    const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map());
+    const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map<string,string>());
 
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
     const { data:currentSettings } = useQuery({
-        queryKey: ['currentSettings'],
+        queryKey: ['profileSettingsCurrentSettings'],
         queryFn: async () => {
             const a = await getUserSettings();
             const b = new Map<string,string>();
             for (const [key, value] of Object.entries(a)) {
                 b.set(key,String(value));
             }
+            const c = new Map<string,string>();
+            changedSettings.forEach((value:string,key:string) => {
+                if (value != b.get(key)){
+                    c.set(key,value);
+                }
+            })
+            setChangedSettings(c);
             return b;
         }
-    })
+    });
+
+    const { mutate:applyChangedSettings } = useMutation({
+        mutationFn: async () => {
+            await setUserSettings(changedSettings)
+            setChangedSettings(new Map<string,string>());
+        }
+    });
 
     const updateSetting = (key:string, value:string) => {
-
+        const currentValue = currentSettings?.get(key);
+        const map:Map<string,string> = changedSettings;
+        if (currentValue == value){
+            map.delete(key);
+        }
+        else {
+            map.set(key,value);
+        }
+        setChangedSettings(map);
     }
+
     const findSetting = (key:string) => {
-        return ("dont commit this)");
+        const changedValue = changedSettings.get(key);
+        if (changedValue != null) {
+            return changedValue;
+        }
+        const currentValue = currentSettings?.get(key);
+        if (currentValue != null) {
+            return currentValue;
+        }
+        return null;
     }
 
     console.log(currentSettings);
 
     return (
         <div className="flex flex-col">
+            <p>current settings: {currentSettings}, changed settings: {changedSettings}</p>
             <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
                 <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
                 <line className="bg-white w-[1px] h-[733px]"></line>
@@ -64,9 +96,9 @@ export function ProfileSettings(){
                 </div>
             </div>
             <Button variant={"default"} onClick={async ()=>{
-                console.log("!!!");
+                applyChangedSettings();
             }}>
-                !!!
+                Apply Settings
             </Button>
         </div>
     )
@@ -121,7 +153,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                         <p className="text-base font-medium leading-normal">
                             Display Name
                         </p>
-                        <Input className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                        <Input onChange={(event)=>{updateSetting("display_name",event.target.value)}} defaultValue={findSetting("display_name")} placeholder={user?.username} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                         </Input>
                     </div>
 

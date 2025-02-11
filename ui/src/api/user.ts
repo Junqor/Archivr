@@ -25,12 +25,21 @@ export const getUserProfileSettings = async (user_id:number) => {
     }
 }
 
-export const setUserSettings = async (settings:Map<string,string>) => {
+export const setUserSettings = async (new_settings:Map<string,string>) => {
     try {
         await fetch(import.meta.env.VITE_API_URL+"/user/set-user-settings",{
             method:"POST",
             headers:getAuthHeader(),
-            body:JSON.stringify({ settings: settings })
+            body:JSON.stringify({ settings: new_settings }, (key,value)=>{
+                if(value instanceof Map) {
+                    return {
+                        dataType: 'Map',
+                        value: Array.from(value.entries()), // or with spread: value: [...value]
+                    };
+                } else {
+                    return value;
+                }
+            })
         });
     } catch (error) {
         console.error(error);
