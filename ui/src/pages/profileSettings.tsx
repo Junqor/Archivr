@@ -23,7 +23,7 @@ export function ProfileSettings(){
 
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
-    const { data:currentSettings } = useQuery({
+    const { data:currentSettings, refetch:refetchCurrentSettings } = useQuery({
         queryKey: ['profileSettingsCurrentSettings'],
         queryFn: async () => {
             const a = await getUserSettings();
@@ -45,17 +45,25 @@ export function ProfileSettings(){
     const { mutate:applyChangedSettings } = useMutation({
         mutationFn: async () => {
             await setUserSettings(changedSettings)
+            refetchCurrentSettings();
             setChangedSettings(new Map<string,string>());
         }
     });
 
     const updateSetting = (key:string, value:string) => {
         const currentValue = currentSettings?.get(key);
-        const map:Map<string,string> = changedSettings;
-        if (currentValue == value){
-            map.delete(key);
-        }
-        else {
+        const map:Map<string,string> = new Map<string,string>();
+        changedSettings.forEach((old_value:string,old_key:string)=>{
+            if (old_key == key) {
+                if (value != currentValue){
+                    map.set(old_key,value);
+                }
+            }
+            else {
+                map.set(old_key,old_value);
+            }
+        })
+        if (!changedSettings.has(key) && (value != currentValue)) {
             map.set(key,value);
         }
         setChangedSettings(map);
@@ -73,11 +81,11 @@ export function ProfileSettings(){
         return null;
     }
 
-    console.log(currentSettings);
+    console.log(currentSettings, changedSettings);
 
     return (
+        <>
         <div className="flex flex-col">
-            <p>current settings: {currentSettings}, changed settings: {changedSettings}</p>
             <div className="flex items-start rounded-3xl w-[960px] max-w-[960px] h-[733px] bg-black border-white border">
                 <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
                 <line className="bg-white w-[1px] h-[733px]"></line>
@@ -95,12 +103,21 @@ export function ProfileSettings(){
                     </div>
                 </div>
             </div>
-            <Button variant={"default"} onClick={async ()=>{
-                applyChangedSettings();
-            }}>
-                Apply Settings
-            </Button>
         </div>
+        {
+        changedSettings.size > 0
+        ?(
+        <>
+            <div className="min-h-16"></div>
+            <div className="flex items-center justify-center fixed bottom-5 p-3 gap-3 bg-black border border-white rounded-2xl">
+                <p className="flex self-center text-base font-normal">
+                    {changedSettings.size} {changedSettings.size != 1?"settings have been modified":"setting has been modified"}
+                </p>
+                <Button onClick={()=>{applyChangedSettings()}} variant={"default"}>Apply Changes</Button>
+            </div>
+        </>
+        ):null}
+        </>
     )
 }
 
@@ -161,7 +178,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                         <p className="text-base font-medium leading-normal text-[#7F7F7E]">
                             Username
                         </p>
-                        <Input disabled value={user?.username} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
+                        <Input disabled value={"@"+user?.username} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
                         </Input>
                     </div>
 
@@ -169,7 +186,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                         <p className="text-base font-medium leading-normal">
                             Status
                         </p>
-                        <Input className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                        <Input onChange={(event)=>{updateSetting("status",event.target.value)}} defaultValue={findSetting("status")} placeholder="..." className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                         </Input>
                     </div>
                 </div>
@@ -178,7 +195,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                 <p className="text-base font-medium leading-normal">
                     Bio
                 </p>
-                <Textarea className="resize-none min-h-[67px] flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                <Textarea onChange={(event)=>{updateSetting("bio",event.target.value)}} defaultValue={findSetting("bio")} className="resize-none min-h-[67px] flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                 </Textarea>
             </div>
             <div className="flex justify-center items-start gap-2 self-stretch">
@@ -186,7 +203,7 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                     <p className="text-base font-medium leading-normal">
                         Pronouns
                     </p>
-                    <Input className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input onChange={(event)=>{updateSetting("pronouns",event.target.value)}} defaultValue={findSetting("pronouns")} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
                 </div>
                 
@@ -194,19 +211,19 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                     <p className="text-base font-medium leading-normal">
                         Location
                     </p>
-                    <Input className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input onChange={(event)=>{updateSetting("location",event.target.value)}} defaultValue={findSetting("location")} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
                 </div>
             </div>
             <div className="flex flex-col items-start gap-3 self-stretch">
                 <div className="flex items-start gap-3">
-                    <Checkbox className="self-center"></Checkbox>
+                    <Checkbox onCheckedChange={(checked)=>{updateSetting("public",String(Number(checked)))}} checked={Boolean(Number(findSetting("public")))} className="self-center"></Checkbox>
                     <p className="text-base font-medium leading-normal">
                         Include profile in members section
                     </p>
                 </div>
                 <div className="flex items-start gap-3">
-                    <Checkbox className="self-center"></Checkbox>
+                    <Checkbox onCheckedChange={(checked)=>{updateSetting("show_adult_content",String(Number(checked)))}} checked={Boolean(Number(findSetting("show_adult_content")))} className="self-center"></Checkbox>
                     <p className="text-base font-medium leading-normal">
                         Show adult content
                     </p>
@@ -238,11 +255,11 @@ function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSett
                     </div>
                 </div>
                 <div className="flex flex-col flex-1 gap-5">
-                    <Input placeholder="https://www.instagram.com/username/" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input onChange={(event)=>{updateSetting("social_instagram",event.target.value)}} defaultValue={findSetting("social_instagram")} placeholder="https://www.instagram.com/username/" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
-                    <Input placeholder="https://www.youtube.com/username/" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input onChange={(event)=>{updateSetting("social_youtube",event.target.value)}} defaultValue={findSetting("social_youtube")} placeholder="https://www.youtube.com/username/" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
-                    <Input placeholder="https://www.tiktok.com/@username/" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input onChange={(event)=>{updateSetting("social_tiktok",event.target.value)}} defaultValue={findSetting("social_tiktok")} placeholder="https://www.tiktok.com/@username/" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
                 </div>
             </div>
@@ -289,19 +306,19 @@ function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{updateSett
                 Account Data
             </p>
             <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
+            {/*
+            Uneeded as all the settings are on the glorious MySQL database
             <div className="flex gap-3">
                 <Button variant={"outline"} className="max-w-[130px]">Import Your Data</Button>
                 <Button variant={"outline"} className="max-w-[130px]">Export Your Data</Button>
             </div>
+            */}
             <p className="underline py-2">
                 Disable Account
             </p>
         </div>
     )
 }
-/*
-
-*/
 
 function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>string}){
     return (
@@ -314,17 +331,17 @@ function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateS
                     <Dropdown>
                         <DropdownTrigger>
                             <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
-                                <p className="text-base font-medium leading-normal">
-                                    Dark
+                                <p className="capitalize text-base font-medium leading-normal">
+                                    {findSetting("theme")}
                                 </p>
                                 <ChevronDown></ChevronDown>
                             </div>
                         </DropdownTrigger>
                     <DropdownContent>
-                        <DropdownItem>
+                        <DropdownItem onSelect={()=>{updateSetting("theme","dark")}}>
                             Dark
                         </DropdownItem>
-                        <DropdownItem>
+                        <DropdownItem onSelect={()=>{updateSetting("theme","light")}}>
                             Light
                         </DropdownItem>
                     </DropdownContent>
@@ -337,21 +354,21 @@ function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateS
                     <Dropdown>
                         <DropdownTrigger>
                             <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
-                                <p className="text-base font-medium leading-normal">
-                                    Normal
+                                <p className="capitalize text-base font-medium leading-normal">
+                                    {findSetting("font_size")}
                                 </p>
                                 <ChevronDown></ChevronDown>
                             </div>
                         </DropdownTrigger>
                     <DropdownContent>
-                        <DropdownItem>
-                            Tiny
+                        <DropdownItem onSelect={()=>{updateSetting("font_size","small")}}>
+                            Small
                         </DropdownItem>
-                        <DropdownItem>
+                        <DropdownItem onSelect={()=>{updateSetting("font_size","normal")}}>
                             Normal
                         </DropdownItem>
-                        <DropdownItem>
-                            Gigagantic
+                        <DropdownItem onSelect={()=>{updateSetting("font_size","large")}}>
+                            Large
                         </DropdownItem>
                     </DropdownContent>
                     </Dropdown>
@@ -366,13 +383,13 @@ function ProfileSettingsCategoryActivity({updateSetting, findSetting}:{updateSet
         <div className="flex flex-col gap-2 self-stretch flex-1">
             <div className="flex flex-col items-start gap-3 self-stretch">
                 <div className="flex items-start gap-3">
-                    <Checkbox className="self-center"></Checkbox>
+                    <Checkbox onCheckedChange={(checked)=>{updateSetting("grant_personal_data",String(Number(checked)))}} checked={Boolean(Number(findSetting("grant_personal_data")))} className="self-center"></Checkbox>
                     <p className="text-base font-medium leading-normal">
                         Allow Archivr employees to see where you live
                     </p>
                 </div>
                 <div className="flex items-start gap-3">
-                    <Checkbox className="self-center"></Checkbox>
+                    <Checkbox onCheckedChange={(checked)=>{updateSetting("show_personalized_content",String(Number(checked)))}} checked={Boolean(Number(findSetting("show_personalized_content")))} className="self-center"></Checkbox>
                     <p className="text-base font-medium leading-normal">
                         Personalized content
                     </p>
