@@ -13,6 +13,7 @@ export const theme = {
       },
       gray: {
         DEFAULT: "#7f7f7e",
+        secondary: "#595958",
       },
       black: {
         DEFAULT: "#0d0d0d",
@@ -20,6 +21,7 @@ export const theme = {
       purple: {
         DEFAULT: "#5616EC",
       },
+      primary: "#5616EC",
       dark: "#242424",
       pill: "#242424",
     },
@@ -34,11 +36,31 @@ export const theme = {
     },
     aspectRatio: {
       "2/3": "2 / 3",
+      auto: "auto",
+      square: "1 / 1",
+      video: "16 / 9",
+      1: "1",
+      2: "2",
+      3: "3",
+      4: "4",
+      5: "5",
+      6: "6",
+      7: "7",
+      8: "8",
+      9: "9",
+      10: "10",
+      11: "11",
+      12: "12",
+      13: "13",
+      14: "14",
+      15: "15",
+      16: "16",
     },
   },
 };
 export const plugins = [
   require("tailwindcss-animate"),
+  require("@tailwindcss/aspect-ratio"),
   plugin(function ({ addUtilities }) {
     addUtilities({
       /* Hide scrollbar for Chrome, Safari and Opera */
@@ -50,6 +72,13 @@ export const plugins = [
       ".no-scrollbar": {
         "-ms-overflow-style": "none" /* IE and Edge */,
         "scrollbar-width": "none" /* Firefox */,
+      },
+
+      ".flip-y": {
+        transform: "scaleY(-1)",
+      },
+      ".flip-x": {
+        transform: "scaleX(-1)",
       },
     });
   }),

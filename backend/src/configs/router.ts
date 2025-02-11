@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { authRouter } from "../auth/auth.route.js";
-import { searchRouter } from "../search/search.route.js";
-import { mediaRouter } from "../media/media.route.js";
-import { adminRouter } from "../admin/admin.route.js";
+import { authRouter } from "../api/auth/auth.route.js";
+import { searchRouter } from "../api/search/search.route.js";
+import { mediaRouter } from "../api/media/media.route.js";
+import { adminRouter } from "../api/admin/admin.route.js";
 import { userRouter } from "../user/user.route.js";
+import { reviewsRouter } from "../api/reviews/reviews.route.js";
+import { watchRouter } from "../api/watch/watch.route.js";
+import { genreRouter } from "../api/genre/genre.route.js";
 
 const router = Router();
 
@@ -13,6 +16,9 @@ router.use("/auth", authRouter);
 router.use("/media", mediaRouter);
 router.use("/admin", adminRouter);
 router.use("/user", userRouter);
+router.use("/reviews", reviewsRouter);
+router.use("/watch", watchRouter);
+router.use("/genre", genreRouter);
 
 router.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");

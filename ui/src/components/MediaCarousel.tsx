@@ -5,9 +5,10 @@ import { TMedia } from "@/types/media";
 
 import "swiper/css";
 import "swiper/css/scrollbar";
+import { Skeleton } from "./ui/skeleton";
 
 interface MediaCarouselProps {
-  media: TMedia[];
+  media: TMedia[] | undefined;
   spaceBetweenMobile?: number;
   spaceBetweenDesktop: number;
   slidesPerViewMobile?: number;
@@ -40,17 +41,23 @@ export default function MediaCarousel({
         pauseOnMouseEnter: true,
       }}
       breakpoints={{
-        600: {
+        640: {
           spaceBetween: spaceBetweenDesktop,
           slidesPerView: slidesPerViewDesktop,
         },
       }}
     >
-      {media.map((m) => (
-        <SwiperSlide key={m.id}>
-          <ThumbnailPreview media={m} />
-        </SwiperSlide>
-      ))}
+      {media
+        ? media.map((m) => (
+            <SwiperSlide key={m.id}>
+              <ThumbnailPreview media={m} />
+            </SwiperSlide>
+          ))
+        : [...Array(7)].map((_, i) => (
+            <SwiperSlide key={i} className="overflow-hidden">
+              <Skeleton className="relative aspect-2/3 h-full w-full rounded-sm outline outline-1 -outline-offset-1 outline-white/10" />
+            </SwiperSlide>
+          ))}
     </Swiper>
   );
 }

@@ -1,15 +1,19 @@
 import {
   getLikedStatus,
   getLikes,
-  getReviews,
   getUserRating,
   updateLikes,
-  updateReview,
 } from "@/api/media";
+import { getReviews, updateReview } from "@/api/reviews";
+import { useAuth } from "@/context/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export const useMedia = (mediaId: string, userId: string) => {
+  const { logout } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: mediaData } = useQuery({
     queryKey: ["media", mediaId, "likes"],
@@ -58,9 +62,16 @@ export const useMedia = (mediaId: string, userId: string) => {
       if (context?.previousData) {
         queryClient.setQueryData(
           ["media", mediaId, "likes"],
-          context.previousData
+          context.previousData,
         );
       }
+      if (_err.message === "Unauthorized") {
+        logout();
+        return navigate("/login", {
+          state: { from: window.location.pathname },
+        });
+      }
+      toast.error("An unexpected error occurred");
     },
     // Always refetch after error or success
     onSettled: () => {
@@ -77,8 +88,17 @@ export const useMedia = (mediaId: string, userId: string) => {
   });
 
   const { mutate: updateReviewMutation } = useMutation({
-    mutationFn: ({ comment, rating }: { comment: string, rating: number }) =>
+    mutationFn: ({ comment, rating }: { comment: string; rating: number }) =>
       updateReview({ mediaId, comment, rating }),
+    onError: (_err, _variables, _context) => {
+      if (_err.message === "Unauthorized") {
+        logout();
+        return navigate("/login", {
+          state: { from: window.location.pathname },
+        });
+      }
+      toast.error("An unexpected error occurred");
+    },
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["media", mediaId, "reviews"],
@@ -89,8 +109,8 @@ export const useMedia = (mediaId: string, userId: string) => {
 
   const { data: ratingData } = useQuery({
     queryKey: ["media", mediaId, "rating"],
-    queryFn: () => getUserRating({ mediaId })
-  })
+    queryFn: () => getUserRating({ mediaId }),
+  });
 
   return {
     isLiked: mediaData?.isLiked ?? false,
