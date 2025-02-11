@@ -1,3 +1,4 @@
+import { error } from "console";
 import { conn } from "../configs/digitalocean.config.js";
 import { RowDataPacket } from "mysql2";
 
@@ -27,14 +28,25 @@ export async function getUserProfileSettings(user_id:number) {
 
 export async function setUserSettings(user_id:number, values:Map<string,string>) {
     try {
-        let v: string = "";
+        let setValues: string = "";
+        let insertArray: Array<string> = [];
         values.forEach((value, key, map) => {
-            v.concat(key, " = ", value, ", ");
+            if (setValues != ""){
+                setValues = setValues.concat(", ");
+            }
+            setValues = setValues.concat("`"+key.replaceAll(/`/g,"")+"` = ?");
+            insertArray.push(value);
         });
-        await conn.query<(RowDataPacket & number)[]>(
-            `INSERT INTO User_Settings VALUES ? WHERE user_id = ?`,
-            [v,user_id]
-        );
+        insertArray.push(user_id.toString());
+        if (setValues != ""){
+            await conn.query<(RowDataPacket & number)[]>(
+                "UPDATE User_Settings SET "+setValues+" WHERE user_id = ?;",
+                insertArray
+            );
+        }
+        else {
+            throw new Error(`tried to set user settings for user_id ${user_id} but was given no settings to set`);
+        }
     } catch (error) {
         console.error(error);
     }    

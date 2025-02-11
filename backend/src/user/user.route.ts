@@ -3,6 +3,7 @@ import { Router } from "express";
 import { getUserSettings, getUserProfileSettings, setUserSettings } from "./user.services.js";
 import { authenticateToken, AuthRequest } from "../middleware/authenticateToken.js";
 import { TAuthToken } from "../types/user.js";
+import bodyParser, { json } from "body-parser";
 
 export const userRouter = Router();
 
@@ -38,9 +39,17 @@ const setSettingsSchema = z.object({
   settings: z.map(z.string(),z.string()),
 });
 
-userRouter.post("/set-user-settings", authenticateToken, async (req, res) => {
+userRouter.post("/set-user-settings", authenticateToken, bodyParser.text(), async (req, res) => {
     try {
-        const body = setSettingsSchema.parse(req.body);
+        let body = JSON.parse(req.body, (key, value) => {
+            if(typeof value === 'object' && value !== null) {
+                if (value.dataType === 'Map') {
+                    return new Map(value.value);
+                }
+            }
+            return value;
+        });
+        body = setSettingsSchema.parse(body);
         const token = (req as AuthRequest).token as TAuthToken;
         await setUserSettings(token.user.id, body.settings);
         res.json({ status:"success" });
