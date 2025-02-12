@@ -1,0 +1,12 @@
+h1{
+  margin: 20px;
+}
+h2 {
+  font-size: x-large;
+  text-decoration: underline;
+}
+li {
+  margin-left: 2em;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
