@@ -1,5 +1,5 @@
 import { error } from "console";
-import { conn } from "../configs/digitalocean.config.js";
+import { conn } from "../../db/database.js";
 import { RowDataPacket } from "mysql2";
 
 export async function getUserSettings(user_id:number) {

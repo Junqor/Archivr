@@ -3,7 +3,7 @@ import { authRouter } from "../api/auth/auth.route.js";
 import { searchRouter } from "../api/search/search.route.js";
 import { mediaRouter } from "../api/media/media.route.js";
 import { adminRouter } from "../api/admin/admin.route.js";
-import { userRouter } from "../user/user.route.js";
+import { userRouter } from "../api/user/user.route.js";
 import { reviewsRouter } from "../api/reviews/reviews.route.js";
 import { watchRouter } from "../api/watch/watch.route.js";
 import { genreRouter } from "../api/genre/genre.route.js";

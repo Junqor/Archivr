@@ -1,16 +1,15 @@
 import z, { ZodError } from "zod";
 import { Router } from "express";
 import { getUserSettings, getUserProfileSettings, setUserSettings } from "./user.services.js";
-import { authenticateToken, AuthRequest } from "../middleware/authenticateToken.js";
-import { TAuthToken } from "../types/user.js";
 import bodyParser, { json } from "body-parser";
+import { TAuthToken } from "../../types/index.js";
+import { authenticateToken } from "../../middleware/authenticateToken.js";
 
 export const userRouter = Router();
 
 userRouter.get("/get-user-settings", authenticateToken, async (req, res) => {
     try {
-        const token = (req as AuthRequest).token as TAuthToken;
-        const values = await getUserSettings(token.user.id);
+        const values = await getUserSettings(res.locals.user.id);
         res.json({ status:"success", settings:values });
     } catch (error) {
         console.error(error);
@@ -50,8 +49,7 @@ userRouter.post("/set-user-settings", authenticateToken, bodyParser.text(), asyn
             return value;
         });
         body = setSettingsSchema.parse(body);
-        const token = (req as AuthRequest).token as TAuthToken;
-        await setUserSettings(token.user.id, body.settings);
+        await setUserSettings(res.locals.user.id, body.settings);
         res.json({ status:"success" });
     } catch (error) {
         console.error(error);
