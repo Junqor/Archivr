@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string|null)}){
+export function ProfileSettingsCategoryAccount(){
     const hash = localStorage.getItem("access_token")?.split('.')[1];
     let email:string = "";
     if (hash){
@@ -19,7 +19,7 @@ export function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{upd
             <p className="text-white text-2xl font-light leading-normal">
                 Change Password
             </p>
-            <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
+            <line className="self-stretch h-px bg-[#7F7F7E]"></line>
             <p className="text-base font-medium leading-normal">
                 Current Password
             </p>
@@ -35,11 +35,11 @@ export function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{upd
             </p>
             <Input type="password" placeholder="Enter new password again" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
-            <Button className="max-w-[130px]">Save Changes</Button>
+            <Button className="mt-2 max-w-[130px]">Save Changes</Button>
             <p className="text-white text-2xl font-light leading-normal">
                 Account Data
             </p>
-            <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
+            <line className="self-stretch h-px bg-[#7F7F7E]"></line>
             {/*
             Uneeded as all the settings are on the glorious MySQL database
             <div className="flex gap-3">
@@ -47,7 +47,7 @@ export function ProfileSettingsCategoryAccount({updateSetting, findSetting}:{upd
                 <Button variant={"outline"} className="max-w-[130px]">Export Your Data</Button>
             </div>
             */}
-            <p className="underline py-2">
+            <p className="underline py-2 cursor-pointer hover:text-red-500">
                 Disable Account
             </p>
         </div>

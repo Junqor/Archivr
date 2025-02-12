@@ -2,13 +2,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Youtube, Instagram, Music2 } from "lucide-react";
 
-export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string|null)}){
+export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     const { user } = useAuth();
     
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col self-stretch gap-2">
             <div className="flex items-center gap-5 self-stretch">
                 <img src={"penguin.png"} className={"max-w-[200px] max-h-[200px] rounded-[200px] bg-neutral-900"}>
 
@@ -43,7 +43,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                 <p className="text-base font-medium leading-normal">
                     Bio
                 </p>
-                <Textarea maxLength={30000} onChange={(event)=>{updateSetting("bio",event.target.value)}} defaultValue={findSetting("bio")} className="min-h-[67px] flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                <Textarea maxLength={30000} onChange={(event)=>{updateSetting("bio",event.target.value)}} defaultValue={findSetting("bio")} placeholder="write about yourself..." className="min-h-[67px] flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                 </Textarea>
             </div>
             <div className="flex justify-center items-start gap-2 self-stretch">
@@ -51,7 +51,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                     <p className="text-base font-medium leading-normal">
                         Pronouns
                     </p>
-                    <Input maxLength={32} onChange={(event)=>{updateSetting("pronouns",event.target.value)}} defaultValue={findSetting("pronouns")} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input maxLength={32} onChange={(event)=>{updateSetting("pronouns",event.target.value)}} defaultValue={findSetting("pronouns")} placeholder="it/that" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
                 </div>
                 
@@ -59,7 +59,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                     <p className="text-base font-medium leading-normal">
                         Location
                     </p>
-                    <Input maxLength={32} onChange={(event)=>{updateSetting("location",event.target.value)}} defaultValue={findSetting("location")} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                    <Input maxLength={32} onChange={(event)=>{updateSetting("location",event.target.value)}} defaultValue={findSetting("location")} placeholder="Earth" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                     </Input>
                 </div>
             </div>
@@ -80,23 +80,23 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
             <p className="text-white text-2xl font-light leading-normal">
                 Socials
             </p>
-            <line className="w-[600px] h-px bg-[#7F7F7E]"></line>
+            <line className="self-stretch h-px bg-[#7F7F7E]"></line>
             <div className="flex items-start gap-3 self-stretch py-3">
                 <div className="flex flex-col gap-[26px] self-stretch py-[5px]">
                     <div className="flex items-center gap-3">
-                        <Search></Search>
+                        <Instagram></Instagram>
                         <p className="text-base font-medium leading-normal">
                             Instagram
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Search></Search>
+                        <Youtube></Youtube>
                         <p className="text-base font-medium leading-normal">
                             Youtube
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Search></Search>
+                        <Music2></Music2>
                         <p className="text-base font-medium leading-normal">
                             Tiktok
                         </p>
