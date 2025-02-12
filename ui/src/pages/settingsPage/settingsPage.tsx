@@ -60,7 +60,7 @@ export function ProfileSettings(){
         setChangedSettings(map);
     }
 
-    const findSetting = (key:string) => {
+    const findSetting = (key:string) : string => {
         const changedValue = changedSettings.get(key);
         if (changedValue != null) {
             return changedValue;
@@ -69,7 +69,7 @@ export function ProfileSettings(){
         if (currentValue != null) {
             return currentValue;
         }
-        return null;
+        return "";
     }
 
     console.log(currentSettings, changedSettings);
@@ -78,19 +78,17 @@ export function ProfileSettings(){
     <>
         <div className="flex items-start rounded-3xl w-full min-h-[calc(100vh-100px)] bg-black border-white border">
             <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
-            <div className=" bg-white w-[1px] self-stretch"></div>
-            <div className="flex p-5 flex-col items-start gap-3">
-                <div className="flex flex-col items-start gap-1 self-stretch">
-                    <p className="text-white text-2xl font-light leading-normal">
-                        {selectedMenu}
-                    </p>
-                    <div className="self-stretch h-px bg-[#7F7F7E]"></div>
-                    {selectedMenu=="Profile"?<ProfileSettingsCategoryProfile updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryProfile>:null}
-                    {selectedMenu=="Account"?<ProfileSettingsCategoryAccount updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAccount>:null}
-                    {selectedMenu=="Appearance"?<ProfileSettingsCategoryAppearance updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAppearance>:null}
-                    {selectedMenu=="Activity"?<ProfileSettingsCategoryActivity updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryActivity>:null}
-                    {selectedMenu=="Help & Support"?<ProfileSettingsCategoryHelpAndSupport updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryHelpAndSupport>:null}
-                </div>
+            <div className=" bg-white w-px self-stretch"></div>
+            <div className="flex p-5 flex-col items-start gap-1 self-stretch w-[67%]">
+                <p className="text-white text-2xl font-light leading-normal">
+                    {selectedMenu}
+                </p>
+                <div className="h-px mb-3 bg-[#7F7F7E] self-stretch"></div>
+                {selectedMenu=="Profile"?<ProfileSettingsCategoryProfile updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryProfile>:null}
+                {selectedMenu=="Account"?<ProfileSettingsCategoryAccount ></ProfileSettingsCategoryAccount>:null}
+                {selectedMenu=="Appearance"?<ProfileSettingsCategoryAppearance updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryAppearance>:null}
+                {selectedMenu=="Activity"?<ProfileSettingsCategoryActivity updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryActivity>:null}
+                {selectedMenu=="Help & Support"?<ProfileSettingsCategoryHelpAndSupport ></ProfileSettingsCategoryHelpAndSupport>:null}
             </div>
         </div>
         {

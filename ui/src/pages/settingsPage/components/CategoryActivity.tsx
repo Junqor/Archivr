@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox"
 
-export function ProfileSettingsCategoryActivity({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string|null)}){
+export function ProfileSettingsCategoryActivity({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     return (
         <div className="flex flex-col gap-2 self-stretch flex-1">
             <div className="flex flex-col items-start gap-3 self-stretch">

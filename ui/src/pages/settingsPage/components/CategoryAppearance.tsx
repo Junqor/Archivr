@@ -1,7 +1,7 @@
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from "@/components/ui/dropdown"
 import { ChevronDown } from "lucide-react"
 
-export function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string|null)}){
+export function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     return (
         <div className="flex flex-col gap-2 self-stretch flex-1">
             <div className="flex gap-2 items-start self-stretch">
