@@ -123,7 +123,7 @@ export const ReviewCard = ({
             onClick={() => {
               setExpanded(!expanded);
             }}
-            className="underline"
+            className="hover:underline"
           >
             {expanded ? "Show less" : "Show more"}
           </button>

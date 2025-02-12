@@ -9,7 +9,7 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
-import { ProfileSettings } from "@/pages/profileSettings";
+import { ProfileSettings } from "@/pages/settingsPage/settingsPage";
 import LoginRequiredRoute from "@/components/loginRequiredRoute";
 
 // Define the router configuration
