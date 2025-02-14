@@ -6,9 +6,9 @@ export function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{
         <div className="flex flex-col gap-2 self-stretch flex-1">
             <div className="flex gap-2 items-start self-stretch">
                 <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
-                    <p className="text-base font-medium leading-normal">
+                    <h4>
                         Theme
-                    </p>
+                    </h4>
                     <Dropdown>
                         <DropdownTrigger>
                             <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">
@@ -29,9 +29,9 @@ export function ProfileSettingsCategoryAppearance({updateSetting, findSetting}:{
                     </Dropdown>
                 </div>
                 <div className="flex flex-col justify-center items-start gap-2 self-stretch flex-1">
-                    <p className="text-base font-medium leading-normal">
+                    <h4>
                         Font
-                    </p>
+                    </h4>
                     <Dropdown>
                         <DropdownTrigger>
                             <div className="flex py-2 px-4 min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black">

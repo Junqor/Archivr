@@ -8,14 +8,17 @@ import { ProfileSettingsCategoryAccount } from "./components/CategoryAccount";
 import { ProfileSettingsCategoryAppearance } from "./components/CategoryAppearance";
 import { ProfileSettingsCategoryActivity } from "./components/CategoryActivity";
 import { ProfileSettingsCategoryHelpAndSupport } from "./components/CategoryHelpAndSupport";
+import { useSettings } from "@/context/settings";
 
 export function ProfileSettings(){
     const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map<string,string>());
 
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
+    const { refetch:refetchUseSettings } = useSettings();
+
     const { data:currentSettings, refetch:refetchCurrentSettings } = useQuery({
-        queryKey: ['profileSettingsCurrentSettings'],
+        queryKey: ['settingsCurrentSettings'],
         queryFn: async () => {
             const a = await getUserSettings();
             const b = new Map<string,string>();
@@ -29,6 +32,7 @@ export function ProfileSettings(){
                 }
             })
             setChangedSettings(c);
+            refetchUseSettings();
             return b;
         }
     });
@@ -72,17 +76,15 @@ export function ProfileSettings(){
         return "";
     }
 
-    console.log(currentSettings, changedSettings);
-
     return (
     <>
         <div className="flex items-start rounded-3xl w-full min-h-[calc(100vh-100px)] bg-black border-white border">
             <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
             <div className=" bg-white w-px self-stretch"></div>
             <div className="flex p-5 flex-col items-start gap-1 self-stretch w-[67%]">
-                <p className="text-white text-2xl font-light leading-normal">
+                <h3>
                     {selectedMenu}
-                </p>
+                </h3>
                 <div className="h-px mb-3 bg-[#7F7F7E] self-stretch"></div>
                 {selectedMenu=="Profile"?<ProfileSettingsCategoryProfile updateSetting={updateSetting} findSetting={findSetting}></ProfileSettingsCategoryProfile>:null}
                 {selectedMenu=="Account"?<ProfileSettingsCategoryAccount ></ProfileSettingsCategoryAccount>:null}
@@ -95,9 +97,9 @@ export function ProfileSettings(){
         changedSettings.size > 0
         ?(
             <div className="flex items-center justify-center fixed bottom-5 p-3 gap-3 bg-black border border-white rounded-2xl">
-                <p className="flex self-center text-base font-normal">
+                <h4 className="flex self-center">
                     {changedSettings.size} {changedSettings.size != 1?"settings have been modified":"setting has been modified"}
-                </p>
+                </h4>
                 <Button onClick={()=>{applyChangedSettings()}} variant={"default"}>Apply Changes</Button>
             </div>
         ):null}
@@ -109,9 +111,9 @@ function ProfileSettingsMenu({selectedMenu, setSelectedMenu}:{selectedMenu:strin
     return (
         <div className="flex flex-col min-w-[33%] flex-shrink-0">
             <div className="flex py-5 px-3 justify-between items-center self-stretch border-b border-white">
-                <p className="text-white text-2xl font-light leading-normal">
+                <h3>
                     Settings
-                </p>
+                </h3>
                 <Search className="w-[21px] h-[21px]"></Search>
             </div>
             <div className="flex flex-col items-start self-stretch">
@@ -133,9 +135,9 @@ function ProfileSettingsMenu({selectedMenu, setSelectedMenu}:{selectedMenu:strin
 function ProfileSettingsMenuButton({category, selectedMenu, setSelectedMenu}: {category:string,selectedMenu:string,setSelectedMenu:(a:string)=>void}){
     return (
         <div onClick={()=>{setSelectedMenu(category)}} className={"flex py-5 px-3 items-center gap-3 self-stretch border-r-8 border-solid hover:bg-neutral-900 " + (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")}>
-            <p className="text-white text-base font-medium leading-normal">
+            <h4>
                 {category}
-            </p>
+            </h4>
         </div>
     )
 }

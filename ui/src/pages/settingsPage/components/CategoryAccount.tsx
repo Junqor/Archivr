@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export function ProfileSettingsCategoryAccount(){
     const hash = localStorage.getItem("access_token")?.split('.')[1];
@@ -11,34 +12,34 @@ export function ProfileSettingsCategoryAccount(){
     
     return (
         <div className="flex flex-col gap-2 self-stretch">
-            <p className="text-base font-medium leading-normal text-[#7F7F7E]">
+            <h4>
                 Email
-            </p>
+            </h4>
             <Input disabled value={email?email:"???"} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] text-[#7F7F7E] bg-black">
             </Input>
-            <p className="text-white text-2xl font-light leading-normal">
+            <h3>
                 Change Password
-            </p>
+            </h3>
             <line className="self-stretch h-px bg-[#7F7F7E]"></line>
-            <p className="text-base font-medium leading-normal">
+            <h4>
                 Current Password
-            </p>
+            </h4>
             <Input type="password" placeholder="Enter current password" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
-            <p className="text-base font-medium leading-normal">
+            <h4>
                 New Password
-            </p>
+            </h4>
             <Input type="password" placeholder="Enter new password"className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
-            <p className="text-base font-medium leading-normal">
+            <h4>
                 Confirm New Password
-            </p>
+            </h4>
             <Input type="password" placeholder="Enter new password again" className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
             </Input>
             <Button className="mt-2 max-w-[130px]">Save Changes</Button>
-            <p className="text-white text-2xl font-light leading-normal">
+            <h3>
                 Account Data
-            </p>
+            </h3>
             <line className="self-stretch h-px bg-[#7F7F7E]"></line>
             {/*
             Uneeded as all the settings are on the glorious MySQL database
@@ -47,7 +48,7 @@ export function ProfileSettingsCategoryAccount(){
                 <Button variant={"outline"} className="max-w-[130px]">Export Your Data</Button>
             </div>
             */}
-            <p className="underline py-2 cursor-pointer hover:text-red-500">
+            <p onClick={()=>{toast.success("Your account has been permanantly deleted")}} className="underline py-2 cursor-pointer hover:text-red-500">
                 Disable Account
             </p>
         </div>
