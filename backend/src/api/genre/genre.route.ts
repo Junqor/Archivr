@@ -5,6 +5,7 @@ import {
   get_genres,
 } from "./genre.service.js";
 import { z, ZodError } from "zod";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 export const genreRouter = Router();
 
@@ -16,26 +17,18 @@ const getPopularMediaGenreBodySchema = z.object({
 // get 5 most popular media of a certain genre
 genreRouter.get(
   "/popular",
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { genre } = getPopularMediaGenreBodySchema.parse(req.query);
-      const popularMedia = await get_popular_media_genre(genre);
-      if (popularMedia.length === 0) {
-        res.status(400).json({
-          status: "failed",
-          message: "No popular media found for the given genre",
-        });
-        return;
-      }
-      res.json({ status: "success", popularMedia });
-    } catch (err) {
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { genre } = getPopularMediaGenreBodySchema.parse(req.query);
+    const popularMedia = await get_popular_media_genre(genre);
+    if (popularMedia.length === 0) {
       res.status(400).json({
         status: "failed",
-        message:
-          err instanceof ZodError ? "Invalid query" : (err as Error).message,
+        message: "No popular media found for the given genre",
       });
+      return;
     }
-  }
+    res.json({ status: "success", popularMedia });
+  })
 );
 
 const getMediaGenreBodySchema = z.object({
@@ -49,34 +42,27 @@ const getMediaGenreBodySchema = z.object({
 // get 20 medias of a certain genre with offset
 genreRouter.get(
   "/media",
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { genre, offset, sortBy, order } = getMediaGenreBodySchema.parse(
-        req.query
-      );
-      const media = await get_media_genre(genre, offset, sortBy, order);
-      if (media.length === 0) {
-        res.status(400).json({
-          status: "failed",
-          message: "No media found for the given genre",
-        });
-        return;
-      }
-      res.json({ status: "success", media });
-    } catch (err) {
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { genre, offset, sortBy, order } = getMediaGenreBodySchema.parse(
+      req.query
+    );
+    const media = await get_media_genre(genre, offset, sortBy, order);
+    if (media.length === 0) {
       res.status(400).json({
         status: "failed",
-        message:
-          err instanceof ZodError ? "Invalid query" : (err as Error).message,
+        message: "No media found for the given genre",
       });
+      return;
     }
-  }
+    res.json({ status: "success", media });
+  })
 );
 
 // (GET /genre)
 // get a list of distinct genres
-genreRouter.get("/", async (req: Request, res: Response): Promise<void> => {
-  try {
+genreRouter.get(
+  "/",
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const genres = await get_genres();
     if (genres.length === 0) {
       res.status(400).json({
@@ -86,10 +72,5 @@ genreRouter.get("/", async (req: Request, res: Response): Promise<void> => {
       return;
     }
     res.json({ status: "success", genres });
-  } catch (err) {
-    res.status(400).json({
-      status: "failed",
-      message: (err as Error).message,
-    });
-  }
-});
+  })
+);
