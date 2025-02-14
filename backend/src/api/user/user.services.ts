@@ -5,7 +5,7 @@ import { RowDataPacket } from "mysql2";
 export async function getUserSettings(user_id:number) {
     try {
         const [result] = await conn.query<(RowDataPacket & number)[]>(
-            `SELECT * FROM User_Settings WHERE user_id = ?`,
+            `SELECT * FROM User_Settings WHERE user_id = ?;`,
             [user_id]
         );
         return result[0];
@@ -17,13 +17,32 @@ export async function getUserSettings(user_id:number) {
 export async function getUserProfileSettings(user_id:number) {
     try {
         const [result] = await conn.query<(RowDataPacket & number)[]>(
-            `SELECT display_name, status, bio, pronouns, location, social_instagram, social_youtube, social_tiktok FROM User_Settings WHERE user_id = ?`,
+            `SELECT display_name, status, bio, pronouns, location, social_instagram, social_youtube, social_tiktok FROM User_Settings WHERE user_id = ?;`,
             [user_id]
         );
         return result[0];
     } catch (error) {
         console.error(error);
     } 
+}
+
+export async function getUserSettingsForSettingsContext(user_id:number) {
+    try {
+        const [result] = await conn.query<(RowDataPacket & number)[]>(
+            "SELECT " +
+            "display_name, " +
+            "show_adult_content, " +
+            "theme, " +
+            "font_size, " +
+            "grant_personal_data, " +
+            "show_personalized_content" +
+            " FROM User_Settings WHERE user_id = ?;",
+            [user_id]
+        );
+        return result[0];
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function setUserSettings(user_id:number, values:Map<string,string>) {
@@ -50,4 +69,25 @@ export async function setUserSettings(user_id:number, values:Map<string,string>)
     } catch (error) {
         console.error(error);
     }    
+}
+
+export async function getPfp( user_id:number ) {
+    try {
+        const [result] = await conn.query<(RowDataPacket & number)[]>(
+            "SELECT image FROM Profile_Images WHERE user_id = ?;",[user_id]
+        );
+        return result[0]?.image;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function setPfp ( user_id:number, blob:string ) {
+    try {
+        await conn.query<(RowDataPacket & number)[]>(
+            `INSERT INTO Profile_Images (user_id, image) VALUES(?, ?) ON DUPLICATE KEY UPDATE user_id=?, image=?;`,[user_id,blob,user_id,blob]
+        );
+    } catch (error) {
+        console.error(error);
+    }
 }

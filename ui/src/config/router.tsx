@@ -11,6 +11,7 @@ import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
 import { ProfileSettings } from "@/pages/settingsPage/settingsPage";
 import LoginRequiredRoute from "@/components/loginRequiredRoute";
+import { ProfilePage } from "@/pages/profilePage/profilePage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -73,8 +74,8 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/profile",
-        element: <UnderConstruction />,
+        path: "/profile/:id",
+        element: <ProfilePage />,
       },
       {
         path: "/settings",
