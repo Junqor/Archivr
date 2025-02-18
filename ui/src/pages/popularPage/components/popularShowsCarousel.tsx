@@ -7,7 +7,6 @@ export function PopularShowsCarousel({ ...props }) {
     queryKey: ["popularShows"],
     queryFn: () => getPopularShows(),
   });
-  console.log(media);
   return (
     <MediaCarousel
       media={media}

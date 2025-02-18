@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { Clapperboard, Tv } from "lucide-react";
+import { ChevronRight, Clapperboard, Tv } from "lucide-react";
 import { PopularMoviesCarousel } from "./components/popularMoviesCarousel";
 import { PopularShowsCarousel } from "./components/popularShowsCarousel";
 import { PopularAnimeCarousel } from "./components/popularAnimeCarousel";
@@ -67,7 +67,9 @@ export function PopularPage() {
           </svg>
           <h4 className="uppercase">Most popular anime</h4>
           <Button variant="ghost" asChild className="ml-auto">
-            <Link to="/genre/anime">View All</Link>
+            <Link to="/genre/anime">
+              View All <ChevronRight size="16" />
+            </Link>
           </Button>
         </div>
         <Separator />
