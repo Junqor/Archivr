@@ -180,7 +180,7 @@ export async function get_recently_reviewed() {
     .selectDistinct({
       id: media.id,
       title: media.title,
-      thumbnail_url: media.thumbnailUrl,
+      thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       userId: users.id,
       userName: users.username,
