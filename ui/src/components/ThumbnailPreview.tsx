@@ -51,7 +51,7 @@ function ThumbnailPreview({ media }: { media: TThumbnailPreview }) {
       >
         {/* If the media title is too long, truncate it */}
         <h4 className="line-clamp-3 text-ellipsis text-center">
-          {media.title.length > 35
+          {media.title?.length > 35
             ? media.title.substring(0, 35) + "..."
             : media.title}
         </h4>

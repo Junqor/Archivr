@@ -9,6 +9,7 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
+import { PopularPage } from "@/pages/popularPage/popularPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -84,7 +85,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/popular",
-        element: <UnderConstruction />,
+        element: <PopularPage />,
       },
       {
         path: "/members",
