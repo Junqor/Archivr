@@ -4,6 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { router } from "./configs/router.js";
+import { loggerMiddleware } from "./middleware/logger.middleware.js";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cors({ origin: "*" }));
-// app.use(loggerMiddleware);
+app.use(loggerMiddleware);
 
 app.use("/api", router); // set base url to /api
 app.use(errorHandler); // Error logging middleware

@@ -3,6 +3,8 @@ import { Clapperboard, Tv } from "lucide-react";
 import { PopularMoviesCarousel } from "./components/popularMoviesCarousel";
 import { PopularShowsCarousel } from "./components/popularShowsCarousel";
 import { PopularAnimeCarousel } from "./components/popularAnimeCarousel";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export function PopularPage() {
   return (
@@ -20,7 +22,7 @@ export function PopularPage() {
         </section>
       </div>
       <section className="flex w-full flex-col justify-start gap-3">
-        <div className="flex flex-row space-x-4">
+        <div className="flex flex-row gap-x-4">
           <Clapperboard />
           <h4 className="uppercase">Most popular movies</h4>
         </div>
@@ -30,7 +32,7 @@ export function PopularPage() {
         </section>
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
-        <div className="flex flex-row space-x-4">
+        <div className="flex w-full flex-row gap-x-4">
           <Tv />
           <h4 className="uppercase">Most popular shows</h4>
         </div>
@@ -40,7 +42,7 @@ export function PopularPage() {
         </section>
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
-        <div className="flex flex-row items-center space-x-4">
+        <div className="flex flex-row items-center gap-x-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -64,6 +66,9 @@ export function PopularPage() {
             />
           </svg>
           <h4 className="uppercase">Most popular anime</h4>
+          <Button variant="ghost" asChild className="ml-auto">
+            <Link to="/genre/anime">View All</Link>
+          </Button>
         </div>
         <Separator />
         <section className="h-full">
