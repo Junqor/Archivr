@@ -113,7 +113,7 @@ export default function GenrePage() {
                 id="sort"
                 value={sortBy}
                 onChange={(e) => handleChangeSortBy(e.target.value as any)}
-                className="border-b-2 border-white bg-black px-2 py-1"
+                className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
               >
                 <option value="alphabetical">Alphabetical</option>
                 <option value="release_date">Release Date</option>
