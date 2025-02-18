@@ -1,12 +1,12 @@
 import { Separator } from "@/components/ui/separator";
-import { Sparkles } from "lucide-react";
+import { Clapperboard, Tv } from "lucide-react";
 import { PopularMoviesCarousel } from "./components/popularMoviesCarousel";
 import { PopularShowsCarousel } from "./components/popularShowsCarousel";
 import { PopularAnimeCarousel } from "./components/popularAnimeCarousel";
 
 export function PopularPage() {
   return (
-    <main className="flex h-full w-full flex-col">
+    <main className="flex h-full w-full flex-col gap-y-5">
       <div className="w-full">
         <section className="flex flex-col items-center justify-center gap-3 md:items-start">
           <h1 className="font-bold">
@@ -15,13 +15,13 @@ export function PopularPage() {
               {" "}
               Popular{" "}
             </span>
-            Media by Category.
+            Media by Category
           </h1>
         </section>
       </div>
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row space-x-4">
-          <Sparkles />
+          <Clapperboard />
           <h4 className="uppercase">Most popular movies</h4>
         </div>
         <Separator />
@@ -31,7 +31,7 @@ export function PopularPage() {
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row space-x-4">
-          <Sparkles />
+          <Tv />
           <h4 className="uppercase">Most popular shows</h4>
         </div>
         <Separator />
@@ -40,8 +40,29 @@ export function PopularPage() {
         </section>
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
-        <div className="flex flex-row space-x-4">
-          <Sparkles />
+        <div className="flex flex-row items-center space-x-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="16"
+            viewBox="0 0 3 2"
+          >
+            <rect
+              width="3"
+              height="2"
+              fill="white"
+              stroke="white"
+              stroke-width="0.1"
+            />
+            <circle
+              cx="1.5"
+              cy="1"
+              r="0.6"
+              fill="red"
+              stroke="red"
+              stroke-width="0.1"
+            />
+          </svg>
           <h4 className="uppercase">Most popular anime</h4>
         </div>
         <Separator />
