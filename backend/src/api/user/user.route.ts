@@ -104,6 +104,7 @@ userRouter.post("/set-pfp", authenticateToken, async(req, res) => {
             throw new Error("Image must be smaller than 64kb");
         }
         const values = await setPfp(res.locals.user.id, image)
+        console.log(values);
         res.json({ status:"success" });
     } catch (error) {
         console.error(error);

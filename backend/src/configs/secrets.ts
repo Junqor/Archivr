@@ -12,6 +12,9 @@ const schema = z.object({
   REFRESH_TOKEN_SECRET: z.string(),
   TMDB_API_KEY: z.string(),
   TVDB_API_KEY: z.string(),
+  BUCKET_URL: z.string(),
+  BUCKET_ACCESS_TOKEN: z.string(),
+  BUCKET_SECRET_TOKEN: z.string(),
 });
 //
 const envVariables = {
@@ -23,6 +26,9 @@ const envVariables = {
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   TMDB_API_KEY: process.env.TMDB_API_KEY,
   TVDB_API_KEY: process.env.TVDB_API_KEY,
+  BUCKET_URL: process.env.BUCKET_URL,
+  BUCKET_ACCESS_TOKEN: process.env.BUCKET_ACCESS_TOKEN,
+  BUCKET_SECRET_TOKEN: process.env.BUCKET_SECRET_TOKEN,
 };
 
 const serverConfig = schema.parse(envVariables);
