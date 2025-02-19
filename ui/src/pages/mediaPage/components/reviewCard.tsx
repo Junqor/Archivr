@@ -96,7 +96,9 @@ export const ReviewCard = ({
           }
           className="size-7 rounded-full"
         />
-        <h5>{review.username}</h5>
+        <a href={"/profile/"+review.user_id} className="hover:underline cursor-pointer">
+          <h5>{review.username}</h5>
+        </a>
         <div className="ml-auto flex items-center">
           {[...Array(10)].map((_, i) => (
             <StarRatings

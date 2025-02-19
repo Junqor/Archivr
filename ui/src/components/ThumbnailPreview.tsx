@@ -42,7 +42,7 @@ function ThumbnailPreview({ media, className }: TThumbnailPreview) {
     <div
       title={media.title}
       style={{
-        backgroundImage: `url(${media.thumbnail_url?.replace(
+        backgroundImage: `url(${media?.thumbnail_url.replace(
           ".jpg",
           "_t.jpg",
         )})`,

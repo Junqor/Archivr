@@ -1,6 +1,8 @@
 import { error } from "console";
 import { conn } from "../../db/database.js";
 import { RowDataPacket } from "mysql2";
+import { serverConfig } from "../../configs/secrets.js";
+import { env } from "process";
 
 export async function getUserSettings(user_id:number) {
     try {
@@ -17,7 +19,7 @@ export async function getUserSettings(user_id:number) {
 export async function getUserProfileSettings(user_id:number) {
     try {
         const [result] = await conn.query<(RowDataPacket & number)[]>(
-            `SELECT display_name, status, bio, pronouns, location, social_instagram, social_youtube, social_tiktok FROM User_Settings WHERE user_id = ?;`,
+            `SELECT username, display_name, status, bio, pronouns, location, social_instagram, social_youtube, social_tiktok FROM User_Settings INNER JOIN Users ON Users.id = User_Settings.user_id WHERE user_id = ?;`,
             [user_id]
         );
         return result[0];
@@ -72,6 +74,7 @@ export async function setUserSettings(user_id:number, values:Map<string,string>)
 }
 
 export async function getPfp( user_id:number ) {
+    return "nope";
     try {
         const [result] = await conn.query<(RowDataPacket & number)[]>(
             "SELECT image FROM Profile_Images WHERE user_id = ?;",[user_id]
@@ -84,9 +87,26 @@ export async function getPfp( user_id:number ) {
 
 export async function setPfp ( user_id:number, blob:string ) {
     try {
-        await conn.query<(RowDataPacket & number)[]>(
-            `INSERT INTO Profile_Images (user_id, image) VALUES(?, ?) ON DUPLICATE KEY UPDATE user_id=?, image=?;`,[user_id,blob,user_id,blob]
-        );
+        const date = Date.prototype.getUTCFullYear().toString()+Date.prototype.getUTCMonth().toString()+Date.prototype.getUTCDate().toString();
+        const date8601 = date + "T" + Date.prototype.getUTCHours().toString()+Date.prototype.getUTCMinutes().toString()+Date.prototype.getUTCSeconds().toString() + "Z"
+        console.log(date8601);
+        const res = await fetch(serverConfig.BUCKET_URL+"/profile-pics/pfp_"+user_id.toString()+".jpeg", {
+            method: "PUT",
+            headers: {
+                "Content-Length": blob.length.toString(),
+                "Content-Type": "image/jpeg",
+                "x-amz-content-sha256": "",
+                "x-amz-date": date8601,
+                "x-amz-storage-class": "STANDARD",
+                "Authorization": "AWS4-HMAC-SHA256 Credential="+serverConfig.BUCKET_ACCESS_TOKEN+
+                "/"+date+
+                "/sfo3/s3/aws4_request"+","+
+                "SignedHeaders=content-length;content-type;x-amz-content-sha256;x-amz-date,"+
+                "Signature=",
+            },
+            body: blob,
+        })
+        return res;
     } catch (error) {
         console.error(error);
     }
