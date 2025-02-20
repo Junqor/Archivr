@@ -13,7 +13,7 @@ import { formatInteger } from "@/utils/formatInteger";
 export type TThumbnailPreview = {
   id: number;
   title: string;
-  thumbnail_url: string;
+  thumbnail_url: string | null;
   rating: number | null;
 };
 
@@ -50,9 +50,8 @@ function ThumbnailPreview({ media }: { media: TThumbnailPreview }) {
         className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white opacity-0 transition-opacity duration-300 hover:opacity-100"
       >
         {/* If the media title is too long, truncate it */}
-        <h4 className="text-center">
-          {" "}
-          {media.title.length > 35
+        <h4 className="line-clamp-3 text-ellipsis text-center">
+          {media.title?.length > 35
             ? media.title.substring(0, 35) + "..."
             : media.title}
         </h4>

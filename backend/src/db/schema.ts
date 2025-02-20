@@ -79,9 +79,9 @@ export const media = mysqlTable(
     title: varchar({ length: 255 }).notNull(),
     description: text(),
     // you can use { mode: 'date' }, if you want to have Date as type for this column
-    releaseDate: date("release_date", { mode: "string" }),
-    ageRating: varchar("age_rating", { length: 20 }),
-    thumbnailUrl: varchar("thumbnail_url", { length: 255 }),
+    release_date: date("release_date", { mode: "string" }),
+    age_rating: varchar("age_rating", { length: 20 }),
+    thumbnail_url: varchar("thumbnail_url", { length: 255 }),
     rating: float(),
     runtime: int(),
   },
@@ -89,11 +89,10 @@ export const media = mysqlTable(
     index("Media_category_IDX").on(table.category),
     index("Media_rating_IDX").on(table.rating),
     primaryKey({ columns: [table.id], name: "Media_id" }),
-    unique("unique_media").on(table.category, table.title, table.releaseDate),
+    unique("unique_media").on(table.category, table.title, table.release_date),
   ]
 );
 
-// Media_Genre table
 export const mediaGenre = mysqlTable(
   "Media_Genre",
   {

@@ -59,7 +59,7 @@ export async function update_review(
   new_comment: string,
   new_rating: number
 ) {
-  const ratingId = await db
+  const [ratingId] = await db
     .insert(ratings)
     .values({ mediaId: media_id, userId: user_id, rating: new_rating })
     .onDuplicateKeyUpdate({
@@ -74,12 +74,12 @@ export async function update_review(
         mediaId: media_id,
         userId: user_id,
         comment: new_comment,
-        ratingId: new_rating,
+        ratingId: ratingId.id,
       })
       .onDuplicateKeyUpdate({
         set: {
           comment: new_comment,
-          ratingId: ratingId[0].id,
+          ratingId: ratingId.id,
           createdAt: sql`CURRENT_TIMESTAMP`,
         },
       });
@@ -182,7 +182,7 @@ export async function get_recently_reviewed() {
     .selectDistinct({
       id: media.id,
       title: media.title,
-      thumbnail_url: media.thumbnailUrl,
+      thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       userId: users.id,
       userName: users.username,

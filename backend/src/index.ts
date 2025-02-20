@@ -14,9 +14,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cors({ origin: "*" }));
-app.use(errorHandler); // Error logging middleware
+//app.use(loggerMiddleware);
 
 app.use("/api", router); // set base url to /api
+app.use(errorHandler); // Error logging middleware
 
 // Test db connection
 try {

@@ -230,7 +230,7 @@ export function Login() {
                 </button>
                 <p className="text-center">
                   Free to join. By clicking Sign Up, you agree to our{" "}
-                  <Link to="#" className="underline">
+                  <Link to="/tos" className="underline">
                     Terms of Service
                   </Link>
                 </p>
