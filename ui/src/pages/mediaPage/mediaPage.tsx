@@ -144,6 +144,9 @@ export function MediaPage() {
               className="mr-2 flex-row space-x-2 pl-0"
               size="sm"
               variant="ghost"
+              onClick={() =>
+                navigator.clipboard.writeText(window.location.href)
+              }
             >
               <MessagesSquare className="size-5" />
               <h4>Tell a Friend</h4>
