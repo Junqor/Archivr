@@ -1,6 +1,6 @@
 import { useParams, Navigate, useSearchParams } from "react-router-dom";
 import { getGenres, getPopularMediaGenre, getMediaGenre } from "@/api/genre";
-import HeroMediaCarousel from "./components/genreHeroCarousel";
+import HeroMediaCarousel from "@/components/heroMediaCarousel";
 import { useQuery } from "@tanstack/react-query";
 import { TGenre } from "@/types/genre";
 import { useEffect } from "react";

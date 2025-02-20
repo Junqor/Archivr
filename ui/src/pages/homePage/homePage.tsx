@@ -2,6 +2,8 @@
 import IconBox from "@/components/icon-box";
 import StatsBox from "@/pages/homePage/components/statsBox";
 import { Link } from "react-router-dom";
+import { SimilarCarousel } from "./components/similarCarousel";
+import { RecommendedCarousel } from "./components/recommendedCarousel";
 import { NewForYouCarousel } from "./components/newForYouCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
@@ -30,7 +32,7 @@ export default function HomePage() {
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <CalendarPlus />
               <h4 className="uppercase">New for you...</h4>
             </div>
@@ -39,8 +41,9 @@ export default function HomePage() {
               <NewForYouCarousel />
             </section>
           </section>
+          <SimilarCarousel />
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <Sparkles />
               <h4 className="uppercase">All time most popular...</h4>
             </div>
@@ -54,8 +57,9 @@ export default function HomePage() {
               />
             </section>
           </section>
+          <RecommendedCarousel />
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <MessageCircleHeart />
               <h4 className="uppercase">Recently Reviewed...</h4>
             </div>
@@ -123,7 +127,7 @@ export default function HomePage() {
             </div>
           </section>
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <MessageCircleHeart />
               <h4 className="uppercase">Recently Reviewed...</h4>
             </div>

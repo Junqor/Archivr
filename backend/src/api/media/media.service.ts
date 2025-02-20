@@ -4,13 +4,15 @@ import { TMedia, TReview } from "../../types/index.js";
 import {
   users as UsersTable,
   likesReviews as likesReviewsTable,
+  likes,
   media,
+  mediaGenre,
   ratings,
   userReviews,
   users,
   remoteId,
 } from "../../db/schema.js";
-import { desc, eq } from "drizzle-orm/expressions";
+import { desc, eq, and, inArray, not, gte } from "drizzle-orm/expressions";
 import { count, sql } from "drizzle-orm";
 
 export async function update_rating(
@@ -403,3 +405,207 @@ export const getMediaTrailer = async (id: number) => {
   ).data.trailers.find((trailer: Trailer) => trailer.url);
   return trailer ? trailer.url : null;
 };
+
+// We think you'd love these
+export async function get_recommended_for_you(user_id: number) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user_id provided");
+  }
+
+  const userInteractions = await db
+    .select({ mediaId: ratings.mediaId })
+    .from(ratings)
+    .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5)))
+    .union(
+      db
+        .select({ mediaId: likes.mediaId })
+        .from(likes)
+        .where(eq(likes.userId, user_id))
+    );
+
+  const interactedMediaIds = userInteractions.map(
+    (interaction) => interaction.mediaId
+  );
+
+  if (interactedMediaIds.length === 0) {
+    const randomMedia = await db
+      .select({
+        id: media.id,
+        category: media.category,
+        title: media.title,
+        release_date: media.release_date,
+        age_rating: media.age_rating,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+        runtime: media.runtime,
+      })
+      .from(media)
+      .orderBy(sql`RAND()`)
+      .limit(24);
+
+    return { status: "success", media: randomMedia };
+  }
+
+  const similarUsers = await db
+    .select({ userId: ratings.userId })
+    .from(ratings)
+    .where(
+      and(inArray(ratings.mediaId, interactedMediaIds), gte(ratings.rating, 5))
+    )
+    .union(
+      db
+        .select({ userId: likes.userId })
+        .from(likes)
+        .where(inArray(likes.mediaId, interactedMediaIds))
+    );
+
+  const similarUserIds = similarUsers
+    .map((user) => user.userId)
+    .filter((id) => id !== user_id);
+
+  let recommendedMedia = await db
+    .selectDistinct({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .innerJoin(ratings, eq(ratings.mediaId, media.id))
+    .where(
+      and(
+        inArray(ratings.userId, similarUserIds),
+        gte(ratings.rating, 5),
+        not(inArray(media.id, interactedMediaIds))
+      )
+    )
+    .orderBy(desc(media.rating))
+    .limit(24);
+
+  if (recommendedMedia.length < 24) {
+    const genres = await db
+      .select({ genre: mediaGenre.genre })
+      .from(mediaGenre)
+      .where(inArray(mediaGenre.mediaId, interactedMediaIds));
+
+    const genreList = genres.map((g) => g.genre);
+
+    const fallbackMedia = await db
+      .selectDistinct({
+        id: media.id,
+        category: media.category,
+        title: media.title,
+        release_date: media.release_date,
+        age_rating: media.age_rating,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+        runtime: media.runtime,
+      })
+      .from(media)
+      .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+      .where(inArray(mediaGenre.genre, genreList))
+      .orderBy(sql`RAND() * ${media.rating}`) // Weighted random selection
+      .limit(24 - recommendedMedia.length);
+
+    recommendedMedia = [...recommendedMedia, ...fallbackMedia];
+  }
+
+  return {
+    status: "success",
+    media: recommendedMedia,
+  };
+}
+
+// Because you watched...
+export async function get_similar_to_watched(user_id: number) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user_id provided");
+  }
+
+  // Step 1: Get the most recently highly rated or liked media by the user
+  const userInteractions = await db
+    .select({ mediaId: ratings.mediaId, title: media.title })
+    .from(ratings)
+    .innerJoin(media, eq(ratings.mediaId, media.id))
+    .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5)))
+    .union(
+      db
+        .select({ mediaId: likes.mediaId, title: media.title })
+        .from(likes)
+        .innerJoin(media, eq(likes.mediaId, media.id))
+        .where(eq(likes.userId, user_id))
+    );
+
+  const interactedMediaIds = userInteractions.map(
+    (interaction) => interaction.mediaId
+  );
+
+  if (interactedMediaIds.length === 0) {
+    return {
+      status: "success",
+      media: [],
+      basedOn: null,
+    };
+  }
+
+  const recentMediaTitle = userInteractions[0].title;
+
+  const genres = await db
+    .select({ genre: mediaGenre.genre })
+    .from(mediaGenre)
+    .where(inArray(mediaGenre.mediaId, interactedMediaIds));
+
+  const genreList = genres.map((g) => g.genre);
+
+  const similarMedia = await db
+    .selectDistinct({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+    .where(inArray(mediaGenre.genre, genreList))
+    .orderBy(sql`RAND() * ${media.rating}`) // Weighted random selection
+    .limit(16);
+
+  if (similarMedia.length < 16) {
+    const fallbackMedia = await db
+      .selectDistinct({
+        id: media.id,
+        category: media.category,
+        title: media.title,
+        release_date: media.release_date,
+        age_rating: media.age_rating,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+        runtime: media.runtime,
+      })
+      .from(media)
+      .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+      .where(inArray(mediaGenre.genre, genreList))
+      .orderBy(sql`RAND() * ${media.rating}`)
+      .limit(16 - similarMedia.length);
+
+    return {
+      status: "success",
+      media: [...similarMedia, ...fallbackMedia],
+      basedOn: recentMediaTitle,
+    };
+  }
+
+  return {
+    status: "success",
+    media: similarMedia,
+    basedOn: recentMediaTitle,
+  };
+}

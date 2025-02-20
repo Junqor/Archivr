@@ -232,3 +232,24 @@ export const getMediaTrailer = async (id: number) => {
 
   return data.result as string;
 };
+
+export const getRecommendedForYou = async (userId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/recommended-for-you/?user_id=${userId}`,
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
+};
+
+export const getSimilarToWatched = async (userId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/similar-to-watched/?user_id=${userId}`,
+  );
+  const data = await response.json();
+  return {
+    media: data.media as TMedia[],
+    basedOn: data.basedOn as string,
+  };
+};

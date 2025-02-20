@@ -19,14 +19,19 @@ import {
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
+// Likes table
 export const likes = mysqlTable(
   "Likes",
   {
     id: int().autoincrement().notNull(),
-    userId: int("user_id").references(() => users.id, { onDelete: "cascade" }),
-    mediaId: int("media_id").references(() => media.id, {
-      onDelete: "cascade",
-    }),
+    userId: int("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    mediaId: int("media_id")
+      .references(() => media.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     likedAt: timestamp("liked_at", { mode: "string" }).defaultNow(),
   },
   (table) => [
@@ -37,6 +42,7 @@ export const likes = mysqlTable(
   ]
 );
 
+// Likes_Reviews table
 export const likesReviews = mysqlTable(
   "Likes_Reviews",
   {
@@ -57,6 +63,7 @@ export const likesReviews = mysqlTable(
   ]
 );
 
+// Media table
 export const media = mysqlTable(
   "Media",
   {
@@ -86,6 +93,7 @@ export const media = mysqlTable(
   ]
 );
 
+// MediaGenre table
 export const mediaGenre = mysqlTable(
   "Media_Genre",
   {
@@ -101,6 +109,7 @@ export const mediaGenre = mysqlTable(
   ]
 );
 
+// Ratings table
 export const ratings = mysqlTable(
   "Ratings",
   {
@@ -124,6 +133,7 @@ export const ratings = mysqlTable(
   ]
 );
 
+// RemoteId table
 export const remoteId = mysqlTable(
   "RemoteId",
   {
@@ -139,6 +149,7 @@ export const remoteId = mysqlTable(
   ]
 );
 
+// Reviews table
 export const reviews = mysqlTable(
   "Reviews",
   {
@@ -168,6 +179,7 @@ export const reviews = mysqlTable(
   ]
 );
 
+// UserReviews table
 export const userReviews = mysqlTable(
   "UserReviews",
   {
@@ -199,6 +211,7 @@ export const userReviews = mysqlTable(
   ]
 );
 
+// Users table
 export const users = mysqlTable(
   "Users",
   {
