@@ -15,7 +15,12 @@ import { formatInteger } from "@/utils/formatInteger";
 import { StarRatings } from "./components/starRatings";
 import { ReviewCard } from "./components/reviewCard";
 import { cn } from "@/lib/utils";
-import { SignalCellularAlt, StarRounded } from "@mui/icons-material";
+import {
+  SignalCellularAlt,
+  StarRounded,
+  CalendarMonthRounded,
+  AccessTimeRounded,
+} from "@mui/icons-material";
 import { checkLikes } from "@/api/reviews";
 import { getWatchProviders } from "@/api/watch";
 import {
@@ -85,8 +90,8 @@ export function MediaPage() {
     : null;
 
   return (
-    <div className="flex h-fit w-full flex-col items-start justify-center bg-black px-4 py-8 text-gray-100 sm:px-6 lg:px-8">
-      <section className="relative flex h-96 w-full flex-row gap-x-5">
+    <div className="flex h-fit w-full flex-col items-start justify-center gap-4 bg-black px-4 py-8 text-gray-100 sm:px-6 lg:px-8">
+      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:h-96">
         {/* blurred background image */}
         <div
           className="absolute z-0 h-5/6 w-full self-center justify-self-center overflow-hidden opacity-30"
@@ -96,7 +101,7 @@ export function MediaPage() {
           }}
         />
         {/* Poster Image */}
-        <div className="relative z-10 w-1/4">
+        <div className="relative z-10 order-2 w-1/3 sm:order-1 sm:w-1/4">
           <img
             src={data.thumbnail_url}
             alt="Poster Thumbnail"
@@ -104,27 +109,27 @@ export function MediaPage() {
           />
         </div>
         {/* Media Info Section */}
-        <section className="relative flex w-1/2 flex-col items-start justify-start overflow-hidden">
+        <section className="relative order-1 flex w-2/3 flex-col items-start justify-start overflow-hidden sm:order-2 sm:w-1/2">
           <div className="flex min-w-0 max-w-full flex-row items-end justify-start">
-            <h1 className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap no-scrollbar">
+            <h2 className="min-w-0 overflow-x-auto no-scrollbar sm:flex-1 sm:whitespace-nowrap">
               {data.title}
-            </h1>
-            <h3 className="ml-2 font-light leading-loose">
+            </h2>
+            <h3 className="ml-2 hidden font-light leading-relaxed sm:block">
               {formatDateYear(new Date(data.release_date))}
             </h3>
           </div>
-          <div className="flex max-w-full flex-row overflow-x-auto no-scrollbar">
-            <Badge variant="secondary" className="mr-2" title="Age Rating">
+          <div className="hidden max-w-full flex-row flex-nowrap gap-2 overflow-x-auto no-scrollbar sm:flex">
+            <Badge variant="secondary" title="Age Rating">
               {data.age_rating}
             </Badge>
-            <pre>| </pre>
+            <pre>|</pre>
             {data.genres.map((genre, i) => (
-              <Badge variant="outline" className="mr-2" key={i}>
+              <Badge variant="outline" key={i}>
                 {genre}
               </Badge>
             ))}
           </div>
-          <p className="overflow-hidden overflow-y-scroll text-ellipsis py-3 font-light leading-tight no-scrollbar">
+          <p className="hidden overflow-hidden overflow-y-scroll text-ellipsis py-3 font-light leading-tight no-scrollbar sm:block">
             {data.description}
           </p>
           <div className="flex flex-row">
@@ -154,7 +159,7 @@ export function MediaPage() {
           </div>
         </section>
         {/* Write Review Section */}
-        <section className="relative z-10 flex h-full w-1/4 flex-col space-y-2">
+        <section className="relative z-10 order-3 hidden h-full w-1/4 flex-col space-y-2 sm:flex">
           <p>Leave a Rating</p>
           <div className="flex">
             {[...Array(10)].map((_, i) => (
@@ -198,11 +203,81 @@ export function MediaPage() {
           </Button>
         </section>
       </section>
+      <section className="relative flex w-full flex-col gap-x-5 sm:hidden">
+        <div className="flex max-w-full flex-row flex-wrap gap-2">
+          <Badge variant="secondary" title="Age Rating">
+            {data.age_rating}
+          </Badge>
+          <pre>|</pre>
+          {data.genres.map((genre, i) => (
+            <Badge variant="outline" key={i}>
+              {genre}
+            </Badge>
+          ))}
+        </div>
+        <p className="py-3 font-light leading-tight no-scrollbar">
+          {data.description}
+        </p>
+        <section className="relative z-10 flex w-full flex-col space-y-2">
+          <div className="flex flex-row items-center gap-4">
+            <h4>Leave a Rating</h4>
+            <div className="flex">
+              {[...Array(10)].map((_, i) => (
+                <StarRatings
+                  key={i}
+                  className={cn(
+                    ratingPreview > i || rating > i
+                      ? `fill-primary text-primary`
+                      : `text-white`,
+                  )}
+                  i={i}
+                  width="16px"
+                  height="32px"
+                  onMouseOver={() => setRatingPreview(i + 1)}
+                  onMouseOut={() => setRatingPreview(0)}
+                  onClick={() => setRating(i + 1)}
+                />
+              ))}
+            </div>
+          </div>
+          <h4>Share your thoughts</h4>
+          <Textarea
+            placeholder={"Write your thoughts and opinions for others to see"}
+            className={cn(
+              "h-32 border-neutral-500 focus:border-white",
+              userWasSilly && "border-red-500",
+            )}
+            value={review}
+            onChange={handleType}
+          />
+          {userWasSilly && (
+            <p className="text-xs text-red-500">
+              You have to choose a rating silly!
+            </p>
+          )}
+          <Button
+            variant="outline"
+            className="flex-row gap-x-2 self-end justify-self-end bg-transparent"
+            onClick={handleAddReview}
+          >
+            Submit Review <Send size="10" />
+          </Button>
+        </section>
+      </section>
       {/* Bottom Section Reviews */}
-      <section className="relative flex w-full flex-row gap-x-5">
-        <section className="flex h-full w-1/4 flex-col justify-start">
+      <section className="relative flex w-full flex-col gap-x-5 sm:flex-row">
+        <section className="flex h-full w-full flex-col justify-start sm:w-1/4">
           {/* Media Stats */}
           <div className="flex flex-row justify-center space-x-4 text-gray-300">
+            <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
+              <AccessTimeRounded className="fill-gray-300" />
+              <h4>{data.runtime}m</h4>
+            </div>
+            <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
+              <CalendarMonthRounded className="fill-gray-300" />
+              <h4>{formatDateYear(new Date(data.release_date))}</h4>
+            </div>
+            <div className="pr-4 sm:hidden" />
             <div className="flex flex-row items-center justify-center space-x-1">
               <SignalCellularAlt className="size-5 fill-gray-300" />
               <h4>{formatInteger(data.rating)}</h4>
@@ -270,7 +345,7 @@ export function MediaPage() {
             )}
           </div>
         </section>
-        <section className="flex h-full w-3/4 flex-col justify-start">
+        <section className="flex h-full w-full flex-col justify-start sm:w-3/4">
           <h3 className="font-light">See What Others Are Saying</h3>
           {reviews && (
             <div className="mt-3 flex flex-col">
@@ -281,7 +356,7 @@ export function MediaPage() {
                   </h4>
                   <img
                     src={empty}
-                    className="h-1/3 w-1/3 justify-self-center"
+                    className="w-3/4 justify-self-center sm:h-1/3 sm:w-1/3"
                   />
                 </>
               ) : (
