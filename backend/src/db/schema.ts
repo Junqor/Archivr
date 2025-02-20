@@ -93,6 +93,7 @@ export const media = mysqlTable(
   ]
 );
 
+// MediaGenre table
 export const mediaGenre = mysqlTable(
   "Media_Genre",
   {

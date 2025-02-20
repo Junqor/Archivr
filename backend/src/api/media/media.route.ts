@@ -171,26 +171,40 @@ mediaRouter.get(
 mediaRouter.get(
   "/trailer/:id",
   asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const result = await getMediaTrailer(parseInt(id));
-    res.status(200).json({ status: "success", result });
-  } catch (error) {
-    res.status(500).json({ status: "failed", message: "Something went wrong" });
-  }
-});
+    try {
+      const { id } = req.params;
+      const result = await getMediaTrailer(parseInt(id));
+      res.status(200).json({ status: "success", result });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ status: "failed", message: "Something went wrong" });
+    }
+  })
+);
 
 // (GET /media/recommended-for-you)
 // get recommended media for the user
-mediaRouter.get("/recommended-for-you", async (req, res) => {
-  const userId = parseInt(req.query.user_id as string);
-  const result = await get_recommended_for_you(userId);
-  res.json({ status: "success", media: result.media });
-});
+mediaRouter.get(
+  "/recommended-for-you",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.query.user_id as string);
+    const result = await get_recommended_for_you(userId);
+    res.json({ status: "success", media: result.media });
+  })
+);
 
 // (GET /media/similar-to-watched)
 // get similar media to the watched media
-mediaRouter.get("/similar-to-watched", async (req, res) => {
-  const userId = parseInt(req.query.user_id as string);
-  const result = await get_similar_to_watched(userId);
-  res.json({ status: "success", media: result.media, basedOn: result.basedOn });
-});
+mediaRouter.get(
+  "/similar-to-watched",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.query.user_id as string);
+    const result = await get_similar_to_watched(userId);
+    res.json({
+      status: "success",
+      media: result.media,
+      basedOn: result.basedOn,
+    });
+  })
+);
