@@ -14,6 +14,7 @@ import {
 } from "../../db/schema.js";
 import { desc, eq, and, inArray, not, gte } from "drizzle-orm/expressions";
 import { count, sql } from "drizzle-orm";
+import { logger } from "../../configs/logger.js";
 
 export async function update_rating(
   media_id: number,
@@ -554,13 +555,15 @@ export async function get_similar_to_watched(user_id: number) {
 
   const recentMediaTitle = userInteractions[0].title;
 
+  // Step 2: Get the genres of the most recently watched media
   const genres = await db
     .select({ genre: mediaGenre.genre })
     .from(mediaGenre)
-    .where(inArray(mediaGenre.mediaId, interactedMediaIds));
+    .where(eq(mediaGenre.mediaId, interactedMediaIds[0]));
 
   const genreList = genres.map((g) => g.genre);
 
+  // Step 3: Get media that match all the genres
   const similarMedia = await db
     .selectDistinct({
       id: media.id,
@@ -574,10 +577,18 @@ export async function get_similar_to_watched(user_id: number) {
     })
     .from(media)
     .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
-    .where(inArray(mediaGenre.genre, genreList))
-    .orderBy(sql`RAND() * ${media.rating}`) // Weighted random selection
+    .where(
+      and(
+        inArray(mediaGenre.genre, genreList),
+        not(inArray(media.id, interactedMediaIds)) // Exclude media user has already watched
+      )
+    )
+    .groupBy(media.id)
+    .having(sql`COUNT(DISTINCT ${mediaGenre.genre}) = ${genreList.length}`)
+    .orderBy(desc(media.rating)) // Weighted random selection
     .limit(16);
 
+  // Optional: If there are less than 16 similar media, get the remaining 16 from the fallback genres that match any 1 of the genres
   if (similarMedia.length < 16) {
     const fallbackMedia = await db
       .selectDistinct({
@@ -593,18 +604,17 @@ export async function get_similar_to_watched(user_id: number) {
       .from(media)
       .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
       .where(inArray(mediaGenre.genre, genreList))
-      .orderBy(sql`RAND() * ${media.rating}`)
+      .groupBy(media.id)
+      .orderBy(sql`COUNT(DISTINCT ${mediaGenre.genre}) DESC`) // Order by the number of genres the media matches
       .limit(16 - similarMedia.length);
 
     return {
-      status: "success",
       media: [...similarMedia, ...fallbackMedia],
       basedOn: recentMediaTitle,
     };
   }
 
   return {
-    status: "success",
     media: similarMedia,
     basedOn: recentMediaTitle,
   };
