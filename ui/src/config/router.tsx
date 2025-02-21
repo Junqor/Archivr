@@ -10,7 +10,7 @@ import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
 import { PopularPage } from "@/pages/popularPage/popularPage";
-import { TermsOfService } from "@/pages/tosPage/termsOfService";
+import TermsOfServicePage from "@/pages/termsOfService";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -94,7 +94,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/tos",
-        element: <TermsOfService />,
+        element: <TermsOfServicePage />,
       },
       {
         path: "/random",
