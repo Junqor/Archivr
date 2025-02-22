@@ -31,7 +31,7 @@ export async function get_popular_media_genre(
 export async function get_media_genre(
   genre: string,
   offset: number,
-  sortBy: "alphabetical" | "release_date" | "rating",
+  sortBy: "alphabetical" | "release_date" | "popularity",
   order: "asc" | "desc"
 ): Promise<TMedia[]> {
   let orderByClause;
@@ -42,7 +42,7 @@ export async function get_media_genre(
     case "release_date":
       orderByClause = "release_date";
       break;
-    case "rating":
+    case "popularity":
       orderByClause = "rating";
       break;
     default:

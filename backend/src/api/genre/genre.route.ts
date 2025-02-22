@@ -34,7 +34,7 @@ genreRouter.get(
 const getMediaGenreBodySchema = z.object({
   genre: z.string(),
   offset: z.coerce.number(),
-  sortBy: z.enum(["alphabetical", "release_date", "rating"]),
+  sortBy: z.enum(["alphabetical", "release_date", "popularity"]),
   order: z.enum(["asc", "desc"]),
 });
 
