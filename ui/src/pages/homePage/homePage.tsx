@@ -4,11 +4,10 @@ import StatsBox from "@/pages/homePage/components/statsBox";
 import { Link } from "react-router-dom";
 import { SimilarCarousel } from "./components/similarCarousel";
 import { RecommendedCarousel } from "./components/recommendedCarousel";
-import { NewForYouCarousel } from "./components/newForYouCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
-import { CalendarPlus, MessageCircleHeart, Sparkles } from "lucide-react";
+import { MessageCircleHeart, Sparkles, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Separator } from "@/components/ui/separator";
 import { TopRatedPicksCarousel } from "./components/topRatedPicksCarousel";
@@ -34,12 +33,12 @@ export default function HomePage() {
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
             <div className="flex flex-row items-center space-x-4">
-              <CalendarPlus />
-              <h4 className="uppercase">New for you...</h4>
+              <TrendingUp />
+              <h4 className="uppercase">Trending this week...</h4>
             </div>
             <Separator />
             <section className="h-full overflow-visible">
-              <NewForYouCarousel />
+              <TrendingCarousel />
             </section>
           </section>
           <SimilarCarousel />
