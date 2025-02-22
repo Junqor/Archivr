@@ -96,6 +96,18 @@ export const getTrending = async (): Promise<TrendingResponse> => {
   return data.media;
 };
 
+export const getTrendingPaginated = async (
+  type: "movie" | "tv",
+  page: number,
+): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/trending-paginated?type=${type}&page=${page}`,
+  );
+  const data = await response.json();
+  return data.media;
+};
+
 export const getTopRatedPicks = async (): Promise<TMedia[]> => {
   const response = await fetch(
     import.meta.env.VITE_API_URL + "/media/top-rated-picks",

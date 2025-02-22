@@ -1,8 +1,10 @@
 import { Separator } from "@/components/ui/separator";
-import { Clapperboard, Tv } from "lucide-react";
+import { ChevronsRight, Clapperboard, Tv } from "lucide-react";
 import MediaCarousel from "@/components/MediaCarousel";
 import { useQuery } from "@tanstack/react-query";
 import { getTrending } from "@/api/media";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export function TrendingPage() {
   const { data: media } = useQuery({
@@ -28,6 +30,11 @@ export function TrendingPage() {
         <div className="flex flex-row gap-x-4">
           <Clapperboard />
           <h4 className="uppercase">Trending movies</h4>
+          <Button variant="ghost" asChild className="ml-auto">
+            <Link to="/trending/movies">
+              View All <ChevronsRight size="16" />
+            </Link>
+          </Button>
         </div>
         <Separator />
         <section className="h-full">
@@ -44,6 +51,11 @@ export function TrendingPage() {
         <div className="flex w-full flex-row gap-x-4">
           <Tv />
           <h4 className="uppercase">Trending shows</h4>
+          <Button variant="ghost" asChild className="ml-auto">
+            <Link to="/trending/shows">
+              View All <ChevronsRight size="16" />
+            </Link>
+          </Button>
         </div>
         <Separator />
         <section className="h-full">

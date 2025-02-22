@@ -320,6 +320,49 @@ export const getTrending = async (type: "movie" | "tv") => {
   return trending;
 };
 
+export const getTrendingPaginated = async (
+  type: "movie" | "tv",
+  page: number
+) => {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/trending/${type}/week?language=en-US&page=${
+      page + 1
+    }`,
+    {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${serverConfig.TMDB_API_KEY}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch trending data");
+  }
+
+  const trendingIds = (await response.json()).results.map((r: any) => r.id);
+
+  const trending = await db
+    .select({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      description: media.description,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .leftJoin(remoteId, eq(media.id, remoteId.id))
+    .where(inArray(remoteId.tmdbId, trendingIds))
+    .orderBy(
+      asc(sql`FIELD(${remoteId.tmdbId}, ${sql.join(trendingIds, sql`,`)})`)
+    );
+
+  return trending;
+};
 export async function get_new_for_you(user_id: number) {
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
     `SELECT DISTINCT Media.*

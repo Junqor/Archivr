@@ -16,6 +16,7 @@ import {
   get_similar_to_watched,
   getTrending,
   getTopRatedPicks,
+  getTrendingPaginated,
 } from "./media.service.js";
 import { z } from "zod";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -142,6 +143,21 @@ mediaRouter.get(
     const movies = await getTrending("movie");
     const shows = await getTrending("tv");
     res.json({ status: "success", media: { movies, shows } });
+  })
+);
+
+const trendingSearchParams = z.object({
+  type: z.enum(["movie", "tv"]),
+  page: z.coerce.number(),
+});
+// (GET /media/trending)
+// Get the trending media with pagination
+mediaRouter.get(
+  "/trending-paginated",
+  asyncHandler(async (req, res) => {
+    const { type, page } = trendingSearchParams.parse(req.query);
+    const media = await getTrendingPaginated(type, page);
+    res.json({ status: "success", media: media });
   })
 );
 

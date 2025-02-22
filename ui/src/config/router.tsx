@@ -12,6 +12,7 @@ import ProtectedRoute from "@/components/protectedRoute";
 import { PopularPage } from "@/pages/popularPage/popularPage";
 import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
+import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -84,6 +85,14 @@ const router = createBrowserRouter([
       {
         path: "/trending",
         element: <TrendingPage />,
+      },
+      {
+        path: "/trending/movies",
+        element: <TrendingPagePaginated type="movie" />,
+      },
+      {
+        path: "/trending/shows",
+        element: <TrendingPagePaginated type="tv" />,
       },
       {
         path: "/popular",
