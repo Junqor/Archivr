@@ -37,16 +37,19 @@ export function TrendingPagePaginated({ type }: { type: "movie" | "tv" }) {
         </h1>
       </div>
       <Separator />
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
-        {media?.pages
-          .flat()
-          .map((media) => (
+      <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 md:gap-x-6">
+        {media?.pages.flat().map((media) => (
+          <div className="flex flex-col gap-y-1">
             <ThumbnailPreview
               key={media.id}
               media={media}
               className="transition-transform duration-300 ease-in-out hover:scale-105"
             />
-          ))}
+            <p className="line-clamp-2 text-ellipsis px-1 opacity-80">
+              {media.title}
+            </p>
+          </div>
+        ))}
       </div>
       <div className="align-center flex justify-center">
         <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
