@@ -57,11 +57,6 @@ export default function GenrePage() {
     enabled: !!genreObj && !isNaN(offset) && !!sortBy && !!order, // Ensure the query runs only if genre is valid
   });
 
-  // Reset offset to 0 when order or sortBy changes
-  useEffect(() => {
-    handleChangeOffset(0);
-  }, [sortBy, order]);
-
   const PAGE_SIZE = 30;
 
   const handleChangeSortBy = (
@@ -71,6 +66,7 @@ export default function GenrePage() {
       prev.set("sort", newSortBy);
       return prev;
     });
+    handleChangeOffset(0);
   };
 
   const handleChangeOrder = (newOrder: "asc" | "desc") => {
@@ -78,6 +74,7 @@ export default function GenrePage() {
       prev.set("order", newOrder);
       return prev;
     });
+    handleChangeOffset(0);
   };
 
   const handleChangeOffset = (newOffset: number) => {
@@ -175,7 +172,6 @@ function useGenreQueryParams() {
     | "rating";
   const order = searchParams.get("order") as "asc" | "desc";
   const offset = parseInt(searchParams.get("offset") || "0");
-
   useEffect(() => {
     if (
       sortBy !== "alphabetical" &&
