@@ -11,6 +11,7 @@ import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
 import { PopularPage } from "@/pages/popularPage/popularPage";
 import TermsOfServicePage from "@/pages/termsOfService";
+import { TrendingPage } from "@/pages/trendingPage/trendingPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -82,7 +83,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/trending",
-        element: <UnderConstruction />,
+        element: <TrendingPage />,
       },
       {
         path: "/popular",

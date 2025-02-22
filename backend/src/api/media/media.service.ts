@@ -12,9 +12,10 @@ import {
   users,
   remoteId,
 } from "../../db/schema.js";
-import { desc, eq, and, inArray, not, gte } from "drizzle-orm/expressions";
-import { count, sql } from "drizzle-orm";
+import { desc, eq, and, inArray, not, gte, asc } from "drizzle-orm/expressions";
+import { count, InferSelectModel, sql } from "drizzle-orm";
 import { logger } from "../../configs/logger.js";
+import { serverConfig } from "../../configs/secrets.js";
 
 export async function update_rating(
   media_id: number,
@@ -212,7 +213,7 @@ export async function get_recently_reviewed() {
   };
 }
 
-export async function get_trending() {
+export async function getTopRatedPicks() {
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
     `WITH WeightedMovies AS (
       SELECT 
@@ -269,6 +270,55 @@ export async function get_trending() {
     media: rows,
   };
 }
+
+export const getTrending = async (type: "movie" | "tv") => {
+  const response = await Promise.all(
+    // Get 3 pages (20x3 = 60 results) in case not enough match the ones in our db
+    [...Array(3)].map((_, i) =>
+      fetch(
+        `https://api.themoviedb.org/3/trending/${type}/week?language=en-US&page=${
+          i + 1
+        }`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${serverConfig.TMDB_API_KEY}`,
+          },
+        }
+      )
+    )
+  );
+  if (response.some((r) => !r.ok)) {
+    throw new Error("Failed to fetch trending data");
+  }
+
+  //https://developer.themoviedb.org/reference/trending-movies
+  const trendingIds = (
+    await Promise.all(response.map((r) => r.json()))
+  ).flatMap((re) => re.results.map((media: any) => media.id)); // brujeria
+
+  // Get 15 media from our db that match the tmdb ids
+  const trending = await db
+    .select({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      description: media.description,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .leftJoin(remoteId, eq(media.id, remoteId.id))
+    .where(inArray(remoteId.tmdbId, trendingIds))
+    .orderBy(
+      asc(sql`FIELD(${remoteId.tmdbId}, ${sql.join(trendingIds, sql`,`)})`)
+    ); // https://www.w3schools.com/sql/func_mysql_field.asp
+
+  return trending;
+};
 
 export async function get_new_for_you(user_id: number) {
   let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(

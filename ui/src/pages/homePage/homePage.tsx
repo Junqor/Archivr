@@ -11,6 +11,7 @@ import { TrendingCarousel } from "./components/trendingCarousel";
 import { CalendarPlus, MessageCircleHeart, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Separator } from "@/components/ui/separator";
+import { TopRatedPicksCarousel } from "./components/topRatedPicksCarousel";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -37,7 +38,7 @@ export default function HomePage() {
               <h4 className="uppercase">New for you...</h4>
             </div>
             <Separator />
-            <section className="h-full">
+            <section className="h-full overflow-visible">
               <NewForYouCarousel />
             </section>
           </section>
@@ -49,12 +50,7 @@ export default function HomePage() {
             </div>
             <Separator />
             <section className="h-full">
-              <MostPopularCarousel
-                slidesPerViewMobile={4}
-                slidesPerViewDesktop={7}
-                spaceBetweenMobile={8}
-                spaceBetweenDesktop={16}
-              />
+              <MostPopularCarousel />
             </section>
           </section>
           <RecommendedCarousel />
@@ -94,7 +90,12 @@ export default function HomePage() {
               </div>
             </section>
             <section className="h-full">
-              <MostPopularCarousel />
+              <TrendingCarousel
+                slidesPerViewMobile={3}
+                slidesPerViewDesktop={3}
+                spaceBetweenMobile={8}
+                spaceBetweenDesktop={16}
+              />
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
@@ -145,7 +146,7 @@ export default function HomePage() {
               curating your own!
             </h4>
             <section className="h-full">
-              <TrendingCarousel />
+              <TopRatedPicksCarousel />
             </section>
             <Link
               to="/login"
