@@ -8,9 +8,13 @@ export function TrendingCarousel({ ...props }) {
     queryFn: () => getTrending(),
   });
 
+  const trendingMoviesAndShows = media
+    ? [...media.movies, ...media.shows]
+    : undefined;
+
   return (
     <MediaCarousel
-      media={media}
+      media={trendingMoviesAndShows}
       slidesPerViewMobile={4}
       slidesPerViewDesktop={7}
       spaceBetweenMobile={8}

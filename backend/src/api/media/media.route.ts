@@ -3,7 +3,6 @@ import {
   get_likes,
   get_media_reviews,
   get_media_rating,
-  get_trending,
   get_recently_reviewed,
   get_new_for_you,
   is_liked,
@@ -15,6 +14,9 @@ import {
   getMediaTrailer,
   get_recommended_for_you,
   get_similar_to_watched,
+  getTrending,
+  getTopRatedPicks,
+  getTrendingPaginated,
 } from "./media.service.js";
 import { z } from "zod";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -123,13 +125,39 @@ mediaRouter.get(
   })
 );
 
+// (GET /media/top-rated-picks)
+// Get the trending media
+mediaRouter.get(
+  "/top-rated-picks",
+  asyncHandler(async (req, res) => {
+    const { media } = await getTopRatedPicks();
+    res.json({ status: "success", media: media });
+  })
+);
+
 // (GET /media/trending)
 // Get the trending media
 mediaRouter.get(
   "/trending",
   asyncHandler(async (req, res) => {
-    const result = await get_trending();
-    res.json({ status: "success", media: result.media });
+    const movies = await getTrending("movie");
+    const shows = await getTrending("tv");
+    res.json({ status: "success", media: { movies, shows } });
+  })
+);
+
+const trendingSearchParams = z.object({
+  type: z.enum(["movie", "tv"]),
+  page: z.coerce.number(),
+});
+// (GET /media/trending)
+// Get the trending media with pagination
+mediaRouter.get(
+  "/trending-paginated",
+  asyncHandler(async (req, res) => {
+    const { type, page } = trendingSearchParams.parse(req.query);
+    const media = await getTrendingPaginated(type, page);
+    res.json({ status: "success", media: media });
   })
 );
 
@@ -190,7 +218,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.query.user_id as string);
     const result = await get_recommended_for_you(userId);
-    res.json({ status: "success", media: result.media });
+    res.json({ status: "success", media: result });
   })
 );
 

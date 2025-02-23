@@ -9,15 +9,19 @@ import {
   StarRounded,
 } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
+import { cn } from "@/lib/utils";
 
 export type TThumbnailPreview = {
-  id: number;
-  title: string;
-  thumbnail_url: string | null;
-  rating: number | null;
+  media: {
+    id: number;
+    title: string;
+    thumbnail_url: string | null;
+    rating: number | null;
+  };
+  className?: string;
 };
 
-function ThumbnailPreview({ media }: { media: TThumbnailPreview }) {
+function ThumbnailPreview({ media, className }: TThumbnailPreview) {
   const [likes, setLikes] = useState<number | null>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
 
@@ -43,7 +47,10 @@ function ThumbnailPreview({ media }: { media: TThumbnailPreview }) {
           "_t.jpg",
         )})`,
       }}
-      className="relative aspect-[2/3] cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10"
+      className={cn(
+        "relative aspect-[2/3] cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10",
+        className,
+      )}
     >
       <Link
         to={`/media/${media.id}`}

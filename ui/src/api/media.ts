@@ -83,12 +83,37 @@ export const getRecentlyReviewed = async (): Promise<TRecentlyReviewed> => {
   return data.media;
 };
 
-export const getTrending = async (): Promise<TMedia[]> => {
+type TrendingResponse = {
+  movies: TMedia[];
+  shows: TMedia[];
+};
+
+export const getTrending = async (): Promise<TrendingResponse> => {
   const response = await fetch(
     import.meta.env.VITE_API_URL + "/media/trending",
   );
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media;
+};
+
+export const getTrendingPaginated = async (
+  type: "movie" | "tv",
+  page: number,
+): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/trending-paginated?type=${type}&page=${page}`,
+  );
+  const data = await response.json();
+  return data.media;
+};
+
+export const getTopRatedPicks = async (): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/media/top-rated-picks",
+  );
+  const data = await response.json();
+  return data.media;
 };
 
 export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
