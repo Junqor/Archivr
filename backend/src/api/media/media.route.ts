@@ -218,7 +218,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.query.user_id as string);
     const result = await get_recommended_for_you(userId);
-    res.json({ status: "success", media: result.media });
+    res.json({ status: "success", media: result });
   })
 );
 

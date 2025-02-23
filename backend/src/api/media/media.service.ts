@@ -12,10 +12,20 @@ import {
   users,
   remoteId,
 } from "../../db/schema.js";
-import { desc, eq, and, inArray, not, gte, asc } from "drizzle-orm/expressions";
-import { count, InferSelectModel, sql } from "drizzle-orm";
+import {
+  desc,
+  eq,
+  and,
+  inArray,
+  not,
+  gte,
+  asc,
+  or,
+} from "drizzle-orm/expressions";
+import { count, InferSelectModel, sql, sum } from "drizzle-orm";
 import { logger } from "../../configs/logger.js";
 import { serverConfig } from "../../configs/secrets.js";
+import { union } from "drizzle-orm/mysql-core";
 
 export async function update_rating(
   media_id: number,
@@ -506,58 +516,103 @@ export async function get_recommended_for_you(user_id: number) {
     throw new Error("Invalid user_id provided");
   }
 
-  const userInteractions = await db
+  // The minimum rating a media needs to be considered for recommendations
+  const RATING_THRESHOLD = 5;
+
+  // Step 1: Get media that the user has rated or liked
+  const ratingsIds = db
     .select({ mediaId: ratings.mediaId })
     .from(ratings)
-    .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5)))
-    .union(
-      db
-        .select({ mediaId: likes.mediaId })
-        .from(likes)
-        .where(eq(likes.userId, user_id))
+    .where(
+      and(eq(ratings.userId, user_id), gte(ratings.rating, RATING_THRESHOLD))
     );
+  const likesIds = db
+    .select({ mediaId: likes.mediaId })
+    .from(likes)
+    .where(eq(likes.userId, user_id));
+  const userInteractions = await union(likesIds, ratingsIds);
 
   const interactedMediaIds = userInteractions.map(
     (interaction) => interaction.mediaId
   );
 
-  if (interactedMediaIds.length === 0) {
-    const randomMedia = await db
-      .select({
-        id: media.id,
-        category: media.category,
-        title: media.title,
-        release_date: media.release_date,
-        age_rating: media.age_rating,
-        thumbnail_url: media.thumbnail_url,
-        rating: media.rating,
-        runtime: media.runtime,
-      })
-      .from(media)
-      .orderBy(sql`RAND()`)
-      .limit(24);
-
-    return { status: "success", media: randomMedia };
-  }
-
-  const similarUsers = await db
-    .select({ userId: ratings.userId })
-    .from(ratings)
-    .where(
-      and(inArray(ratings.mediaId, interactedMediaIds), gte(ratings.rating, 5))
-    )
-    .union(
-      db
-        .select({ userId: likes.userId })
-        .from(likes)
-        .where(inArray(likes.mediaId, interactedMediaIds))
-    );
+  // Step 2: Find users that have liked or highly rated the same media
+  const similarUsers = await union(
+    db // Get users that have rated the same media
+      .selectDistinct({ userId: ratings.userId })
+      .from(ratings)
+      .where(
+        and(
+          inArray(ratings.mediaId, interactedMediaIds),
+          gte(ratings.rating, RATING_THRESHOLD)
+        )
+      ),
+    db // Get users that have liked the same media
+      .select({ userId: likes.userId })
+      .from(likes)
+      .where(inArray(likes.mediaId, interactedMediaIds))
+  );
 
   const similarUserIds = similarUsers
     .map((user) => user.userId)
     .filter((id) => id !== user_id);
 
-  let recommendedMedia = await db
+  // Step 3: Get the genres that the user has interacted with the most and normalize them
+  const genres = await db
+    .select({ genre: mediaGenre.genre, interactions: count(mediaGenre.genre) })
+    .from(mediaGenre)
+    .leftJoin(media, eq(media.id, mediaGenre.mediaId))
+    .where(inArray(media.id, interactedMediaIds))
+    .groupBy(mediaGenre.genre);
+
+  const min = genres.reduce(
+    (acc, curr) => Math.min(acc, curr.interactions),
+    Infinity
+  );
+  const max = genres.reduce((acc, curr) => Math.max(acc, curr.interactions), 0);
+
+  const normalizedGenres: Record<string, number> = {};
+  genres.forEach((g) => {
+    normalizedGenres[g.genre] = (g.interactions - min) / (max - min);
+  });
+
+  // Step 4: Calculate a genre factor for each media based on the genres it shares with the normalized genres
+  // Essentially a sum of the normalized genre values that are present in the media's genres
+  const genreFactor = sql`
+      SUM(
+        CASE 
+          ${sql.join(
+            Object.values(genres).map(
+              ({ genre }) =>
+                sql`WHEN ${mediaGenre.genre} = ${genre} THEN ${normalizedGenres[genre]}`
+            ),
+            sql` `
+          )}
+          ELSE 0
+        END
+      )
+    `;
+
+  // Step 5: Get the count of similar user interactions for each media
+  const similarUserInteractions = sql`(
+    (
+      SELECT COUNT(*) FROM ${ratings}
+      WHERE ${eq(ratings.mediaId, media.id)}
+        AND ${inArray(ratings.userId, similarUserIds)}
+        AND ${gte(ratings.rating, RATING_THRESHOLD)}
+    )
+    +
+    (
+      SELECT COUNT(*) FROM ${likes}
+      WHERE ${eq(likes.mediaId, media.id)}
+        AND ${inArray(likes.userId, similarUserIds)}
+    )
+    )`;
+
+  const weightFactor = 10_000_000; // Maybe tweak this if user interactions start being too much when we get more users
+  const finalWeight = sql`( ${similarUserInteractions} * ${genreFactor} * ${weightFactor} ) + ( ${genreFactor} * ${media.rating} )`;
+
+  const recommendedMedia = await db
     .selectDistinct({
       id: media.id,
       category: media.category,
@@ -567,51 +622,16 @@ export async function get_recommended_for_you(user_id: number) {
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       runtime: media.runtime,
+      weight: finalWeight,
     })
     .from(media)
-    .innerJoin(ratings, eq(ratings.mediaId, media.id))
-    .where(
-      and(
-        inArray(ratings.userId, similarUserIds),
-        gte(ratings.rating, 5),
-        not(inArray(media.id, interactedMediaIds))
-      )
-    )
-    .orderBy(desc(media.rating))
+    .leftJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+    .where(not(inArray(media.id, interactedMediaIds))) // filter out already interacted media
+    .groupBy(media.id)
+    .orderBy(desc(finalWeight))
     .limit(24);
 
-  if (recommendedMedia.length < 24) {
-    const genres = await db
-      .select({ genre: mediaGenre.genre })
-      .from(mediaGenre)
-      .where(inArray(mediaGenre.mediaId, interactedMediaIds));
-
-    const genreList = genres.map((g) => g.genre);
-
-    const fallbackMedia = await db
-      .selectDistinct({
-        id: media.id,
-        category: media.category,
-        title: media.title,
-        release_date: media.release_date,
-        age_rating: media.age_rating,
-        thumbnail_url: media.thumbnail_url,
-        rating: media.rating,
-        runtime: media.runtime,
-      })
-      .from(media)
-      .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
-      .where(inArray(mediaGenre.genre, genreList))
-      .orderBy(sql`RAND() * ${media.rating}`) // Weighted random selection
-      .limit(24 - recommendedMedia.length);
-
-    recommendedMedia = [...recommendedMedia, ...fallbackMedia];
-  }
-
-  return {
-    status: "success",
-    media: recommendedMedia,
-  };
+  return recommendedMedia;
 }
 
 // Because you watched...
@@ -620,19 +640,19 @@ export async function get_similar_to_watched(user_id: number) {
     throw new Error("Invalid user_id provided");
   }
 
-  // Step 1: Get the most recently highly rated or liked media by the user
-  const userInteractions = await db
-    .select({ mediaId: ratings.mediaId, title: media.title })
-    .from(ratings)
-    .innerJoin(media, eq(ratings.mediaId, media.id))
-    .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5)))
-    .union(
-      db
-        .select({ mediaId: likes.mediaId, title: media.title })
-        .from(likes)
-        .innerJoin(media, eq(likes.mediaId, media.id))
-        .where(eq(likes.userId, user_id))
-    );
+  // Step 1: Get the highly rated or liked media by the user
+  const userInteractions = await union(
+    db
+      .select({ mediaId: ratings.mediaId, title: media.title })
+      .from(ratings)
+      .innerJoin(media, eq(ratings.mediaId, media.id))
+      .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5))),
+    db
+      .select({ mediaId: likes.mediaId, title: media.title })
+      .from(likes)
+      .innerJoin(media, eq(likes.mediaId, media.id))
+      .where(eq(likes.userId, user_id))
+  );
 
   const interactedMediaIds = userInteractions.map(
     (interaction) => interaction.mediaId
