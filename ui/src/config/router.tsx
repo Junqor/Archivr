@@ -12,6 +12,12 @@ import ProtectedRoute from "@/components/protectedRoute";
 import { ProfileSettings } from "@/pages/settingsPage/settingsPage";
 import LoginRequiredRoute from "@/components/loginRequiredRoute";
 import { ProfilePage } from "@/pages/profilePage/profilePage";
+import { PopularPage } from "@/pages/popularPage/popularPage";
+import TermsOfServicePage from "@/pages/termsOfService";
+import { TrendingPage } from "@/pages/trendingPage/trendingPage";
+import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
+import { ResetPassword } from "@/pages/resetPassword";
+import { Random } from "@/pages/random";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -34,10 +40,6 @@ const router = createBrowserRouter([
       {
         path: "/genre/:genre",
         element: <GenrePage />,
-      },
-      {
-        path: "/browse",
-        element: <BrowsePage />,
       },
       // Error Pages
       {
@@ -74,8 +76,24 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/profile/:username",
+        path: "/genre",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/members",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/popular",
+        element: <PopularPage />,
+      },
+      {
+        path: "/profile:username",
         element: <ProfilePage />,
+      },
+      {
+        path: "/random",
+        element: <Random />,
       },
       {
         path: "/settings",
