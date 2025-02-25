@@ -2,40 +2,45 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input";
-import { Youtube, Instagram, Music2 } from "lucide-react";
-import { useRef } from "react";
-import { uploadPfp } from "@/api/user";
+import { Youtube, Instagram, Music2, ImageUp } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
 
 export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     const { user } = useAuth();
-    const upload_pfp = useRef<HTMLInputElement>(null);
-    // used for formating uploaded images to 256x256 webp
-    const canvas = useRef<HTMLCanvasElement>(null);
     
+    const api_url:string = import.meta.env.VITE_API_URL;
+
     return (
         <div className="flex flex-col self-stretch gap-2">
-            <canvas ref={canvas} width={256} height={256} className="hidden"></canvas>
             <div className="flex items-center gap-5 self-stretch">
-                <label htmlFor="upload-pfp">
-                    <img src={"penguin.png"} className={"max-w-[200px] max-h-[200px] rounded-[200px] bg-neutral-900"}></img>
-                </label>
-                <input ref={upload_pfp} onChange={()=>{
-                    const list = upload_pfp.current?.files;
-                    if (!list || list?.length == 0){
-                        return;
-                    }
-                    const file = list[0];
-                    const image = new Image();
-                    image.onload = () => {
-                        canvas.current?.getContext('2d')?.drawImage(image,0,0);
-                        canvas.current?.toBlob(async (blob)=>{
-                            const textblob = await blob?.text();
-                            if (textblob)
-                                uploadPfp(textblob);
-                        },"image/jpeg", 0.5);
-                    }
-                    image.src = URL.createObjectURL(file);
-                }} id="upload-pfp" type="file" accept="image/png, image/jpeg, image/webp" className="hidden"></input>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <div style={{backgroundImage:"url(penguin.png)"}} className={"cursor-pointer bg-cover bg-center w-[200px] h-[200px] rounded-[200px] bg-neutral-900"}>
+                            <div className="flex items-center justify-center bg-[#44444488] w-[200px] h-[200px] rounded-[200px] opacity-0 hover:opacity-100">
+                                <ImageUp className="size-20"></ImageUp>
+                            </div>
+                        </div>
+                    </DialogTrigger>
+                    <DialogPortal>
+                        <DialogOverlay className="bg-[#111111AA] fixed inset-0"/>
+                        <DialogContent>
+                            <div className="flex flex-col items-center justify-center bg-black fixed border border-white rounded-2xl top-1/2 bottom-1/2 left-1/2 right-1/2 translate-x-[-50%] translate-y-[-50%] max-w-[90%] max-h-[90%] w-[360px] h-[400px] z-50">
+                                <DialogTitle>
+                                    Set PFP
+                                </DialogTitle>
+                                <form action={api_url+"/user/set-pfp"} method="POST" encType="multipart/form-data">
+                                    <legend>Upload Avatar</legend>
+                                    <input type="file" name="pfp" accept="image/png, image/jpeg, image/pjpeg, image/webp"></input>
+                                    <button type="submit" className="">Upload</button>
+                                </form>
+                                <DialogClose>
+                                    <Button variant={"outline"}>Cancel</Button>
+                                </DialogClose>
+                            </div>
+                        </DialogContent>
+                    </DialogPortal>
+                </Dialog>
                 <div className="flex flex-col items-start gap-3 flex-1">
                     <div className="flex flex-col justify-center items-start gap-2 self-stretch">
                         <h4>

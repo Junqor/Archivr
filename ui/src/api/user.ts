@@ -54,22 +54,25 @@ export const setUserSettings = async (new_settings:Map<string,string>) => {
                 }
             })
         });
+        return;
     } catch (error) {
         console.error(error);
     }
 }
 
-export const uploadPfp = async (blob: string) => {
+/*
+export const uploadPfp = async (blob: Blob) => {
     try {
         await fetch(import.meta.env.VITE_API_URL+"/user/set-pfp",{
             method:"POST",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
                 ...getAuthHeader(),
             },
-            body:JSON.stringify({ image: blob })
+            body:JSON.stringify({image: blob})
         });
     } catch (error) {
         console.error(error);
     }
 }
+*/
