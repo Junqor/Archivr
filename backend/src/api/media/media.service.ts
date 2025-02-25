@@ -776,3 +776,13 @@ export async function get_similar_to_watched(user_id: number) {
     basedOn: recentMedia.title,
   };
 }
+
+export async function getRandomMedia() {
+  const [data] = await db
+    .select()
+    .from(media)
+    .orderBy(sql`RAND()`)
+    .limit(1);
+
+  return data;
+}

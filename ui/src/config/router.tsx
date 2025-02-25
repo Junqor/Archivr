@@ -17,6 +17,7 @@ import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
 import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
 import { ResetPassword } from "@/pages/resetPassword";
+import { Random } from "@/pages/random";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -75,8 +76,24 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/profile/:username",
+        path: "/genre",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/members",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/popular",
+        element: <PopularPage />,
+      },
+      {
+        path: "/profile:username",
         element: <ProfilePage />,
+      },
+      {
+        path: "/random",
+        element: <Random />,
       },
       {
         path: "/settings",

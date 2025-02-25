@@ -259,6 +259,15 @@ export const getMediaTrailer = async (id: number) => {
   return data.result as string;
 };
 
+export const getRandomMedia = async () => {
+  const response = await fetch(import.meta.env.VITE_API_URL + "/media/random");
+  if (!response.ok) {
+    throw new Error("Failed to fetch random media");
+  }
+  const data = await response.json();
+  return data.media as TMedia;
+};
+
 export const getRecommendedForYou = async (userId: number) => {
   const response = await fetch(
     import.meta.env.VITE_API_URL +

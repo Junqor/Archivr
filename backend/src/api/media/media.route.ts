@@ -17,6 +17,7 @@ import {
   getTrending,
   getTopRatedPicks,
   getTrendingPaginated,
+  getRandomMedia,
 } from "./media.service.js";
 import { z } from "zod";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -92,6 +93,15 @@ const reviewBodySchema = z.object({
   comment: z.string(),
   rating: z.number().default(0), //TODO : make dis work
 });
+
+// (GET /media/random)
+mediaRouter.get(
+  "/random",
+  asyncHandler(async (req, res) => {
+    const media = await getRandomMedia();
+    res.json({ status: "success", media });
+  })
+);
 
 // (POST /media/review)
 // Update or add a review for a media
