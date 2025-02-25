@@ -2,37 +2,77 @@ import {
   mysqlTable,
   mysqlSchema,
   AnyMySqlColumn,
-  index,
   foreignKey,
   primaryKey,
-  unique,
   int,
-  timestamp,
-  datetime,
   mysqlEnum,
-  varchar,
   text,
+  timestamp,
+  index,
+  unique,
+  datetime,
+  varchar,
   date,
   float,
   check,
   smallint,
+  char,
   tinyint,
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
-// Likes table
+export const activity = mysqlTable(
+  "Activity",
+  {
+    id: int().autoincrement().notNull(),
+    userId: int("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    activityType: mysqlEnum("activity_type", [
+      "follow",
+      "review",
+      "like_review",
+      "like_media",
+    ]).notNull(),
+    targetId: int("target_id").notNull(),
+    relatedId: int("related_id"),
+    content: text(),
+    createdAt: timestamp("created_at", { mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "Activity_id" })]
+);
+
+export const follows = mysqlTable(
+  "Follows",
+  {
+    id: int().autoincrement().notNull(),
+    followerId: int("follower_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    followeeId: int("followee_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
+  },
+  (table) => [
+    index("followee_id").on(table.followeeId),
+    primaryKey({ columns: [table.id], name: "Follows_id" }),
+    unique("follower_id").on(table.followerId, table.followeeId),
+  ]
+);
+
 export const likes = mysqlTable(
   "Likes",
   {
     id: int().autoincrement().notNull(),
     userId: int("user_id")
-      .references(() => users.id, { onDelete: "cascade" })
-      .notNull(),
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     mediaId: int("media_id")
-      .references(() => media.id, {
-        onDelete: "cascade",
-      })
-      .notNull(),
+      .notNull()
+      .references(() => media.id, { onDelete: "cascade" }),
     likedAt: timestamp("liked_at", { mode: "string" }).defaultNow(),
   },
   (table) => [
@@ -43,7 +83,6 @@ export const likes = mysqlTable(
   ]
 );
 
-// Likes_Reviews table
 export const likesReviews = mysqlTable(
   "Likes_Reviews",
   {
@@ -53,18 +92,21 @@ export const likesReviews = mysqlTable(
       .references(() => users.id),
     reviewId: int("review_id")
       .notNull()
-      .references(() => reviews.id),
+      .references(() => userReviews.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     createdAt: datetime("created_at", { mode: "string" })
       .default(sql`(CURRENT_TIMESTAMP)`)
       .notNull(),
   },
   (table) => [
+    index("Likes_Reviews_Reviews_FK").on(table.reviewId, table.userId),
     primaryKey({ columns: [table.id], name: "Likes_Reviews_id" }),
     unique("Likes_Reviews_UNIQUE").on(table.userId, table.reviewId),
   ]
 );
 
-// Media table
 export const media = mysqlTable(
   "Media",
   {
@@ -94,7 +136,6 @@ export const media = mysqlTable(
   ]
 );
 
-// MediaGenre table
 export const mediaGenre = mysqlTable(
   "Media_Genre",
   {
@@ -110,17 +151,16 @@ export const mediaGenre = mysqlTable(
   ]
 );
 
-// Ratings table
 export const ratings = mysqlTable(
   "Ratings",
   {
     id: int().autoincrement().notNull().primaryKey(),
     userId: int("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     mediaId: int("media_id")
       .notNull()
-      .references(() => media.id, { onDelete: "cascade" }),
+      .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
     rating: smallint({ unsigned: true }).notNull(),
     ratedAt: timestamp("rated_at", { mode: "string" }).defaultNow(),
   },
@@ -134,13 +174,12 @@ export const ratings = mysqlTable(
   ]
 );
 
-// RemoteId table
 export const remoteId = mysqlTable(
   "RemoteId",
   {
     id: int()
       .notNull()
-      .references(() => media.id),
+      .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
     tvdbId: int("tvdb_id"),
     tmdbId: int("tmdb_id"),
   },
@@ -150,7 +189,6 @@ export const remoteId = mysqlTable(
   ]
 );
 
-// Reviews table
 export const reviews = mysqlTable(
   "Reviews",
   {
@@ -180,28 +218,24 @@ export const reviews = mysqlTable(
   ]
 );
 
-// UserReviews table
 export const userReviews = mysqlTable(
   "UserReviews",
   {
     id: int().autoincrement().notNull().primaryKey(),
     userId: int("user_id")
       .notNull()
-      .references(() => users.id, {
-        onDelete: "cascade",
-        onUpdate: "restrict",
-      }),
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     mediaId: int("media_id")
       .notNull()
-      .references(() => media.id, {
-        onDelete: "cascade",
-        onUpdate: "restrict",
-      }),
+      .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
     comment: text(),
     createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
     ratingId: int("rating_id")
       .notNull()
-      .references(() => ratings.id),
+      .references(() => ratings.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
   },
   (table) => [
     index("media_index").on(table.mediaId, table.userId),
@@ -216,29 +250,38 @@ export const userSettings = mysqlTable(
   "User_Settings",
   {
     id: int().autoincrement().notNull(),
-    user_id: int().notNull(),
-    status: varchar({ length: 128 }).default("").notNull(),
-    bio: text(),
-    pronouns: varchar({ length: 32 }).default("").notNull(),
-    location: varchar({ length: 128 }).default("").notNull(),
-    social_instagram: varchar({ length: 255 }).default("").notNull(),
-    social_youtube: varchar({ length: 255 }).default("").notNull(),
-    social_tiktok: varchar({ length: 255 }).default("").notNull(),
+    user_id: int("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    displayName: char("display_name", { length: 32 }).default("").notNull(),
+    status: char({ length: 128 }).default("").notNull(),
+    bio: text().notNull(),
+    pronouns: char({ length: 32 }).default("").notNull(),
+    location: char({ length: 128 }).default("").notNull(),
+    social_instagram: char("social_instagram", { length: 255 })
+      .default("")
+      .notNull(),
+    social_youtube: char("social_youtube", { length: 255 })
+      .default("")
+      .notNull(),
+    social_tiktok: char("social_tiktok", { length: 255 }).default("").notNull(),
     public: tinyint().default(1).notNull(),
-    show_adult_content: tinyint().default(0).notNull(),
+    show_adult_content: tinyint("show_adult_content").default(0).notNull(),
     theme: mysqlEnum(["dark", "light"]).default("dark").notNull(),
-    font_size: mysqlEnum(["small", "normal", "large"])
+    fontSize: mysqlEnum("font_size", ["small", "normal", "large"])
       .default("normal")
       .notNull(),
-    grant_personal_data: tinyint().default(1).notNull(),
-    show_personalized_content: tinyint().default(1).notNull(),
+    grant_personal_data: tinyint("grant_personal_data").default(1).notNull(),
+    show_personalized_content: tinyint("show_personalized_content")
+      .default(1)
+      .notNull(),
   },
   (table) => [
-    primaryKey({ columns: [table.id], name: "Users_id" }),
     index("user_id").on(table.user_id),
+    primaryKey({ columns: [table.id], name: "User_Settings_id" }),
   ]
 );
-// Users table
+
 export const users = mysqlTable(
   "Users",
   {
