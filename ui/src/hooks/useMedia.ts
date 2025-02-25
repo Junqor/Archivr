@@ -90,6 +90,9 @@ export const useMedia = (mediaId: string, userId: string) => {
   const { mutate: updateReviewMutation } = useMutation({
     mutationFn: ({ comment, rating }: { comment: string; rating: number }) =>
       updateReview({ mediaId, comment, rating }),
+    onSuccess: () => {
+      toast.success("Review updated!");
+    },
     onError: (_err, _variables, _context) => {
       if (_err.message === "Unauthorized") {
         logout();
