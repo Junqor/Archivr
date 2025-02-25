@@ -1,9 +1,13 @@
 import z, { ZodError } from "zod";
 import { Router } from "express";
-import { getUserSettings, getUserProfileSettings, getUserSettingsForSettingsContext, setUserSettings, setPfp, getPfp } from "./user.services.js";
-import bodyParser, { json } from "body-parser";
-import { TAuthToken } from "../../types/index.js";
+import { getUserSettings, getUserProfileSettings, getUserSettingsForSettingsContext, setUserSettings, getPfp } from "./user.services.js";
+import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
+import multer from "multer";
+import _ from "lodash";
+import { serverConfig } from "../../configs/secrets.js";
+import { tmpDir } from "../../utils/tmpDir.js";
+import { Jimp } from "jimp";
 
 export const userRouter = Router();
 
@@ -90,27 +94,48 @@ userRouter.get("/pfp/:userId", async (req, res) => {
     }
 });
 
-const setPfpSchema = z.object({
-    image: z.string(),
-});
+const uploadPfp = multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, tmpDir.name);
+        },
+        filename: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, file.fieldname + '-' + uniqueSuffix);
+        },
+    }),
+    fileFilter: function(req, file, cb) {
+        var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/webp', 'image/png'];
+        
+        if (_.includes(allowedMimes, file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only jpg, png and webp image files are allowed.'));
+        }
+    },
+    limits: {
+        files: 1,
+        fileSize: 1024 * 1024,
+    },
+})
 
-userRouter.post("/set-pfp", authenticateToken, async(req, res) => {
+// todo: figure out authentication 
+userRouter.post("/set-pfp", uploadPfp.single('pfp'), async(req, res) => {
     try {
-        const { image } = setPfpSchema.parse(req.body);
-        if (!image){
-            throw new Error("No image sent for pfp");
+        console.log(req.file);
+        if (req.file) {
+            const image = await Jimp.read(req.file.path);
+            const writeDestination = req.file.destination + '\\' + req.file.filename;
+            image.resize({w:256,h:256});
+            await image.write(`${writeDestination}.jpeg`, {quality:0.8});
         }
-        if (image.length > 65535) {
-            throw new Error("Image must be smaller than 64kb");
-        }
-        const values = await setPfp(res.locals.user.id, image)
-        console.log(values);
-        res.json({ status:"success" });
+        
+        res.redirect(serverConfig.FRONTEND_URL+"/settings");
     } catch (error) {
         console.error(error);
         res.status(400).json({
             status: "failed",
-            message: error instanceof ZodError ? "Invalid body" : (error as Error).message,
+            message: (error as Error).message,
         });
     }
 });

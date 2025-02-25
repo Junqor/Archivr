@@ -3,6 +3,16 @@ import { conn } from "../../db/database.js";
 import { RowDataPacket } from "mysql2";
 import { serverConfig } from "../../configs/secrets.js";
 import { env } from "process";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+
+const s3Client = new S3Client({
+    region: "sfo3",
+    endpoint: serverConfig.BUCKET_URL,
+    credentials: {
+        accessKeyId: serverConfig.BUCKET_ACCESS_TOKEN,
+        secretAccessKey: serverConfig.BUCKET_SECRET_TOKEN,
+    }
+});
 
 export async function getUserSettings(user_id:number) {
     try {
@@ -85,29 +95,20 @@ export async function getPfp( user_id:number ) {
     }
 }
 
-export async function setPfp ( user_id:number, blob:string ) {
+/*
+export async function setPfp ( user_id:number, blob:Blob ) {
     try {
-        const date = Date.prototype.getUTCFullYear().toString()+Date.prototype.getUTCMonth().toString()+Date.prototype.getUTCDate().toString();
-        const date8601 = date + "T" + Date.prototype.getUTCHours().toString()+Date.prototype.getUTCMinutes().toString()+Date.prototype.getUTCSeconds().toString() + "Z"
-        console.log(date8601);
-        const res = await fetch(serverConfig.BUCKET_URL+"/profile-pics/pfp_"+user_id.toString()+".jpeg", {
-            method: "PUT",
-            headers: {
-                "Content-Length": blob.length.toString(),
-                "Content-Type": "image/jpeg",
-                "x-amz-content-sha256": "",
-                "x-amz-date": date8601,
-                "x-amz-storage-class": "STANDARD",
-                "Authorization": "AWS4-HMAC-SHA256 Credential="+serverConfig.BUCKET_ACCESS_TOKEN+
-                "/"+date+
-                "/sfo3/s3/aws4_request"+","+
-                "SignedHeaders=content-length;content-type;x-amz-content-sha256;x-amz-date,"+
-                "Signature=",
-            },
-            body: blob,
-        })
-        return res;
+        if (!user_id) {
+            throw new Error("No user_id given");
+        }
+        s3Client.send(new PutObjectCommand({
+            "Body": blob,
+            "Bucket": "archivr-storage",
+            "Key": "profile-pics/pfp"+user_id.toString()+".jpeg"
+          }))
+        return "Amogus";
     } catch (error) {
         console.error(error);
     }
 }
+*/

@@ -15,6 +15,7 @@ const schema = z.object({
   BUCKET_URL: z.string(),
   BUCKET_ACCESS_TOKEN: z.string(),
   BUCKET_SECRET_TOKEN: z.string(),
+  FRONTEND_URL: z.string(),
 });
 
 const envVariables = {
@@ -29,6 +30,7 @@ const envVariables = {
   BUCKET_URL: process.env.BUCKET_URL,
   BUCKET_ACCESS_TOKEN: process.env.BUCKET_ACCESS_TOKEN,
   BUCKET_SECRET_TOKEN: process.env.BUCKET_SECRET_TOKEN,
+  FRONTEND_URL: process.env.FRONTEND_URL,
 };
 
 const serverConfig = schema.parse(envVariables);

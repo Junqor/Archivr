@@ -9,15 +9,16 @@ import { ProfileSettingsCategoryAppearance } from "./components/CategoryAppearan
 import { ProfileSettingsCategoryActivity } from "./components/CategoryActivity";
 import { ProfileSettingsCategoryHelpAndSupport } from "./components/CategoryHelpAndSupport";
 import { useSettings } from "@/context/settings";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function ProfileSettings(){
     const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map<string,string>());
 
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
-    const { refetch:refetchUseSettings } = useSettings();
+    const { refetch:refetchUserSettings } = useSettings();
 
-    const { data:currentSettings, refetch:refetchCurrentSettings } = useQuery({
+    const { error:query_error, isPending:query_isPending, data:currentSettings, refetch:refetchCurrentSettings } = useQuery({
         queryKey: ['settingsCurrentSettings'],
         queryFn: async () => {
             const a = await getUserSettings();
@@ -32,14 +33,14 @@ export function ProfileSettings(){
                 }
             })
             setChangedSettings(c);
-            refetchUseSettings();
+            refetchUserSettings();
             return b;
         }
     });
 
-    const { mutate:applyChangedSettings } = useMutation({
+    const { error:mutate_error, isPending:mutate_isPending, mutate:applyChangedSettings } = useMutation({
         mutationFn: async () => {
-            await setUserSettings(changedSettings)
+            await setUserSettings(changedSettings);
             refetchCurrentSettings();
             setChangedSettings(new Map<string,string>());
         }
@@ -76,9 +77,17 @@ export function ProfileSettings(){
         return "";
     }
 
+    if (query_error || mutate_error){
+        throw new Error("Error fetching settings")
+        return null;
+    }
+
+    const isPending = query_isPending || mutate_isPending
+
     return (
     <>
-        <div className="flex items-start rounded-3xl w-full min-h-[calc(100vh-100px)] bg-black border-white border">
+        {isPending?(<LoadingSpinner></LoadingSpinner>):null}
+        <div className={"flex items-start rounded-3xl w-full min-h-[calc(100vh-100px)] bg-black border-white border"+(isPending?" hidden":"")}>
             <ProfileSettingsMenu selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}></ProfileSettingsMenu>
             <div className=" bg-white w-px self-stretch"></div>
             <div className="flex p-5 flex-col items-start gap-1 self-stretch w-[67%]">
