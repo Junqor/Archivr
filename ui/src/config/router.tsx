@@ -13,6 +13,7 @@ import { PopularPage } from "@/pages/popularPage/popularPage";
 import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
 import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
+import { ResetPassword } from "@/pages/resetPassword";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -111,6 +112,10 @@ const router = createBrowserRouter([
         element: <UnderConstruction />,
       },
     ],
+  },
+  {
+    path: "/password-reset",
+    element: <ResetPassword />,
   },
   {
     path: "/login",
