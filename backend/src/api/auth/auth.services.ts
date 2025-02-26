@@ -56,7 +56,6 @@ export async function signUp(
   // Generate a random salt
   const salt = generateSalt();
   const { hashedPassword } = await hashPassword(password, salt);
-  //Changed to Drizzle
   try {
     await db.insert(users).values({
       email: email,
@@ -82,7 +81,6 @@ export async function logIn(
   }
 
   // First retrieve the user with matching username from the database
-  //Changed to drizzle
   const [rows] = await db
     .select()
     .from(users)

@@ -1,6 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Mousewheel, Autoplay } from "swiper/modules";
-import heroMedia from "./heroMedia";
+import heroMedia from "@/components/heroMedia";
 import { TMedia } from "@/types/media";
 
 import "swiper/css";

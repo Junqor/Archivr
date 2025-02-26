@@ -6,7 +6,6 @@ import { aliasedTable, getTableColumns, sql } from "drizzle-orm";
 
 // Get 5 most popular media of a certain genre
 export async function get_popular_media_genre(genre: string) {
-  //Change to drizzle
   const mediaGenre1 = aliasedTable(mediaGenre, "mediaGenre1");
   const mediaGenre2 = aliasedTable(mediaGenre, "mediaGenre2");
   const data = await db
@@ -34,7 +33,7 @@ export async function get_popular_media_genre(genre: string) {
 export async function get_media_genre(
   genre: string,
   offset: number,
-  sortBy: "alphabetical" | "release_date" | "rating",
+  sortBy: "alphabetical" | "release_date" | "popularity",
   order: "asc" | "desc"
 ) {
   let sortByClause;
@@ -43,15 +42,14 @@ export async function get_media_genre(
       sortByClause = media.title;
       break;
     case "release_date":
-      sortByClause = media.releaseDate;
+      sortByClause = media.release_date;
       break;
-    case "rating":
+    case "popularity":
       sortByClause = media.rating;
       break;
     default:
       sortByClause = media.title;
   }
-  //changed to drizzle
 
   let rows = await db
     .select()
@@ -74,8 +72,6 @@ export async function get_media_genre(
 
 // Get a list of distinct genres
 export async function get_genres(): Promise<{ genre: string; slug: string }[]> {
-  //Changed to drizzle
-
   let rows = await db
     .selectDistinct({ genre: mediaGenre.genre })
     .from(mediaGenre);

@@ -15,8 +15,6 @@ export async function searchMedia(
   limit: number,
   offset: number
 ) {
-  //changed to drizzle
-
   const rows = await db
     .select()
     .from(media)
@@ -42,8 +40,6 @@ export async function searchMedia(
 
 // Returns a single media entry by its id
 export async function getMediaById(id: number) {
-  //Changed to drizzle
-
   const rows = await db
     .select()
     .from(media)
@@ -58,7 +54,6 @@ export async function getMediaById(id: number) {
   }
 
   const genres = await getGenres(id);
-  console.log(genres);
 
   const mediaAns = { ...rows[0], genres: genres };
 
@@ -70,7 +65,6 @@ export async function getMediaById(id: number) {
 
 // Helper function for getting a media's genres
 async function getGenres(mediaId: number) {
-  //changed to drizzle
   const genreRows = await db
     .select()
     .from(mediaGenre)

@@ -3,6 +3,7 @@ import { Router } from "express";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
 import { delete_media, insert_media, update_media } from "./admin.service.js";
 import { authenticateAdmin } from "../../middleware/authenticateAdmin.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const adminRouter = Router();
 
@@ -30,7 +31,7 @@ adminRouter.post(
   "/insert",
   authenticateToken,
   authenticateAdmin,
-  async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       const body = mediaBodySchema.parse(req.body);
       await insert_media(body);
@@ -42,7 +43,7 @@ adminRouter.post(
           error instanceof ZodError ? "Invalid body" : (error as Error).message,
       });
     }
-  }
+  })
 );
 
 const updateMediaBodySchema = z.object({
@@ -56,19 +57,11 @@ adminRouter.post(
   "/update",
   authenticateToken,
   authenticateAdmin,
-  async (req, res) => {
-    try {
-      const body = updateMediaBodySchema.parse(req.body);
-      const result = await update_media(body.id, body.newData);
-      res.json({ status: "success", media: result });
-    } catch (error) {
-      res.status(400).json({
-        status: "failed",
-        message:
-          error instanceof ZodError ? "Invalid body" : (error as Error).message,
-      });
-    }
-  }
+  asyncHandler(async (req, res) => {
+    const body = updateMediaBodySchema.parse(req.body);
+    const result = await update_media(body.id, body.newData);
+    res.json({ status: "success", media: result });
+  })
 );
 
 // (DELETE api/admin/delete/:id)
@@ -77,17 +70,11 @@ adminRouter.delete(
   "/delete/:id",
   authenticateToken,
   authenticateAdmin,
-  async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const result = await delete_media(id);
-      res.json({ status: "success", media: result });
-    } catch (error) {
-      res
-        .status(400)
-        .json({ status: "failed", message: (error as Error).message });
-    }
-  }
+  asyncHandler(async (req, res) => {
+    const id = parseInt(req.params.id);
+    const result = await delete_media(id);
+    res.json({ status: "success", media: result });
+  })
 );
 
 export { adminRouter };

@@ -6,6 +6,7 @@ import { adminRouter } from "../api/admin/admin.route.js";
 import { reviewsRouter } from "../api/reviews/reviews.route.js";
 import { watchRouter } from "../api/watch/watch.route.js";
 import { genreRouter } from "../api/genre/genre.route.js";
+import { popularRouter } from "../api/popular/popular.route.js";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use("/admin", adminRouter);
 router.use("/reviews", reviewsRouter);
 router.use("/watch", watchRouter);
 router.use("/genre", genreRouter);
+router.use("/popular", popularRouter);
 
 router.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");

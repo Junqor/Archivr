@@ -19,14 +19,19 @@ import {
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
+// Likes table
 export const likes = mysqlTable(
   "Likes",
   {
     id: int().autoincrement().notNull(),
-    userId: int("user_id").references(() => users.id, { onDelete: "cascade" }),
-    mediaId: int("media_id").references(() => media.id, {
-      onDelete: "cascade",
-    }),
+    userId: int("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    mediaId: int("media_id")
+      .references(() => media.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     likedAt: timestamp("liked_at", { mode: "string" }).defaultNow(),
   },
   (table) => [
@@ -37,6 +42,7 @@ export const likes = mysqlTable(
   ]
 );
 
+// Likes_Reviews table
 export const likesReviews = mysqlTable(
   "Likes_Reviews",
   {
@@ -57,6 +63,7 @@ export const likesReviews = mysqlTable(
   ]
 );
 
+// Media table
 export const media = mysqlTable(
   "Media",
   {
@@ -72,9 +79,9 @@ export const media = mysqlTable(
     title: varchar({ length: 255 }).notNull(),
     description: text(),
     // you can use { mode: 'date' }, if you want to have Date as type for this column
-    releaseDate: date("release_date", { mode: "string" }),
-    ageRating: varchar("age_rating", { length: 20 }),
-    thumbnailUrl: varchar("thumbnail_url", { length: 255 }),
+    release_date: date("release_date", { mode: "string" }),
+    age_rating: varchar("age_rating", { length: 20 }),
+    thumbnail_url: varchar("thumbnail_url", { length: 255 }),
     rating: float(),
     runtime: int(),
   },
@@ -82,10 +89,11 @@ export const media = mysqlTable(
     index("Media_category_IDX").on(table.category),
     index("Media_rating_IDX").on(table.rating),
     primaryKey({ columns: [table.id], name: "Media_id" }),
-    unique("unique_media").on(table.category, table.title, table.releaseDate),
+    unique("unique_media").on(table.category, table.title, table.release_date),
   ]
 );
 
+// MediaGenre table
 export const mediaGenre = mysqlTable(
   "Media_Genre",
   {
@@ -101,6 +109,7 @@ export const mediaGenre = mysqlTable(
   ]
 );
 
+// Ratings table
 export const ratings = mysqlTable(
   "Ratings",
   {
@@ -124,6 +133,7 @@ export const ratings = mysqlTable(
   ]
 );
 
+// RemoteId table
 export const remoteId = mysqlTable(
   "RemoteId",
   {
@@ -139,6 +149,7 @@ export const remoteId = mysqlTable(
   ]
 );
 
+// Reviews table
 export const reviews = mysqlTable(
   "Reviews",
   {
@@ -168,37 +179,39 @@ export const reviews = mysqlTable(
   ]
 );
 
+// UserReviews table
 export const userReviews = mysqlTable(
   "UserReviews",
   {
     id: int().autoincrement().notNull().primaryKey(),
-    user_id: int("user_id")
+    userId: int("user_id")
       .notNull()
       .references(() => users.id, {
         onDelete: "cascade",
         onUpdate: "restrict",
       }),
-    media_id: int("media_id")
+    mediaId: int("media_id")
       .notNull()
       .references(() => media.id, {
         onDelete: "cascade",
         onUpdate: "restrict",
       }),
     comment: text(),
-    created_at: timestamp("created_at", { mode: "string" }).defaultNow(),
-    rating: int("rating_id")
+    createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
+    ratingId: int("rating_id")
       .notNull()
       .references(() => ratings.id),
   },
   (table) => [
-    index("media_index").on(table.media_id, table.user_id),
-    index("Reviews_media_id_IDX").on(table.media_id),
-    index("user_id").on(table.user_id),
+    index("media_index").on(table.mediaId, table.userId),
+    index("Reviews_media_id_IDX").on(table.mediaId),
+    index("user_id").on(table.userId),
     primaryKey({ columns: [table.id], name: "UserReviews_id" }),
-    unique("unique_media_user").on(table.media_id, table.user_id),
+    unique("unique_media_user").on(table.mediaId, table.userId),
   ]
 );
 
+// Users table
 export const users = mysqlTable(
   "Users",
   {
