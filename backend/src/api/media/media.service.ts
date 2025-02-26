@@ -588,12 +588,16 @@ export async function get_recommended_for_you(user_id: number) {
 
   const normalizedGenres: Record<string, number> = {};
   genres.forEach((g) => {
-    normalizedGenres[g.genre] = (g.interactions - min) / (max - min);
+    const range = max - min;
+    normalizedGenres[g.genre] =
+      range === 0 ? 0.5 : (g.interactions - min) / range;
   });
 
   // Step 4: Calculate a genre factor for each media based on the genres it shares with the normalized genres
   // Essentially a sum of the normalized genre values that are present in the media's genres
-  const genreFactor = sql`
+  const genreFactor =
+    genres.length > 0
+      ? sql`
       SUM(
         CASE 
           ${sql.join(
@@ -606,7 +610,8 @@ export async function get_recommended_for_you(user_id: number) {
           ELSE 0
         END
       )
-    `;
+    `
+      : sql`1`;
 
   // Step 5: Get the count of similar user interactions for each media
   const similarUserInteractions = sql`(
