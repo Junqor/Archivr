@@ -2,6 +2,6 @@ import tmp from "tmp";
 
 tmp.setGracefulCleanup();
 
-export const tmpDir = tmp.dirSync();
+export const tmpDir = tmp.dirSync({prefix:"ARCHIVR"});
 
-console.log("opened tmp dir at "+tmpDir.name);
+console.log("Opened temp directory at "+tmpDir.name);

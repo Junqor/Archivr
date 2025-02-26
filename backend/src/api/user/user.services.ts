@@ -3,16 +3,6 @@ import { conn } from "../../db/database.js";
 import { RowDataPacket } from "mysql2";
 import { serverConfig } from "../../configs/secrets.js";
 import { env } from "process";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-
-const s3Client = new S3Client({
-    region: "sfo3",
-    endpoint: serverConfig.BUCKET_URL,
-    credentials: {
-        accessKeyId: serverConfig.BUCKET_ACCESS_TOKEN,
-        secretAccessKey: serverConfig.BUCKET_SECRET_TOKEN,
-    }
-});
 
 export async function getUserSettings(user_id:number) {
     try {

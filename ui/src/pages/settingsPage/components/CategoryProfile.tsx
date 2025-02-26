@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Youtube, Instagram, Music2, ImageUp } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
+import { getAuthHeader } from "@/utils/authHeader";
 
 export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     const { user } = useAuth();
@@ -16,7 +17,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
             <div className="flex items-center gap-5 self-stretch">
                 <Dialog>
                     <DialogTrigger asChild>
-                        <div style={{backgroundImage:"url(penguin.png)"}} className={"cursor-pointer bg-cover bg-center w-[200px] h-[200px] rounded-[200px] bg-neutral-900"}>
+                        <div style={{backgroundImage:"url("+api_url+"/user/pfp/"+user?.id+")"}} className={"cursor-pointer bg-cover bg-center w-[200px] h-[200px] rounded-[200px] bg-neutral-900"}>
                             <div className="flex items-center justify-center bg-[#44444488] w-[200px] h-[200px] rounded-[200px] opacity-0 hover:opacity-100">
                                 <ImageUp className="size-20"></ImageUp>
                             </div>
@@ -31,7 +32,8 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                                 </DialogTitle>
                                 <form action={api_url+"/user/set-pfp"} method="POST" encType="multipart/form-data">
                                     <legend>Upload Avatar</legend>
-                                    <input type="file" name="pfp" accept="image/png, image/jpeg, image/pjpeg, image/webp"></input>
+                                    <input type="file" name="pfp" accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"></input>
+                                    <input type="text" name="Authorization" value={getAuthHeader().Authorization+"a"} className="hidden"></input>
                                     <button type="submit" className="">Upload</button>
                                 </form>
                                 <DialogClose>
