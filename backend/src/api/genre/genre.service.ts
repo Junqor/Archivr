@@ -1,68 +1,81 @@
-import { conn } from "../../db/database.js";
-import { RowDataPacket } from "mysql2";
-import { TGenre, TMedia } from "../../types/index.js";
+import { db } from "../../db/database.js";
 import { slugify } from "../../utils/slugify.js";
+import { mediaGenre, media } from "../../db/schema.js";
+import { desc, inArray, eq, asc } from "drizzle-orm/expressions";
+import { aliasedTable, getTableColumns, sql } from "drizzle-orm";
 
 // Get 5 most popular media of a certain genre
-export async function get_popular_media_genre(
-  genre: string
-): Promise<TMedia[]> {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT * FROM Media WHERE id IN (
-      SELECT media_id FROM Media_Genre WHERE genre = ?)
-      ORDER BY rating DESC LIMIT 5;`,
-    [genre]
-  );
+export async function get_popular_media_genre(genre: string) {
+  const mediaGenre1 = aliasedTable(mediaGenre, "mediaGenre1");
+  const mediaGenre2 = aliasedTable(mediaGenre, "mediaGenre2");
+  const data = await db
+    .select({
+      ...getTableColumns(media),
+      genres: sql<string>`GROUP_CONCAT(DISTINCT mediaGenre2.genre) AS genres`,
+    })
+    .from(media)
+    .leftJoin(mediaGenre1, eq(media.id, mediaGenre1.mediaId))
+    .leftJoin(mediaGenre2, eq(media.id, mediaGenre2.mediaId))
+    .where(eq(mediaGenre1.genre, genre))
+    .groupBy(media.id)
+    .orderBy(desc(media.rating))
+    .limit(5);
 
-  for (let media of rows) {
-    let [genres] = await conn.query<RowDataPacket[]>(
-      `SELECT genre FROM Media_Genre WHERE media_id = ?`,
-      [media.id]
-    );
-    media.genres = (genres as Array<RowDataPacket & { genre: string }>).map(
-      (row) => row.genre
-    );
-  }
-
-  return rows;
+  return data.map((row) => {
+    return {
+      ...row,
+      genres: row.genres?.split(","),
+    };
+  });
 }
 
 // Get 20 medias of a certain genre with offset
 export async function get_media_genre(
   genre: string,
   offset: number,
-  sortBy: "alphabetical" | "release_date" | "rating",
+  sortBy: "alphabetical" | "release_date" | "popularity",
   order: "asc" | "desc"
-): Promise<TMedia[]> {
-  let orderByClause;
+) {
+  let sortByClause;
   switch (sortBy) {
     case "alphabetical":
-      orderByClause = "title";
+      sortByClause = media.title;
       break;
     case "release_date":
-      orderByClause = "release_date";
+      sortByClause = media.release_date;
       break;
-    case "rating":
-      orderByClause = "rating";
+    case "popularity":
+      sortByClause = media.rating;
       break;
     default:
-      orderByClause = "title";
+      sortByClause = media.title;
   }
 
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT * FROM Media WHERE id IN (
-            SELECT media_id FROM Media_Genre WHERE genre = ?)
-            ORDER BY ${orderByClause} ${order.toUpperCase()} LIMIT 30 OFFSET ?;`,
-    [genre, offset]
-  );
+  let rows = await db
+    .select()
+    .from(media)
+    .where(
+      inArray(
+        media.id,
+        db
+          .select({ mediaId: mediaGenre.mediaId })
+          .from(mediaGenre)
+          .where(eq(mediaGenre.genre, genre))
+      )
+    )
+    .orderBy(order === "desc" ? desc(sortByClause) : asc(sortByClause))
+    .limit(30)
+    .offset(offset);
+
   return rows;
 }
 
 // Get a list of distinct genres
 export async function get_genres(): Promise<{ genre: string; slug: string }[]> {
-  let [rows] = await conn.query<RowDataPacket[]>(
-    `SELECT DISTINCT genre FROM Media_Genre;`
-  );
+  let rows = await db
+    .selectDistinct({ genre: mediaGenre.genre })
+    .from(mediaGenre);
+
   return (rows as Array<{ genre: string }>).map((row) => ({
     genre: row.genre,
     slug: slugify(row.genre),

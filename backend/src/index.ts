@@ -4,6 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { router } from "./configs/router.js";
+import { logger } from "./configs/logger.js";
 
 const app = express();
 
@@ -22,10 +23,10 @@ app.use(errorHandler); // Error logging middleware
 // Test db connection
 try {
   await testConnection();
-  console.log("Database connection successful");
+  logger.info("Database connection successful");
   app.listen(PORT, () => {
-    console.log(`ARCHIVR is active and listing on on port ${PORT}`);
+    logger.info(`ARCHIVR is active and listing on on port ${PORT}`);
   });
 } catch (error) {
-  console.error("Database connection failed", error);
+  logger.error("Database connection failed", error);
 }

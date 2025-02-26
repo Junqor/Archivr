@@ -115,7 +115,7 @@ export function MediaPage() {
               {data.title}
             </h2>
             <h3 className="ml-2 hidden font-light leading-relaxed sm:block">
-              {formatDateYear(new Date(data.release_date))}
+              {formatDateYear(data.release_date)}
             </h3>
           </div>
           <div className="hidden max-w-full flex-row flex-nowrap gap-2 overflow-x-auto no-scrollbar sm:flex">
@@ -275,7 +275,7 @@ export function MediaPage() {
             </div>
             <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
               <CalendarMonthRounded className="fill-gray-300" />
-              <h4>{formatDateYear(new Date(data.release_date))}</h4>
+              <h4>{formatDateYear(data.release_date)}</h4>
             </div>
             <div className="pr-4 sm:hidden" />
             <div className="flex flex-row items-center justify-center space-x-1">

@@ -16,7 +16,7 @@ import { LoadingScreen } from "../loadingScreen";
 export default function GenrePage() {
   const [_, setSearchParams] = useSearchParams();
   const { genre } = useParams();
-  const { sortBy, order, offset } = useGenreQueryParams();
+  const { sortBy, order, page } = useGenreSearchParams();
 
   // Fetch genres
   const {
@@ -51,26 +51,23 @@ export default function GenrePage() {
     isPending,
     error,
   } = useQuery({
-    queryKey: ["popularMediaGenre", genreObj?.genre, offset, sortBy, order],
-    queryFn: () => getMediaGenre(genreObj?.genre || "", offset, sortBy, order),
+    queryKey: ["popularMediaGenre", genreObj?.genre, page, sortBy, order],
+    queryFn: () =>
+      getMediaGenre(genreObj?.genre || "", page * PAGE_SIZE, sortBy, order),
     refetchOnWindowFocus: false,
-    enabled: !!genreObj && !isNaN(offset) && !!sortBy && !!order, // Ensure the query runs only if genre is valid
+    enabled: !!genreObj && !isNaN(page) && !!sortBy && !!order, // Ensure the query runs only if genre is valid
   });
-
-  // Reset offset to 0 when order or sortBy changes
-  useEffect(() => {
-    handleChangeOffset(0);
-  }, [sortBy, order]);
 
   const PAGE_SIZE = 30;
 
   const handleChangeSortBy = (
-    newSortBy: "alphabetical" | "release_date" | "rating",
+    newSortBy: "alphabetical" | "release_date" | "popularity",
   ) => {
     setSearchParams((prev) => {
       prev.set("sort", newSortBy);
       return prev;
     });
+    handleChangePage(0);
   };
 
   const handleChangeOrder = (newOrder: "asc" | "desc") => {
@@ -78,11 +75,12 @@ export default function GenrePage() {
       prev.set("order", newOrder);
       return prev;
     });
+    handleChangePage(0);
   };
 
-  const handleChangeOffset = (newOffset: number) => {
+  const handleChangePage = (newPage: number) => {
     setSearchParams((prev) => {
-      prev.set("offset", newOffset.toString());
+      prev.set("page", newPage.toString());
       return prev;
     });
   };
@@ -117,7 +115,7 @@ export default function GenrePage() {
               >
                 <option value="alphabetical">Alphabetical</option>
                 <option value="release_date">Release Date</option>
-                <option value="rating">Rating</option>
+                <option value="popularity">Popularity</option>
               </select>
               <button
                 type="button"
@@ -147,14 +145,14 @@ export default function GenrePage() {
       </section>
       <section className="mt-5 flex w-full justify-center gap-3">
         <button
-          onClick={() => handleChangeOffset(Math.max(0, offset - PAGE_SIZE))}
-          disabled={offset === 0}
-          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${offset === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+          onClick={() => handleChangePage(Math.max(0, page - 1))}
+          disabled={page === 0}
+          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
         >
           <ChevronLeftRounded />
         </button>
         <button
-          onClick={() => handleChangeOffset(offset + PAGE_SIZE)}
+          onClick={() => handleChangePage(page + 1)}
           disabled={!mediaList || mediaList.length < PAGE_SIZE} // Disable if no more media
           className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!mediaList || mediaList.length < PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
         >
@@ -165,25 +163,25 @@ export default function GenrePage() {
   );
 }
 
-function useGenreQueryParams() {
+function useGenreSearchParams() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // useSearchParams for sorting and ordering
   const sortBy = searchParams.get("sort") as
     | "alphabetical"
     | "release_date"
-    | "rating";
+    | "popularity";
   const order = searchParams.get("order") as "asc" | "desc";
-  const offset = parseInt(searchParams.get("offset") || "0");
+  const page = parseInt(searchParams.get("page") || "0");
 
   useEffect(() => {
     if (
       sortBy !== "alphabetical" &&
       sortBy !== "release_date" &&
-      sortBy !== "rating"
+      sortBy !== "popularity"
     ) {
       setSearchParams((prev) => {
-        prev.set("sort", "rating"); // default to rating
+        prev.set("sort", "popularity"); // default to popularity
         return prev;
       });
     }
@@ -195,13 +193,13 @@ function useGenreQueryParams() {
       });
     }
 
-    if (isNaN(offset)) {
+    if (isNaN(page)) {
       setSearchParams((prev) => {
-        prev.set("offset", "0");
+        prev.set("page", "0");
         return prev;
       });
     }
-  }, [sortBy, order, offset, searchParams]);
+  }, [sortBy, order, page, searchParams]);
 
-  return { sortBy, order, offset };
+  return { sortBy, order, page };
 }

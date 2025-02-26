@@ -4,7 +4,7 @@ import {
   get_media_genre,
   get_genres,
 } from "./genre.service.js";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 export const genreRouter = Router();
@@ -34,11 +34,11 @@ genreRouter.get(
 const getMediaGenreBodySchema = z.object({
   genre: z.string(),
   offset: z.coerce.number(),
-  sortBy: z.enum(["alphabetical", "release_date", "rating"]),
+  sortBy: z.enum(["alphabetical", "release_date", "popularity"]),
   order: z.enum(["asc", "desc"]),
 });
 
-// (GET /genre/media?genre=genre&offset=offset)
+// (GET /genre/media?genre=genre&offset=offset&sortBy=sortBy&order=order)
 // get 20 medias of a certain genre with offset
 genreRouter.get(
   "/media",
