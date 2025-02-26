@@ -29,7 +29,7 @@ emailRouter.post(
     const token = jwt.sign({ email }, serverConfig.JWT_SECRET, {
       expiresIn: "1h",
     });
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const resetLink = `${process.env.FRONTEND_URL}/password-reset?token=${token}`;
 
     await sendEmail(email, resetLink);
 

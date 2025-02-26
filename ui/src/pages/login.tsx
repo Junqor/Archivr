@@ -8,6 +8,7 @@ import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { tryLogin, trySignup } from "@/api/auth";
+import { requestPasswordReset } from "@/api/email";
 import {
   LockResetRounded,
   NotificationsActiveRounded,
@@ -135,7 +136,7 @@ export function Login() {
                     </div>
                     <h2>Check Your Email</h2>
                     <p>
-                      We’ve sent a password reset link to your email. Follow the
+                      We've sent a password reset link to your email. Follow the
                       instructions in the email to reset your password.
                     </p>
                   </motion.div>
@@ -189,7 +190,22 @@ export function Login() {
                     <button
                       type="submit"
                       className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
-                      onClick={() => setIsResetEmailSent(true)}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        if (!email) {
+                          toast.error("Please enter your email");
+                          return;
+                        }
+
+                        try {
+                          await requestPasswordReset(email);
+                          toast.success("Password reset email sent!");
+                          setIsResetEmailSent(true);
+                        } catch (error) {
+                          console.error(error);
+                          toast.error("Failed to send password reset email");
+                        }
+                      }}
                     >
                       Send Reset Instructions
                     </button>
