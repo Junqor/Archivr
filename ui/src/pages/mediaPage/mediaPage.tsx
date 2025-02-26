@@ -63,6 +63,7 @@ export function MediaPage() {
   const { data: reviewsLikedByUser } = useQuery({
     queryKey: ["media", id, "reviews/check-likes"],
     queryFn: () => checkLikes(parseInt(id as string)),
+    enabled: !!user,
   });
 
   const { isPending, error, data } = useQuery<TMedia>({
@@ -361,14 +362,14 @@ export function MediaPage() {
                 </>
               ) : (
                 reviews.map(
-                  (review) =>
-                    review.comment !== "" &&
-                    review.comment !== undefined && (
+                  (userReview) =>
+                    userReview.review.comment !== "" &&
+                    userReview.review.comment !== undefined && (
                       <ReviewCard
-                        review={review}
+                        userReview={userReview}
                         isLiked={
                           !!reviewsLikedByUser &&
-                          reviewsLikedByUser.includes(review.id)
+                          reviewsLikedByUser.includes(userReview.review.id)
                         }
                         key={crypto.randomUUID()}
                       />
