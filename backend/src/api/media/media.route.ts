@@ -30,6 +30,7 @@ mediaRouter.post("/like", authenticateToken, async (req, res) => {
   try {
     const { user } = res.locals;
     const { media_id } = updateLikesBodySchema.parse(req.body);
+
     await update_likes(media_id, user.id);
     res.json({ status: "success" });
   } catch (err) {
@@ -139,7 +140,7 @@ mediaRouter.get("/trending", async (req, res) => {
 mediaRouter.get("/new-for-you", async (req, res) => {
   const userId = parseInt(req.query.user_id as string);
   const result = await get_new_for_you(userId);
-  res.json({ status: "success", media: result.media });
+  res.json({ status: "success", media: result });
 });
 
 // (GET /media/stats/:userId)

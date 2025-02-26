@@ -6,15 +6,22 @@ import { authenticateAdmin } from "../../middleware/authenticateAdmin.js";
 
 const adminRouter = Router();
 
-const mediaBodySchema = z.object({
-  category: z.string(),
+export const mediaBodySchema = z.object({
+  category: z.enum([
+    "movie",
+    "tv_show",
+    "music",
+    "podcast",
+    "book",
+    "videogame",
+  ]),
   title: z.string(),
   description: z.string(),
   release_date: z.string(),
   age_rating: z.string(),
   thumbnail_url: z.string(),
   rating: z.number(),
-  genre: z.string(),
+  genres: z.array(z.string()),
 });
 
 // (POST api/admin/insert)

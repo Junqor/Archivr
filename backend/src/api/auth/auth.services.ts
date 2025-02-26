@@ -1,10 +1,10 @@
-import { RowDataPacket } from "mysql2";
-import { conn } from "../../db/database.js";
 import { TUser } from "../../types/index.js";
 import { AuthErrorHandler } from "../../utils/authErrorHandler.js";
 import { generateSalt, hashPassword } from "../../utils/hashPassword.js";
 import { z } from "zod";
-
+import { db } from "../../db/database.js";
+import { users } from "../../db/schema.js";
+import { sql } from "drizzle-orm";
 export type TAuthResult = {
   status: "success" | "failed";
   message: string;
@@ -56,26 +56,21 @@ export async function signUp(
   // Generate a random salt
   const salt = generateSalt();
   const { hashedPassword } = await hashPassword(password, salt);
-
-  const values = [email, username, hashedPassword, salt];
-
-  const query = `
-    INSERT INTO Users (email, username, password_hash, salt) 
-    VALUES (?, ?, ?, ?)
-  `;
-
-  const result = await conn
-    .query(query, values)
-    .then(
-      (_e) =>
-        ({
-          status: "success",
-          message: "Signed up successfully",
-        } as TAuthResult)
-    )
-    .catch((err) => AuthErrorHandler(err)); // Handle SQL errors
-
-  return result;
+  //Changed to Drizzle
+  try {
+    await db.insert(users).values({
+      email: email,
+      username: username,
+      passwordHash: hashedPassword,
+      salt: salt,
+    });
+  } catch (error) {
+    return AuthErrorHandler(error);
+  }
+  return {
+    status: "success",
+    message: "Signed up successfully",
+  };
 }
 
 export async function logIn(
@@ -87,23 +82,23 @@ export async function logIn(
   }
 
   // First retrieve the user with matching username from the database
-  const [rows] = await conn
-    .query<(RowDataPacket & TUser)[]>(
-      "SELECT * FROM Users WHERE username = ?",
-      [username]
-    )
-    .then((e) => e);
-  const user = rows[0];
+  //Changed to drizzle
+  const [rows] = await db
+    .select()
+    .from(users)
+    .where(sql`${users.username} = ${username}`);
+
+  const user = rows;
   if (!user) {
     return { status: "failed", message: "Username not found" };
   }
-  const { salt, password_hash } = user; // extract salt and hashed password in db
+  const { salt, passwordHash } = user; // extract salt and hashed password in db
 
   // Hash the entered password with the salt
   const { hashedPassword } = await hashPassword(password, salt);
 
   // Check if the passwords match
-  if (hashedPassword !== password_hash) {
+  if (hashedPassword !== passwordHash) {
     return { status: "failed", message: "Incorrect password" };
   }
 
