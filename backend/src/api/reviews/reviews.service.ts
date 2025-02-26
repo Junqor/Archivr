@@ -2,13 +2,17 @@ import { db } from "../../db/database.js";
 import {
   userReviews,
   likesReviews as likesReviewsTable,
+  ratings,
 } from "../../db/schema.js";
 import { and, eq } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../../utils/error.class.js";
 
 export const deleteReview = async (reviewId: number, userId: number) => {
-  const [{ reviewUserId }] = await db
-    .select({ reviewUserId: userReviews.userId })
+  const [{ reviewUserId, ratingId }] = await db
+    .select({
+      reviewUserId: userReviews.userId,
+      ratingId: userReviews.ratingId,
+    })
     .from(userReviews)
     .where(eq(userReviews.id, reviewId));
 
@@ -16,8 +20,10 @@ export const deleteReview = async (reviewId: number, userId: number) => {
   if (reviewUserId !== userId) {
     throw new UnauthorizedError("Unauthorized");
   }
-
-  await db.delete(userReviews).where(eq(userReviews.id, reviewId));
+  await db.transaction(async (tx) => {
+    await tx.delete(userReviews).where(eq(userReviews.id, reviewId));
+    await tx.delete(ratings).where(eq(ratings.id, ratingId));
+  });
 };
 
 export const likeReview = async (reviewId: number, userId: number) => {

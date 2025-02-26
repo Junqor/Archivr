@@ -36,6 +36,7 @@ mediaRouter.post(
   asyncHandler(async (req, res) => {
     const { user } = res.locals;
     const { media_id } = updateLikesBodySchema.parse(req.body);
+
     await update_likes(media_id, user.id);
     res.json({ status: "success" });
   })
@@ -110,7 +111,7 @@ mediaRouter.post(
 mediaRouter.get(
   "/popular",
   asyncHandler(async (req, res) => {
-    const { media } = await getMostPopular();
+    const media = await getMostPopular();
     res.json({ status: "success", media: media });
   })
 );
@@ -120,8 +121,8 @@ mediaRouter.get(
 mediaRouter.get(
   "/recent-reviews",
   asyncHandler(async (req, res) => {
-    const result = await get_recently_reviewed();
-    res.json({ status: "success", media: result.media });
+    const media = await get_recently_reviewed();
+    res.json({ status: "success", media: media });
   })
 );
 
@@ -167,8 +168,8 @@ mediaRouter.get(
   "/new-for-you",
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.query.user_id as string);
-    const result = await get_new_for_you(userId);
-    res.json({ status: "success", media: result.media });
+    const media = await get_new_for_you(userId);
+    res.json({ status: "success", media: media });
   })
 );
 

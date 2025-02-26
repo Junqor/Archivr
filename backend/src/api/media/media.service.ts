@@ -1,6 +1,5 @@
-import { conn, db } from "../../db/database.js";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { TMedia, TReview } from "../../types/index.js";
+import { db } from "../../db/database.js";
+import { TReview } from "../../types/index.js";
 import {
   users as UsersTable,
   likesReviews as likesReviewsTable,
@@ -22,8 +21,7 @@ import {
   asc,
   or,
 } from "drizzle-orm/expressions";
-import { count, InferSelectModel, sql, sum } from "drizzle-orm";
-import { logger } from "../../configs/logger.js";
+import { count, sql, avg } from "drizzle-orm";
 import { serverConfig } from "../../configs/secrets.js";
 import { union } from "drizzle-orm/mysql-core";
 
@@ -32,37 +30,25 @@ export async function update_rating(
   user_id: number,
   new_rating: number
 ) {
-  let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "INSERT INTO Ratings (media_id, user_id, rating) VALUES (?, ?, ?) " +
-      "ON DUPLICATE KEY UPDATE rating = ?",
-    [media_id, user_id, new_rating, new_rating]
-  );
-  return;
+  await db
+    .insert(ratings)
+    .values({
+      mediaId: media_id,
+      userId: user_id,
+      rating: new_rating,
+    })
+    .onDuplicateKeyUpdate({ set: { rating: new_rating } });
 }
 
-export async function get_media_rating(media_id: number): Promise<number> {
-  let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "SELECT AVG(rating) as avg FROM Ratings WHERE media_id=?;",
-    [media_id]
-  );
-  if (rows[0].length == 0) {
-    throw Error("RATINGS AREN'T REAL");
-  }
-  return rows[0].avg;
-}
+export async function get_media_rating(
+  media_id: number
+): Promise<number | null> {
+  const [row] = await db
+    .select({ avg: avg(ratings.rating) })
+    .from(ratings)
+    .where(eq(ratings.mediaId, media_id));
 
-export async function get_user_rating(
-  media_id: number,
-  user_id: number
-): Promise<number> {
-  let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "SELECT rating as rat FROM Ratings WHERE media_id=? AND user_id=?;",
-    [media_id, user_id]
-  );
-  if (rows[0].length == 0) {
-    throw Error("RATINGS AREN'T REAL");
-  }
-  return rows[0][0].rat;
+  return row.avg === null ? null : parseInt(row.avg);
 }
 
 export async function update_review(
@@ -132,30 +118,41 @@ export async function get_user_review(
   media_id: number,
   user_id: number
 ): Promise<TReview> {
-  let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    "SELECT * FROM UserReviews WHERE media_id=? AND user_id=?;",
-    [media_id, user_id]
-  );
-  if (rows[0].length == 0) {
+  let [rows] = await db
+    .select({
+      id: userReviews.id,
+      user_id: userReviews.userId,
+      media_id: userReviews.mediaId,
+      comment: userReviews.comment,
+      created_at: userReviews.createdAt,
+      rating: ratings.rating,
+    })
+    .from(userReviews)
+    .where(
+      and(eq(userReviews.mediaId, media_id), eq(userReviews.userId, user_id))
+    );
+
+  if (rows === null) {
     throw Error("REVIEWS AREN'T REAL");
   }
-  return rows[0];
+  return rows;
 }
 
 // Try inserting the like; if it already exists, delete it instead.
 export async function update_likes(media_id: number, user_id: number) {
-  const [result] = await conn.query<ResultSetHeader>(
-    `INSERT IGNORE INTO Likes (media_id, user_id) VALUES (?, ?)`,
-    [media_id, user_id]
-  );
+  const [result] = await db
+    .insert(likes)
+    .ignore()
+    .values({ mediaId: media_id, userId: user_id });
 
   // Check if a row was inserted; if not, delete it instead.
   if (result.affectedRows === 0) {
     // If the row wasn’t inserted (it already exists), delete it to "toggle" the like.
-    await conn.query("DELETE FROM Likes WHERE media_id = ? AND user_id = ?;", [
-      media_id,
-      user_id,
-    ]);
+    await db
+      .delete(likes)
+      .where(
+        sql`${likes.mediaId} = ${media_id} and ${likes.userId} = ${user_id}`
+      );
   }
 }
 
@@ -163,30 +160,32 @@ export async function is_liked(
   media_id: number,
   user_id: number
 ): Promise<boolean> {
-  const [rows] = await conn.query<RowDataPacket[]>(
-    "SELECT 1 FROM Likes WHERE media_id = ? AND user_id = ? LIMIT 1;",
-    [media_id, user_id]
-  );
+  const rows = await db
+    .select()
+    .from(likes)
+    .where(and(eq(likes.mediaId, media_id), eq(likes.userId, user_id)))
+    .limit(1);
+
   return rows.length > 0;
 }
 
 export async function get_likes(media_id: number): Promise<number> {
-  let [rows] = await conn.query<RowDataPacket[]>(
-    "SELECT COUNT(*) as num FROM Likes WHERE media_id=?;",
-    [media_id]
-  );
-  return rows[0].num ?? 0;
+  let [row] = await db
+    .select({ num: count() })
+    .from(likes)
+    .where(eq(likes.mediaId, media_id));
+
+  return row.num ?? 0;
 }
 
 export async function getMostPopular() {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT * FROM Media ORDER BY rating DESC LIMIT 15;`
-  );
+  const rows = await db
+    .select()
+    .from(media)
+    .orderBy(desc(media.rating))
+    .limit(15);
 
-  return {
-    status: "success",
-    media: rows,
-  };
+  return rows;
 }
 
 export async function get_recently_reviewed() {
@@ -217,63 +216,64 @@ export async function get_recently_reviewed() {
     .orderBy(desc(userReviews.createdAt))
     .limit(8);
 
-  return {
-    status: "success",
-    media: rows,
-  };
+  return rows;
 }
 
 export async function getTopRatedPicks() {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `WITH WeightedMovies AS (
-      SELECT 
-        Media.id,
-        Media.category,
-        Media.title,
-        Media.description,
-        Media.release_date,
-        Media.age_rating,
-        Media.thumbnail_url,
-        Media.rating AS base_rating,
-        AVG(Ratings.rating) AS average_rating,
-        COUNT(Ratings.rating) AS num_ratings,
-        (
-          -- Weighted average rating based on number of ratings
+  const WeightedMovies = db.$with("WeightedMovies").as(
+    db
+      .select({
+        mediaId: media.id,
+        mediaCategory: media.category,
+        mediaTitle: media.title,
+        mediaDescription: media.description,
+        mediaRelease_Date: media.release_date,
+        mediaAge_Rating: media.age_rating,
+        mediaThumbnailURL: media.thumbnail_url,
+        base_rating: media.rating,
+        average_rating: avg(ratings.rating).as("average_rating"),
+        num_ratings: count(ratings.rating).as("num_ratings"),
+        weighted_rating:
+          sql<number>`(COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
+        (50 / (COUNT(Ratings.rating) + 50)) * (
+          SELECT AVG(rating) FROM Ratings
+        )`.as("weighted_rating"),
+        age: sql<number>`TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE())`.as(
+          "age"
+        ),
+        final_weighted_score: sql<number>`(
           (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
           (50 / (COUNT(Ratings.rating) + 50)) * (
             SELECT AVG(rating) FROM Ratings
           )
-        ) AS weighted_rating,
-        -- Calculate the age of the movie in years
-        TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) AS age,
-        -- Apply a time-decay weight (linear decay, modify factor if needed)
-        (
-          (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
-          (50 / (COUNT(Ratings.rating) + 50)) * (
-            SELECT AVG(rating) FROM Ratings
-          )
-        ) * (1 - LEAST(TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) / 50, 1)) AS final_weighted_score
-      FROM Media
-      LEFT JOIN Ratings ON Media.id = Ratings.media_id
-      GROUP BY Media.id
-    )
-    SELECT 
-      id,
-      category,
-      title,
-      description,
-      release_date,
-      age_rating,
-      thumbnail_url,
-      base_rating as rating,
-      average_rating,
-      num_ratings,
-      weighted_rating,
-      final_weighted_score
-    FROM WeightedMovies
-    ORDER BY final_weighted_score DESC
-    LIMIT 15;`
+        ) * (1 - LEAST(TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) / 50, 1))`.as(
+          "final_weighted_score"
+        ),
+      })
+      .from(media)
+      .leftJoin(ratings, eq(media.id, ratings.mediaId))
+      .groupBy(media.id)
   );
+
+  const rows = await db
+    .with(WeightedMovies)
+    .select({
+      id: WeightedMovies.mediaId,
+      category: WeightedMovies.mediaCategory,
+      title: WeightedMovies.mediaTitle,
+      description: WeightedMovies.mediaDescription,
+      release_date: WeightedMovies.mediaRelease_Date,
+      age_rating: WeightedMovies.mediaAge_Rating,
+      thumbnail_url: WeightedMovies.mediaThumbnailURL,
+      base_rating: WeightedMovies.base_rating,
+      average_rating: WeightedMovies.average_rating,
+      num_rating: WeightedMovies.num_ratings,
+      weighted_rating: WeightedMovies.weighted_rating,
+      final_weighted_score: WeightedMovies.final_weighted_score,
+    })
+    .from(WeightedMovies)
+    .orderBy(desc(WeightedMovies.final_weighted_score))
+    .limit(15);
 
   return {
     status: "success",
@@ -373,39 +373,54 @@ export const getTrendingPaginated = async (
 
   return trending;
 };
-export async function get_new_for_you(user_id: number) {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT DISTINCT Media.*
-    FROM Media
-    WHERE Media.id NOT IN (
-      SELECT media_id FROM Ratings WHERE user_id = ?
-      UNION
-      SELECT media_id FROM Likes WHERE user_id = ?
-      UNION
-      SELECT media_id FROM UserReviews WHERE user_id = ?
-    )
-    AND Media.release_date <= CURDATE()
-    ORDER BY RAND()
-    LIMIT 15;`,
-    [user_id, user_id, user_id]
-  );
 
-  return {
-    status: "success",
-    media: rows,
-  };
+export async function get_new_for_you(user_id: number) {
+  const data = await db
+    .selectDistinct()
+    .from(media)
+    .where(
+      and(
+        not(
+          inArray(
+            media.id,
+            db
+              .select({ mediaId: likes.mediaId })
+              .from(likes)
+              .where(eq(likes.userId, user_id))
+              .union(
+                db
+                  .select({ mediaId: ratings.mediaId })
+                  .from(ratings)
+                  .where(eq(ratings.userId, user_id))
+              )
+              .union(
+                db
+                  .select({ mediaId: userReviews.mediaId })
+                  .from(userReviews)
+                  .where(eq(userReviews.userId, user_id))
+              )
+          )
+        ),
+        sql`${media.release_date} <= CURDATE()`
+      )
+    )
+    .orderBy(sql`RAND()`)
+    .limit(15);
+
+  return data;
 }
 
 // Get the users total number of likes, reviews, and ratings
 export async function get_user_stats(user_id: number) {
-  let [rows] = await conn.query<RowDataPacket[]>(
-    `SELECT 
-    (SELECT COUNT(*) FROM Likes WHERE user_id = ?) AS likes,
-    (SELECT COUNT(*) FROM UserReviews WHERE user_id = ?) AS reviews,
-    (SELECT COUNT(*) FROM Ratings WHERE user_id = ?) AS ratings;`,
-    [user_id, user_id, user_id]
-  );
-  return rows[0];
+  const like = await db.$count(likes, eq(likes.userId, user_id));
+  const review = await db.$count(userReviews, eq(userReviews.userId, user_id));
+  const rating = await db.$count(ratings, eq(ratings.userId, user_id));
+
+  return {
+    likes: like,
+    reviews: review,
+    ratings: rating,
+  };
 }
 
 export const getMediaBackground = async (id: number) => {
@@ -641,38 +656,57 @@ export async function get_similar_to_watched(user_id: number) {
   }
 
   // Step 1: Get the highly rated or liked media by the user
-  const userInteractions = await union(
-    db
-      .select({ mediaId: ratings.mediaId, title: media.title })
-      .from(ratings)
-      .innerJoin(media, eq(ratings.mediaId, media.id))
-      .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5))),
-    db
-      .select({ mediaId: likes.mediaId, title: media.title })
-      .from(likes)
-      .innerJoin(media, eq(likes.mediaId, media.id))
-      .where(eq(likes.userId, user_id))
+  const userInteractions = db.$with("userInteractions").as(
+    union(
+      db
+        .select({
+          mediaId: ratings.mediaId,
+          title: media.title,
+          createdAt: ratings.ratedAt,
+        })
+        .from(ratings)
+        .innerJoin(media, eq(ratings.mediaId, media.id))
+        .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5))),
+      db
+        .select({
+          mediaId: likes.mediaId,
+          title: media.title,
+          createdAt: likes.likedAt,
+        })
+        .from(likes)
+        .innerJoin(media, eq(likes.mediaId, media.id))
+        .where(eq(likes.userId, user_id))
+    )
   );
 
-  const interactedMediaIds = userInteractions.map(
+  const recentInteractions = await db
+    .with(userInteractions)
+    .select({
+      mediaId: userInteractions.mediaId,
+      title: userInteractions.title,
+      createdAt: userInteractions.createdAt,
+    })
+    .from(userInteractions)
+    .orderBy(desc(userInteractions.createdAt));
+
+  const interactedMediaIds = recentInteractions.map(
     (interaction) => interaction.mediaId
   );
 
-  if (interactedMediaIds.length === 0) {
+  if (recentInteractions.length === 0) {
     return {
-      status: "success",
       media: [],
       basedOn: null,
     };
   }
 
-  const recentMediaTitle = userInteractions[0].title;
+  const recentMedia = recentInteractions[0];
 
   // Step 2: Get the genres of the most recently watched media
   const genres = await db
     .select({ genre: mediaGenre.genre })
     .from(mediaGenre)
-    .where(eq(mediaGenre.mediaId, interactedMediaIds[0]));
+    .where(eq(mediaGenre.mediaId, recentMedia.mediaId));
 
   const genreList = genres.map((g) => g.genre);
 
@@ -723,12 +757,12 @@ export async function get_similar_to_watched(user_id: number) {
 
     return {
       media: [...similarMedia, ...fallbackMedia],
-      basedOn: recentMediaTitle,
+      basedOn: recentMedia.title,
     };
   }
 
   return {
     media: similarMedia,
-    basedOn: recentMediaTitle,
+    basedOn: recentMedia.title,
   };
 }

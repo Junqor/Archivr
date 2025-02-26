@@ -73,10 +73,10 @@ export function ActionButtons({
   };
 
   return (
-    <div className="flex space-x-2 w-full">
+    <div className="flex w-full space-x-2">
       <MediaForm media={selectedItem as TMedia} handleSave={handleEdit}>
         <Button variant="outline" size="icon" disabled={!selectedItem}>
-          <Edit className="w-4 h-4" />
+          <Edit className="h-4 w-4" />
           <span className="sr-only">Edit</span>
         </Button>
       </MediaForm>
@@ -87,12 +87,12 @@ export function ActionButtons({
         disabled={!selectedItem}
         className="border-red-500 hover:border-white"
       >
-        <Trash className="w-4 h-4 text-red-500" />
+        <Trash className="h-4 w-4 text-red-500" />
         <span className="sr-only">Delete</span>
       </Button>
       <MediaForm handleSave={handleAdd} media={null}>
         <Button variant="outline" size="icon">
-          <Plus className="w-4 h-4" />
+          <Plus className="h-4 w-4" />
           <span className="sr-only">Add</span>
         </Button>
       </MediaForm>
@@ -103,7 +103,7 @@ export function ActionButtons({
         disabled={pageNumber <= 1}
         onClick={handlePageDown}
       >
-        <ChevronLeft className="w-4 h-4" />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
       <Button
         variant="outline"
@@ -111,7 +111,7 @@ export function ActionButtons({
         disabled={numResults < 10}
         onClick={handlePageUp}
       >
-        <ChevronRight className="w-4 h-4" />
+        <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
   );
@@ -140,7 +140,6 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
     await handleSave(updatedMedia);
   };
 
-  console.log(media);
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -155,7 +154,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
           <form onSubmit={handleSubmit} autoComplete="off">
             <div className="grid gap-4 py-4">
               {/* Title */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
                   Title
                 </Label>
@@ -167,7 +166,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Type */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="type" className="text-right">
                   Type
                 </Label>
@@ -179,7 +178,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Description */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="description" className="text-right">
                   Description
                 </Label>
@@ -191,7 +190,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Release Date */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="release-date" className="text-right">
                   Release Date
                 </Label>
@@ -207,7 +206,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Age Rating */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="age-rating" className="text-right">
                   Age Rating
                 </Label>
@@ -219,7 +218,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Thumbnail URL */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="thumbnail-url" className="text-right">
                   Thumbnail URL
                 </Label>
@@ -231,7 +230,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Genre */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="genre" className="text-right">
                   Genre
                 </Label>
@@ -243,7 +242,7 @@ function MediaForm({ children, handleSave, media }: MediaFormProps) {
                 />
               </div>
               {/* Genre */}
-              <div className="grid items-center grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="rating" className="text-right">
                   Rating
                 </Label>
