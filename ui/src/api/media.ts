@@ -64,16 +64,23 @@ export const getMostPopular = async (): Promise<TMedia[]> => {
 };
 
 export type TRecentlyReviewed = {
-  id: number;
-  title: string;
-  thumbnail_url: string;
-  rating: number;
-  userId: number;
-  userName: string;
-  display_name: string;
-  review: string | null;
-  reviewRating: number;
-  created_at: string;
+  media: {
+    id: number;
+    title: string;
+    thumbnail_url: string;
+    rating: number;
+  };
+  user: {
+    userId: number;
+    username: string;
+    avatar_url: string | null;
+    display_name: string;
+  };
+  review: {
+    reviewText: string | null;
+    reviewRating: number;
+    created_at: string;
+  };
 }[];
 
 export const getRecentlyReviewed = async (): Promise<TRecentlyReviewed> => {

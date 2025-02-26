@@ -195,16 +195,23 @@ export async function getMostPopular() {
 export async function get_recently_reviewed() {
   let rows = await db
     .selectDistinct({
-      id: media.id,
-      title: media.title,
-      thumbnail_url: media.thumbnail_url,
-      rating: media.rating,
-      userId: users.id,
-      userName: users.username,
-      display_name: users.displayName,
-      review: userReviews.comment,
-      reviewRating: ratings.rating,
-      created_at: userReviews.createdAt,
+      media: {
+        id: media.id,
+        title: media.title,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+      },
+      user: {
+        userId: users.id,
+        username: users.username,
+        avatar_url: users.avatarUrl,
+        display_name: users.displayName,
+      },
+      review: {
+        reviewText: userReviews.comment,
+        reviewRating: ratings.rating,
+        created_at: userReviews.createdAt,
+      },
     })
     .from(media)
     .innerJoin(userReviews, eq(media.id, userReviews.mediaId))

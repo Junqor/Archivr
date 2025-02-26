@@ -89,7 +89,7 @@ export const likesReviews = mysqlTable(
     id: int().autoincrement().notNull(),
     userId: int("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     reviewId: int("review_id")
       .notNull()
       .references(() => userReviews.id, {
