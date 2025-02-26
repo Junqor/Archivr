@@ -34,7 +34,7 @@ export async function searchMedia(
 
   return {
     status: "success",
-    Media: Media,
+    media: Media,
   };
 }
 
