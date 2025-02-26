@@ -33,7 +33,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                                 <form action={api_url+"/user/set-pfp"} method="POST" encType="multipart/form-data">
                                     <legend>Upload Avatar</legend>
                                     <input type="file" name="pfp" accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"></input>
-                                    <input type="text" name="Authorization" value={getAuthHeader().Authorization+"a"} className="hidden"></input>
+                                    <input type="text" name="Authorization" value={getAuthHeader().Authorization} className="hidden"></input>
                                     <button type="submit" className="">Upload</button>
                                 </form>
                                 <DialogClose>
