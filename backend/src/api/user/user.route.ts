@@ -2,12 +2,24 @@ import z, { ZodError } from "zod";
 import { Router } from "express";
 import { getUserSettings, getUserProfileSettings, getUserSettingsForSettingsContext, setUserSettings, getPfp } from "./user.services.js";
 import bodyParser from "body-parser";
-import { authenticateToken } from "../../middleware/authenticateToken.js";
+import { authenticateToken, authenticateTokenFunc } from "../../middleware/authenticateToken.js";
 import multer from "multer";
 import _ from "lodash";
 import { serverConfig } from "../../configs/secrets.js";
 import { tmpDir } from "../../utils/tmpDir.js";
 import { Jimp } from "jimp";
+import fs from "fs";
+import { GetObjectAclCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+const __dirname = import.meta.dirname;
+
+const s3Client = new S3Client({
+    region: "sfo3",
+    endpoint: serverConfig.BUCKET_URL,
+    credentials: {
+        accessKeyId: serverConfig.BUCKET_ACCESS_TOKEN,
+        secretAccessKey: serverConfig.BUCKET_SECRET_TOKEN,
+    }
+});
 
 export const userRouter = Router();
 
@@ -79,12 +91,17 @@ userRouter.post("/set-user-settings", authenticateToken, bodyParser.text(), asyn
 
 userRouter.get("/pfp/:userId", async (req, res) => {
     try {
-        const blob:string = await getPfp(Number(req.params.userId));
-        res.set({
-            'content-type': 'image/jpeg',
-            'content-length': blob.length,
-        })
-        res.send(blob);
+        const user_id = parseInt(req.params.userId);
+        const bucket_response = await s3Client.send(new GetObjectCommand({
+            "Bucket": "archivr-storage",
+            "Key": "profile-pics/pfp-"+user_id.toString()+".jpeg"
+        }));
+        const blobstring = await bucket_response.Body?.transformToString("base64");
+        if (blobstring){
+            res.set("Content-Type","text/plain");
+            res.send(blobstring);
+        }
+        res.sendFile(__dirname + "/assets/default"+user_id%5+".png");
     } catch (error) {
         console.error(error);
         res.status(400).json({
@@ -105,7 +122,7 @@ const uploadPfp = multer({
         },
     }),
     fileFilter: function(req, file, cb) {
-        var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/webp', 'image/png'];
+        var allowedMimes = ['image/jpeg', 'image/bmp', 'image/png', 'image/tiff', 'image/gif'];
         
         if (_.includes(allowedMimes, file.mimetype)) {
             cb(null, true);
@@ -119,23 +136,41 @@ const uploadPfp = multer({
     },
 })
 
-// todo: figure out authentication 
+const setPfpSchema = z.object({
+    Authorization: z.string(),
+});
+
 userRouter.post("/set-pfp", uploadPfp.single('pfp'), async(req, res) => {
     try {
-        console.log(req.file);
-        if (req.file) {
-            const image = await Jimp.read(req.file.path);
-            const writeDestination = req.file.destination + '\\' + req.file.filename;
-            image.resize({w:256,h:256});
-            await image.write(`${writeDestination}.jpeg`, {quality:0.8});
+        setPfpSchema.parse(req.body);
+        const authToken = authenticateTokenFunc(req.body.Authorization)
+        if (!authToken) {
+            if (req.file) fs.unlink(req.file.path,()=>{})
+            throw new Error("Authentication failed");
         }
-        
+        if (req.file) {
+            // load file into jimp
+            const image = await Jimp.read(req.file.path);
+            // resize image
+            image.resize({w:256,h:256});
+            // save image to jpeg and compress it to hell
+            const blob = await image.getBuffer("image/jpeg", {quality:50.0});
+
+            fs.unlink(req.file.path,()=>{});
+            
+            // send the file all at once
+            await s3Client.send(new PutObjectCommand({
+                "Body": blob,
+                "Bucket": "archivr-storage",
+                "Key": "profile-pics/pfp-"+authToken.user.id.toString()+".jpeg"
+            }))
+        }
         res.redirect(serverConfig.FRONTEND_URL+"/settings");
     } catch (error) {
         console.error(error);
         res.status(400).json({
             status: "failed",
-            message: (error as Error).message,
+            message: error instanceof ZodError ? "Invalid body" : (error as Error).message,
         });
     }
 });
