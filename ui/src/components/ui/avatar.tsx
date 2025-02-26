@@ -2,6 +2,7 @@ import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
 import { cn } from "@/lib/utils";
+import { SecurityTwoTone } from "@mui/icons-material";
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -48,19 +49,39 @@ AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 const UserAvatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
-    user: { username: string; avatar_url: string | null };
+    user: {
+      username: string;
+      avatar_url: string | null;
+      role?: "admin" | "user";
+    };
   } & {
     size?: "small";
   }
 >(({ user, size, className, ...props }, ref) => (
-  <Avatar
-    ref={ref}
-    className={cn(size === "small" && "size-6 text-xs", className)}
-    {...props}
-  >
-    <AvatarImage src={user.avatar_url || undefined} />
-    <AvatarFallback>{user.username.slice(0, 2)}</AvatarFallback>
-  </Avatar>
+  <div className="relative">
+    <Avatar
+      ref={ref}
+      className={cn(size === "small" && "size-6 text-xs", className)}
+      {...props}
+    >
+      <AvatarImage src={user.avatar_url || undefined} />
+      <AvatarFallback>{user.username.slice(0, 2)}</AvatarFallback>
+    </Avatar>
+    {user.role === "admin" && (
+      <SecurityTwoTone
+        className={cn(
+          size === "small"
+            ? "-bottom-1 -right-1"
+            : "-bottom-[0.5px] -right-[0.5px]",
+          "absolute",
+        )}
+        sx={{
+          fontSize: size === "small" ? "0.8rem" : "1rem",
+          color: "#5616EC",
+        }}
+      />
+    )}
+  </div>
 ));
 
 export { Avatar, AvatarImage, AvatarFallback, UserAvatar };

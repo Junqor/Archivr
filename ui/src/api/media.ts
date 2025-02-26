@@ -74,6 +74,7 @@ export type TRecentlyReviewed = {
     userId: number;
     username: string;
     avatar_url: string | null;
+    role: "admin" | "user";
     display_name: string;
   };
   review: {
