@@ -7,6 +7,7 @@ export type TUser = {
   password_hash: string;
   salt: string;
   role: "admin" | "user";
+  avatar_url: string | null;
 };
 
 // Information in auth token

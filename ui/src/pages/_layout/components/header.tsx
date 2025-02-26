@@ -12,6 +12,7 @@ import { getGenres } from "@/api/genre";
 import { TGenre } from "@/types/genre";
 import { useQuery } from "@tanstack/react-query";
 import { ArchivrIcon } from "@/components/archivrIcon";
+import { UserAvatar } from "@/components/ui/avatar";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -94,10 +95,7 @@ export default function Header() {
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <img
-                  src={import.meta.env.VITE_API_URL + "/user/pfp/" + user.id}
-                  className="ml-4 size-[2.5rem] rounded-[2.5rem]"
-                ></img>
+                <UserAvatar user={user} />
                 <div className="flex flex-row items-center gap-1">
                   <div className="flex flex-col items-start">
                     <h4 className="text-nowrap">

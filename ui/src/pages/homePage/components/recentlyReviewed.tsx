@@ -1,5 +1,6 @@
 import { getRecentlyReviewed } from "@/api/media";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
+import { UserAvatar } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { StarRatings } from "@/pages/mediaPage/components/starRatings";
@@ -16,18 +17,20 @@ export function RecentlyReviewed() {
     <section className="grid grid-cols-1 gap-3 md:grid-cols-2">
       {media
         ? media.map((item) => (
-            <div className="flex min-h-0 flex-row gap-3" key={item.id}>
+            <div className="flex min-h-0 flex-row gap-3" key={item.media.id}>
               <div className="w-1/3">
-                <ThumbnailPreview key={item.id} media={item} />
+                <ThumbnailPreview key={item.media.id} media={item.media} />
               </div>
               <div className="flex w-2/3 flex-col gap-3 py-4">
                 <h4 className="overflow-hidden text-ellipsis text-nowrap font-bold text-white">
-                  {item.title}
+                  {item.media.title}
                 </h4>
                 <div className="flex flex-row items-center justify-start gap-2">
-                  <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+item.userId} className="size-[2rem] rounded-[2rem]"></img>
+                  <UserAvatar user={item.user} size="small" />
                   <p className="overflow-hidden text-ellipsis whitespace-nowrap text-white/80 no-scrollbar">
-                    {item.display_name ? item.display_name : item.userName}
+                    {item.user.display_name
+                      ? item.user.display_name
+                      : item.user.username}
                   </p>
                   <div className="flex flex-row">
                     {[...Array(10)].map((_, i) => (
@@ -36,7 +39,8 @@ export function RecentlyReviewed() {
                         i={i}
                         className={cn(
                           "text-white/80",
-                          i < item.reviewRating && "fill-purple text-purple",
+                          i < item.review.reviewRating &&
+                            "fill-purple text-purple",
                           i % 2 === 0 && "ml-1",
                         )}
                         width="8px"
@@ -47,10 +51,12 @@ export function RecentlyReviewed() {
                 </div>
                 {item.review && (
                   <p className="line-clamp-4 overflow-hidden text-ellipsis text-white/80">
-                    {item.review}
+                    {item.review.reviewText}
                   </p>
                 )}
-                <p className="text-white/70">{formatDate(item.created_at)}</p>
+                <p className="text-white/70">
+                  {formatDate(item.review.created_at)}
+                </p>
               </div>
             </div>
           ))
