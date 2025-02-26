@@ -93,7 +93,7 @@ export default function Header() {
             Members
           </Link>
         </div>
-        <div className="flex flex-row items-center justify-center gap-6">
+        <div className="flex flex-row items-center justify-center gap-2 sm:gap-6">
           <SearchBar />
           {user ? (
             <Dropdown>

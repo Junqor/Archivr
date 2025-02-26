@@ -34,7 +34,7 @@ export async function get_popular_media_genre(genre: string) {
 export async function get_media_genre(
   genre: string,
   offset: number,
-  sortBy: "alphabetical" | "release_date" | "rating",
+  sortBy: "alphabetical" | "release_date" | "popularity",
   order: "asc" | "desc"
 ) {
   let sortByClause;
@@ -45,8 +45,8 @@ export async function get_media_genre(
     case "release_date":
       sortByClause = media.releaseDate;
       break;
-    case "rating":
-      sortByClause = media.rating;
+    case "popularity":
+      orderByClause = "rating";
       break;
     default:
       sortByClause = media.title;

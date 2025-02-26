@@ -1,11 +1,11 @@
-import { getMostPopular } from "@/api/media";
+import { getTopRatedPicks } from "@/api/media";
 import MediaCarousel from "@/components/MediaCarousel";
 import { useQuery } from "@tanstack/react-query";
 
-export function MostPopularCarousel({ ...props }) {
+export function TopRatedPicksCarousel({ ...props }) {
   const { data: media } = useQuery({
-    queryKey: ["mostPopular"],
-    queryFn: () => getMostPopular(),
+    queryKey: ["top-rated-picks"],
+    queryFn: () => getTopRatedPicks(),
   });
 
   return (

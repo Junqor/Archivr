@@ -2,13 +2,15 @@
 import IconBox from "@/components/icon-box";
 import StatsBox from "@/pages/homePage/components/statsBox";
 import { Link } from "react-router-dom";
-import { NewForYouCarousel } from "./components/newForYouCarousel";
+import { SimilarCarousel } from "./components/similarCarousel";
+import { RecommendedCarousel } from "./components/recommendedCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
-import { CalendarPlus, MessageCircleHeart, Sparkles } from "lucide-react";
+import { MessageCircleHeart, Sparkles, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Separator } from "@/components/ui/separator";
+import { TopRatedPicksCarousel } from "./components/topRatedPicksCarousel";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -30,32 +32,29 @@ export default function HomePage() {
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
-              <CalendarPlus />
-              <h4 className="uppercase">New for you...</h4>
+            <div className="flex flex-row items-center space-x-4">
+              <TrendingUp />
+              <h4 className="uppercase">Trending this week...</h4>
             </div>
             <Separator />
-            <section className="h-full">
-              <NewForYouCarousel />
+            <section className="h-full overflow-visible">
+              <TrendingCarousel />
             </section>
           </section>
+          <SimilarCarousel />
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <Sparkles />
               <h4 className="uppercase">All time most popular...</h4>
             </div>
             <Separator />
             <section className="h-full">
-              <MostPopularCarousel
-                slidesPerViewMobile={4}
-                slidesPerViewDesktop={7}
-                spaceBetweenMobile={8}
-                spaceBetweenDesktop={16}
-              />
+              <MostPopularCarousel />
             </section>
           </section>
+          <RecommendedCarousel />
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <MessageCircleHeart />
               <h4 className="uppercase">Recently Reviewed...</h4>
             </div>
@@ -90,7 +89,12 @@ export default function HomePage() {
               </div>
             </section>
             <section className="h-full">
-              <MostPopularCarousel />
+              <TrendingCarousel
+                slidesPerViewMobile={3}
+                slidesPerViewDesktop={3}
+                spaceBetweenMobile={8}
+                spaceBetweenDesktop={16}
+              />
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
@@ -123,7 +127,7 @@ export default function HomePage() {
             </div>
           </section>
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-row items-center space-x-4">
               <MessageCircleHeart />
               <h4 className="uppercase">Recently Reviewed...</h4>
             </div>
@@ -141,7 +145,7 @@ export default function HomePage() {
               curating your own!
             </h4>
             <section className="h-full">
-              <TrendingCarousel />
+              <TopRatedPicksCarousel />
             </section>
             <Link
               to="/login"

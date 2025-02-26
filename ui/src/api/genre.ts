@@ -37,7 +37,7 @@ export const getPopularMediaGenre = async (
 export const getMediaGenre = async (
   genre: string,
   offset: number,
-  sortBy: "alphabetical" | "release_date" | "rating",
+  sortBy: "alphabetical" | "release_date" | "popularity",
   order: "asc" | "desc",
 ): Promise<TMedia[]> => {
   const url =

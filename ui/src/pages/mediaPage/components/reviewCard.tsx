@@ -130,9 +130,7 @@ export const ReviewCard = ({
         </div>
       )}
       <div className="flex flex-row items-center justify-start">
-        <p className="text-sm text-gray-400">
-          {formatDate(new Date(review.created_at))}
-        </p>
+        <p className="text-sm text-gray-400">{formatDate(review.created_at)}</p>
 
         <Button
           variant="ghost"
