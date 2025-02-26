@@ -8,7 +8,7 @@ import { UnauthorizedError } from "../../utils/error.class.js";
 
 export const deleteReview = async (reviewId: number, userId: number) => {
   const [{ reviewUserId }] = await db
-    .select({ reviewUserId: userReviews.user_id })
+    .select({ reviewUserId: userReviews.userId })
     .from(userReviews)
     .where(eq(userReviews.id, reviewId));
 
@@ -43,7 +43,7 @@ export const checkLikes = async (mediaId: number, userId: number) => {
     .innerJoin(userReviews, eq(userReviews.id, likesReviewsTable.reviewId))
     .where(
       and(
-        eq(userReviews.media_id, mediaId),
+        eq(userReviews.mediaId, mediaId),
         eq(likesReviewsTable.userId, userId)
       )
     );

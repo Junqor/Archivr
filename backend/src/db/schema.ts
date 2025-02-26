@@ -67,7 +67,7 @@ export const likesReviews = mysqlTable(
 export const media = mysqlTable(
   "Media",
   {
-    id: int().autoincrement().notNull(),
+    id: int().autoincrement().notNull().primaryKey(),
     category: mysqlEnum([
       "movie",
       "tv_show",

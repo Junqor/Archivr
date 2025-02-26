@@ -43,10 +43,10 @@ export async function get_media_genre(
       sortByClause = media.title;
       break;
     case "release_date":
-      sortByClause = media.releaseDate;
+      sortByClause = media.release_date;
       break;
     case "popularity":
-      orderByClause = "rating";
+      sortByClause = media.rating;
       break;
     default:
       sortByClause = media.title;

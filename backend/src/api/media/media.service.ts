@@ -22,8 +22,9 @@ import {
   gte,
   asc,
   or,
+  notInArray,
 } from "drizzle-orm/expressions";
-import { count, InferSelectModel, sql, sum } from "drizzle-orm";
+import { avg, count, InferSelectModel, sql, sum } from "drizzle-orm";
 import { logger } from "../../configs/logger.js";
 import { serverConfig } from "../../configs/secrets.js";
 import { union } from "drizzle-orm/mysql-core";
@@ -72,16 +73,16 @@ export async function update_review(
     await db
       .insert(userReviews)
       .values({
-        media_id: media_id,
-        user_id: user_id,
+        mediaId: media_id,
+        userId: user_id,
         comment: new_comment,
-        rating: ratingId.id,
+        ratingId: ratingId.id,
       })
       .onDuplicateKeyUpdate({
         set: {
           comment: new_comment,
-          rating: ratingId.id,
-          created_at: sql`CURRENT_TIMESTAMP`,
+          ratingId: ratingId.id,
+          createdAt: sql`CURRENT_TIMESTAMP`,
         },
       });
   }
@@ -97,36 +98,33 @@ export async function get_media_reviews(
     .select({
       id: userReviews.id,
       user_id: UsersTable.id,
-      media_id: userReviews.media_id,
+      media_id: userReviews.mediaId,
       username: UsersTable.username,
       comment: userReviews.comment,
-      created_at: userReviews.created_at,
+      created_at: userReviews.createdAt,
       rating: ratings.rating,
       likes: count(likesReviewsTable.id).as("likes_count"),
     })
     .from(userReviews)
-    .innerJoin(UsersTable, eq(userReviews.user_id, UsersTable.id))
+    .innerJoin(UsersTable, eq(userReviews.mediaId, UsersTable.id))
     .leftJoin(likesReviewsTable, eq(userReviews.id, likesReviewsTable.reviewId))
-    .innerJoin(ratings, eq(ratings.id, userReviews.rating))
-    .where(eq(userReviews.media_id, media_id))
+    .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
+    .where(eq(userReviews.mediaId, media_id))
     .groupBy(userReviews.id)
-    .orderBy(desc(userReviews.created_at))
+    .orderBy(desc(userReviews.createdAt))
     .limit(amount)
     .offset(offset);
 
   return rows satisfies TReview[];
 }
 
-export async function get_user_review(
-  media_id: number,
-  user_id: number
-): Promise<TReview> {
+export async function get_user_review(media_id: number, user_id: number) {
   //changed to drizzle needed to change a few names to match TReview
   let [rows] = await db
     .select()
     .from(userReviews)
     .where(
-      sql`${userReviews.media_id} = ${media_id} and ${userReviews.user_id} = ${user_id}`
+      sql`${userReviews.mediaId} = ${media_id} and ${userReviews.userId} = ${user_id}`
     );
 
   if (rows === null) {
@@ -205,12 +203,12 @@ export async function get_recently_reviewed() {
       userName: users.username,
       review: userReviews.comment,
       reviewRating: ratings.rating,
-      created_at: userReviews.created_at,
+      created_at: userReviews.createdAt,
     })
     .from(media)
-    .innerJoin(userReviews, eq(media.id, userReviews.media_id))
-    .innerJoin(users, eq(users.id, userReviews.user_id))
-    .innerJoin(ratings, eq(ratings.id, userReviews.rating))
+    .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
+    .innerJoin(users, eq(users.id, userReviews.userId))
+    .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
     .where(
       // Ensure only the most recent reviews for each media is selected. Still have to write raw sql for this one 🤕
       sql`UserReviews.created_at = (
@@ -219,7 +217,7 @@ export async function get_recently_reviewed() {
         WHERE r.media_id = UserReviews.media_id
       )`
     )
-    .orderBy(desc(userReviews.created_at))
+    .orderBy(desc(userReviews.createdAt))
     .limit(8);
 
   return {
@@ -237,9 +235,9 @@ export async function getTopRatedPicks() {
         mediaCategory: media.category,
         mediaTitle: media.title,
         mediaDescription: media.description,
-        mediaRelease_Date: media.releaseDate,
-        mediaAge_Rating: media.ageRating,
-        mediaThumbnailURL: media.thumbnailUrl,
+        mediaRelease_Date: media.release_date,
+        mediaAge_Rating: media.age_rating,
+        mediaThumbnailURL: media.thumbnail_url,
         base_rating: media.rating,
         average_rating: avg(ratings.rating).as("average_rating"),
         num_ratings: count(ratings.rating).as("num_ratings"),
@@ -404,12 +402,12 @@ export async function get_new_for_you(user_id: number) {
             )
             .union(
               db
-                .select({ mediaId: userReviews.media_id })
+                .select({ mediaId: userReviews.mediaId })
                 .from(userReviews)
-                .where(eq(userReviews.user_id, user_id))
+                .where(eq(userReviews.userId, user_id))
             )
         ),
-        sql`${media.releaseDate} <= CURDATE()`
+        sql`${media.release_date} <= CURDATE()`
       )
     )
     .orderBy(sql`RAND()`)
@@ -423,7 +421,7 @@ export async function get_user_stats(user_id: number) {
   //changed to drizzle
 
   const like = await db.$count(likes, eq(likes.userId, user_id));
-  const review = await db.$count(userReviews, eq(userReviews.user_id, user_id));
+  const review = await db.$count(userReviews, eq(userReviews.userId, user_id));
   const rating = await db.$count(ratings, eq(ratings.userId, user_id));
 
   return {
