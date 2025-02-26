@@ -7,6 +7,7 @@ import { reviewsRouter } from "../api/reviews/reviews.route.js";
 import { watchRouter } from "../api/watch/watch.route.js";
 import { genreRouter } from "../api/genre/genre.route.js";
 import { popularRouter } from "../api/popular/popular.route.js";
+import { emailRouter } from "../api/email/email.route.js";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.use("/reviews", reviewsRouter);
 router.use("/watch", watchRouter);
 router.use("/genre", genreRouter);
 router.use("/popular", popularRouter);
+router.use("/email", emailRouter);
 
 router.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
