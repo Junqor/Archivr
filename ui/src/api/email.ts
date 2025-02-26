@@ -39,3 +39,24 @@ export const resetPassword = async (token: string, newPassword: string) => {
     console.error(error);
   }
 };
+
+// Verify Reset Token
+export const verifyResetToken = async (token: string) => {
+  const url = import.meta.env.VITE_API_URL + "/email/verify-reset-token";
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Invalid or expired token");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};

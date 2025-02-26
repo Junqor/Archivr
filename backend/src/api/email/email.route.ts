@@ -64,3 +64,41 @@ emailRouter.post(
     }
   })
 );
+
+// (POST /email/verify-reset-token)
+emailRouter.post(
+  "/verify-reset-token",
+  asyncHandler(async (req, res) => {
+    const { token } = req.body;
+
+    if (!token) {
+      res.status(400).json({ message: "Token is required." });
+      return;
+    }
+
+    try {
+      const decoded = jwt.verify(token, serverConfig.JWT_SECRET) as JwtPayload;
+      const email = decoded.email;
+
+      if (!email) {
+        res.status(400).json({ message: "Invalid token." });
+        return;
+      }
+
+      const user = await db
+        .select({ email: UsersTable.email })
+        .from(UsersTable)
+        .where(eq(UsersTable.email, email))
+        .limit(1);
+
+      if (user.length === 0) {
+        res.status(404).json({ message: "User not found." });
+        return;
+      }
+
+      res.status(200).json({ message: "Token is valid." });
+    } catch (error) {
+      res.status(400).json({ message: "Invalid or expired token." });
+    }
+  })
+);

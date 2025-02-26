@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { resetPassword } from "@/api/email";
+import { resetPassword, verifyResetToken } from "@/api/email";
 import { LockResetRounded } from "@mui/icons-material";
 import { motion } from "framer-motion";
 
@@ -15,17 +15,34 @@ export function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [token, setToken] = useState("");
+  const [isTokenValid, setIsTokenValid] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   // Extract token from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tokenFromURL = params.get("token");
-    if (tokenFromURL) {
-      setToken(tokenFromURL);
-    } else {
+
+    if (!tokenFromURL) {
       toast.error("Invalid or missing reset token.");
-      navigate("/login"); // Redirect if no valid token
+      navigate("/login"); // Redirect if no token
+      return;
     }
+
+    setToken(tokenFromURL);
+
+    // Verify the reset token
+    verifyResetToken(tokenFromURL)
+      .then(() => {
+        setIsTokenValid(true);
+      })
+      .catch(() => {
+        toast.error("Invalid or expired token.");
+        navigate("/login"); // Redirect if token is invalid
+      })
+      .finally(() => {
+        setIsVerifying(false);
+      });
   }, [location, navigate]);
 
   // Fixing mutation to accept an object with token and password
@@ -67,6 +84,22 @@ export function ResetPassword() {
 
     // Submit password reset request with correct argument format
     submitReset({ token, newPassword });
+  }
+
+  if (isVerifying) {
+    return (
+      <main className="flex h-screen w-screen items-center justify-center">
+        <p>Verifying reset token...</p>
+      </main>
+    );
+  }
+
+  if (!isTokenValid) {
+    return (
+      <main className="flex h-screen w-screen items-center justify-center">
+        <p>Invalid or expired reset token.</p>
+      </main>
+    );
   }
 
   return (
