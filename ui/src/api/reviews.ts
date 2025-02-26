@@ -51,6 +51,26 @@ export const updateReview = async ({
   return data.review as TReview;
 };
 
+export type TReviewResponse = {
+  user: {
+    username: string;
+    avatar_url: string | null;
+    role: "user" | "admin";
+    display_name: string;
+  };
+  review: {
+    id: number;
+    user_id: number;
+    media_id: number;
+    username: string;
+    display_name: string;
+    comment: string;
+    created_at: string;
+    rating: number;
+    likes: number;
+  };
+};
+
 export const getReviews = async ({ mediaId }: { mediaId: string }) => {
   const reviewsResponse = await fetch(
     `${import.meta.env.VITE_API_URL}/media/reviews/${mediaId}`,
@@ -66,7 +86,7 @@ export const getReviews = async ({ mediaId }: { mediaId: string }) => {
     throw new Error("Failed to fetch reviews");
   }
 
-  return reviewsData.reviews as TReview[];
+  return reviewsData.reviews as TReviewResponse[];
 };
 
 export const deleteReview = async (reviewId: number) => {
