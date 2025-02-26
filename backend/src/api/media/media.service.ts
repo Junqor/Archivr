@@ -206,6 +206,7 @@ export async function get_recently_reviewed() {
         username: users.username,
         avatar_url: users.avatarUrl,
         display_name: users.displayName,
+        role: users.role,
       },
       review: {
         reviewText: userReviews.comment,
