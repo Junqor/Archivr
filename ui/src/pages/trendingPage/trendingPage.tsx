@@ -40,8 +40,8 @@ export function TrendingPage() {
         <section className="h-full">
           <MediaCarousel
             media={media?.movies}
-            slidesPerViewMobile={4}
-            slidesPerViewDesktop={7}
+            slidesPerViewMobile={3}
+            slidesPerViewDesktop={6}
             spaceBetweenMobile={8}
             spaceBetweenDesktop={16}
           />
@@ -61,8 +61,8 @@ export function TrendingPage() {
         <section className="h-full">
           <MediaCarousel
             media={media?.shows}
-            slidesPerViewMobile={4}
-            slidesPerViewDesktop={7}
+            slidesPerViewMobile={3}
+            slidesPerViewDesktop={6}
             spaceBetweenMobile={8}
             spaceBetweenDesktop={16}
           />
