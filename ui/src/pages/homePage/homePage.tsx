@@ -7,10 +7,16 @@ import { RecommendedCarousel } from "./components/recommendedCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
-import { MessageCircleHeart, Sparkles, TrendingUp } from "lucide-react";
+import { Info, MessageCircleHeart, Sparkles, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Separator } from "@/components/ui/separator";
 import { TopRatedPicksCarousel } from "./components/topRatedPicksCarousel";
+import { TvRounded } from "@mui/icons-material";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -32,7 +38,7 @@ export default function HomePage() {
             </section>
           </div>
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row items-center space-x-4">
+            <div className="flex flex-row items-center gap-x-4">
               <TrendingUp />
               <h4 className="uppercase">Trending this week...</h4>
             </div>
@@ -43,7 +49,7 @@ export default function HomePage() {
           </section>
           <SimilarCarousel />
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row items-center space-x-4">
+            <div className="flex flex-row items-center gap-x-4">
               <Sparkles />
               <h4 className="uppercase">All time most popular...</h4>
             </div>
@@ -52,9 +58,35 @@ export default function HomePage() {
               <MostPopularCarousel />
             </section>
           </section>
-          <RecommendedCarousel />
           <section className="flex w-full flex-col justify-start gap-3">
-            <div className="flex flex-row items-center space-x-4">
+            <div className="flex flex-row items-center justify-start gap-x-4">
+              <TvRounded sx={{ fontSize: "1.71428571rem" }} />
+              <h4 className="uppercase">We think you'd love these...</h4>
+              <Popover>
+                <PopoverTrigger className="ml-auto">
+                  <Info />
+                </PopoverTrigger>
+                <PopoverContent
+                  className="inline-flex border-white text-sm text-white"
+                  side="top"
+                  align="end"
+                >
+                  <></>
+                  <p>
+                    Recommendations are based on what you like and rate.
+                    Interact with more media to get more personalized
+                    recommendations.
+                  </p>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <Separator />
+            <section className="h-full">
+              <RecommendedCarousel />
+            </section>
+          </section>
+          <section className="flex w-full flex-col justify-start gap-3">
+            <div className="flex flex-row items-center gap-x-4">
               <MessageCircleHeart />
               <h4 className="uppercase">Recently Reviewed...</h4>
             </div>
