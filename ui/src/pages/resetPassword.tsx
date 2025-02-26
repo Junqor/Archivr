@@ -73,7 +73,7 @@ export function ResetPassword() {
     <main className="flex h-screen w-screen flex-col items-center justify-center gap-4 overflow-y-auto bg-login-bg bg-cover bg-left bg-no-repeat px-8 py-4 font-normal">
       <link rel="preload" as="image" href="/assets/login-bg.png"></link>
       <motion.div
-        className="w-max max-w-sm overflow-hidden rounded-lg bg-black p-0"
+        className="w-max max-w-md overflow-hidden rounded-lg bg-black p-0"
         layout
         transition={{ duration: 0.1 }}
       >
