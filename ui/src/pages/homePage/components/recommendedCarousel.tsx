@@ -13,8 +13,8 @@ export function RecommendedCarousel() {
   return (
     <MediaCarousel
       media={returnData}
-      slidesPerViewMobile={4}
-      slidesPerViewDesktop={7}
+      slidesPerViewMobile={3}
+      slidesPerViewDesktop={6}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
     />
