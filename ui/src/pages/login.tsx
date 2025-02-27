@@ -8,15 +8,12 @@ import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { tryLogin, trySignup } from "@/api/auth";
-import { requestPasswordReset } from "@/api/email";
-import {
-  LockResetRounded,
-  NotificationsActiveRounded,
-} from "@mui/icons-material";
+import { useSettings } from "@/context/settings";
 
 // LoginPopUp component
 export function Login() {
   const { user, setLoginData } = useAuth();
+  const { refetchSettings } = useSettings();
   if (user) return <Navigate to="/" />;
 
   const [isOnLogin, setIsOnLogin] = useState(true);
@@ -35,6 +32,7 @@ export function Login() {
     onSuccess: async (_data) => {
       await setLoginData();
       toast.success("Logged in successfully");
+      refetchSettings();
 
       // Redirect the user back to the page they were on before logging in
       const from = location.state.from || "/";

@@ -16,7 +16,7 @@ export function ProfileSettings(){
 
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
-    const { refetch:refetchUserSettings } = useSettings();
+    const { refetchSettings:refetchUserSettings } = useSettings();
 
     const { error:query_error, isPending:query_isPending, data:currentSettings, refetch:refetchCurrentSettings } = useQuery({
         queryKey: ['settingsCurrentSettings'],

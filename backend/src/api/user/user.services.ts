@@ -73,6 +73,7 @@ export async function setUserSettings(user_id:number, values:Map<string,string>)
     }    
 }
 
+/*
 export async function getPfp( user_id:number ) {
     return "nope";
     try {
@@ -85,7 +86,7 @@ export async function getPfp( user_id:number ) {
     }
 }
 
-/*
+
 export async function setPfp ( user_id:number, blob:Blob ) {
     try {
         if (!user_id) {

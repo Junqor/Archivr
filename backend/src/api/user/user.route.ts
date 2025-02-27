@@ -1,6 +1,6 @@
 import z, { ZodError } from "zod";
 import { Router } from "express";
-import { getUserSettings, getUserProfileSettings, getUserSettingsForSettingsContext, setUserSettings, getPfp } from "./user.services.js";
+import { getUserSettings, getUserProfileSettings, getUserSettingsForSettingsContext, setUserSettings } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken, authenticateTokenFunc } from "../../middleware/authenticateToken.js";
 import multer from "multer";
@@ -9,15 +9,15 @@ import { serverConfig } from "../../configs/secrets.js";
 import { tmpDir } from "../../utils/tmpDir.js";
 import { Jimp } from "jimp";
 import fs from "fs";
-import { GetObjectAclCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectAclCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 const __dirname = import.meta.dirname;
 
 const s3Client = new S3Client({
     region: "sfo3",
-    endpoint: serverConfig.BUCKET_URL,
+    endpoint: "https://"+serverConfig.S3_REGION+"."+serverConfig.S3_HOST,
     credentials: {
-        accessKeyId: serverConfig.BUCKET_ACCESS_TOKEN,
-        secretAccessKey: serverConfig.BUCKET_SECRET_TOKEN,
+        accessKeyId: serverConfig.S3_ACCESS_TOKEN,
+        secretAccessKey: serverConfig.S3_SECRET_TOKEN,
     }
 });
 
@@ -92,16 +92,18 @@ userRouter.post("/set-user-settings", authenticateToken, bodyParser.text(), asyn
 userRouter.get("/pfp/:userId", async (req, res) => {
     try {
         const user_id = parseInt(req.params.userId);
-        const bucket_response = await s3Client.send(new GetObjectCommand({
-            "Bucket": "archivr-storage",
-            "Key": "profile-pics/pfp-"+user_id.toString()+".jpeg"
-        }));
-        const blobstring = await bucket_response.Body?.transformToString("base64");
-        if (blobstring){
-            res.set("Content-Type","text/plain");
-            res.send(blobstring);
+        if (!user_id) throw new Error("user_id is not real.");
+        const image_url = "https://archivr-pfp."+serverConfig.S3_REGION+"."+serverConfig.S3_HOST+"/pfp-"+user_id.toString()+".jpeg"
+        try {
+            await s3Client.send(new HeadObjectCommand({
+                "Bucket": "archivr-pfp",
+                "Key": "pfp-"+user_id.toString()+".jpeg"
+            }));
+            res.redirect(image_url);
         }
-        res.sendFile(__dirname + "/assets/default"+user_id%5+".png");
+        catch {
+            res.sendFile(__dirname + "/assets/default"+user_id%5+".png");
+        }
     } catch (error) {
         console.error(error);
         res.status(400).json({
