@@ -47,7 +47,7 @@ export const activity = mysqlTable(
 export const follows = mysqlTable(
   "Follows",
   {
-    id: int().autoincrement().notNull(),
+    id: int().autoincrement().notNull().primaryKey(),
     followerId: int("follower_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),

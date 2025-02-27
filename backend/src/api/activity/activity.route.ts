@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
-import { getFollowingActivity, getGlobalActivity } from "./activity.service.js";
+import {
+  followUser,
+  getFollowingActivity,
+  getGlobalActivity,
+} from "./activity.service.js";
 import { z } from "zod";
 
 export const activityRouter = Router();
@@ -17,7 +21,7 @@ activityRouter.get(
   asyncHandler(async (req, res) => {
     const { page } = activityRouteSchema.parse(req.query);
     const activity = await getGlobalActivity(page);
-    res.json({ status: "success", data: activity });
+    res.json({ status: "success", activity: activity });
   })
 );
 
@@ -30,6 +34,21 @@ activityRouter.get(
     const { user } = res.locals;
     const { page } = activityRouteSchema.parse(req.query);
     const activity = await getFollowingActivity(user.id, page);
-    res.json({ status: "success", data: activity });
+    res.json({ status: "success", activity: activity });
+  })
+);
+
+const followRouteSchema = z.object({
+  followeeId: z.number(),
+});
+
+activityRouter.post(
+  "/follow",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { followeeId } = followRouteSchema.parse(req.body);
+    await followUser(user.id, followeeId);
+    res.json({ status: "success" });
   })
 );

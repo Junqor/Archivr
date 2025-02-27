@@ -1,3 +1,4 @@
+import { followUser } from "@/api/activity";
 import { TReview } from "@/api/reviews";
 import { deleteReview } from "@/api/reviews";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,12 @@ export const ReviewKebab = ({ review }: ReviewKebabProps) => {
             <Button
               variant="outline"
               className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+              onClick={() => {
+                console.log(review.user_id);
+                followUser(review.user_id).then(() =>
+                  toast.success("Followed " + review.username),
+                );
+              }}
             >
               <PersonAdd className="mr-1" /> {`Follow ${review.username}`}
             </Button>
