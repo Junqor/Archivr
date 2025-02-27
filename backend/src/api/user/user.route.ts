@@ -161,8 +161,8 @@ userRouter.post("/set-pfp", uploadPfp.single('pfp'), async(req, res) => {
             // send the file all at once
             await s3Client.send(new PutObjectCommand({
                 "Body": blob,
-                "Bucket": "archivr-storage",
-                "Key": "profile-pics/pfp-"+authToken.user.id.toString()+".jpeg"
+                "Bucket": "archivr-pfp",
+                "Key": "pfp-"+authToken.user.id.toString()+".jpeg"
             }))
         }
         res.redirect(serverConfig.FRONTEND_URL+"/settings");
