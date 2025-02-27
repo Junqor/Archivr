@@ -4,7 +4,7 @@ import { useContext, createContext } from "react";
 
 export type TUserSettingsContext = {
     settings: TUserSettingsContextSettings | null;
-    refetch: () => void;
+    refetchSettings: () => void;
 }
 
 export type TUserSettingsContextSettings = {
@@ -36,7 +36,7 @@ export function SettingsProvider({children}:{children: React.ReactNode}){
         <SettingsContext.Provider
             value = {{
                 settings : currentSettings,
-                refetch: refetchSettingsContext,
+                refetchSettings: refetchSettingsContext,
             }}
         >
             {children}

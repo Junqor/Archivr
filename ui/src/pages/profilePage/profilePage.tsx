@@ -15,6 +15,8 @@ export function ProfilePage() {
         },
     })
     
+    const api_url:string = import.meta.env.VITE_API_URL;
+
     if (isPending){
         return (
             <LoadingSpinner></LoadingSpinner>
@@ -29,7 +31,7 @@ export function ProfilePage() {
         <div className="flex border border-white rounded-2xl p-4 gap-2 max-w-full min-w-full min-h-screen">
             <div className="flex flex-col border max-w-[40%] bg-gray-secondary border-none rounded-2xl p-4 gap-2 h-full">
                 {/* profile image */}
-                <img src={"../penguin.png"} className={"rounded-[500px] w-full h-full bg-neutral-900"}></img>
+                <img src={api_url+"/user/pfp/"+id} className={"rounded-[500px] w-[500px] h-full bg-neutral-900"}></img>
                 <div className="flex flex-col">
                     {/* username */}
                     <div>
