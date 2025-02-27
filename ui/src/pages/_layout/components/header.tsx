@@ -100,7 +100,7 @@ export default function Header() {
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <AccountCircle sx={{ fontSize: "1.5rem" }} />
+                <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+user.id} className="size-[2.5rem] rounded-[2.5rem]"></img>
                 <div className="flex flex-row items-center gap-1">
                   <div className="flex flex-col items-start">
                     <h4 className="text-nowrap">{

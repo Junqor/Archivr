@@ -72,34 +72,3 @@ export async function setUserSettings(user_id:number, values:Map<string,string>)
         console.error(error);
     }    
 }
-
-/*
-export async function getPfp( user_id:number ) {
-    return "nope";
-    try {
-        const [result] = await conn.query<(RowDataPacket & number)[]>(
-            "SELECT image FROM Profile_Images WHERE user_id = ?;",[user_id]
-        );
-        return result[0]?.image;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-
-export async function setPfp ( user_id:number, blob:Blob ) {
-    try {
-        if (!user_id) {
-            throw new Error("No user_id given");
-        }
-        s3Client.send(new PutObjectCommand({
-            "Body": blob,
-            "Bucket": "archivr-storage",
-            "Key": "profile-pics/pfp"+user_id.toString()+".jpeg"
-          }))
-        return "Amogus";
-    } catch (error) {
-        console.error(error);
-    }
-}
-*/

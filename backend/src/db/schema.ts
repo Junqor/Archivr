@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, foreignKey, primaryKey, unique, int, timestamp, datetime, mysqlEnum, varchar, text, date, float, check, smallint } from "drizzle-orm/mysql-core"
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, foreignKey, primaryKey, unique, int, timestamp, datetime, mysqlEnum, varchar, text, date, float, check, smallint, tinyint } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const likes = mysqlTable("Likes", {
@@ -124,4 +124,27 @@ export const users = mysqlTable("Users", {
 	primaryKey({ columns: [table.id], name: "Users_id"}),
 	unique("email").on(table.email),
 	unique("username").on(table.username),
+]);
+
+export const userSettings = mysqlTable("User_Settings", {
+	id: int().autoincrement().notNull(),
+  	user_id: int().notNull(),
+  	display_name: varchar({ length: 64 }).default('').notNull(),
+  	status: varchar({ length: 128 }).default('').notNull(),
+  	bio: text(),
+  	pronouns: varchar({ length: 32 }).default('').notNull(),
+  	location: varchar({ length: 128 }).default('').notNull(),
+  	social_instagram: varchar({ length: 255 }).default('').notNull(),
+  	social_youtube: varchar({ length: 255 }).default('').notNull(),
+  	social_tiktok: varchar({ length: 255 }).default('').notNull(),
+  	public: tinyint().default(1).notNull(),
+  	show_adult_content: tinyint().default(0).notNull(),
+  	theme: mysqlEnum(['dark', 'light']).default('dark').notNull(),
+  	font_size: mysqlEnum(['small', 'normal', 'large']).default('normal').notNull(),
+  	grant_personal_data: tinyint().default(1).notNull(),
+  	show_personalized_content: tinyint().default(1).notNull(),
+},
+(table) => [
+  	primaryKey({ columns: [table.id], name: "Users_id" }),
+  	index("user_id").on(table.user_id),
 ]);

@@ -9,6 +9,7 @@ import {
   userReviews,
   users,
   remoteId,
+  userSettings,
 } from "../../db/schema.js";
 import { desc, eq } from "drizzle-orm/expressions";
 import { count, sql } from "drizzle-orm";
@@ -85,6 +86,7 @@ export async function update_review(
   return;
 }
 
+// I disabled sql_mode=only_full_group_by to make this slop work with display_name
 export async function get_media_reviews(
   media_id: number,
   amount: number,
@@ -96,6 +98,7 @@ export async function get_media_reviews(
       user_id: UsersTable.id,
       media_id: userReviews.mediaId,
       username: UsersTable.username,
+      display_name: sql`User_Settings.display_name`,
       comment: userReviews.comment,
       created_at: userReviews.createdAt,
       rating: ratings.rating,
@@ -103,6 +106,8 @@ export async function get_media_reviews(
     })
     .from(userReviews)
     .innerJoin(UsersTable, eq(userReviews.userId, UsersTable.id))
+    // nick fix this please
+    .innerJoin(sql`(SELECT User_Settings.user_id, User_Settings.display_name FROM User_Settings) AS User_Settings`,sql`(User_Settings.user_id = UserReviews.user_id)`)
     .leftJoin(likesReviewsTable, eq(userReviews.id, likesReviewsTable.reviewId))
     .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
     .where(eq(userReviews.mediaId, media_id))
@@ -114,6 +119,7 @@ export async function get_media_reviews(
   return rows satisfies TReview[];
 }
 
+// unused and outdated
 export async function get_user_review(
   media_id: number,
   user_id: number
@@ -184,6 +190,7 @@ export async function get_recently_reviewed() {
       rating: media.rating,
       userId: users.id,
       userName: users.username,
+      display_name: userSettings.display_name,
       review: userReviews.comment,
       reviewRating: ratings.rating,
       created_at: userReviews.createdAt,
@@ -192,6 +199,7 @@ export async function get_recently_reviewed() {
     .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
     .innerJoin(users, eq(users.id, userReviews.userId))
     .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
+    .innerJoin(userSettings, eq(userReviews.userId, userSettings.user_id))
     .where(
       // Ensure only the most recent reviews for each media is selected. Still have to write raw sql for this one 🤕
       sql`UserReviews.created_at = (
