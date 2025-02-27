@@ -89,15 +89,9 @@ export const ReviewCard = ({
   return (
     <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
-        {/* // todo: Replace with avatar image */}
-        <img
-          src={
-            "https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=cheeseball&backgroundColor=c0aede"
-          }
-          className="size-7 rounded-full"
-        />
+        <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+review.user_id} className="size-[2rem] rounded-[2rem]"></img>
         <a href={"/profile/"+review.user_id} className="hover:underline cursor-pointer">
-          <h5>{review.username}</h5>
+          <h5>{review.display_name ? review.display_name : review.username}</h5>
         </a>
         <div className="ml-auto flex items-center">
           {[...Array(10)].map((_, i) => (

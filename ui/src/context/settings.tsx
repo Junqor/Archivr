@@ -1,6 +1,7 @@
 import { getUserSettingsForSettingsContext } from "@/api/user";
 import { useQuery } from "@tanstack/react-query";
 import { useContext, createContext } from "react";
+import { useAuth } from "./auth";
 
 export type TUserSettingsContext = {
     settings: TUserSettingsContextSettings | null;
@@ -19,12 +20,14 @@ export type TUserSettingsContextSettings = {
 const SettingsContext = createContext<TUserSettingsContext | undefined>(undefined);
 
 export function SettingsProvider({children}:{children: React.ReactNode}){
+    const { user } = useAuth();
+
     const { data:currentSettings, refetch:refetchSettingsContext } = useQuery({
-        queryKey: ['settingsCurrentContextSettings'],
+        queryKey: ['settingsCurrentContextSettings', user ? user.id : null],
         queryFn: async () => {
-            const a = await getUserSettingsForSettingsContext();
-            if (a) {
-                return a;
+            const userSettings = await getUserSettingsForSettingsContext();
+            if (userSettings) {
+                return userSettings;
             }
             else {
                 return null;

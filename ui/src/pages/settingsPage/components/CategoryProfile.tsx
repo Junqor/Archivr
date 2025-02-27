@@ -2,14 +2,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input";
-import { Youtube, Instagram, Music2, ImageUp } from "lucide-react";
+import { Youtube, Instagram, Music2, ImageUp, X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { getAuthHeader } from "@/utils/authHeader";
+import { useRef } from "react";
 
 export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     const { user } = useAuth();
     
+    const pfp_upload_preview = useRef<HTMLDivElement>(null);
+    const pfp_upload_input = useRef<HTMLInputElement>(null);
+
     const api_url:string = import.meta.env.VITE_API_URL;
 
     return (
@@ -27,17 +31,28 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                         <DialogOverlay className="bg-[#111111AA] fixed inset-0"/>
                         <DialogContent>
                             <div className="flex flex-col items-center justify-center bg-black fixed border border-white rounded-2xl top-1/2 bottom-1/2 left-1/2 right-1/2 translate-x-[-50%] translate-y-[-50%] max-w-[90%] max-h-[90%] w-[360px] h-[400px] z-50">
-                                <DialogTitle>
-                                    Set PFP
+                                <DialogTitle className="absolute top-5">
+                                    <h3>Set Avatar</h3>
                                 </DialogTitle>
+                                <div className="flex flex-col items-center py-10">
+                                    <div ref={pfp_upload_preview} className=" bg-neutral-900 bg-cover bg-center w-[200px] h-[200px] rounded-[256px]">
+                                    </div>
+                                    <h4>Preview</h4>
+                                </div>
                                 <form action={api_url+"/user/set-pfp"} method="POST" encType="multipart/form-data">
-                                    <legend>Upload Avatar</legend>
-                                    <input type="file" name="pfp" accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"></input>
+                                    <input onChange={() => {
+                                        if (!pfp_upload_input.current) return;
+                                        if (!pfp_upload_preview.current) return;
+                                        if (!pfp_upload_input.current.files) return;
+                                        const file = pfp_upload_input.current.files[0];
+                                        const url = URL.createObjectURL(file);
+                                        pfp_upload_preview.current.style.backgroundImage = "url("+url+")";
+                                    }} ref={pfp_upload_input} type="file" name="pfp" accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"></input>
                                     <input type="text" name="Authorization" value={getAuthHeader().Authorization} className="hidden"></input>
-                                    <button type="submit" className="">Upload</button>
+                                    <Button type="submit" className="">Upload</Button>
                                 </form>
                                 <DialogClose>
-                                    <Button variant={"outline"}>Cancel</Button>
+                                    <X className="absolute top-5 right-5 size-8"></X>
                                 </DialogClose>
                             </div>
                         </DialogContent>
@@ -48,7 +63,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                         <h4>
                             Display Name
                         </h4>
-                        <Input maxLength={32} onChange={(event)=>{updateSetting("display_name",event.target.value)}} defaultValue={findSetting("display_name")} placeholder={user?.username} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
+                        <Input maxLength={64} onChange={(event)=>{updateSetting("display_name",event.target.value)}} defaultValue={findSetting("display_name")} placeholder={user?.username} className="flex py-2 px-4 items-start gap-3 self-stretch rounded-xl border border-white bg-black">
                         </Input>
                     </div>
 

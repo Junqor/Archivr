@@ -156,7 +156,7 @@ userRouter.post("/set-pfp", uploadPfp.single('pfp'), async(req, res) => {
             // resize image
             image.resize({w:256,h:256});
             // save image to jpeg and compress it to hell
-            const blob = await image.getBuffer("image/jpeg", {quality:50.0});
+            const blob = await image.getBuffer("image/jpeg", {quality:80.0});
 
             fs.unlink(req.file.path,()=>{});
             

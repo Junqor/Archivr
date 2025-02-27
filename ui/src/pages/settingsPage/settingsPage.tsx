@@ -10,16 +10,21 @@ import { ProfileSettingsCategoryActivity } from "./components/CategoryActivity";
 import { ProfileSettingsCategoryHelpAndSupport } from "./components/CategoryHelpAndSupport";
 import { useSettings } from "@/context/settings";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useAuth } from "@/context/auth";
 
 export function ProfileSettings(){
     const [changedSettings, setChangedSettings] = useState<Map<string,string>>(new Map<string,string>());
 
     const [selectedMenu, setSelectedMenu] = useState("Profile");
 
+    const { user } = useAuth();
+
+    if (!user) throw new Error("user doesnt exist in page that already kicks you if you're not logged in");
+
     const { refetchSettings:refetchUserSettings } = useSettings();
 
     const { error:query_error, isPending:query_isPending, data:currentSettings, refetch:refetchCurrentSettings } = useQuery({
-        queryKey: ['settingsCurrentSettings'],
+        queryKey: ['settingsCurrentSettings', user.id.toString()],
         queryFn: async () => {
             const a = await getUserSettings();
             const b = new Map<string,string>();
