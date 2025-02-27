@@ -13,4 +13,7 @@ export default defineConfig({
     database: process.env.DB_NAME,
     port: 3306,
   },
+  introspect: {
+    casing: "preserve",
+  },
 });

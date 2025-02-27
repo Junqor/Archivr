@@ -11,8 +11,8 @@ export function MostPopularCarousel({ ...props }) {
   return (
     <MediaCarousel
       media={media}
-      slidesPerViewMobile={3}
-      slidesPerViewDesktop={3}
+      slidesPerViewMobile={4}
+      slidesPerViewDesktop={7}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
       {...props}

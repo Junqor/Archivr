@@ -4,6 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { router } from "./configs/router.js";
+import { logger } from "./configs/logger.js";
 
 const app = express();
 
@@ -14,17 +15,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cors({ origin: "*" }));
-app.use(errorHandler); // Error logging middleware
+//app.use(loggerMiddleware);
 
 app.use("/api", router); // set base url to /api
+app.use(errorHandler); // Error logging middleware
 
 // Test db connection
 try {
   await testConnection();
-  console.log("Database connection successful");
+  logger.info("Database connection successful");
   app.listen(PORT, () => {
-    console.log(`ARCHIVR is active and listing on on port ${PORT}`);
+    logger.info(`ARCHIVR is active and listing on on port ${PORT}`);
   });
 } catch (error) {
-  console.error("Database connection failed", error);
+  logger.error("Database connection failed", error);
 }

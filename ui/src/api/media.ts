@@ -84,12 +84,37 @@ export const getRecentlyReviewed = async (): Promise<TRecentlyReviewed> => {
   return data.media;
 };
 
-export const getTrending = async (): Promise<TMedia[]> => {
+type TrendingResponse = {
+  movies: TMedia[];
+  shows: TMedia[];
+};
+
+export const getTrending = async (): Promise<TrendingResponse> => {
   const response = await fetch(
     import.meta.env.VITE_API_URL + "/media/trending",
   );
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media;
+};
+
+export const getTrendingPaginated = async (
+  type: "movie" | "tv",
+  page: number,
+): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/trending-paginated?type=${type}&page=${page}`,
+  );
+  const data = await response.json();
+  return data.media;
+};
+
+export const getTopRatedPicks = async (): Promise<TMedia[]> => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/media/top-rated-picks",
+  );
+  const data = await response.json();
+  return data.media;
 };
 
 export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
@@ -232,4 +257,25 @@ export const getMediaTrailer = async (id: number) => {
   const data = await response.json();
 
   return data.result as string;
+};
+
+export const getRecommendedForYou = async (userId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/recommended-for-you/?user_id=${userId}`,
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
+};
+
+export const getSimilarToWatched = async (userId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/media/similar-to-watched/?user_id=${userId}`,
+  );
+  const data = await response.json();
+  return {
+    media: data.media as TMedia[],
+    basedOn: data.basedOn as string,
+  };
 };

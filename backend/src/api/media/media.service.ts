@@ -1,55 +1,55 @@
-import { conn, db } from "../../db/database.js";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { TMedia, TReview } from "../../types/index.js";
+import { db } from "../../db/database.js";
+import { TReview } from "../../types/index.js";
 import {
   users as UsersTable,
   likesReviews as likesReviewsTable,
+  likes,
   media,
+  mediaGenre,
   ratings,
   userReviews,
   users,
   remoteId,
   userSettings,
 } from "../../db/schema.js";
-import { desc, eq } from "drizzle-orm/expressions";
-import { count, sql } from "drizzle-orm";
+import {
+  desc,
+  eq,
+  and,
+  inArray,
+  not,
+  gte,
+  asc,
+  or,
+} from "drizzle-orm/expressions";
+import { count, sql, avg } from "drizzle-orm";
+import { serverConfig } from "../../configs/secrets.js";
+import { union } from "drizzle-orm/mysql-core";
 
 export async function update_rating(
   media_id: number,
   user_id: number,
   new_rating: number
 ) {
-  let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "INSERT INTO Ratings (media_id, user_id, rating) VALUES (?, ?, ?) " +
-      "ON DUPLICATE KEY UPDATE rating = ?",
-    [media_id, user_id, new_rating, new_rating]
-  );
-  return;
+  await db
+    .insert(ratings)
+    .values({
+      mediaId: media_id,
+      userId: user_id,
+      rating: new_rating,
+    })
+    .onDuplicateKeyUpdate({ set: { rating: new_rating } });
 }
 
-export async function get_media_rating(media_id: number): Promise<number> {
-  let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "SELECT AVG(rating) as avg FROM Ratings WHERE media_id=?;",
-    [media_id]
-  );
-  if (rows[0].length == 0) {
-    throw Error("RATINGS AREN'T REAL");
-  }
-  return rows[0].avg;
-}
+export async function get_media_rating(
+  media_id: number
+): Promise<number | null> {
+  const [row] = await db
+    .select({ avg: avg(ratings.rating) })
+    .from(ratings)
+    .where(eq(ratings.mediaId, media_id));
 
-export async function get_user_rating(
-  media_id: number,
-  user_id: number
-): Promise<number> {
-  let [rows] = await conn.query<(RowDataPacket & number)[]>(
-    "SELECT rating as rat FROM Ratings WHERE media_id=? AND user_id=?;",
-    [media_id, user_id]
-  );
-  if (rows[0].length == 0) {
-    throw Error("RATINGS AREN'T REAL");
-  }
-  return rows[0][0].rat;
+  return row.avg === null ? null : parseInt(row.avg);
 }
 
 export async function update_review(
@@ -124,30 +124,41 @@ export async function get_user_review(
   media_id: number,
   user_id: number
 ): Promise<TReview> {
-  let [rows] = await conn.query<(RowDataPacket & TReview)[]>(
-    "SELECT * FROM UserReviews WHERE media_id=? AND user_id=?;",
-    [media_id, user_id]
-  );
-  if (rows[0].length == 0) {
+  let [rows] = await db
+    .select({
+      id: userReviews.id,
+      user_id: userReviews.userId,
+      media_id: userReviews.mediaId,
+      comment: userReviews.comment,
+      created_at: userReviews.createdAt,
+      rating: ratings.rating,
+    })
+    .from(userReviews)
+    .where(
+      and(eq(userReviews.mediaId, media_id), eq(userReviews.userId, user_id))
+    );
+
+  if (rows === null) {
     throw Error("REVIEWS AREN'T REAL");
   }
-  return rows[0];
+  return rows;
 }
 
 // Try inserting the like; if it already exists, delete it instead.
 export async function update_likes(media_id: number, user_id: number) {
-  const [result] = await conn.query<ResultSetHeader>(
-    `INSERT IGNORE INTO Likes (media_id, user_id) VALUES (?, ?)`,
-    [media_id, user_id]
-  );
+  const [result] = await db
+    .insert(likes)
+    .ignore()
+    .values({ mediaId: media_id, userId: user_id });
 
   // Check if a row was inserted; if not, delete it instead.
   if (result.affectedRows === 0) {
     // If the row wasn’t inserted (it already exists), delete it to "toggle" the like.
-    await conn.query("DELETE FROM Likes WHERE media_id = ? AND user_id = ?;", [
-      media_id,
-      user_id,
-    ]);
+    await db
+      .delete(likes)
+      .where(
+        sql`${likes.mediaId} = ${media_id} and ${likes.userId} = ${user_id}`
+      );
   }
 }
 
@@ -155,30 +166,32 @@ export async function is_liked(
   media_id: number,
   user_id: number
 ): Promise<boolean> {
-  const [rows] = await conn.query<RowDataPacket[]>(
-    "SELECT 1 FROM Likes WHERE media_id = ? AND user_id = ? LIMIT 1;",
-    [media_id, user_id]
-  );
+  const rows = await db
+    .select()
+    .from(likes)
+    .where(and(eq(likes.mediaId, media_id), eq(likes.userId, user_id)))
+    .limit(1);
+
   return rows.length > 0;
 }
 
 export async function get_likes(media_id: number): Promise<number> {
-  let [rows] = await conn.query<RowDataPacket[]>(
-    "SELECT COUNT(*) as num FROM Likes WHERE media_id=?;",
-    [media_id]
-  );
-  return rows[0].num ?? 0;
+  let [row] = await db
+    .select({ num: count() })
+    .from(likes)
+    .where(eq(likes.mediaId, media_id));
+
+  return row.num ?? 0;
 }
 
 export async function getMostPopular() {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT * FROM Media ORDER BY rating DESC LIMIT 15;`
-  );
+  const rows = await db
+    .select()
+    .from(media)
+    .orderBy(desc(media.rating))
+    .limit(15);
 
-  return {
-    status: "success",
-    media: rows,
-  };
+  return rows;
 }
 
 export async function get_recently_reviewed() {
@@ -186,7 +199,7 @@ export async function get_recently_reviewed() {
     .selectDistinct({
       id: media.id,
       title: media.title,
-      thumbnail_url: media.thumbnailUrl,
+      thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       userId: users.id,
       userName: users.username,
@@ -211,103 +224,211 @@ export async function get_recently_reviewed() {
     .orderBy(desc(userReviews.createdAt))
     .limit(8);
 
-  return {
-    status: "success",
-    media: rows,
-  };
+  return rows;
 }
 
-export async function get_trending() {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `WITH WeightedMovies AS (
-      SELECT 
-        Media.id,
-        Media.category,
-        Media.title,
-        Media.description,
-        Media.release_date,
-        Media.age_rating,
-        Media.thumbnail_url,
-        Media.rating AS base_rating,
-        AVG(Ratings.rating) AS average_rating,
-        COUNT(Ratings.rating) AS num_ratings,
-        (
-          -- Weighted average rating based on number of ratings
+export async function getTopRatedPicks() {
+  const WeightedMovies = db.$with("WeightedMovies").as(
+    db
+      .select({
+        mediaId: media.id,
+        mediaCategory: media.category,
+        mediaTitle: media.title,
+        mediaDescription: media.description,
+        mediaRelease_Date: media.release_date,
+        mediaAge_Rating: media.age_rating,
+        mediaThumbnailURL: media.thumbnail_url,
+        base_rating: media.rating,
+        average_rating: avg(ratings.rating).as("average_rating"),
+        num_ratings: count(ratings.rating).as("num_ratings"),
+        weighted_rating:
+          sql<number>`(COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
+        (50 / (COUNT(Ratings.rating) + 50)) * (
+          SELECT AVG(rating) FROM Ratings
+        )`.as("weighted_rating"),
+        age: sql<number>`TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE())`.as(
+          "age"
+        ),
+        final_weighted_score: sql<number>`(
           (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
           (50 / (COUNT(Ratings.rating) + 50)) * (
             SELECT AVG(rating) FROM Ratings
           )
-        ) AS weighted_rating,
-        -- Calculate the age of the movie in years
-        TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) AS age,
-        -- Apply a time-decay weight (linear decay, modify factor if needed)
-        (
-          (COUNT(Ratings.rating) / (COUNT(Ratings.rating) + 50)) * AVG(Ratings.rating) +
-          (50 / (COUNT(Ratings.rating) + 50)) * (
-            SELECT AVG(rating) FROM Ratings
-          )
-        ) * (1 - LEAST(TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) / 50, 1)) AS final_weighted_score
-      FROM Media
-      LEFT JOIN Ratings ON Media.id = Ratings.media_id
-      GROUP BY Media.id
-    )
-    SELECT 
-      id,
-      category,
-      title,
-      description,
-      release_date,
-      age_rating,
-      thumbnail_url,
-      base_rating as rating,
-      average_rating,
-      num_ratings,
-      weighted_rating,
-      final_weighted_score
-    FROM WeightedMovies
-    ORDER BY final_weighted_score DESC
-    LIMIT 15;`
+        ) * (1 - LEAST(TIMESTAMPDIFF(YEAR, Media.release_date, CURDATE()) / 50, 1))`.as(
+          "final_weighted_score"
+        ),
+      })
+      .from(media)
+      .leftJoin(ratings, eq(media.id, ratings.mediaId))
+      .groupBy(media.id)
   );
 
+  const rows = await db
+    .with(WeightedMovies)
+    .select({
+      id: WeightedMovies.mediaId,
+      category: WeightedMovies.mediaCategory,
+      title: WeightedMovies.mediaTitle,
+      description: WeightedMovies.mediaDescription,
+      release_date: WeightedMovies.mediaRelease_Date,
+      age_rating: WeightedMovies.mediaAge_Rating,
+      thumbnail_url: WeightedMovies.mediaThumbnailURL,
+      base_rating: WeightedMovies.base_rating,
+      average_rating: WeightedMovies.average_rating,
+      num_rating: WeightedMovies.num_ratings,
+      weighted_rating: WeightedMovies.weighted_rating,
+      final_weighted_score: WeightedMovies.final_weighted_score,
+    })
+    .from(WeightedMovies)
+    .orderBy(desc(WeightedMovies.final_weighted_score))
+    .limit(15);
+
   return {
     status: "success",
     media: rows,
   };
 }
+
+export const getTrending = async (type: "movie" | "tv") => {
+  const response = await Promise.all(
+    // Get 3 pages (20x3 = 60 results) in case not enough match the ones in our db
+    [...Array(3)].map((_, i) =>
+      fetch(
+        `https://api.themoviedb.org/3/trending/${type}/week?language=en-US&page=${
+          i + 1
+        }`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${serverConfig.TMDB_API_KEY}`,
+          },
+        }
+      )
+    )
+  );
+  if (response.some((r) => !r.ok)) {
+    throw new Error("Failed to fetch trending data");
+  }
+
+  //https://developer.themoviedb.org/reference/trending-movies
+  const trendingIds = (
+    await Promise.all(response.map((r) => r.json()))
+  ).flatMap((re) => re.results.map((media: any) => media.id)); // brujeria
+
+  // Get 15 media from our db that match the tmdb ids
+  const trending = await db
+    .select({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      description: media.description,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .leftJoin(remoteId, eq(media.id, remoteId.id))
+    .where(inArray(remoteId.tmdbId, trendingIds))
+    .orderBy(
+      asc(sql`FIELD(${remoteId.tmdbId}, ${sql.join(trendingIds, sql`,`)})`)
+    ); // https://www.w3schools.com/sql/func_mysql_field.asp
+
+  return trending;
+};
+
+export const getTrendingPaginated = async (
+  type: "movie" | "tv",
+  page: number
+) => {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/trending/${type}/week?language=en-US&page=${
+      page + 1
+    }`,
+    {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${serverConfig.TMDB_API_KEY}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch trending data");
+  }
+
+  const trendingIds = (await response.json()).results.map((r: any) => r.id);
+
+  const trending = await db
+    .select({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      description: media.description,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .leftJoin(remoteId, eq(media.id, remoteId.id))
+    .where(inArray(remoteId.tmdbId, trendingIds))
+    .orderBy(
+      asc(sql`FIELD(${remoteId.tmdbId}, ${sql.join(trendingIds, sql`,`)})`)
+    );
+
+  return trending;
+};
 
 export async function get_new_for_you(user_id: number) {
-  let [rows] = await conn.query<(RowDataPacket & TMedia)[]>(
-    `SELECT DISTINCT Media.*
-    FROM Media
-    WHERE Media.id NOT IN (
-      SELECT media_id FROM Ratings WHERE user_id = ?
-      UNION
-      SELECT media_id FROM Likes WHERE user_id = ?
-      UNION
-      SELECT media_id FROM UserReviews WHERE user_id = ?
+  const data = await db
+    .selectDistinct()
+    .from(media)
+    .where(
+      and(
+        not(
+          inArray(
+            media.id,
+            db
+              .select({ mediaId: likes.mediaId })
+              .from(likes)
+              .where(eq(likes.userId, user_id))
+              .union(
+                db
+                  .select({ mediaId: ratings.mediaId })
+                  .from(ratings)
+                  .where(eq(ratings.userId, user_id))
+              )
+              .union(
+                db
+                  .select({ mediaId: userReviews.mediaId })
+                  .from(userReviews)
+                  .where(eq(userReviews.userId, user_id))
+              )
+          )
+        ),
+        sql`${media.release_date} <= CURDATE()`
+      )
     )
-    AND Media.release_date <= CURDATE()
-    ORDER BY RAND()
-    LIMIT 15;`,
-    [user_id, user_id, user_id]
-  );
+    .orderBy(sql`RAND()`)
+    .limit(15);
 
-  return {
-    status: "success",
-    media: rows,
-  };
+  return data;
 }
 
 // Get the users total number of likes, reviews, and ratings
 export async function get_user_stats(user_id: number) {
-  let [rows] = await conn.query<RowDataPacket[]>(
-    `SELECT 
-    (SELECT COUNT(*) FROM Likes WHERE user_id = ?) AS likes,
-    (SELECT COUNT(*) FROM UserReviews WHERE user_id = ?) AS reviews,
-    (SELECT COUNT(*) FROM Ratings WHERE user_id = ?) AS ratings;`,
-    [user_id, user_id, user_id]
-  );
-  return rows[0];
+  const like = await db.$count(likes, eq(likes.userId, user_id));
+  const review = await db.$count(userReviews, eq(userReviews.userId, user_id));
+  const rating = await db.$count(ratings, eq(ratings.userId, user_id));
+
+  return {
+    likes: like,
+    reviews: review,
+    ratings: rating,
+  };
 }
 
 export const getMediaBackground = async (id: number) => {
@@ -411,3 +532,250 @@ export const getMediaTrailer = async (id: number) => {
   ).data.trailers.find((trailer: Trailer) => trailer.url);
   return trailer ? trailer.url : null;
 };
+
+// We think you'd love these
+export async function get_recommended_for_you(user_id: number) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user_id provided");
+  }
+
+  // The minimum rating a media needs to be considered for recommendations
+  const RATING_THRESHOLD = 5;
+
+  // Step 1: Get media that the user has rated or liked
+  const ratingsIds = db
+    .select({ mediaId: ratings.mediaId })
+    .from(ratings)
+    .where(
+      and(eq(ratings.userId, user_id), gte(ratings.rating, RATING_THRESHOLD))
+    );
+  const likesIds = db
+    .select({ mediaId: likes.mediaId })
+    .from(likes)
+    .where(eq(likes.userId, user_id));
+  const userInteractions = await union(likesIds, ratingsIds);
+
+  const interactedMediaIds = userInteractions.map(
+    (interaction) => interaction.mediaId
+  );
+
+  // Step 2: Find users that have liked or highly rated the same media
+  const similarUsers = await union(
+    db // Get users that have rated the same media
+      .selectDistinct({ userId: ratings.userId })
+      .from(ratings)
+      .where(
+        and(
+          inArray(ratings.mediaId, interactedMediaIds),
+          gte(ratings.rating, RATING_THRESHOLD)
+        )
+      ),
+    db // Get users that have liked the same media
+      .select({ userId: likes.userId })
+      .from(likes)
+      .where(inArray(likes.mediaId, interactedMediaIds))
+  );
+
+  const similarUserIds = similarUsers
+    .map((user) => user.userId)
+    .filter((id) => id !== user_id);
+
+  // Step 3: Get the genres that the user has interacted with the most and normalize them
+  const genres = await db
+    .select({ genre: mediaGenre.genre, interactions: count(mediaGenre.genre) })
+    .from(mediaGenre)
+    .leftJoin(media, eq(media.id, mediaGenre.mediaId))
+    .where(inArray(media.id, interactedMediaIds))
+    .groupBy(mediaGenre.genre);
+
+  const min = genres.reduce(
+    (acc, curr) => Math.min(acc, curr.interactions),
+    Infinity
+  );
+  const max = genres.reduce((acc, curr) => Math.max(acc, curr.interactions), 0);
+
+  const normalizedGenres: Record<string, number> = {};
+  genres.forEach((g) => {
+    const range = max - min;
+    normalizedGenres[g.genre] =
+      range === 0 ? 0.5 : (g.interactions - min) / range;
+  });
+
+  // Step 4: Calculate a genre factor for each media based on the genres it shares with the normalized genres
+  // Essentially a sum of the normalized genre values that are present in the media's genres
+  const genreFactor =
+    genres.length > 0
+      ? sql`
+      SUM(
+        CASE 
+          ${sql.join(
+            Object.values(genres).map(
+              ({ genre }) =>
+                sql`WHEN ${mediaGenre.genre} = ${genre} THEN ${normalizedGenres[genre]}`
+            ),
+            sql` `
+          )}
+          ELSE 0
+        END
+      )
+    `
+      : sql`1`;
+
+  // Step 5: Get the count of similar user interactions for each media
+  const similarUserInteractions = sql`(
+    (
+      SELECT COUNT(*) FROM ${ratings}
+      WHERE ${eq(ratings.mediaId, media.id)}
+        AND ${inArray(ratings.userId, similarUserIds)}
+        AND ${gte(ratings.rating, RATING_THRESHOLD)}
+    )
+    +
+    (
+      SELECT COUNT(*) FROM ${likes}
+      WHERE ${eq(likes.mediaId, media.id)}
+        AND ${inArray(likes.userId, similarUserIds)}
+    )
+    )`;
+
+  const weightFactor = 10_000_000; // Maybe tweak this if user interactions start being too much when we get more users
+  const finalWeight = sql`( ${similarUserInteractions} * ${genreFactor} * ${weightFactor} ) + ( ${genreFactor} * ${media.rating} )`;
+
+  const recommendedMedia = await db
+    .selectDistinct({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+      weight: finalWeight,
+    })
+    .from(media)
+    .leftJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+    .where(not(inArray(media.id, interactedMediaIds))) // filter out already interacted media
+    .groupBy(media.id)
+    .orderBy(desc(finalWeight))
+    .limit(24);
+
+  return recommendedMedia;
+}
+
+// Because you watched...
+export async function get_similar_to_watched(user_id: number) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user_id provided");
+  }
+
+  // Step 1: Get the highly rated or liked media by the user
+  const userInteractions = db.$with("userInteractions").as(
+    union(
+      db
+        .select({
+          mediaId: ratings.mediaId,
+          title: media.title,
+          createdAt: ratings.ratedAt,
+        })
+        .from(ratings)
+        .innerJoin(media, eq(ratings.mediaId, media.id))
+        .where(and(eq(ratings.userId, user_id), gte(ratings.rating, 5))),
+      db
+        .select({
+          mediaId: likes.mediaId,
+          title: media.title,
+          createdAt: likes.likedAt,
+        })
+        .from(likes)
+        .innerJoin(media, eq(likes.mediaId, media.id))
+        .where(eq(likes.userId, user_id))
+    )
+  );
+
+  const recentInteractions = await db
+    .with(userInteractions)
+    .select({
+      mediaId: userInteractions.mediaId,
+      title: userInteractions.title,
+      createdAt: userInteractions.createdAt,
+    })
+    .from(userInteractions)
+    .orderBy(desc(userInteractions.createdAt));
+
+  const interactedMediaIds = recentInteractions.map(
+    (interaction) => interaction.mediaId
+  );
+
+  if (recentInteractions.length === 0) {
+    return {
+      media: [],
+      basedOn: null,
+    };
+  }
+
+  const recentMedia = recentInteractions[0];
+
+  // Step 2: Get the genres of the most recently watched media
+  const genres = await db
+    .select({ genre: mediaGenre.genre })
+    .from(mediaGenre)
+    .where(eq(mediaGenre.mediaId, recentMedia.mediaId));
+
+  const genreList = genres.map((g) => g.genre);
+
+  // Step 3: Get media that match all the genres
+  const similarMedia = await db
+    .selectDistinct({
+      id: media.id,
+      category: media.category,
+      title: media.title,
+      release_date: media.release_date,
+      age_rating: media.age_rating,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      runtime: media.runtime,
+    })
+    .from(media)
+    .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+    .where(
+      and(
+        inArray(mediaGenre.genre, genreList),
+        not(inArray(media.id, interactedMediaIds)) // Exclude media user has already watched
+      )
+    )
+    .groupBy(media.id)
+    .having(sql`COUNT(DISTINCT ${mediaGenre.genre}) = ${genreList.length}`)
+    .orderBy(desc(media.rating)) // Weighted random selection
+    .limit(16);
+
+  // Optional: If there are less than 16 similar media, get the remaining 16 from the fallback genres that match any 1 of the genres
+  if (similarMedia.length < 16) {
+    const fallbackMedia = await db
+      .selectDistinct({
+        id: media.id,
+        category: media.category,
+        title: media.title,
+        release_date: media.release_date,
+        age_rating: media.age_rating,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+        runtime: media.runtime,
+      })
+      .from(media)
+      .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+      .where(inArray(mediaGenre.genre, genreList))
+      .groupBy(media.id)
+      .orderBy(sql`COUNT(DISTINCT ${mediaGenre.genre}) DESC`) // Order by the number of genres the media matches
+      .limit(16 - similarMedia.length);
+
+    return {
+      media: [...similarMedia, ...fallbackMedia],
+      basedOn: recentMedia.title,
+    };
+  }
+
+  return {
+    media: similarMedia,
+    basedOn: recentMedia.title,
+  };
+}

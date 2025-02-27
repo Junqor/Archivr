@@ -56,7 +56,7 @@ export default function SearchBar() {
   }, []);
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="mx-auto w-full max-w-sm">
       <div className="relative" ref={inputRef}>
         <Input
           placeholder="Search..."
@@ -65,16 +65,16 @@ export default function SearchBar() {
             setIsLoading(true);
             handleSearch(e.target.value);
           }}
-          className="pl-8 peer border-white/70 focus:border-white"
+          className="peer border-white/70 pl-8 focus:border-white"
         />
-        <Search className="text-white/70 peer peer-focus:text-white absolute left-2 top-2.5 h-4 w-4 transition-all" />
+        <Search className="peer absolute left-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
         {query && showResults && (
-          <Command className="absolute right-0 mt-1 text-white bg-black border rounded-lg shadow-md h-max w-96 top-full">
+          <Command className="absolute right-0 top-full mt-1 h-max w-96 rounded-lg border bg-black text-white shadow-md">
             <CommandList>
               <CommandGroup heading="Media">
                 {results.map((media) => (
                   <CommandItem
-                    className="text-white bg-black"
+                    className="bg-black text-white"
                     key={media.id}
                     onSelect={() => {
                       setQuery("");

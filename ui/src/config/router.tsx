@@ -12,6 +12,11 @@ import ProtectedRoute from "@/components/protectedRoute";
 import { ProfileSettings } from "@/pages/settingsPage/settingsPage";
 import LoginRequiredRoute from "@/components/loginRequiredRoute";
 import { ProfilePage } from "@/pages/profilePage/profilePage";
+import { PopularPage } from "@/pages/popularPage/popularPage";
+import TermsOfServicePage from "@/pages/termsOfService";
+import { TrendingPage } from "@/pages/trendingPage/trendingPage";
+import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
+import { ResetPassword } from "@/pages/resetPassword";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -87,21 +92,37 @@ const router = createBrowserRouter([
       },
       {
         path: "/trending",
-        element: <UnderConstruction />,
+        element: <TrendingPage />,
+      },
+      {
+        path: "/trending/movies",
+        element: <TrendingPagePaginated type="movie" />,
+      },
+      {
+        path: "/trending/shows",
+        element: <TrendingPagePaginated type="tv" />,
       },
       {
         path: "/popular",
-        element: <UnderConstruction />,
+        element: <PopularPage />,
       },
       {
         path: "/members",
         element: <UnderConstruction />,
       },
       {
+        path: "/tos",
+        element: <TermsOfServicePage />,
+      },
+      {
         path: "/random",
         element: <UnderConstruction />,
       },
     ],
+  },
+  {
+    path: "/password-reset",
+    element: <ResetPassword />,
   },
   {
     path: "/login",

@@ -1,10 +1,4 @@
 // login.tsx
-/*
-  What to do:
-  - Use REGEX to check if fields are valid
-  - Add a loading spinner
-*/
-
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { FormEvent, useEffect, useState } from "react";
@@ -14,6 +8,11 @@ import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { tryLogin, trySignup } from "@/api/auth";
+import { requestPasswordReset } from "@/api/email";
+import {
+  LockResetRounded,
+  NotificationsActiveRounded,
+} from "@mui/icons-material";
 
 // LoginPopUp component
 export function Login() {
@@ -28,6 +27,8 @@ export function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation(); // Capture the current location
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResetEmailSent, setIsResetEmailSent] = useState(false);
 
   const { mutate: login } = useMutation({
     mutationFn: tryLogin,
@@ -119,124 +120,232 @@ export function Login() {
           layout
           transition={{ duration: 0.1 }}
         >
-          <motion.div layout className="flex w-full flex-row">
-            <button
-              className={`${
-                isOnLogin ? "bg-purple" : "bg-black"
-              } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
-              onClick={() => setIsOnLogin(true)}
-            >
-              Sign In
-            </button>
-            <button
-              className={`${
-                isOnLogin ? "bg-black" : "bg-purple"
-              } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
-              onClick={() => setIsOnLogin(false)}
-            >
-              Sign Up
-            </button>
-          </motion.div>
-          <motion.form
-            layout
-            transition={{ duration: 0.1 }}
-            onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
-            className="flex flex-col space-y-4 px-6 py-6"
-          >
-            <h2 className="text-center font-bold leading-tight">
-              {isOnLogin ? (
-                <>
-                  Welcome back
-                  <br />
-                  to <span className="text-purple">Archivr</span>
-                </>
+          {isForgotPassword ? (
+            <>
+              {isResetEmailSent ? (
+                <motion.div
+                  layout
+                  className="flex flex-col items-start space-y-4 p-5"
+                >
+                  <motion.div
+                    layout
+                    className="flex flex-col items-center space-y-2"
+                  >
+                    <div className="flex items-center justify-center text-8xl">
+                      <NotificationsActiveRounded fontSize="inherit" />
+                    </div>
+                    <h2>Check Your Email</h2>
+                    <p>
+                      We've sent a password reset link to your email. Follow the
+                      instructions in the email to reset your password.
+                    </p>
+                  </motion.div>
+                  <motion.div layout className="flex w-full flex-col space-y-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsResetEmailSent(false);
+                        setIsForgotPassword(false);
+                      }}
+                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                    >
+                      Return to Sign In
+                    </button>
+                  </motion.div>
+                </motion.div>
               ) : (
-                <>
-                  Join the <span className="text-purple">Archivr</span>
-                  <br />
-                  Community
-                </>
+                <motion.div
+                  layout
+                  className="flex flex-col items-start space-y-4 p-5"
+                >
+                  <motion.div
+                    layout
+                    className="flex flex-col items-center space-y-2"
+                  >
+                    <div className="flex items-center justify-center text-8xl">
+                      <LockResetRounded fontSize="inherit" />
+                    </div>
+                    <h2>Forgot Password?</h2>
+                    <p>
+                      Enter your email address, and we'll send you instructions
+                      to reset your password.
+                    </p>
+                  </motion.div>
+                  <motion.form
+                    layout
+                    transition={{ duration: 0.1 }}
+                    className="align-center flex w-full flex-col space-y-4"
+                  >
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="e.g., name@example.com"
+                        autoComplete="off"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        if (!email) {
+                          toast.error("Please enter your email");
+                          return;
+                        }
+
+                        try {
+                          await requestPasswordReset(email);
+                          toast.success("Password reset email sent!");
+                          setIsResetEmailSent(true);
+                        } catch (error) {
+                          console.error(error);
+                          toast.error("Failed to send password reset email");
+                        }
+                      }}
+                    >
+                      Send Reset Instructions
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsForgotPassword(false)}
+                      className="text-center underline"
+                    >
+                      Back to Sign In
+                    </button>
+                  </motion.form>
+                </motion.div>
               )}
-            </h2>
-            <p className="text-left">
-              Discover trending movies, top-rated shows, and personalized picks
-              chosen just for you.
-            </p>
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="e.g., john_doe123"
-                autoComplete="off"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            {!isOnLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="e.g., name@example.com"
-                  autoComplete="off"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="At least 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            {!isOnLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  placeholder="Re-enter your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-            )}
-            {isOnLogin ? (
-              <>
+            </>
+          ) : (
+            <>
+              <div className="flex w-full flex-row">
                 <button
-                  type="submit"
-                  className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                  className={`${
+                    isOnLogin ? "bg-purple" : "bg-black"
+                  } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
+                  onClick={() => setIsOnLogin(true)}
                 >
-                  Continue to Archivr
+                  Sign In
                 </button>
-                <Link to="#" className="text-center underline">
-                  Forgot your password?
-                </Link>
-              </>
-            ) : (
-              <>
                 <button
-                  type="submit"
-                  className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                  className={`${
+                    isOnLogin ? "bg-black" : "bg-purple"
+                  } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
+                  onClick={() => setIsOnLogin(false)}
                 >
-                  Start on Archivr
+                  Sign Up
                 </button>
-                <p className="text-center">
-                  Free to join. By clicking Sign Up, you agree to our{" "}
-                  <Link to="#" className="underline">
-                    Terms of Service
-                  </Link>
+              </div>
+              <motion.form
+                layout
+                transition={{ duration: 0.1 }}
+                onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
+                className="flex flex-col space-y-4 px-6 py-6"
+              >
+                <h2 className="text-center font-bold leading-tight">
+                  {isOnLogin ? (
+                    <>
+                      Welcome back
+                      <br />
+                      to <span className="text-purple">Archivr</span>
+                    </>
+                  ) : (
+                    <>
+                      Join the <span className="text-purple">Archivr</span>
+                      <br />
+                      Community
+                    </>
+                  )}
+                </h2>
+                <p className="text-left">
+                  Discover trending movies, top-rated shows, and personalized
+                  picks chosen just for you.
                 </p>
-              </>
-            )}
-          </motion.form>
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="e.g., john_doe123"
+                    autoComplete="off"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+                {!isOnLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="e.g., name@example.com"
+                      autoComplete="off"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="At least 8 characters"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                {!isOnLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="Re-enter your password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                )}
+                {isOnLogin ? (
+                  <>
+                    <button
+                      type="submit"
+                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                    >
+                      Continue to Archivr
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsForgotPassword(true)}
+                      className="text-center underline"
+                    >
+                      Forgot your password?
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="submit"
+                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                    >
+                      Start on Archivr
+                    </button>
+                    <p className="text-center">
+                      Free to join. By clicking Sign Up, you agree to our{" "}
+                      <Link to="/tos" className="underline">
+                        Terms of Service
+                      </Link>
+                    </p>
+                  </>
+                )}
+              </motion.form>
+            </>
+          )}
         </motion.div>
         <Link to="/" className="block text-white underline sm:hidden">
           Go back to the home page

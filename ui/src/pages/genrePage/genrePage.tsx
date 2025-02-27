@@ -1,10 +1,9 @@
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useSearchParams } from "react-router-dom";
 import { getGenres, getPopularMediaGenre, getMediaGenre } from "@/api/genre";
-import HeroMediaCarousel from "./components/genreHeroCarousel";
+import HeroMediaCarousel from "@/components/heroMediaCarousel";
 import { useQuery } from "@tanstack/react-query";
 import { TGenre } from "@/types/genre";
-import { TMedia } from "@/types/media";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -12,9 +11,12 @@ import {
   ChevronRightRounded,
   SwapVertRounded,
 } from "@mui/icons-material";
+import { LoadingScreen } from "../loadingScreen";
 
 export default function GenrePage() {
+  const [_, setSearchParams] = useSearchParams();
   const { genre } = useParams();
+  const { sortBy, order, page } = useGenreSearchParams();
 
   // Fetch genres
   const {
@@ -42,38 +44,52 @@ export default function GenrePage() {
     enabled: !!genreObj, // Ensure the query runs only if genre is valid
   });
 
-  // State for sorting and ordering
-  const [sortBy, setSortBy] = useState<
-    "alphabetical" | "release_date" | "rating"
-  >("alphabetical");
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const [offset, setOffset] = useState<number>(0);
-  const [mediaList, setMediaList] = useState<TMedia[]>([]);
-  const [isFetching, setIsFetching] = useState<boolean>(false);
+  // Fetch media for the genre with sorting and ordering
+  const {
+    data: mediaList,
+    isFetching,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["popularMediaGenre", genreObj?.genre, page, sortBy, order],
+    queryFn: () =>
+      getMediaGenre(genreObj?.genre || "", page * PAGE_SIZE, sortBy, order),
+    refetchOnWindowFocus: false,
+    enabled: !!genreObj && !isNaN(page) && !!sortBy && !!order, // Ensure the query runs only if genre is valid
+  });
 
   const PAGE_SIZE = 30;
 
-  useEffect(() => {
-    setOffset(0);
-  }, [sortBy, order]);
+  const handleChangeSortBy = (
+    newSortBy: "alphabetical" | "release_date" | "popularity",
+  ) => {
+    setSearchParams((prev) => {
+      prev.set("sort", newSortBy);
+      return prev;
+    });
+    handleChangePage(0);
+  };
 
-  // Fetch media for the genre with sorting and ordering
-  useEffect(() => {
-    if (!genreObj) return;
+  const handleChangeOrder = (newOrder: "asc" | "desc") => {
+    setSearchParams((prev) => {
+      prev.set("order", newOrder);
+      return prev;
+    });
+    handleChangePage(0);
+  };
 
-    setIsFetching(true);
-    getMediaGenre(genreObj.genre, offset, sortBy, order)
-      .then((data) => setMediaList(data))
-      .catch((err) => console.error("Failed to fetch media", err))
-      .finally(() => setIsFetching(false));
-  }, [genreObj, sortBy, order, offset]);
+  const handleChangePage = (newPage: number) => {
+    setSearchParams((prev) => {
+      prev.set("page", newPage.toString());
+      return prev;
+    });
+  };
 
   // Now return JSX conditionally
-  if (isGenresLoading) return <p>Loading genres...</p>;
-  if (genresError) return <p>Error loading genres.</p>;
+  if (isGenresLoading || isMediaLoading) return <LoadingScreen />;
+  if (genresError || error || mediaError)
+    return <p>An unexpected error occurred.</p>;
   if (!genreObj) return <Navigate to="/404" />;
-  if (isMediaLoading) return <p>Loading media...</p>;
-  if (mediaError) return <p>Error loading media.</p>;
 
   return (
     <>
@@ -94,17 +110,17 @@ export default function GenrePage() {
                 name="sort"
                 id="sort"
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="border-b-2 border-white bg-black px-2 py-1"
+                onChange={(e) => handleChangeSortBy(e.target.value as any)}
+                className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
               >
                 <option value="alphabetical">Alphabetical</option>
                 <option value="release_date">Release Date</option>
-                <option value="rating">Rating</option>
+                <option value="popularity">Popularity</option>
               </select>
               <button
                 type="button"
                 onClick={() =>
-                  setOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+                  handleChangeOrder(order === "asc" ? "desc" : "asc")
                 }
                 className="flex items-center justify-center p-1 transition-transform duration-300"
                 style={{ transform: `rotate(${order === "asc" ? 0 : 180}deg)` }}
@@ -116,7 +132,7 @@ export default function GenrePage() {
         </section>
       </section>
       <section className="mt-6 grid w-full grid-cols-3 gap-4 md:grid-cols-5">
-        {isFetching
+        {isFetching || isPending
           ? [...Array(30)].map((_, i) => (
               <Skeleton
                 key={i}
@@ -129,20 +145,61 @@ export default function GenrePage() {
       </section>
       <section className="mt-5 flex w-full justify-center gap-3">
         <button
-          onClick={() => setOffset((prev) => Math.max(0, prev - PAGE_SIZE))}
-          disabled={offset === 0}
-          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${offset === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+          onClick={() => handleChangePage(Math.max(0, page - 1))}
+          disabled={page === 0}
+          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
         >
           <ChevronLeftRounded />
         </button>
         <button
-          onClick={() => setOffset((prev) => prev + PAGE_SIZE)}
-          disabled={mediaList.length < PAGE_SIZE} // Disable if no more media
-          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${mediaList.length < PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+          onClick={() => handleChangePage(page + 1)}
+          disabled={!mediaList || mediaList.length < PAGE_SIZE} // Disable if no more media
+          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!mediaList || mediaList.length < PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
         >
           <ChevronRightRounded />
         </button>
       </section>
     </>
   );
+}
+
+function useGenreSearchParams() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // useSearchParams for sorting and ordering
+  const sortBy = searchParams.get("sort") as
+    | "alphabetical"
+    | "release_date"
+    | "popularity";
+  const order = searchParams.get("order") as "asc" | "desc";
+  const page = parseInt(searchParams.get("page") || "0");
+
+  useEffect(() => {
+    if (
+      sortBy !== "alphabetical" &&
+      sortBy !== "release_date" &&
+      sortBy !== "popularity"
+    ) {
+      setSearchParams((prev) => {
+        prev.set("sort", "popularity"); // default to popularity
+        return prev;
+      });
+    }
+
+    if (order !== "asc" && order !== "desc") {
+      setSearchParams((prev) => {
+        prev.set("order", "desc"); // default to descending order
+        return prev;
+      });
+    }
+
+    if (isNaN(page)) {
+      setSearchParams((prev) => {
+        prev.set("page", "0");
+        return prev;
+      });
+    }
+  }, [sortBy, order, page, searchParams]);
+
+  return { sortBy, order, page };
 }
