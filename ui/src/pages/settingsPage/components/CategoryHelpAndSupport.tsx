@@ -12,10 +12,10 @@ export function ProfileSettingsCategoryHelpAndSupport(){
                 Helpful Links
             </h4>
             <div className="flex items-start gap-3">
-                <p className="text-sm font-normal leading-normal underline decoration-solid">
+                <p className="text-sm font-normal leading-normal underline decoration-solid cursor-pointer transition-colors hover:text-purple">
                     FAQ
                 </p>
-                <p className="text-sm font-normal leading-normal underline decoration-solid">
+                <p className="text-sm font-normal leading-normal underline decoration-solid cursor-pointer transition-colors hover:text-purple">
                     Knowledge Base
                 </p>
             </div>

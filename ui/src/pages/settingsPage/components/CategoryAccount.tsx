@@ -48,7 +48,7 @@ export function ProfileSettingsCategoryAccount(){
                 <Button variant={"outline"} className="max-w-[130px]">Export Your Data</Button>
             </div>
             */}
-            <p onClick={()=>{toast.success("Your account has been permanantly deleted")}} className="underline py-2 cursor-pointer hover:text-red-500">
+            <p onClick={()=>{toast.success("Your account has been permanantly deleted")}} className="underline py-2 cursor-pointer hover:text-red-500 transition-colors">
                 Disable Account
             </p>
         </div>

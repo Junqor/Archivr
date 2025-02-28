@@ -67,7 +67,7 @@ export function ProfilePage() {
                     ?
                     (<>
                         <div className="flex self-stretch my-4 h-px bg-gray-100 "></div>
-                        <p className="text-gray-200 break-words">
+                        <p className="text-gray-200 break-words whitespace-pre-wrap">
                             {profileData?.bio}
                         </p>
                     </>)
