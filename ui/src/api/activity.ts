@@ -70,3 +70,24 @@ export const followUser = async (followeeId: number) => {
     throw new Error("Failed to follow user");
   }
 };
+
+export type TUserRatedMedia = {
+  id: number;
+  title: string;
+  thumbnail_url: string | null;
+  rating: number | null;
+  userRating: number;
+};
+
+export const getTopUserMedia = async () => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/activity/top-user-media",
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch top user media");
+  }
+
+  const data = await response.json();
+
+  return data.media as TUserRatedMedia[];
+};
