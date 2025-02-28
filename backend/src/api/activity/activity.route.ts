@@ -5,6 +5,7 @@ import {
   followUser,
   getFollowingActivity,
   getGlobalActivity,
+  getTopUserMedia,
 } from "./activity.service.js";
 import { z } from "zod";
 
@@ -50,5 +51,13 @@ activityRouter.post(
     const { followeeId } = followRouteSchema.parse(req.body);
     await followUser(user.id, followeeId);
     res.json({ status: "success" });
+  })
+);
+
+activityRouter.get(
+  "/top-user-media",
+  asyncHandler(async (req, res) => {
+    const media = await getTopUserMedia();
+    res.json({ status: "success", media: media });
   })
 );

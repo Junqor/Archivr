@@ -1,4 +1,4 @@
-import { aliasedTable } from "drizzle-orm";
+import { aliasedTable, avg, sql, sum } from "drizzle-orm";
 import { db } from "../../db/database.js";
 import {
   activity,
@@ -138,4 +138,21 @@ export const followUser = async (userId: number, followeeId: number) => {
       activityType: "follow",
     });
   });
+};
+
+export const getTopUserMedia = async () => {
+  const rows = await db
+    .select({
+      id: media.id,
+      title: media.title,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      userRating: sql<number>`avg(${ratings.rating})`,
+    })
+    .from(media)
+    .leftJoin(ratings, eq(media.id, ratings.mediaId))
+    .orderBy(desc(avg(ratings.rating)), desc(media.rating))
+    .groupBy(media.id)
+    .limit(10);
+  return rows;
 };

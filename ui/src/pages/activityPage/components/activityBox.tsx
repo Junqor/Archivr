@@ -8,7 +8,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
   const { activity, user } = item;
   return (
     <div className="flex min-h-20 w-full flex-col gap-y-2 rounded-xl border border-white/30 bg-slate-800 p-4">
-      <div className="flex w-full flex-row items-center gap-x-2">
+      <div className="flex w-full flex-row items-center gap-x-2 pb-2">
         <UserAvatar user={user} size="small" />
         <h4 className="max-w-40 overflow-hidden text-ellipsis text-nowrap text-white">
           {user.username}

@@ -36,8 +36,12 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
         ))}
       </div>
       {hasNextPage && (
-        <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-          {isFetchingNextPage ? "Loading more..." : "Load More"}
+        <Button
+          onClick={() => fetchNextPage()}
+          disabled={isFetchingNextPage}
+          className="align-self-center w-fit"
+        >
+          {isFetchingNextPage ? "Loading more..." : "Show More"}
         </Button>
       )}
     </>
