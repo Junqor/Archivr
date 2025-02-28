@@ -3,7 +3,9 @@ import { serverConfig } from "../configs/secrets.js";
 import jwt from "jsonwebtoken";
 import { TAuthToken } from "../types/index.js";
 
-export const authenticateTokenFunc = (authHeader: String) : TAuthToken | null => {
+export const authenticateTokenFunc = (
+  authHeader: String
+): TAuthToken | null => {
   const token = authHeader && authHeader.split(" ")[1]; // Extract token from Authorization header (format: Bearer <token>)
   try {
     // Check if token is present
@@ -17,7 +19,7 @@ export const authenticateTokenFunc = (authHeader: String) : TAuthToken | null =>
   } catch (error) {
     return null;
   }
-}
+};
 
 export const authenticateToken: RequestHandler = (
   req: Request,
