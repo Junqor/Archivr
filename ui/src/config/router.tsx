@@ -14,6 +14,7 @@ import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
 import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
 import { ResetPassword } from "@/pages/resetPassword";
+import BrowsePage from "@/pages/browsePage/browsePage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/genre/:genre",
         element: <GenrePage />,
+      },
+      {
+        path: "/browse",
+        element: <BrowsePage />,
       },
       // Error Pages
       {
