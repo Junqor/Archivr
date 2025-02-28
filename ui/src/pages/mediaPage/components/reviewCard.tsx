@@ -1,5 +1,4 @@
 import { TReview } from "@/api/reviews";
-import { useState } from "react";
 import { StarRatings } from "./starRatings";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
