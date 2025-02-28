@@ -11,6 +11,7 @@ import { likeReview } from "@/api/reviews";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { CollapsedText } from "@/components/ui/collapsed-text";
 
 export const ReviewCard = ({
   review,
@@ -19,7 +20,6 @@ export const ReviewCard = ({
   review: TReview;
   isLiked: boolean;
 }) => {
-  const [expanded, setExpanded] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -76,16 +76,6 @@ export const ReviewCard = ({
     },
   });
 
-  const maxUnexpandedCommentCharacters = 400;
-
-  const isTooLong = () => {
-    return review.comment.length > maxUnexpandedCommentCharacters;
-  };
-
-  const truncatedComment = () => {
-    return review.comment.substring(0, maxUnexpandedCommentCharacters) + "...";
-  };
-
   return (
     <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
@@ -110,21 +100,7 @@ export const ReviewCard = ({
         </div>
         <ReviewKebab review={review} />
       </div>
-      <p className="min-h-8 text-gray-300">
-        {expanded || !isTooLong() ? review.comment : truncatedComment()}
-      </p>
-      {isTooLong() && (
-        <div>
-          <button
-            onClick={() => {
-              setExpanded(!expanded);
-            }}
-            className="hover:underline"
-          >
-            {expanded ? "Show less" : "Show more"}
-          </button>
-        </div>
-      )}
+      <CollapsedText text={review.comment} max_length={400}></CollapsedText>
       <div className="flex flex-row items-center justify-start">
         <p className="text-sm text-gray-400">{formatDate(review.created_at)}</p>
 

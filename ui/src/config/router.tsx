@@ -128,6 +128,10 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
+  {
+    path: "/magnapinna-ceptis",
+    element: null,
+  },
 ]);
 
 export default router;
