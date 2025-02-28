@@ -12,7 +12,6 @@ import {
   authenticateTokenFunc,
 } from "../../middleware/authenticateToken.js";
 import multer from "multer";
-import _ from "lodash";
 import { serverConfig } from "../../configs/secrets.js";
 import { tmpDir } from "../../utils/tmpDir.js";
 import { Jimp } from "jimp";
@@ -164,7 +163,7 @@ const uploadPfp = multer({
       "image/gif",
     ];
 
-    if (_.includes(allowedMimes, file.mimetype)) {
+    if (allowedMimes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(
