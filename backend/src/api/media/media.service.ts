@@ -107,7 +107,10 @@ export async function get_media_reviews(
     .from(userReviews)
     .innerJoin(UsersTable, eq(userReviews.userId, UsersTable.id))
     // nick fix this please
-    .innerJoin(sql`(SELECT User_Settings.user_id, User_Settings.display_name FROM User_Settings) AS User_Settings`,sql`(User_Settings.user_id = UserReviews.user_id)`)
+    .innerJoin(
+      sql`(SELECT User_Settings.user_id, User_Settings.display_name FROM User_Settings) AS User_Settings`,
+      sql`(User_Settings.user_id = UserReviews.user_id)`
+    )
     .leftJoin(likesReviewsTable, eq(userReviews.id, likesReviewsTable.reviewId))
     .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
     .where(eq(userReviews.mediaId, media_id))
@@ -119,7 +122,7 @@ export async function get_media_reviews(
   return rows satisfies TReview[];
 }
 
-// unused and outdated
+// ! deprecated
 export async function get_user_review(
   media_id: number,
   user_id: number
