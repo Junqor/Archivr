@@ -6,11 +6,13 @@ import { Youtube, Instagram, Music2, ImageUp, X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { getAuthHeader } from "@/utils/authHeader";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{updateSetting:(key:string,value:string)=>void,findSetting:(key:string)=>(string)}){
     const { user } = useAuth();
     
+    const [ pfpSelected, setPfpSelected ] = useState<boolean>(false);
+
     const pfp_upload_preview = useRef<HTMLDivElement>(null);
     const pfp_upload_input = useRef<HTMLInputElement>(null);
 
@@ -19,10 +21,10 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
     return (
         <div className="flex flex-col self-stretch gap-2">
             <div className="flex items-center gap-5 self-stretch">
-                <Dialog>
+                <Dialog onOpenChange={()=>{setPfpSelected(false)}}>
                     <DialogTrigger asChild>
                         <div style={{backgroundImage:"url("+api_url+"/user/pfp/"+user?.id+")"}} className={"cursor-pointer bg-cover bg-center w-[200px] h-[200px] rounded-[200px] bg-neutral-900"}>
-                            <div className="flex items-center justify-center bg-[#44444488] w-[200px] h-[200px] rounded-[200px] opacity-0 hover:opacity-100">
+                            <div className="flex items-center justify-center bg-[#44444488] w-[200px] h-[200px] rounded-[200px] opacity-0 hover:opacity-100 transition-opacity">
                                 <ImageUp className="size-20"></ImageUp>
                             </div>
                         </div>
@@ -30,7 +32,7 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                     <DialogPortal>
                         <DialogOverlay className="bg-[#111111AA] fixed inset-0"/>
                         <DialogContent>
-                            <div className="flex flex-col items-center justify-center bg-black fixed border border-white rounded-2xl top-1/2 bottom-1/2 left-1/2 right-1/2 translate-x-[-50%] translate-y-[-50%] max-w-[90%] max-h-[90%] w-[360px] h-[400px] z-50">
+                            <div className="flex flex-col items-center justify-center bg-black fixed border border-white rounded-2xl top-1/2 bottom-1/2 left-1/2 right-1/2 translate-x-[-50%] translate-y-[-50%] max-w-[90%] max-h-[90%] min-w-[360px] h-[400px] z-50">
                                 <DialogTitle className="absolute top-5">
                                     <h3>Set Avatar</h3>
                                 </DialogTitle>
@@ -43,13 +45,17 @@ export function ProfileSettingsCategoryProfile({updateSetting, findSetting}:{upd
                                     <input onChange={() => {
                                         if (!pfp_upload_input.current) return;
                                         if (!pfp_upload_preview.current) return;
-                                        if (!pfp_upload_input.current.files) return;
+                                        if (!pfp_upload_input.current.files) {
+                                            setPfpSelected(false);
+                                            return;
+                                        }
+                                        setPfpSelected(true);
                                         const file = pfp_upload_input.current.files[0];
                                         const url = URL.createObjectURL(file);
                                         pfp_upload_preview.current.style.backgroundImage = "url("+url+")";
                                     }} ref={pfp_upload_input} type="file" name="pfp" accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"></input>
                                     <input type="text" name="Authorization" value={getAuthHeader().Authorization} className="hidden"></input>
-                                    <Button type="submit" className="">Upload</Button>
+                                    { pfpSelected ? (<Button type="submit" className="">Upload</Button>) : null }
                                 </form>
                                 <DialogClose>
                                     <X className="absolute top-5 right-5 size-8"></X>

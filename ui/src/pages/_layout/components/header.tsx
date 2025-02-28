@@ -1,6 +1,5 @@
 import SearchBar from "../../../components/searchBar";
 import {
-  AccountCircle,
   LoginRounded,
   KeyboardArrowDownRounded,
 } from "@mui/icons-material";
@@ -96,11 +95,11 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex flex-row items-center justify-center gap-2 sm:gap-6">
-          <SearchBar />
+          <SearchBar/>
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+user.id} className="size-[2.5rem] rounded-[2.5rem]"></img>
+                <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+user.id} className="size-[2.5rem] rounded-[2.5rem] ml-4"></img>
                 <div className="flex flex-row items-center gap-1">
                   <div className="flex flex-col items-start">
                     <h4 className="text-nowrap">{

@@ -148,7 +148,7 @@ function ProfileSettingsMenu({selectedMenu, setSelectedMenu}:{selectedMenu:strin
 
 function ProfileSettingsMenuButton({category, selectedMenu, setSelectedMenu}: {category:string,selectedMenu:string,setSelectedMenu:(a:string)=>void}){
     return (
-        <div onClick={()=>{setSelectedMenu(category)}} className={"flex py-5 px-3 items-center gap-3 self-stretch border-r-8 border-solid hover:bg-neutral-900 " + (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")}>
+        <div onClick={()=>{setSelectedMenu(category)}} className={"flex py-5 px-3 items-center gap-3 self-stretch border-r-8 border-solid hover:bg-neutral-900 transition-colors " + (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")}>
             <h4>
                 {category}
             </h4>
