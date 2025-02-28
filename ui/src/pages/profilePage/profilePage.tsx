@@ -1,8 +1,9 @@
 import { getUserProfileSettings } from "@/api/user";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { Speech, ClockAlert, MapPin, Youtube, Instagram, Music2 } from "lucide-react";
+import { Speech, ClockAlert, MapPin, Youtube, Instagram, Music2, UserPlus } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { CollapsedText } from "@/components/ui/collapsed-text";
 
 
 export function ProfilePage() {
@@ -42,6 +43,21 @@ export function ProfilePage() {
                             @{profileData?.username}
                         </h4>
                     </div>
+                    <div className="flex self-stretch mt-4 mb-2 h-px bg-gray-100 "></div>
+                    {/* Friend and follow buttons */}
+                    <div className="gap-2 pt-2 break-words text-gray-100">
+                            <UserPlus fill="#FFFFFF" strokeWidth={1} className="inline-block size-8 mr-2"></UserPlus>
+                            <a>0 followers</a>
+                        </div>
+                    
+                    {/* dividing line for socials */}
+                    {
+                    profileData?.status || profileData?.pronouns || profileData?.location
+                    ?
+                    (<div className="flex self-stretch my-4 h-px bg-gray-100 "></div>)
+                    :
+                    null
+                    }
                     {/* misc profile data */}
                     {profileData?.status ? (
                         <div className="gap-2 pt-2 break-words text-gray-100">
@@ -67,9 +83,7 @@ export function ProfilePage() {
                     ?
                     (<>
                         <div className="flex self-stretch my-4 h-px bg-gray-100 "></div>
-                        <p className="text-gray-200 break-words whitespace-pre-wrap">
-                            {profileData?.bio}
-                        </p>
+                        <CollapsedText text={profileData?.bio} max_length={400}></CollapsedText>
                     </>)
                     :
                     null
