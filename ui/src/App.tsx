@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "./context/auth";
 import { Toaster } from "./components/ui/sonner";
 import { useEffect, useState } from "react";
 import { LoadingScreen } from "./pages/loadingScreen";
+import { SettingsProvider } from "./context/settings";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
@@ -14,7 +15,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
+        <SettingsProvider>
+          <Router />
+        </SettingsProvider>
       </AuthProvider>
       <Toaster position="bottom-right" toastOptions={{}} />
     </QueryClientProvider>

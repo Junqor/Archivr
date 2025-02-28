@@ -25,15 +25,9 @@ export function RecentlyReviewed() {
                   {item.title}
                 </h4>
                 <div className="flex flex-row items-center justify-start gap-2">
-                  {/* // todo: Replace with avatar image */}
-                  <img
-                    src={
-                      "https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=cheeseball&backgroundColor=c0aede"
-                    }
-                    className="size-5 rounded-full"
-                  />
+                  <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+item.userId} className="size-[2rem] rounded-[2rem]"></img>
                   <p className="overflow-hidden text-ellipsis whitespace-nowrap text-white/80 no-scrollbar">
-                    {item.userName}
+                    {item.display_name ? item.display_name : item.userName}
                   </p>
                   <div className="flex flex-row">
                     {[...Array(10)].map((_, i) => (

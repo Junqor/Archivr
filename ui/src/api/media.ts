@@ -70,6 +70,7 @@ export type TRecentlyReviewed = {
   rating: number;
   userId: number;
   userName: string;
+  display_name: string;
   review: string | null;
   reviewRating: number;
   created_at: string;
