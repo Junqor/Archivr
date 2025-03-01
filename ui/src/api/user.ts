@@ -71,19 +71,18 @@ export const setUserSettings = async (new_settings: Map<string, string>) => {
   }
 };
 
-/*
-export const uploadPfp = async (blob: Blob) => {
-    try {
-        await fetch(import.meta.env.VITE_API_URL+"/user/set-pfp",{
-            method:"POST",
-            headers: {
-                "Content-Type": "multipart/form-data",
-                ...getAuthHeader(),
-            },
-            body:JSON.stringify({image: blob})
-        });
-    } catch (error) {
-        console.error(error);
-    }
-}
-*/
+export const uploadPfp = async (file: File) => {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await fetch(import.meta.env.VITE_API_URL + "/user/set-pfp", {
+    method: "POST",
+    headers: {
+      ...getAuthHeader(),
+    },
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error("Failed to upload avatar");
+  }
+};

@@ -212,28 +212,33 @@ export const userReviews = mysqlTable(
   ]
 );
 
-export const userSettings = mysqlTable("User_Settings", {
-	id: int().autoincrement().notNull(),
-  	user_id: int().notNull(),
-  	display_name: varchar({ length: 64 }).default('').notNull(),
-  	status: varchar({ length: 128 }).default('').notNull(),
-  	bio: text(),
-  	pronouns: varchar({ length: 32 }).default('').notNull(),
-  	location: varchar({ length: 128 }).default('').notNull(),
-  	social_instagram: varchar({ length: 255 }).default('').notNull(),
-  	social_youtube: varchar({ length: 255 }).default('').notNull(),
-  	social_tiktok: varchar({ length: 255 }).default('').notNull(),
-  	public: tinyint().default(1).notNull(),
-  	show_adult_content: tinyint().default(0).notNull(),
-  	theme: mysqlEnum(['dark', 'light']).default('dark').notNull(),
-  	font_size: mysqlEnum(['small', 'normal', 'large']).default('normal').notNull(),
-  	grant_personal_data: tinyint().default(1).notNull(),
-  	show_personalized_content: tinyint().default(1).notNull(),
-},
-(table) => [
-  	primaryKey({ columns: [table.id], name: "Users_id" }),
-  	index("user_id").on(table.user_id),
-]);
+export const userSettings = mysqlTable(
+  "User_Settings",
+  {
+    id: int().autoincrement().notNull(),
+    user_id: int().notNull(),
+    display_name: varchar({ length: 64 }).default("").notNull(),
+    status: varchar({ length: 128 }).default("").notNull(),
+    bio: text(),
+    pronouns: varchar({ length: 32 }).default("").notNull(),
+    location: varchar({ length: 128 }).default("").notNull(),
+    social_instagram: varchar({ length: 255 }).default("").notNull(),
+    social_youtube: varchar({ length: 255 }).default("").notNull(),
+    social_tiktok: varchar({ length: 255 }).default("").notNull(),
+    public: tinyint().default(1).notNull(),
+    show_adult_content: tinyint().default(0).notNull(),
+    theme: mysqlEnum(["dark", "light"]).default("dark").notNull(),
+    font_size: mysqlEnum(["small", "normal", "large"])
+      .default("normal")
+      .notNull(),
+    grant_personal_data: tinyint().default(1).notNull(),
+    show_personalized_content: tinyint().default(1).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "Users_id" }),
+    index("user_id").on(table.user_id),
+  ]
+);
 // Users table
 export const users = mysqlTable(
   "Users",
@@ -244,6 +249,7 @@ export const users = mysqlTable(
     passwordHash: varchar("password_hash", { length: 255 }).notNull(),
     salt: varchar({ length: 255 }).notNull(),
     role: mysqlEnum(["user", "admin"]).default("user").notNull(),
+    avatarUrl: varchar("avatar_url", { length: 255 }),
   },
   (table) => [
     primaryKey({ columns: [table.id], name: "Users_id" }),
