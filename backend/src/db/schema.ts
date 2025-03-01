@@ -20,14 +20,19 @@ import {
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
+// Likes table
 export const likes = mysqlTable(
   "Likes",
   {
     id: int().autoincrement().notNull(),
-    userId: int("user_id").references(() => users.id, { onDelete: "cascade" }),
-    mediaId: int("media_id").references(() => media.id, {
-      onDelete: "cascade",
-    }),
+    userId: int("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    mediaId: int("media_id")
+      .references(() => media.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     likedAt: timestamp("liked_at", { mode: "string" }).defaultNow(),
   },
   (table) => [
@@ -207,23 +212,6 @@ export const userReviews = mysqlTable(
   ]
 );
 
-export const users = mysqlTable(
-  "Users",
-  {
-    id: int().autoincrement().notNull(),
-    username: varchar({ length: 50 }).notNull(),
-    email: varchar({ length: 100 }).notNull(),
-    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
-    salt: varchar({ length: 255 }).notNull(),
-    role: mysqlEnum(["user", "admin"]).default("user").notNull(),
-  },
-  (table) => [
-    primaryKey({ columns: [table.id], name: "Users_id" }),
-    unique("email").on(table.email),
-    unique("username").on(table.username),
-  ]
-);
-
 export const userSettings = mysqlTable(
   "User_Settings",
   {
@@ -249,5 +237,23 @@ export const userSettings = mysqlTable(
   (table) => [
     primaryKey({ columns: [table.id], name: "Users_id" }),
     index("user_id").on(table.user_id),
+  ]
+);
+// Users table
+export const users = mysqlTable(
+  "Users",
+  {
+    id: int().autoincrement().notNull(),
+    username: varchar({ length: 50 }).notNull(),
+    email: varchar({ length: 100 }).notNull(),
+    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+    salt: varchar({ length: 255 }).notNull(),
+    role: mysqlEnum(["user", "admin"]).default("user").notNull(),
+    avatarUrl: varchar("avatar_url", { length: 255 }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "Users_id" }),
+    unique("email").on(table.email),
+    unique("username").on(table.username),
   ]
 );
