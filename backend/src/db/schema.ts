@@ -217,7 +217,6 @@ export const userSettings = mysqlTable(
   {
     id: int().autoincrement().notNull(),
     user_id: int().notNull(),
-    display_name: varchar({ length: 64 }).default("").notNull(),
     status: varchar({ length: 128 }).default("").notNull(),
     bio: text(),
     pronouns: varchar({ length: 32 }).default("").notNull(),
@@ -250,6 +249,7 @@ export const users = mysqlTable(
     salt: varchar({ length: 255 }).notNull(),
     role: mysqlEnum(["user", "admin"]).default("user").notNull(),
     avatarUrl: varchar("avatar_url", { length: 255 }),
+    displayName: varchar("display_name", { length: 64 }),
   },
   (table) => [
     primaryKey({ columns: [table.id], name: "Users_id" }),
