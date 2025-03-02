@@ -1,122 +1,128 @@
-import { getUserProfileSettings } from "@/api/user";
+import { getUserProfile } from "@/api/user";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { Speech, ClockAlert, MapPin, Youtube, Instagram, Music2, UserPlus } from "lucide-react";
+import { Navigate, useParams } from "react-router-dom";
+import {
+  Speech,
+  ClockAlert,
+  MapPin,
+  Youtube,
+  Instagram,
+  Music2,
+  UserPlus,
+} from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CollapsedText } from "@/components/ui/collapsed-text";
 
-
 export function ProfilePage() {
-    const { id } = useParams();
-    const {error, isPending, data:profileData} = useQuery({
-        queryKey: ['user_profile', id],
-        queryFn: async () => {
-            if (id)
-                return await getUserProfileSettings(Number(id));
-        },
-    })
-    
-    const api_url:string = import.meta.env.VITE_API_URL;
+  const { username } = useParams();
+  if (!username) return <Navigate to="/404" />;
 
-    if (isPending){
-        return (
-            <LoadingSpinner></LoadingSpinner>
-        )
-    }
+  const {
+    error,
+    isPending,
+    isLoading,
+    data: profile,
+  } = useQuery({
+    queryKey: ["user_profile", username],
+    queryFn: () => getUserProfile(username),
+    retry: false,
+  });
 
-    if (error){
-        throw new Error("Profile not found");
-    }
+  const api_url: string = import.meta.env.VITE_API_URL;
 
-    return (
-        <div className="flex border border-white rounded-2xl p-4 gap-2 max-w-full min-w-full min-h-screen">
-            <div className="flex flex-col border max-w-[40%] bg-gray-secondary border-none rounded-2xl p-4 gap-2 h-full">
-                {/* profile image */}
-                <img src={api_url+"/user/pfp/"+id} className={"rounded-[500px] w-[500px] h-full bg-neutral-900"}></img>
-                <div className="flex flex-col">
-                    {/* username */}
-                    <div>
-                        <h2 className="text-gray-100 break-words">
-                            {profileData?.display_name ? profileData.display_name : profileData?.username}
-                        </h2>
-                        <h4 className="text-gray-400 break-words">
-                            @{profileData?.username}
-                        </h4>
-                    </div>
-                    <div className="flex self-stretch mt-4 mb-2 h-px bg-gray-100 "></div>
-                    {/* Friend and follow buttons */}
-                    <div className="gap-2 pt-2 break-words text-gray-100">
-                            <UserPlus fill="#FFFFFF" strokeWidth={1} className="inline-block size-8 mr-2"></UserPlus>
-                            <a>0 followers</a>
-                        </div>
-                    
-                    {/* dividing line for socials */}
-                    {
-                    profileData?.status || profileData?.pronouns || profileData?.location
-                    ?
-                    (<div className="flex self-stretch my-4 h-px bg-gray-100 "></div>)
-                    :
-                    null
-                    }
-                    {/* misc profile data */}
-                    {profileData?.status ? (
-                        <div className="gap-2 pt-2 break-words text-gray-100">
-                            <ClockAlert className="inline-block size-6 mr-2"></ClockAlert>
-                            {profileData.status}
-                        </div>
-                    ) : null}
-                    {profileData?.pronouns ? (
-                        <div className="gap-2 pt-2 break-words text-gray-100">
-                            <Speech className="inline-block size-6 mr-2"></Speech>
-                            {profileData.pronouns}
-                        </div>
-                    ) : null}
-                    {profileData?.location ? (
-                        <div className="gap-2 pt-2 break-words text-gray-100">
-                            <MapPin className="inline-block size-6 mr-2"></MapPin>
-                            {profileData.location}
-                        </div>
-                    ) : null}
-                    {/* bio */}
-                    {
-                    profileData?.bio
-                    ?
-                    (<>
-                        <div className="flex self-stretch my-4 h-px bg-gray-100 "></div>
-                        <CollapsedText text={profileData?.bio} max_length={400}></CollapsedText>
-                    </>)
-                    :
-                    null
-                    }
-                    {/* dividing line for socials */}
-                    {
-                    profileData?.social_instagram || profileData?.social_youtube || profileData?.social_tiktok
-                    ?
-                    (<div className="flex self-stretch mt-4 mb-2 h-px bg-gray-100 "></div>)
-                    :
-                    null
-                    }
-                    {/* socials */}
-                    {profileData?.social_instagram ? (
-                        <div className="gap-2 pt-2 break-words text-gray-100">
-                            <Instagram className="inline-block size-6 mr-2"></Instagram>
-                            <a href={"//"+profileData.social_instagram}>Instagram</a>
-                        </div>
-                    ) : null}
-                    {profileData?.social_youtube ? (
-                        <div className="gap-2 pt-2 break-words text-gray-100">
-                            <Youtube className="inline-block size-6 mr-2"></Youtube>
-                            <a href={"//"+profileData.social_youtube}>Youtube</a>
-                        </div>
-                    ) : null}
-                    {profileData?.social_tiktok ? (
-                        <div className="gap-2 pt-2 break-words text-gray-100">
-                            <Music2 className="inline-block size-6 mr-2"></Music2>
-                            <a href={"//"+profileData.social_tiktok}>TikTok</a>
-                        </div>
-                    ) : null}
-                </div>
+  if (isPending || isLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
+  }
+
+  if (error) {
+    throw { status: 404, message: "Profile not found" };
+  }
+
+  return (
+    <div className="flex min-h-screen min-w-full max-w-full gap-2 rounded-2xl border border-white p-4">
+      <div className="flex h-full max-w-[40%] flex-col gap-2 rounded-2xl border border-none bg-gray-secondary p-4">
+        {/* profile image */}
+        <img
+          src={api_url + "/user/pfp/" + profile.id}
+          className={"h-full w-[500px] rounded-[500px] bg-neutral-900"}
+        ></img>
+        <div className="flex flex-col">
+          {/* username */}
+          <div>
+            <h2 className="break-words text-gray-100">
+              {profile.displayName || profile.username}
+            </h2>
+            <h4 className="break-words text-gray-400">@{profile.username}</h4>
+          </div>
+          <div className="mb-2 mt-4 flex h-px self-stretch bg-gray-100"></div>
+          {/* Friend and follow buttons */}
+          <div className="gap-2 break-words pt-2 text-gray-100">
+            <UserPlus
+              fill="#FFFFFF"
+              strokeWidth={1}
+              className="mr-2 inline-block size-8"
+            ></UserPlus>
+            <a>0 followers</a>
+          </div>
+
+          {/* dividing line for socials */}
+          {profile?.status || profile?.pronouns || profile?.location ? (
+            <div className="my-4 flex h-px self-stretch bg-gray-100"></div>
+          ) : null}
+          {/* misc profile data */}
+          {profile?.status ? (
+            <div className="gap-2 break-words pt-2 text-gray-100">
+              <ClockAlert className="mr-2 inline-block size-6"></ClockAlert>
+              {profile.status}
             </div>
+          ) : null}
+          {profile?.pronouns ? (
+            <div className="gap-2 break-words pt-2 text-gray-100">
+              <Speech className="mr-2 inline-block size-6"></Speech>
+              {profile.pronouns}
+            </div>
+          ) : null}
+          {profile?.location ? (
+            <div className="gap-2 break-words pt-2 text-gray-100">
+              <MapPin className="mr-2 inline-block size-6"></MapPin>
+              {profile.location}
+            </div>
+          ) : null}
+          {/* bio */}
+          {profile.bio ? (
+            <>
+              <div className="my-4 flex h-px self-stretch bg-gray-100"></div>
+              <CollapsedText
+                text={profile?.bio}
+                max_length={400}
+              ></CollapsedText>
+            </>
+          ) : null}
+          {/* dividing line for socials */}
+          {profile.instagram || profile.youtube || profile.tiktok ? (
+            <div className="mb-2 mt-4 flex h-px self-stretch bg-gray-100"></div>
+          ) : null}
+          {/* socials */}
+          {profile.instagram ? (
+            <div className="gap-2 break-words pt-2 text-gray-100">
+              <Instagram className="mr-2 inline-block size-6"></Instagram>
+              <a href={"//" + profile.instagram}>Instagram</a>
+            </div>
+          ) : null}
+          {profile.youtube ? (
+            <div className="gap-2 break-words pt-2 text-gray-100">
+              <Youtube className="mr-2 inline-block size-6"></Youtube>
+              <a href={"//" + profile.youtube}>Youtube</a>
+            </div>
+          ) : null}
+          {profile.tiktok ? (
+            <div className="gap-2 break-words pt-2 text-gray-100">
+              <Music2 className="mr-2 inline-block size-6"></Music2>
+              <a href={"//" + profile.tiktok}>TikTok</a>
+            </div>
+          ) : null}
         </div>
-    )
+      </div>
+    </div>
+  );
 }

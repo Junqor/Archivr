@@ -17,13 +17,14 @@ import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 import { uploadPfp } from "@/api/user";
 import { toast } from "sonner";
+import { TUserSettings } from "../settingsPage";
 
 export function ProfileSettingsCategoryProfile({
   updateSetting,
-  findSetting,
+  settings,
 }: {
-  updateSetting: (key: string, value: string) => void;
-  findSetting: (key: string) => string;
+  updateSetting: (key: keyof TUserSettings, value: string) => void;
+  settings: TUserSettings;
 }) {
   const { user } = useAuth();
 
@@ -121,9 +122,9 @@ export function ProfileSettingsCategoryProfile({
             <Input
               maxLength={64}
               onChange={(event) => {
-                updateSetting("display_name", event.target.value);
+                updateSetting("displayName", event.target.value);
               }}
-              defaultValue={findSetting("display_name")}
+              defaultValue={settings.displayName || ""}
               placeholder={user?.username}
               className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
             />
@@ -145,7 +146,7 @@ export function ProfileSettingsCategoryProfile({
               onChange={(event) => {
                 updateSetting("status", event.target.value);
               }}
-              defaultValue={findSetting("status")}
+              defaultValue={settings.status || ""}
               placeholder="..."
               className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
             />
@@ -159,7 +160,7 @@ export function ProfileSettingsCategoryProfile({
           onChange={(event) => {
             updateSetting("bio", event.target.value);
           }}
-          defaultValue={findSetting("bio")}
+          defaultValue={settings.bio || ""}
           placeholder="write about yourself..."
           className="flex min-h-[67px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
         ></Textarea>
@@ -172,7 +173,7 @@ export function ProfileSettingsCategoryProfile({
             onChange={(event) => {
               updateSetting("pronouns", event.target.value);
             }}
-            defaultValue={findSetting("pronouns")}
+            defaultValue={settings.pronouns || ""}
             placeholder="it/that"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
           ></Input>
@@ -185,7 +186,7 @@ export function ProfileSettingsCategoryProfile({
             onChange={(event) => {
               updateSetting("location", event.target.value);
             }}
-            defaultValue={findSetting("location")}
+            defaultValue={settings.location || ""}
             placeholder="Earth"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
           ></Input>
@@ -197,7 +198,7 @@ export function ProfileSettingsCategoryProfile({
             onCheckedChange={(checked) => {
               updateSetting("public", String(Number(checked)));
             }}
-            checked={Boolean(Number(findSetting("public")))}
+            checked={Boolean(Number(settings.public || ""))}
             className="self-center"
           ></Checkbox>
           <p>Include profile in members section</p>
@@ -207,7 +208,7 @@ export function ProfileSettingsCategoryProfile({
             onCheckedChange={(checked) => {
               updateSetting("show_adult_content", String(Number(checked)));
             }}
-            checked={Boolean(Number(findSetting("show_adult_content")))}
+            checked={Boolean(Number(settings.show_adult_content || ""))}
             className="self-center"
           ></Checkbox>
           <p>Show adult content</p>
@@ -236,7 +237,7 @@ export function ProfileSettingsCategoryProfile({
             onChange={(event) => {
               updateSetting("social_instagram", event.target.value);
             }}
-            defaultValue={findSetting("social_instagram")}
+            defaultValue={settings.social_instagram || ""}
             placeholder="https://www.instagram.com/username/"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
           ></Input>
@@ -245,7 +246,7 @@ export function ProfileSettingsCategoryProfile({
             onChange={(event) => {
               updateSetting("social_youtube", event.target.value);
             }}
-            defaultValue={findSetting("social_youtube")}
+            defaultValue={settings.social_youtube || ""}
             placeholder="https://www.youtube.com/username/"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
           ></Input>
@@ -254,7 +255,7 @@ export function ProfileSettingsCategoryProfile({
             onChange={(event) => {
               updateSetting("social_tiktok", event.target.value);
             }}
-            defaultValue={findSetting("social_tiktok")}
+            defaultValue={settings.social_tiktok || ""}
             placeholder="https://www.tiktok.com/@username/"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
           ></Input>

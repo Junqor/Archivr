@@ -1,9 +1,10 @@
+import { TUserSettings } from "@/pages/settingsPage/settingsPage";
 import { getAuthHeader } from "@/utils/authHeader";
 
 export const getUserSettings = async () => {
   try {
     const result = await fetch(
-      import.meta.env.VITE_API_URL + "/user/get-user-settings",
+      import.meta.env.VITE_API_URL + "/user/settings",
       {
         method: "GET",
         headers: getAuthHeader(),
@@ -33,37 +34,37 @@ export const getUserSettingsForSettingsContext = async () => {
   }
 };
 
-export const getUserProfileSettings = async (user_id: number) => {
-  try {
-    const result = await fetch(
-      import.meta.env.VITE_API_URL +
-        `/user/get-user-profile-settings/${user_id}`,
-      {
-        method: "GET",
-      },
-    );
-    const val = await result.json();
-    return val.settings;
-  } catch (error) {
-    console.error(error);
-  }
+type TUserProfile = {
+  id: number;
+  username: string;
+  avatarUrl: string | null;
+  displayName: string | null;
+  tiktok: string | null;
+  youtube: string | null;
+  instagram: string | null;
+  bio: string | null;
+  pronouns: string | null;
+  location: string | null;
+  status: string | null;
 };
 
-export const setUserSettings = async (new_settings: Map<string, string>) => {
+export const getUserProfile = async (username: string) => {
+  const result = await fetch(
+    import.meta.env.VITE_API_URL + `/user/profile/${username}`,
+  );
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+  const data = await result.json();
+  return data.profile as TUserProfile;
+};
+
+export const setUserSettings = async (new_settings: TUserSettings) => {
   try {
-    await fetch(import.meta.env.VITE_API_URL + "/user/set-user-settings", {
+    await fetch(import.meta.env.VITE_API_URL + "/user/settings", {
       method: "POST",
-      headers: getAuthHeader(),
-      body: JSON.stringify({ settings: new_settings }, (_key, value) => {
-        if (value instanceof Map) {
-          return {
-            dataType: "Map",
-            value: Array.from(value.entries()),
-          };
-        } else {
-          return value;
-        }
-      }),
+      headers: { "content-type": "application/json", ...getAuthHeader() },
+      body: JSON.stringify(new_settings),
     });
     return;
   } catch (error) {
@@ -85,4 +86,6 @@ export const uploadPfp = async (file: File) => {
   if (!response.ok) {
     throw new Error("Failed to upload avatar");
   }
+  const data = await response.json();
+  return data.avatarUrl as string;
 };

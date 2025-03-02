@@ -2,6 +2,8 @@ export type TUser = {
   id: number;
   email: string;
   username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
   password_hash: string;
   salt: string;
   role: "admin" | "user";

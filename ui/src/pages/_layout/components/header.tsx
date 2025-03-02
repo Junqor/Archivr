@@ -1,8 +1,5 @@
 import SearchBar from "../../../components/searchBar";
-import {
-  LoginRounded,
-  KeyboardArrowDownRounded,
-} from "@mui/icons-material";
+import { LoginRounded, KeyboardArrowDownRounded } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import {
@@ -15,11 +12,9 @@ import { getGenres } from "@/api/genre";
 import { TGenre } from "@/types/genre";
 import { useQuery } from "@tanstack/react-query";
 import { ArchivrIcon } from "@/components/archivrIcon";
-import { useSettings } from "@/context/settings";
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const { settings } = useSettings();
   const navigate = useNavigate();
 
   // Fetch genres
@@ -95,36 +90,37 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex flex-row items-center justify-center gap-2 sm:gap-6">
-          <SearchBar/>
+          <SearchBar />
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+user.id} className="size-[2.5rem] rounded-[2.5rem] ml-4"></img>
+                <img
+                  src={import.meta.env.VITE_API_URL + "/user/pfp/" + user.id}
+                  className="ml-4 size-[2.5rem] rounded-[2.5rem]"
+                ></img>
                 <div className="flex flex-row items-center gap-1">
                   <div className="flex flex-col items-start">
-                    <h4 className="text-nowrap">{
-                      settings?.display_name
-                      ?
-                      settings?.display_name
-                      :
-                      user.username
-                    }</h4>
-                    <h5 className="text-nowrap text-[#7F7F7E]">{"@"+user.username}</h5>
+                    <h4 className="text-nowrap">
+                      {user.displayName || user.username}
+                    </h4>
+                    <h5 className="text-nowrap text-[#7F7F7E]">
+                      {"@" + user.username}
+                    </h5>
                   </div>
                   <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
                 </div>
               </DropdownTrigger>
               <DropdownContent>
                 {user.role === "admin" && (
-                  <DropdownItem onSelect={() => navigate("/admin")}>
-                    Admin Portal{" { }"}
+                  <DropdownItem asChild>
+                    <Link to="/admin">Admin Portal{" { }"}</Link>
                   </DropdownItem>
                 )}
-                <DropdownItem onSelect={() => navigate("/profile/"+user.id)}>
-                  Profile
+                <DropdownItem asChild>
+                  <Link to={`/profile/${user.username}`}>Profile</Link>
                 </DropdownItem>
-                <DropdownItem onSelect={() => navigate("/settings")}>
-                  Settings
+                <DropdownItem asChild>
+                  <Link to="/settings">Settings</Link>
                 </DropdownItem>
                 <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
               </DropdownContent>
