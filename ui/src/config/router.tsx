@@ -92,7 +92,7 @@ const router = createBrowserRouter([
         element: <PopularPage />,
       },
       {
-        path: "/profile:username",
+        path: "/profile/:username",
         element: <ProfilePage />,
       },
       {
@@ -110,6 +110,10 @@ const router = createBrowserRouter([
       {
         path: "/genre",
         element: <UnderConstruction />,
+      },
+      {
+        path: "/tos",
+        element: <TermsOfServicePage />,
       },
       {
         path: "/trending",

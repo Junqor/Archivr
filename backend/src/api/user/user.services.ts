@@ -40,7 +40,7 @@ export async function getUserSettings(user_id: number) {
       public: userSettings.public,
       show_adult_content: userSettings.show_adult_content,
       theme: userSettings.theme,
-      font_size: userSettings.font_size,
+      font_size: userSettings.fontSize,
       grant_personal_data: userSettings.grant_personal_data,
       show_personalized_content: userSettings.show_personalized_content,
     })
