@@ -64,16 +64,24 @@ export const getMostPopular = async (): Promise<TMedia[]> => {
 };
 
 export type TRecentlyReviewed = {
-  id: number;
-  title: string;
-  thumbnail_url: string;
-  rating: number;
-  userId: number;
-  userName: string;
-  display_name: string;
-  review: string | null;
-  reviewRating: number;
-  created_at: string;
+  media: {
+    id: number;
+    title: string;
+    thumbnail_url: string;
+    rating: number;
+  };
+  user: {
+    userId: number;
+    username: string;
+    avatar_url: string | null;
+    role: "admin" | "user";
+    display_name: string;
+  };
+  review: {
+    reviewText: string | null;
+    reviewRating: number;
+    created_at: string;
+  };
 }[];
 
 export const getRecentlyReviewed = async (): Promise<TRecentlyReviewed> => {
@@ -257,6 +265,15 @@ export const getMediaTrailer = async (id: number) => {
   const data = await response.json();
 
   return data.result as string;
+};
+
+export const getRandomMedia = async () => {
+  const response = await fetch(import.meta.env.VITE_API_URL + "/media/random");
+  if (!response.ok) {
+    throw new Error("Failed to fetch random media");
+  }
+  const data = await response.json();
+  return data.media as TMedia;
 };
 
 export const getRecommendedForYou = async (userId: number) => {

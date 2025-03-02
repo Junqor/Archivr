@@ -1,4 +1,4 @@
-import { TReview } from "@/api/reviews";
+import { TReviewResponse } from "@/api/reviews";
 import { StarRatings } from "./starRatings";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,15 +8,16 @@ import { formatDate } from "@/utils/formatDate";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { likeReview } from "@/api/reviews";
 import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { UserAvatar } from "@/components/ui/avatar";
 import { CollapsedText } from "@/components/ui/collapsed-text";
 
 export const ReviewCard = ({
-  review,
+  userReview,
   isLiked,
 }: {
-  review: TReview;
+  userReview: TReviewResponse;
   isLiked: boolean;
 }) => {
   const { id } = useParams();
@@ -75,13 +76,17 @@ export const ReviewCard = ({
     },
   });
 
+  const { user, review } = userReview;
+
   return (
     <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
-        <img src={import.meta.env.VITE_API_URL+"/user/pfp/"+review.user_id} className="size-[2rem] rounded-[2rem]"></img>
-        <a href={"/profile/"+review.user_id} className="text-white transition-colors hover:text-purple cursor-pointer">
-          <h5>{review.display_name ? review.display_name : review.username}</h5>
-        </a>
+        <UserAvatar user={user} size="small" />
+        <Link to={`/profile/${user.username}`}>
+          <h5 className="transition-colors hover:text-purple">
+            {user.display_name || user.username}
+          </h5>
+        </Link>
         <div className="ml-auto flex items-center">
           {[...Array(10)].map((_, i) => (
             <StarRatings

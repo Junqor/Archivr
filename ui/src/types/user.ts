@@ -4,4 +4,5 @@ export type TUser = {
   displayName: string | null;
   email: string;
   role: "admin" | "user";
+  avatar_url: string | null;
 };

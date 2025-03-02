@@ -11,6 +11,7 @@ import {
   users,
   remoteId,
   userSettings,
+  activity,
 } from "../../db/schema.js";
 import {
   desc,
@@ -58,31 +59,42 @@ export async function update_review(
   new_comment: string,
   new_rating: number
 ) {
-  const [ratingId] = await db
-    .insert(ratings)
-    .values({ mediaId: media_id, userId: user_id, rating: new_rating })
-    .onDuplicateKeyUpdate({
-      set: { rating: new_rating, ratedAt: sql`CURRENT_TIMESTAMP` },
-    })
-    .$returningId();
-
-  if (new_comment.length > 0) {
-    await db
-      .insert(userReviews)
-      .values({
-        mediaId: media_id,
-        userId: user_id,
-        comment: new_comment,
-        ratingId: ratingId.id,
-      })
+  await db.transaction(async (tx) => {
+    const [ratingId] = await tx
+      .insert(ratings)
+      .values({ mediaId: media_id, userId: user_id, rating: new_rating })
       .onDuplicateKeyUpdate({
-        set: {
+        set: { rating: new_rating, ratedAt: sql`CURRENT_TIMESTAMP` },
+      })
+      .$returningId();
+
+    if (new_comment.length > 0) {
+      await tx
+        .insert(userReviews)
+        .values({
+          mediaId: media_id,
+          userId: user_id,
           comment: new_comment,
           ratingId: ratingId.id,
-          createdAt: sql`CURRENT_TIMESTAMP`,
-        },
-      });
-  }
+        })
+        .onDuplicateKeyUpdate({
+          set: {
+            comment: new_comment,
+            ratingId: ratingId.id,
+            createdAt: sql`CURRENT_TIMESTAMP`,
+          },
+        });
+    }
+
+    // Update activity
+    await tx.insert(activity).values({
+      userId: user_id,
+      activityType: "review",
+      targetId: media_id,
+      relatedId: ratingId.id,
+      content: new_comment,
+    });
+  });
   return;
 }
 
@@ -94,15 +106,23 @@ export async function get_media_reviews(
 ) {
   let rows = await db
     .select({
-      id: userReviews.id,
-      user_id: UsersTable.id,
-      media_id: userReviews.mediaId,
-      username: UsersTable.username,
-      display_name: UsersTable.displayName,
-      comment: userReviews.comment,
-      created_at: userReviews.createdAt,
-      rating: ratings.rating,
-      likes: count(likesReviewsTable.id).as("likes_count"),
+      user: {
+        username: UsersTable.username,
+        avatar_url: UsersTable.avatarUrl,
+        role: UsersTable.role,
+        display_name: UsersTable.displayName,
+      },
+      review: {
+        id: userReviews.id,
+        user_id: UsersTable.id,
+        media_id: userReviews.mediaId,
+        username: UsersTable.username,
+        display_name: UsersTable.displayName,
+        comment: userReviews.comment,
+        created_at: userReviews.createdAt,
+        rating: ratings.rating,
+        likes: count(likesReviewsTable.id).as("likes_count"),
+      },
     })
     .from(userReviews)
     .innerJoin(UsersTable, eq(userReviews.userId, UsersTable.id))
@@ -114,7 +134,7 @@ export async function get_media_reviews(
     .limit(amount)
     .offset(offset);
 
-  return rows satisfies TReview[];
+  return rows;
 }
 
 // ! deprecated
@@ -144,20 +164,29 @@ export async function get_user_review(
 
 // Try inserting the like; if it already exists, delete it instead.
 export async function update_likes(media_id: number, user_id: number) {
-  const [result] = await db
-    .insert(likes)
-    .ignore()
-    .values({ mediaId: media_id, userId: user_id });
+  await db.transaction(async (tx) => {
+    const [result] = await tx
+      .insert(likes)
+      .ignore()
+      .values({ mediaId: media_id, userId: user_id });
 
-  // Check if a row was inserted; if not, delete it instead.
-  if (result.affectedRows === 0) {
-    // If the row wasn’t inserted (it already exists), delete it to "toggle" the like.
-    await db
-      .delete(likes)
-      .where(
-        sql`${likes.mediaId} = ${media_id} and ${likes.userId} = ${user_id}`
-      );
-  }
+    // Check if a row was inserted; if not, delete it instead.
+    if (result.affectedRows === 0) {
+      // If the row wasn’t inserted (it already exists), delete it to "toggle" the like.
+      await tx
+        .delete(likes)
+        .where(
+          sql`${likes.mediaId} = ${media_id} and ${likes.userId} = ${user_id}`
+        );
+    } else {
+      // Update activity
+      await tx.insert(activity).values({
+        userId: user_id,
+        activityType: "like_media",
+        targetId: media_id,
+      });
+    }
+  });
 }
 
 export async function is_liked(
@@ -195,16 +224,24 @@ export async function getMostPopular() {
 export async function get_recently_reviewed() {
   let rows = await db
     .selectDistinct({
-      id: media.id,
-      title: media.title,
-      thumbnail_url: media.thumbnail_url,
-      rating: media.rating,
-      userId: users.id,
-      userName: users.username,
-      display_name: users.displayName,
-      review: userReviews.comment,
-      reviewRating: ratings.rating,
-      created_at: userReviews.createdAt,
+      media: {
+        id: media.id,
+        title: media.title,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+      },
+      user: {
+        userId: users.id,
+        username: users.username,
+        avatar_url: users.avatarUrl,
+        display_name: users.displayName,
+        role: users.role,
+      },
+      review: {
+        reviewText: userReviews.comment,
+        reviewRating: ratings.rating,
+        created_at: userReviews.createdAt,
+      },
     })
     .from(media)
     .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
@@ -760,7 +797,17 @@ export async function get_similar_to_watched(user_id: number) {
       })
       .from(media)
       .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
-      .where(inArray(mediaGenre.genre, genreList))
+      .where(
+        and(
+          inArray(mediaGenre.genre, genreList),
+          not(
+            inArray(
+              media.id,
+              similarMedia.map((m) => m.id)
+            )
+          )
+        )
+      )
       .groupBy(media.id)
       .orderBy(sql`COUNT(DISTINCT ${mediaGenre.genre}) DESC`) // Order by the number of genres the media matches
       .limit(16 - similarMedia.length);
@@ -775,4 +822,14 @@ export async function get_similar_to_watched(user_id: number) {
     media: similarMedia,
     basedOn: recentMedia.title,
   };
+}
+
+export async function getRandomMedia() {
+  const [data] = await db
+    .select()
+    .from(media)
+    .orderBy(sql`RAND()`)
+    .limit(1);
+
+  return data;
 }

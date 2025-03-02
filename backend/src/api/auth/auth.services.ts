@@ -110,6 +110,7 @@ export async function logIn(
       displayName: user.displayName,
       email: user.email,
       role: user.role,
+      avatar_url: user.avatarUrl,
     },
   };
 }

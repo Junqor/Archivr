@@ -10,8 +10,8 @@ export function PopularShowsCarousel({ ...props }) {
   return (
     <MediaCarousel
       media={media}
-      slidesPerViewMobile={4}
-      slidesPerViewDesktop={7}
+      slidesPerViewMobile={3}
+      slidesPerViewDesktop={6}
       spaceBetweenMobile={8}
       spaceBetweenDesktop={16}
       {...props}

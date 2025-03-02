@@ -16,7 +16,10 @@ export function TrendingPagePaginated({ type }: { type: "movie" | "tv" }) {
     queryKey: ["trending", type],
     queryFn: ({ pageParam }) => getTrendingPaginated(type, pageParam),
     initialPageParam: 0,
-    getNextPageParam: (_lastPage, pages) => pages.length,
+    getNextPageParam: (lastPage, _pages, lastPageParam) => {
+      if (lastPage.length === 0) return undefined;
+      else return lastPageParam + 1;
+    },
   });
 
   if (status === "pending") {

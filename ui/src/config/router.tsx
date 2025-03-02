@@ -17,6 +17,8 @@ import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
 import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginated";
 import { ResetPassword } from "@/pages/resetPassword";
+import { Random } from "@/pages/random";
+import { ActivityPage } from "@/pages/activityPage/activityPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -65,7 +67,10 @@ const router = createBrowserRouter([
           throw { status: 503 };
         },
       },
-      // Admin Portal
+      {
+        path: "/activity",
+        element: <ActivityPage />,
+      },
       {
         path: "/admin",
         element: (
@@ -75,8 +80,24 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/genre",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/members",
+        element: <UnderConstruction />,
+      },
+      {
+        path: "/popular",
+        element: <PopularPage />,
+      },
+      {
         path: "/profile/:username",
         element: <ProfilePage />,
+      },
+      {
+        path: "/random",
+        element: <Random />,
       },
       {
         path: "/settings",
@@ -91,6 +112,10 @@ const router = createBrowserRouter([
         element: <UnderConstruction />,
       },
       {
+        path: "/tos",
+        element: <TermsOfServicePage />,
+      },
+      {
         path: "/trending",
         element: <TrendingPage />,
       },
@@ -101,22 +126,6 @@ const router = createBrowserRouter([
       {
         path: "/trending/shows",
         element: <TrendingPagePaginated type="tv" />,
-      },
-      {
-        path: "/popular",
-        element: <PopularPage />,
-      },
-      {
-        path: "/members",
-        element: <UnderConstruction />,
-      },
-      {
-        path: "/tos",
-        element: <TermsOfServicePage />,
-      },
-      {
-        path: "/random",
-        element: <UnderConstruction />,
       },
     ],
   },
