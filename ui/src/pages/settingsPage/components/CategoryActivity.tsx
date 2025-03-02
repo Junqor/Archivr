@@ -1,11 +1,12 @@
 import { Checkbox } from "@/components/ui/checkbox";
+import { TUserSettings } from "../settingsPage";
 
 export function ProfileSettingsCategoryActivity({
   updateSetting,
-  findSetting,
+  settings,
 }: {
-  updateSetting: (key: string, value: string) => void;
-  findSetting: (key: string) => string;
+  updateSetting: (key: keyof TUserSettings, value: string) => void;
+  settings: TUserSettings;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
@@ -15,7 +16,7 @@ export function ProfileSettingsCategoryActivity({
             onCheckedChange={(checked) => {
               updateSetting("grant_personal_data", String(Number(checked)));
             }}
-            checked={Boolean(Number(findSetting("grant_personal_data")))}
+            checked={Boolean(Number(settings.grant_personal_data || ""))}
             className="self-center"
           ></Checkbox>
           <p>Allow Archivr employees to see where you live</p>
@@ -28,7 +29,7 @@ export function ProfileSettingsCategoryActivity({
                 String(Number(checked)),
               );
             }}
-            checked={Boolean(Number(findSetting("show_personalized_content")))}
+            checked={Boolean(Number(settings.show_personalized_content || ""))}
             className="self-center"
           ></Checkbox>
           <p>Personalized content</p>

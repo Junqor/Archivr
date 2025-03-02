@@ -1,110 +1,106 @@
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getUserSettings, setUserSettings } from "@/api/user";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSettingsCategoryProfile } from "./components/CategoryProfile";
 import { ProfileSettingsCategoryAccount } from "./components/CategoryAccount";
 import { ProfileSettingsCategoryAppearance } from "./components/CategoryAppearance";
 import { ProfileSettingsCategoryActivity } from "./components/CategoryActivity";
 import { ProfileSettingsCategoryHelpAndSupport } from "./components/CategoryHelpAndSupport";
-import { useSettings } from "@/context/settings";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useAuth } from "@/context/auth";
+import { Navigate } from "react-router-dom";
+import { toast } from "sonner";
+
+export type TUserSettings = {
+  displayName: string | null;
+  status: string | null;
+  bio: string | null;
+  pronouns: string | null;
+  location: string | null;
+  social_instagram: string | null;
+  social_youtube: string | null;
+  social_tiktok: string | null;
+  public: number | null;
+  show_adult_content: number | null;
+  theme: string | null;
+  font_size: string | null;
+  grant_personal_data: number | null;
+  show_personalized_content: number | null;
+};
 
 export function ProfileSettings() {
-  const [changedSettings, setChangedSettings] = useState<Map<string, string>>(
-    new Map<string, string>(),
-  );
-
+  const [newSettings, setNewSettings] = useState<TUserSettings>({
+    displayName: null,
+    status: null,
+    bio: null,
+    pronouns: null,
+    location: null,
+    social_instagram: null,
+    social_youtube: null,
+    social_tiktok: null,
+    public: null,
+    show_adult_content: null,
+    theme: null,
+    font_size: null,
+    grant_personal_data: null,
+    show_personalized_content: null,
+  });
+  const [changedSettingsKeys, setChangedSettingsKeys] = useState<
+    Set<keyof TUserSettings>
+  >(new Set());
   const [selectedMenu, setSelectedMenu] = useState("Profile");
-
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  if (!user)
-    throw new Error(
-      "user doesnt exist in page that already kicks you if you're not logged in",
-    );
-
-  const { refetchSettings: refetchUserSettings } = useSettings();
+  if (!user) return <Navigate to="/login" />;
 
   const {
     error: query_error,
-    isPending: query_isPending,
+    isPending,
+    isLoading,
     data: currentSettings,
-    refetch: refetchCurrentSettings,
   } = useQuery({
-    queryKey: ["settingsCurrentSettings", user.id.toString()],
-    queryFn: async () => {
-      const a = await getUserSettings();
-      const b = new Map<string, string>();
-      for (const [key, value] of Object.entries(a)) {
-        b.set(key, String(value));
-      }
-      const c = new Map<string, string>();
-      changedSettings.forEach((value: string, key: string) => {
-        if (value != b.get(key)) {
-          c.set(key, value);
-        }
-      });
-      setChangedSettings(c);
-      refetchUserSettings();
-      return b;
+    queryKey: ["settingsCurrentSettings"],
+    queryFn: () => getUserSettings(),
+  });
+
+  const { error: mutate_error, mutate: applyChangedSettings } = useMutation({
+    mutationFn: () => setUserSettings(newSettings),
+    onSuccess: () => {
+      setChangedSettingsKeys(new Set());
+      toast.success("Settings updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["settingsCurrentSettings"] });
+    },
+    onError: () => {
+      toast.error("Failed to update settings");
     },
   });
 
-  const {
-    error: mutate_error,
-    isPending: mutate_isPending,
-    mutate: applyChangedSettings,
-  } = useMutation({
-    mutationFn: async () => {
-      await setUserSettings(changedSettings);
-      refetchCurrentSettings();
-      setChangedSettings(new Map<string, string>());
-    },
-  });
+  useEffect(() => {
+    if (currentSettings) {
+      setNewSettings(currentSettings);
+    }
+  }, [currentSettings]);
 
-  const updateSetting = (key: string, value: string) => {
-    const currentValue = currentSettings?.get(key);
-    const map: Map<string, string> = new Map<string, string>();
-    changedSettings.forEach((old_value: string, old_key: string) => {
-      if (old_key == key) {
-        if (value != currentValue) {
-          map.set(old_key, value);
-        }
-      } else {
-        map.set(old_key, old_value);
-      }
-    });
-    if (!changedSettings.has(key) && value != currentValue) {
-      map.set(key, value);
-    }
-    setChangedSettings(map);
-  };
-
-  const findSetting = (key: string): string => {
-    const changedValue = changedSettings.get(key);
-    if (changedValue != null) {
-      return changedValue;
-    }
-    const currentValue = currentSettings?.get(key);
-    if (currentValue != null) {
-      return currentValue;
-    }
-    return "";
+  const updateSetting = (key: keyof TUserSettings, value: string) => {
+    if (currentSettings[key] === value) changedSettingsKeys.delete(key);
+    else changedSettingsKeys.add(key);
+    setNewSettings((prevSettings) => ({
+      ...prevSettings,
+      [key]: value,
+    }));
   };
 
   if (query_error || mutate_error) {
     throw new Error("Error fetching settings");
-    return null;
   }
 
-  const isPending = query_isPending || mutate_isPending;
+  if (isPending || isLoading) return <LoadingSpinner />;
 
   return (
     <>
-      {isPending ? <LoadingSpinner></LoadingSpinner> : null}
       <div
         className={
           "flex min-h-[calc(100vh-100px)] w-full items-start rounded-3xl border border-white bg-black" +
@@ -122,8 +118,8 @@ export function ProfileSettings() {
           {selectedMenu == "Profile" ? (
             <ProfileSettingsCategoryProfile
               updateSetting={updateSetting}
-              findSetting={findSetting}
-            ></ProfileSettingsCategoryProfile>
+              settings={newSettings}
+            />
           ) : null}
           {selectedMenu == "Account" ? (
             <ProfileSettingsCategoryAccount></ProfileSettingsCategoryAccount>
@@ -131,13 +127,13 @@ export function ProfileSettings() {
           {selectedMenu == "Appearance" ? (
             <ProfileSettingsCategoryAppearance
               updateSetting={updateSetting}
-              findSetting={findSetting}
+              settings={newSettings}
             ></ProfileSettingsCategoryAppearance>
           ) : null}
           {selectedMenu == "Activity" ? (
             <ProfileSettingsCategoryActivity
               updateSetting={updateSetting}
-              findSetting={findSetting}
+              settings={newSettings}
             ></ProfileSettingsCategoryActivity>
           ) : null}
           {selectedMenu == "Help & Support" ? (
@@ -145,11 +141,11 @@ export function ProfileSettings() {
           ) : null}
         </div>
       </div>
-      {changedSettings.size > 0 ? (
+      {changedSettingsKeys.size > 0 ? (
         <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border border-white bg-black p-3">
           <h4 className="flex self-center">
-            {changedSettings.size}{" "}
-            {changedSettings.size != 1
+            {changedSettingsKeys.size}{" "}
+            {changedSettingsKeys.size != 1
               ? "settings have been modified"
               : "setting has been modified"}
           </h4>

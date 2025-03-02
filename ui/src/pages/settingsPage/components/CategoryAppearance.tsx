@@ -5,13 +5,14 @@ import {
   DropdownTrigger,
 } from "@/components/ui/dropdown";
 import { ChevronDown } from "lucide-react";
+import { TUserSettings } from "../settingsPage";
 
 export function ProfileSettingsCategoryAppearance({
   updateSetting,
-  findSetting,
+  settings,
 }: {
-  updateSetting: (key: string, value: string) => void;
-  findSetting: (key: string) => string;
+  updateSetting: (key: keyof TUserSettings, value: string) => void;
+  settings: TUserSettings;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
@@ -22,7 +23,7 @@ export function ProfileSettingsCategoryAppearance({
             <DropdownTrigger>
               <div className="flex min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2">
                 <p className="text-base font-medium capitalize leading-normal">
-                  {findSetting("theme")}
+                  {settings.theme || ""}
                 </p>
                 <ChevronDown></ChevronDown>
               </div>
@@ -51,7 +52,7 @@ export function ProfileSettingsCategoryAppearance({
             <DropdownTrigger>
               <div className="flex min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2">
                 <p className="text-base font-medium capitalize leading-normal">
-                  {findSetting("font_size")}
+                  {settings.font_size || ""}
                 </p>
                 <ChevronDown></ChevronDown>
               </div>
