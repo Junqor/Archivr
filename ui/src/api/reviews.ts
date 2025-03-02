@@ -5,6 +5,7 @@ export type TReview = {
   user_id: number;
   media_id: number;
   username: string;
+  display_name: string;
   comment: string;
   created_at: string;
   rating: number;

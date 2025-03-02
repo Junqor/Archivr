@@ -20,17 +20,22 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.6",
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@types/multer": "^1.4.12",
+    "@types/tmp": "^0.2.6",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.39.1",
     "express": "^4.21.1",
+    "jimp": "^1.6.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.10.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
+    "tmp": "^0.2.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {

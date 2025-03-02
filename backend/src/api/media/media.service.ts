@@ -10,6 +10,7 @@ import {
   userReviews,
   users,
   remoteId,
+  userSettings,
 } from "../../db/schema.js";
 import {
   desc,
@@ -85,6 +86,7 @@ export async function update_review(
   return;
 }
 
+// I disabled sql_mode=only_full_group_by to make this slop work with display_name
 export async function get_media_reviews(
   media_id: number,
   amount: number,
@@ -96,6 +98,7 @@ export async function get_media_reviews(
       user_id: UsersTable.id,
       media_id: userReviews.mediaId,
       username: UsersTable.username,
+      display_name: UsersTable.displayName,
       comment: userReviews.comment,
       created_at: userReviews.createdAt,
       rating: ratings.rating,
@@ -114,6 +117,7 @@ export async function get_media_reviews(
   return rows satisfies TReview[];
 }
 
+// ! deprecated
 export async function get_user_review(
   media_id: number,
   user_id: number
@@ -197,6 +201,7 @@ export async function get_recently_reviewed() {
       rating: media.rating,
       userId: users.id,
       userName: users.username,
+      display_name: users.displayName,
       review: userReviews.comment,
       reviewRating: ratings.rating,
       created_at: userReviews.createdAt,

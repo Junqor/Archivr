@@ -9,6 +9,9 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminPortal from "@/pages/adminPortal/adminPortal";
 import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
+import { ProfileSettings } from "@/pages/settingsPage/settingsPage";
+import LoginRequiredRoute from "@/components/loginRequiredRoute";
+import { ProfilePage } from "@/pages/profilePage/profilePage";
 import { PopularPage } from "@/pages/popularPage/popularPage";
 import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
@@ -72,12 +75,16 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/profile",
-        element: <UnderConstruction />,
+        path: "/profile/:username",
+        element: <ProfilePage />,
       },
       {
         path: "/settings",
-        element: <UnderConstruction />,
+        element: (
+          <LoginRequiredRoute>
+            <ProfileSettings />
+          </LoginRequiredRoute>
+        ),
       },
       {
         path: "/genre",
@@ -120,6 +127,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/magnapinna-ceptis",
+    element: null,
   },
 ]);
 

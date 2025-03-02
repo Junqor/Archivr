@@ -8,7 +8,10 @@ export const loggerMiddleware = async (
 ) => {
   const start = performance.now();
   const { method, url } = req;
-  logger.info({ method, url }, "Incoming Request");
+  logger.info(
+    { method, url, headers: req.headers, body: req.body },
+    "Incoming Request"
+  );
   next();
   logger.info(
     {

@@ -68,3 +68,17 @@ export const getUserInfoFromToken = async () => {
 
   return data.user as TUser;
 };
+
+export const refreshLogin = async () => {
+  const response = await fetch(import.meta.env.VITE_API_URL + "/auth", {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to refresh login");
+  }
+
+  const data = await response.json();
+
+  return data.user as TUser;
+};

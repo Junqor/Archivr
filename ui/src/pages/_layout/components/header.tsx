@@ -1,9 +1,5 @@
 import SearchBar from "../../../components/searchBar";
-import {
-  AccountCircle,
-  LoginRounded,
-  KeyboardArrowDownRounded,
-} from "@mui/icons-material";
+import { LoginRounded, KeyboardArrowDownRounded } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import {
@@ -98,23 +94,33 @@ export default function Header() {
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <AccountCircle sx={{ fontSize: "1.5rem" }} />
+                <img
+                  src={import.meta.env.VITE_API_URL + "/user/pfp/" + user.id}
+                  className="ml-4 size-[2.5rem] rounded-[2.5rem]"
+                ></img>
                 <div className="flex flex-row items-center gap-1">
-                  <h4>{user.username}</h4>
+                  <div className="flex flex-col items-start">
+                    <h4 className="text-nowrap">
+                      {user.displayName || user.username}
+                    </h4>
+                    <h5 className="text-nowrap text-[#7F7F7E]">
+                      {"@" + user.username}
+                    </h5>
+                  </div>
                   <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
                 </div>
               </DropdownTrigger>
               <DropdownContent>
                 {user.role === "admin" && (
-                  <DropdownItem onSelect={() => navigate("/admin")}>
-                    Admin Portal{" { }"}
+                  <DropdownItem asChild>
+                    <Link to="/admin">Admin Portal{" { }"}</Link>
                   </DropdownItem>
                 )}
-                <DropdownItem onSelect={() => navigate("/profile")}>
-                  Profile
+                <DropdownItem asChild>
+                  <Link to={`/profile/${user.username}`}>Profile</Link>
                 </DropdownItem>
-                <DropdownItem onSelect={() => navigate("/settings")}>
-                  Settings
+                <DropdownItem asChild>
+                  <Link to="/settings">Settings</Link>
                 </DropdownItem>
                 <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
               </DropdownContent>
