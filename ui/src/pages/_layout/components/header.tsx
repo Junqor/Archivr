@@ -53,9 +53,9 @@ export default function Header() {
           >
             Home
           </Link>
-          <Dropdown>
+          <Dropdown modal={false}>
             <DropdownTrigger className="flex flex-row items-center justify-center gap-1 text-base text-white transition-colors hover:text-purple">
-              Genre
+              Genres
               <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
             </DropdownTrigger>
             <DropdownContent className="grid grid-cols-5 gap-2 bg-black p-2">
@@ -71,24 +71,47 @@ export default function Header() {
               ))}
             </DropdownContent>
           </Dropdown>
-          <Link
-            to="/trending"
-            className="text-white transition-colors hover:text-purple"
-          >
-            Trending
-          </Link>
-          <Link
-            to="/popular"
-            className="text-white transition-colors hover:text-purple"
-          >
-            Popular
-          </Link>
-          <Link
-            to="/members"
-            className="text-white transition-colors hover:text-purple"
-          >
-            Members
-          </Link>
+
+          <Dropdown modal={false}>
+            <DropdownTrigger className="flex flex-row items-center gap-3 text-base text-white transition-colors hover:text-purple">
+              Explore
+              <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
+            </DropdownTrigger>
+            <DropdownContent>
+              <DropdownItem asChild>
+                <Link
+                  to="/trending"
+                  className="text-white transition-colors hover:text-purple"
+                >
+                  Trending
+                </Link>
+              </DropdownItem>
+              <DropdownItem asChild>
+                <Link
+                  to="/popular"
+                  className="text-white transition-colors hover:text-purple"
+                >
+                  Popular
+                </Link>
+              </DropdownItem>
+              <DropdownItem asChild>
+                <Link
+                  to="/activity"
+                  className="text-white transition-colors hover:text-purple"
+                >
+                  Activity
+                </Link>
+              </DropdownItem>
+              <DropdownItem asChild>
+                <Link
+                  to="/members"
+                  className="text-white transition-colors hover:text-purple"
+                >
+                  Members
+                </Link>
+              </DropdownItem>
+            </DropdownContent>
+          </Dropdown>
         </div>
         <div className="flex flex-row items-center justify-center gap-2 sm:gap-6">
           <SearchBar />
