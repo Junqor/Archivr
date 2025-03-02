@@ -35,6 +35,7 @@ function returnBaseQuery() {
         username: users.username,
         avatar_url: users.avatarUrl,
         role: users.role,
+        display_name: users.displayName,
       },
       review: {
         rating: ratings.rating,

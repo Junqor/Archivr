@@ -3,6 +3,7 @@ import {
   userReviews,
   likesReviews as likesReviewsTable,
   ratings,
+  activity,
 } from "../../db/schema.js";
 import { and, eq } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../../utils/error.class.js";
@@ -28,7 +29,20 @@ export const deleteReview = async (reviewId: number, userId: number) => {
 
 export const likeReview = async (reviewId: number, userId: number) => {
   try {
-    await db.insert(likesReviewsTable).values({ userId, reviewId });
+    await db.transaction(async (tx) => {
+      await tx.insert(likesReviewsTable).values({ userId, reviewId });
+
+      const [{ mediaId }] = await tx
+        .select({ mediaId: userReviews.mediaId })
+        .from(userReviews)
+        .where(eq(userReviews.id, reviewId));
+      await tx.insert(activity).values({
+        userId,
+        activityType: "like_review",
+        targetId: reviewId,
+        relatedId: mediaId,
+      });
+    });
   } catch (error) {
     // If the like already exists for this review+user, unlike/delete it
     await db

@@ -1,5 +1,4 @@
 import { TReviewResponse } from "@/api/reviews";
-import { useState } from "react";
 import { StarRatings } from "./starRatings";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,7 +8,7 @@ import { formatDate } from "@/utils/formatDate";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { likeReview } from "@/api/reviews";
 import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { UserAvatar } from "@/components/ui/avatar";
 import { CollapsedText } from "@/components/ui/collapsed-text";
@@ -21,7 +20,6 @@ export const ReviewCard = ({
   userReview: TReviewResponse;
   isLiked: boolean;
 }) => {
-  const [expanded, setExpanded] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -79,21 +77,16 @@ export const ReviewCard = ({
   });
 
   const { user, review } = userReview;
-  const maxUnexpandedCommentCharacters = 400;
-
-  const isTooLong = () => {
-    return review.comment.length > maxUnexpandedCommentCharacters;
-  };
-
-  const truncatedComment = () => {
-    return review.comment.substring(0, maxUnexpandedCommentCharacters) + "...";
-  };
 
   return (
     <section className="mb-4 flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
       <div className="flex flex-row items-center gap-x-2 space-y-0">
         <UserAvatar user={user} size="small" />
-        <h5>{review.username}</h5>
+        <Link to={`/profile/${user.username}`}>
+          <h5 className="transition-colors hover:text-purple">
+            {user.display_name || user.username}
+          </h5>
+        </Link>
         <div className="ml-auto flex items-center">
           {[...Array(10)].map((_, i) => (
             <StarRatings
@@ -112,21 +105,6 @@ export const ReviewCard = ({
         <ReviewKebab review={review} />
       </div>
       <CollapsedText text={review.comment} max_length={400}></CollapsedText>
-      <p className="min-h-8 text-gray-300">
-        {expanded || !isTooLong() ? review.comment : truncatedComment()}
-      </p>
-      {isTooLong() && (
-        <div>
-          <button
-            onClick={() => {
-              setExpanded(!expanded);
-            }}
-            className="underline"
-          >
-            {expanded ? "Show less" : "Show more"}
-          </button>
-        </div>
-      )}
       <div className="flex flex-row items-center justify-start">
         <p className="text-sm text-gray-400">{formatDate(review.created_at)}</p>
 

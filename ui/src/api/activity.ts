@@ -22,6 +22,7 @@ export type TEnhancedActivity = {
     username: string;
     avatar_url: string;
     role: "admin" | "user";
+    display_name: string;
   };
   review: {
     mediaId: number;
