@@ -253,7 +253,6 @@ export const userSettings = mysqlTable(
     user_id: int("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
-    displayName: char("display_name", { length: 32 }).default("").notNull(),
     status: char({ length: 128 }).default("").notNull(),
     bio: text().notNull(),
     pronouns: char({ length: 32 }).default("").notNull(),
@@ -265,9 +264,9 @@ export const userSettings = mysqlTable(
       .default("")
       .notNull(),
     social_tiktok: char("social_tiktok", { length: 255 }).default("").notNull(),
-    public: tinyint().default(1).notNull(),
+    public: tinyint().default(1).notNull(), // Should be boolean
     show_adult_content: tinyint("show_adult_content").default(0).notNull(),
-    theme: mysqlEnum(["dark", "light"]).default("dark").notNull(),
+    theme: mysqlEnum(["dark", "light"]).default("dark").notNull(), // Should be in localstorage
     fontSize: mysqlEnum("font_size", ["small", "normal", "large"])
       .default("normal")
       .notNull(),
