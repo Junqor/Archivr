@@ -1,6 +1,7 @@
 import { Router, Request } from "express";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
 import {
+  addReply,
   checkLikes,
   deleteReview,
   getUserReviewAndRating,
@@ -8,6 +9,7 @@ import {
 } from "./reviews.service.js";
 import { UnauthorizedError } from "../../utils/error.class.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { z } from "zod";
 
 const reviewsRouter = Router();
 
@@ -60,6 +62,22 @@ reviewsRouter.get(
     }
     const data = await getUserReviewAndRating(user.id, mediaId);
     res.json({ status: "success", data });
+  })
+);
+
+const replyBodySchema = z.object({
+  reviewId: z.coerce.number(),
+  text: z.string(),
+});
+
+reviewsRouter.post(
+  "/reply",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { reviewId, text } = replyBodySchema.parse(req.body);
+    await addReply(text, reviewId, user.id);
+    res.json({ status: "success" });
   })
 );
 

@@ -4,6 +4,7 @@ import {
   likesReviews as likesReviewsTable,
   ratings,
   activity,
+  Replies,
 } from "../../db/schema.js";
 import { and, eq } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../../utils/error.class.js";
@@ -86,4 +87,30 @@ export const getUserReviewAndRating = async (
   }
 
   return rows[0];
+};
+
+export const addReply = async (
+  text: string,
+  reviewId: number,
+  userId: number
+) => {
+  //
+  await db.transaction(async (tx) => {
+    await tx.insert(Replies).values({
+      parent_id: reviewId,
+      user_id: userId,
+      text: text,
+    });
+    const [{ mediaId }] = await tx
+      .select({ mediaId: userReviews.mediaId })
+      .from(userReviews)
+      .where(eq(userReviews.id, reviewId));
+    await tx.insert(activity).values({
+      userId: userId,
+      activityType: "reply",
+      targetId: reviewId,
+      relatedId: mediaId,
+      content: text,
+    });
+  });
 };
