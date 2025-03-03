@@ -2,7 +2,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Youtube, Instagram, Music2, ImageUp, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { ImageUp, X } from "lucide-react";
+import { Instagram, YouTube, AudiotrackRounded } from "@mui/icons-material";
 import {
   Dialog,
   DialogClose,
@@ -66,7 +68,7 @@ export function ProfileSettingsCategoryProfile({
 
   return (
     <div className="flex flex-col gap-2 self-stretch">
-      <div className="flex items-center gap-5 self-stretch">
+      <div className="flex w-full flex-col items-center gap-5 self-stretch sm:flex-row">
         <Dialog
           onOpenChange={() => {
             setPfpSelected(false);
@@ -105,7 +107,7 @@ export function ProfileSettingsCategoryProfile({
                   onChange={handleFileChange}
                   ref={pfp_upload_input}
                   type="file"
-                  name="pfp"
+                  id="pfp"
                   accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"
                 />
                 {pfpSelected && <Button onClick={handleSetPfp}>Upload</Button>}
@@ -116,9 +118,9 @@ export function ProfileSettingsCategoryProfile({
             </DialogContent>
           </DialogPortal>
         </Dialog>
-        <div className="flex flex-1 flex-col items-start gap-3">
+        <div className="flex w-full flex-1 flex-col items-start gap-3">
           <div className="flex flex-col items-start justify-center gap-2 self-stretch">
-            <h4>Display Name</h4>
+            <Label htmlFor="display_name">Display Name</Label>
             <Input
               maxLength={64}
               onChange={(event) => {
@@ -127,60 +129,67 @@ export function ProfileSettingsCategoryProfile({
               defaultValue={settings.displayName || ""}
               placeholder={user?.username}
               className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+              id="display_name"
             />
           </div>
 
           <div className="flex flex-col items-start justify-center gap-2 self-stretch">
-            <h4 className="text-[#7F7F7E]">Username</h4>
+            <Label className="text-[#7F7F7E]" htmlFor="username">
+              Username
+            </Label>
             <Input
               disabled
               value={"@" + user?.username}
               className="flex items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] bg-black px-4 py-2 text-[#7F7F7E]"
+              id="username"
             />
           </div>
 
           <div className="flex flex-col items-start justify-center gap-2 self-stretch">
-            <h4>Status</h4>
+            <Label htmlFor="status">Status</Label>
             <Input
               maxLength={128}
               onChange={(event) => {
                 updateSetting("status", event.target.value);
               }}
               defaultValue={settings.status || ""}
-              placeholder="..."
+              placeholder="What's on your mind?"
               className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+              id="status"
             />
           </div>
         </div>
       </div>
       <div className="flex flex-col items-start justify-center gap-2 self-stretch">
-        <h4>Bio</h4>
+        <Label htmlFor="bio">Bio</Label>
         <Textarea
           maxLength={30000}
           onChange={(event) => {
             updateSetting("bio", event.target.value);
           }}
           defaultValue={settings.bio || ""}
-          placeholder="write about yourself..."
+          placeholder="Tell us a little about yourself..."
           className="flex min-h-[67px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+          id="bio"
         ></Textarea>
       </div>
-      <div className="flex items-start justify-center gap-2 self-stretch">
-        <div className="flex flex-1 flex-col items-start justify-center gap-2 self-stretch">
-          <h4>Pronouns</h4>
+      <div className="flex flex-col items-start justify-center gap-3 self-stretch sm:flex-row">
+        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
+          <Label htmlFor="pronouns">Pronouns</Label>
           <Input
             maxLength={32}
             onChange={(event) => {
               updateSetting("pronouns", event.target.value);
             }}
             defaultValue={settings.pronouns || ""}
-            placeholder="it/that"
+            placeholder="e.g. She/Her, He/Him, They/Them"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+            id="pronouns"
           ></Input>
         </div>
 
-        <div className="flex flex-1 flex-col items-start justify-center gap-2 self-stretch">
-          <h4>Location</h4>
+        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
+          <Label htmlFor="location">Location</Label>
           <Input
             maxLength={32}
             onChange={(event) => {
@@ -189,6 +198,7 @@ export function ProfileSettingsCategoryProfile({
             defaultValue={settings.location || ""}
             placeholder="Earth"
             className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+            id="location"
           ></Input>
         </div>
       </div>
@@ -217,48 +227,57 @@ export function ProfileSettingsCategoryProfile({
       <h3>Socials</h3>
       <hr className="h-px self-stretch bg-[#7F7F7E]" />
       <div className="flex items-start gap-3 self-stretch py-3">
-        <div className="flex flex-col gap-[26px] self-stretch py-[5px]">
-          <div className="flex items-center gap-3">
-            <Instagram />
-            <h4>Instagram</h4>
+        <div className="flex w-full flex-col gap-[26px] self-stretch py-[5px]">
+          <div className="flex w-full flex-col gap-5">
+            <div className="flex w-full flex-col gap-2 sm:flex-row">
+              <div className="flex items-center gap-3 sm:w-1/4">
+                <Instagram />
+                <Label htmlFor="social_instagram">Instagram</Label>
+              </div>
+              <Input
+                maxLength={255}
+                onChange={(event) => {
+                  updateSetting("social_instagram", event.target.value);
+                }}
+                defaultValue={settings.social_instagram || ""}
+                placeholder="https://www.instagram.com/username/"
+                className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+                id="social_instagram"
+              />
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="flex items-center gap-3 sm:w-1/4">
+                <YouTube />
+                <Label htmlFor="social_youtube">Youtube</Label>
+              </div>
+              <Input
+                maxLength={255}
+                onChange={(event) => {
+                  updateSetting("social_youtube", event.target.value);
+                }}
+                defaultValue={settings.social_youtube || ""}
+                placeholder="https://www.youtube.com/username/"
+                className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+                id="social_youtube"
+              />
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="flex items-center gap-3 sm:w-1/4">
+                <AudiotrackRounded />
+                <Label htmlFor="social_tiktok">Tiktok</Label>
+              </div>
+              <Input
+                maxLength={255}
+                onChange={(event) => {
+                  updateSetting("social_tiktok", event.target.value);
+                }}
+                defaultValue={settings.social_tiktok || ""}
+                placeholder="https://www.tiktok.com/@username/"
+                className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+                id="social_tiktok"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Youtube />
-            <h4>Youtube</h4>
-          </div>
-          <div className="flex items-center gap-3">
-            <Music2 />
-            <h4>Tiktok</h4>
-          </div>
-        </div>
-        <div className="flex flex-1 flex-col gap-5">
-          <Input
-            maxLength={255}
-            onChange={(event) => {
-              updateSetting("social_instagram", event.target.value);
-            }}
-            defaultValue={settings.social_instagram || ""}
-            placeholder="https://www.instagram.com/username/"
-            className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
-          ></Input>
-          <Input
-            maxLength={255}
-            onChange={(event) => {
-              updateSetting("social_youtube", event.target.value);
-            }}
-            defaultValue={settings.social_youtube || ""}
-            placeholder="https://www.youtube.com/username/"
-            className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
-          ></Input>
-          <Input
-            maxLength={255}
-            onChange={(event) => {
-              updateSetting("social_tiktok", event.target.value);
-            }}
-            defaultValue={settings.social_tiktok || ""}
-            placeholder="https://www.tiktok.com/@username/"
-            className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
-          ></Input>
         </div>
       </div>
     </div>

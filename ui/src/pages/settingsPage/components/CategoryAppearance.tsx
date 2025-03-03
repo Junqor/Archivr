@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dropdown";
 import { ChevronDown } from "lucide-react";
 import { TUserSettings } from "../settingsPage";
+import { Label } from "@/components/ui/label";
 
 export function ProfileSettingsCategoryAppearance({
   updateSetting,
@@ -16,12 +17,12 @@ export function ProfileSettingsCategoryAppearance({
 }) {
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
-      <div className="flex items-start gap-2 self-stretch">
-        <div className="flex flex-1 flex-col items-start justify-center gap-2 self-stretch">
-          <h4>Theme</h4>
+      <div className="flex flex-col items-start gap-2 self-stretch sm:flex-row">
+        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
+          <Label>Theme</Label>
           <Dropdown>
-            <DropdownTrigger>
-              <div className="flex min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2">
+            <DropdownTrigger className="w-full">
+              <div className="flex min-h-9 w-full items-center justify-between gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2">
                 <p className="text-base font-medium capitalize leading-normal">
                   {settings.theme || ""}
                 </p>
@@ -46,11 +47,11 @@ export function ProfileSettingsCategoryAppearance({
             </DropdownContent>
           </Dropdown>
         </div>
-        <div className="flex flex-1 flex-col items-start justify-center gap-2 self-stretch">
-          <h4>Font</h4>
+        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
+          <Label>Font</Label>
           <Dropdown>
-            <DropdownTrigger>
-              <div className="flex min-h-9 min-w-[295px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2">
+            <DropdownTrigger className="w-full">
+              <div className="flex min-h-9 w-full items-center justify-between gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2">
                 <p className="text-base font-medium capitalize leading-normal">
                   {settings.font_size || ""}
                 </p>
