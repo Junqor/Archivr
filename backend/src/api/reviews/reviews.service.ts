@@ -43,7 +43,26 @@ export async function updateReview(
         });
     }
 
-    // Update activity
+    // Try to update the review activity
+    const rows = await tx
+      .update(activity)
+      .set({
+        content: new_comment,
+        createdAt: sql`CURRENT_TIMESTAMP`,
+      })
+      .where(
+        and(eq(activity.userId, user_id), eq(activity.targetId, media_id))
+      );
+
+    // If the update was successful, do not insert a new activity
+    if (rows[0].affectedRows === 1) {
+      return;
+    } else if (rows[0].affectedRows > 1) {
+      // Just in case
+      throw new Error("Multiple review activities found");
+    }
+
+    // Insert a new activity
     await tx.insert(activity).values({
       userId: user_id,
       activityType: "review",
