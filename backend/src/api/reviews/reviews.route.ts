@@ -1,6 +1,11 @@
 import { Router, Request } from "express";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
-import { checkLikes, deleteReview, likeReview } from "./reviews.service.js";
+import {
+  checkLikes,
+  deleteReview,
+  getUserReviewAndRating,
+  likeReview,
+} from "./reviews.service.js";
 import { UnauthorizedError } from "../../utils/error.class.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 
@@ -39,6 +44,22 @@ reviewsRouter.get(
     const { user } = res.locals;
     const likes = await checkLikes(parseInt(mediaId), user.id);
     res.json({ status: "success", likes });
+  })
+);
+
+// Get the user's rating and review for a show
+reviewsRouter.get(
+  "/review-rating/:mediaId",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const mediaId = parseInt(req.params.mediaId);
+    if (isNaN(mediaId)) {
+      res.status(400).json({ status: "failed", message: "Invalid mediaId" });
+      return;
+    }
+    const data = await getUserReviewAndRating(user.id, mediaId);
+    res.json({ status: "success", data });
   })
 );
 
