@@ -6,7 +6,7 @@ import { useParams, Navigate } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { searchMedia } from "@/api/media";
 import empty from "@/assets/empty.png";
 import { formatDateYear } from "@/utils/formatDate";
@@ -21,7 +21,7 @@ import {
   CalendarMonthRounded,
   AccessTimeRounded,
 } from "@mui/icons-material";
-import { checkLikes } from "@/api/reviews";
+import { checkLikes, getUserReviewAndRating } from "@/api/reviews";
 import { getWatchProviders } from "@/api/watch";
 import {
   Select,
@@ -75,6 +75,23 @@ export function MediaPage() {
     queryKey: ["media", id, "watch-providers"],
     queryFn: () => getWatchProviders(parseInt(id as string)),
   });
+
+  const { data: ratingAndReview } = useQuery({
+    queryKey: ["media", user?.id, "rating"],
+    queryFn: () => getUserReviewAndRating(parseInt(id as string)),
+    enabled: !!user,
+  });
+
+  // Show the users current rating and review
+  useEffect(() => {
+    if (!ratingAndReview) return;
+    if (ratingAndReview.rating) {
+      setRating(ratingAndReview.rating);
+    }
+    if (ratingAndReview.review) {
+      setReview(ratingAndReview.review);
+    }
+  }, [ratingAndReview]);
 
   const handleLike = () => {
     updateLikes();

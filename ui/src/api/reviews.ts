@@ -152,3 +152,19 @@ export const checkLikes = async (mediaId: number) => {
 
   return likes;
 };
+
+export const getUserReviewAndRating = async (mediaId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/reviews/review-rating/" + mediaId,
+    {
+      headers: getAuthHeader(),
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch user review and rating");
+  }
+
+  const data = await response.json();
+
+  return data.data as { rating: number | null; review: string | null };
+};

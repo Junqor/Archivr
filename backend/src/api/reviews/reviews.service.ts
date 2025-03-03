@@ -70,3 +70,20 @@ export const checkLikes = async (mediaId: number, userId: number) => {
 
   return rows;
 };
+
+export const getUserReviewAndRating = async (
+  userId: number,
+  mediaId: number
+) => {
+  const rows = await db
+    .select({ rating: ratings.rating, review: userReviews.comment })
+    .from(ratings)
+    .leftJoin(userReviews, eq(ratings.id, userReviews.ratingId))
+    .where(and(eq(ratings.userId, userId), eq(ratings.mediaId, mediaId)));
+
+  if (rows.length === 0) {
+    return { rating: null, review: null };
+  }
+
+  return rows[0];
+};
