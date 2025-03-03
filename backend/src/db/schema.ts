@@ -33,6 +33,7 @@ export const activity = mysqlTable(
       "review",
       "like_review",
       "like_media",
+      "reply",
     ]).notNull(),
     targetId: int("target_id").notNull(),
     relatedId: int("related_id"),
@@ -186,6 +187,27 @@ export const remoteId = mysqlTable(
   (table) => [
     index("RemoteId_tmdb_id_IDX").on(table.tmdbId),
     primaryKey({ columns: [table.id], name: "RemoteId_id" }),
+  ]
+);
+
+export const Replies = mysqlTable(
+  "Replies",
+  {
+    id: int().autoincrement().notNull(),
+    parent_id: int()
+      .notNull()
+      .references(() => userReviews.id, { onDelete: "cascade" }),
+    user_id: int()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    text: text().notNull(),
+    created_at: timestamp({ mode: "string" }).defaultNow().notNull(),
+    updated_at: timestamp({ mode: "string" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("parent_id").on(table.parent_id),
+    index("user_id").on(table.user_id),
+    primaryKey({ columns: [table.id], name: "Replies_id" }),
   ]
 );
 
