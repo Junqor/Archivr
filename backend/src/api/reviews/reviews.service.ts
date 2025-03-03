@@ -8,6 +8,52 @@ import {
 } from "../../db/schema.js";
 import { and, eq } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../../utils/error.class.js";
+import { sql } from "drizzle-orm/sql";
+
+export async function updateReview(
+  media_id: number,
+  user_id: number,
+  new_comment: string,
+  new_rating: number
+) {
+  await db.transaction(async (tx) => {
+    const [ratingId] = await tx
+      .insert(ratings)
+      .values({ mediaId: media_id, userId: user_id, rating: new_rating })
+      .onDuplicateKeyUpdate({
+        set: { rating: new_rating, ratedAt: sql`CURRENT_TIMESTAMP` },
+      })
+      .$returningId();
+
+    if (new_comment.length > 0) {
+      await tx
+        .insert(userReviews)
+        .values({
+          mediaId: media_id,
+          userId: user_id,
+          comment: new_comment,
+          ratingId: ratingId.id,
+        })
+        .onDuplicateKeyUpdate({
+          set: {
+            comment: new_comment,
+            ratingId: ratingId.id,
+            createdAt: sql`CURRENT_TIMESTAMP`,
+          },
+        });
+    }
+
+    // Update activity
+    await tx.insert(activity).values({
+      userId: user_id,
+      activityType: "review",
+      targetId: media_id,
+      relatedId: ratingId.id,
+      content: new_comment,
+    });
+  });
+  return;
+}
 
 export const deleteReview = async (reviewId: number, userId: number) => {
   const [{ reviewUserId, ratingId }] = await db

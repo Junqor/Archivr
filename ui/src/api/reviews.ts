@@ -23,7 +23,7 @@ export const updateReview = async ({
   comment,
   rating = 5,
 }: UpdateReviewArgs) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/review`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -6,12 +6,31 @@ import {
   deleteReview,
   getUserReviewAndRating,
   likeReview,
+  updateReview,
 } from "./reviews.service.js";
-import { UnauthorizedError } from "../../utils/error.class.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
 
 const reviewsRouter = Router();
+
+const reviewBodySchema = z.object({
+  media_id: z.number(),
+  comment: z.string(),
+  rating: z.number().default(0), //TODO : make dis work
+});
+
+// (POST /media/review)
+// Update or add a review for a media
+reviewsRouter.post(
+  "/",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { media_id, comment, rating } = reviewBodySchema.parse(req.body);
+    await updateReview(media_id, user.id, comment, rating);
+    res.json({ status: "success" });
+  })
+);
 
 // (DELETE /reviews/:reviewId)
 reviewsRouter.delete(

@@ -53,51 +53,6 @@ export async function get_media_rating(
   return row.avg === null ? null : parseInt(row.avg);
 }
 
-export async function update_review(
-  media_id: number,
-  user_id: number,
-  new_comment: string,
-  new_rating: number
-) {
-  await db.transaction(async (tx) => {
-    const [ratingId] = await tx
-      .insert(ratings)
-      .values({ mediaId: media_id, userId: user_id, rating: new_rating })
-      .onDuplicateKeyUpdate({
-        set: { rating: new_rating, ratedAt: sql`CURRENT_TIMESTAMP` },
-      })
-      .$returningId();
-
-    if (new_comment.length > 0) {
-      await tx
-        .insert(userReviews)
-        .values({
-          mediaId: media_id,
-          userId: user_id,
-          comment: new_comment,
-          ratingId: ratingId.id,
-        })
-        .onDuplicateKeyUpdate({
-          set: {
-            comment: new_comment,
-            ratingId: ratingId.id,
-            createdAt: sql`CURRENT_TIMESTAMP`,
-          },
-        });
-    }
-
-    // Update activity
-    await tx.insert(activity).values({
-      userId: user_id,
-      activityType: "review",
-      targetId: media_id,
-      relatedId: ratingId.id,
-      content: new_comment,
-    });
-  });
-  return;
-}
-
 // I disabled sql_mode=only_full_group_by to make this slop work with display_name
 export async function get_media_reviews(
   media_id: number,
