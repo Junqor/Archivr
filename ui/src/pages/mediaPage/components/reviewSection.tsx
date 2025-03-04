@@ -88,7 +88,7 @@ export const ReviewSection = ({
     onSuccess: () => {
       toast.success("Reply posted!");
       queryClient.invalidateQueries({
-        queryKey: ["media", id, "reviews/check-likes"],
+        queryKey: ["media", id, "reviews"],
         exact: true,
       });
       setReplyingTo(null);
@@ -132,6 +132,10 @@ export const ReviewSection = ({
   };
 
   const handleSubmitReply = (text: string) => {
+    if (text.trim().length < 5) {
+      toast.error("Reply must be at least 5 characters long");
+      return;
+    }
     replyMutation(text);
   };
 
