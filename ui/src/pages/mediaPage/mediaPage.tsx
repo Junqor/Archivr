@@ -37,7 +37,7 @@ import {
 
 export function MediaPage() {
   const { id } = useParams();
-  const match = id?.match(/\d+/); // Check that the id is an integer
+  const match = id?.match(/^\d+$/); // Check that the id is an integer
   if (!match) {
     return <Navigate to="/404" />;
   }
@@ -87,7 +87,7 @@ export function MediaPage() {
   });
 
   const { data: ratingAndReview } = useQuery({
-    queryKey: ["media", user?.id, "rating"],
+    queryKey: ["media", id, "ratingAndReview"],
     queryFn: () => getUserReviewAndRating(parseInt(id as string)),
     enabled: !!user,
   });
