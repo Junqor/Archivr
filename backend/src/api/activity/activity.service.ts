@@ -64,6 +64,10 @@ function returnBaseQuery() {
         and(
           eq(activity.activityType, "review"),
           eq(media.id, activity.targetId)
+        ),
+        and(
+          eq(activity.activityType, "reply"),
+          eq(media.id, activity.relatedId)
         )
       )
     )
