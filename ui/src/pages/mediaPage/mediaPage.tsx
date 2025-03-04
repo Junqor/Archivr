@@ -13,7 +13,7 @@ import { formatDateYear } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
 import { formatInteger } from "@/utils/formatInteger";
 import { StarRatings } from "./components/starRatings";
-import { ReviewCard } from "./components/reviewCard";
+import { ReviewSection } from "./components/reviewSection";
 import { cn } from "@/lib/utils";
 import {
   SignalCellularAlt,
@@ -392,7 +392,7 @@ export function MediaPage() {
                   if (!userReview.comment) return null;
                   return (
                     <div key={crypto.randomUUID()}>
-                      <ReviewCard
+                      <ReviewSection
                         userReview={userReview}
                         isLiked={
                           !!reviewsLikedByUser &&
