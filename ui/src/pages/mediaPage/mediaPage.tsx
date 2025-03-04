@@ -376,7 +376,7 @@ export function MediaPage() {
         <section className="flex h-full w-full flex-col justify-start sm:w-3/4">
           <h3 className="font-light">See What Others Are Saying</h3>
           {reviewData && (
-            <div className="mt-3 flex flex-col">
+            <div className="mt-3 flex flex-col gap-y-4">
               {!reviewData.reviews.length ? (
                 <>
                   <h4 className="text-gray-400">
