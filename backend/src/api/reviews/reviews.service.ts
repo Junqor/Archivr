@@ -93,6 +93,20 @@ export const deleteReview = async (reviewId: number, userId: number) => {
   });
 };
 
+export const deleteReply = async (replyId: number, userId: number) => {
+  const [{ replyUserId }] = await db
+    .select({ replyUserId: Replies.user_id })
+    .from(Replies)
+    .where(eq(Replies.id, replyId));
+
+  // Check if the user is the reviewer
+  if (replyUserId !== userId) {
+    throw new UnauthorizedError("Unauthorized");
+  }
+
+  await db.delete(Replies).where(eq(Replies.id, replyId));
+};
+
 export const likeReview = async (reviewId: number, userId: number) => {
   try {
     await db.transaction(async (tx) => {

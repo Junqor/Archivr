@@ -72,7 +72,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const mediaId = parseInt(req.params.mediaId);
     const reviews = await get_media_reviews(mediaId, 10, 0);
-    res.json({ status: "success", reviews });
+    res.json({ status: "success", data: reviews });
   })
 );
 
