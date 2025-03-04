@@ -3,7 +3,7 @@ import { getAuthHeader } from "@/utils/authHeader";
 export type TActivity = {
   id: number;
   userId: number;
-  activityType: "follow" | "review" | "like_review" | "like_media";
+  activityType: "follow" | "review" | "like_review" | "like_media" | "reply";
   targetId: number;
   relatedId: number | null;
   content: string | null;
