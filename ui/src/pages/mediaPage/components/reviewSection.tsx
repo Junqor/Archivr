@@ -17,7 +17,7 @@ import { Comment, Reply } from "@mui/icons-material";
 import { ReplyKebab } from "./replyKebab";
 import { ReplyForm } from "./replyForm";
 
-export const ReviewCard = ({
+export const ReviewSection = ({
   userReview,
   isLiked,
 }: {
