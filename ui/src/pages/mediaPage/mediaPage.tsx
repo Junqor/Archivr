@@ -391,7 +391,7 @@ export function MediaPage() {
                 constructReviewLog(reviewData).map((userReview) => {
                   if (!userReview.comment) return null;
                   return (
-                    <div key={crypto.randomUUID()}>
+                    <div key={userReview.id}>
                       <ReviewSection
                         userReview={userReview}
                         isLiked={
