@@ -12,6 +12,7 @@ import {
   remoteId,
   userSettings,
   activity,
+  Replies,
 } from "../../db/schema.js";
 import {
   desc,
@@ -23,7 +24,7 @@ import {
   asc,
   or,
 } from "drizzle-orm/expressions";
-import { count, sql, avg } from "drizzle-orm";
+import { count, sql, avg, getTableColumns } from "drizzle-orm";
 import { serverConfig } from "../../configs/secrets.js";
 import { union } from "drizzle-orm/mysql-core";
 
@@ -67,17 +68,15 @@ export async function get_media_reviews(
         role: UsersTable.role,
         display_name: UsersTable.displayName,
       },
-      review: {
-        id: userReviews.id,
-        user_id: UsersTable.id,
-        media_id: userReviews.mediaId,
-        username: UsersTable.username,
-        display_name: UsersTable.displayName,
-        comment: userReviews.comment,
-        created_at: userReviews.createdAt,
-        rating: ratings.rating,
-        likes: count(likesReviewsTable.id).as("likes_count"),
-      },
+      id: userReviews.id,
+      user_id: UsersTable.id,
+      media_id: userReviews.mediaId,
+      username: UsersTable.username,
+      display_name: UsersTable.displayName,
+      comment: userReviews.comment,
+      created_at: userReviews.createdAt,
+      rating: ratings.rating,
+      likes: count(likesReviewsTable.id).as("likes_count"),
     })
     .from(userReviews)
     .innerJoin(UsersTable, eq(userReviews.userId, UsersTable.id))
@@ -89,7 +88,24 @@ export async function get_media_reviews(
     .limit(amount)
     .offset(offset);
 
-  return rows;
+  const reviewIds = rows.map((row) => row.id);
+
+  // Get the replies for each review
+  const replies = await db
+    .select({
+      user: {
+        username: UsersTable.username,
+        avatar_url: UsersTable.avatarUrl,
+        role: UsersTable.role,
+        display_name: UsersTable.displayName,
+      },
+      ...getTableColumns(Replies),
+    })
+    .from(Replies)
+    .innerJoin(users, eq(Replies.user_id, users.id))
+    .where(inArray(Replies.parent_id, reviewIds));
+
+  return { reviews: rows, replies: replies };
 }
 
 // ! deprecated

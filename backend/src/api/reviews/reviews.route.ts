@@ -3,6 +3,7 @@ import { authenticateToken } from "../../middleware/authenticateToken.js";
 import {
   addReply,
   checkLikes,
+  deleteReply,
   deleteReview,
   getUserReviewAndRating,
   likeReview,
@@ -96,6 +97,21 @@ reviewsRouter.post(
     const { user } = res.locals;
     const { reviewId, text } = replyBodySchema.parse(req.body);
     await addReply(text, reviewId, user.id);
+    res.json({ status: "success" });
+  })
+);
+
+reviewsRouter.delete(
+  "/reply/:replyId",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const replyId = parseInt(req.params.replyId);
+    if (isNaN(replyId)) {
+      res.status(400).json({ status: "failed", message: "Invalid Reply Id" });
+      return;
+    }
+    await deleteReply(replyId, user.id);
     res.json({ status: "success" });
   })
 );
