@@ -7,7 +7,6 @@ import {
   get_new_for_you,
   is_liked,
   update_likes,
-  update_review,
   get_user_stats,
   getMostPopular,
   getMediaBackground,
@@ -73,7 +72,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const mediaId = parseInt(req.params.mediaId);
     const reviews = await get_media_reviews(mediaId, 10, 0);
-    res.json({ status: "success", reviews });
+    res.json({ status: "success", data: reviews });
   })
 );
 
@@ -88,31 +87,12 @@ mediaRouter.get(
   })
 );
 
-const reviewBodySchema = z.object({
-  media_id: z.number(),
-  comment: z.string(),
-  rating: z.number().default(0), //TODO : make dis work
-});
-
 // (GET /media/random)
 mediaRouter.get(
   "/random",
   asyncHandler(async (req, res) => {
     const media = await getRandomMedia();
     res.json({ status: "success", media });
-  })
-);
-
-// (POST /media/review)
-// Update or add a review for a media
-mediaRouter.post(
-  "/review",
-  authenticateToken,
-  asyncHandler(async (req, res) => {
-    const { user } = res.locals;
-    const { media_id, comment, rating } = reviewBodySchema.parse(req.body);
-    await update_review(media_id, user.id, comment, rating);
-    res.json({ status: "success" });
   })
 );
 

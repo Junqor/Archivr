@@ -23,7 +23,7 @@ export const updateReview = async ({
   comment,
   rating = 5,
 }: UpdateReviewArgs) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/media/review`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -51,24 +51,39 @@ export const updateReview = async ({
   return data.review as TReview;
 };
 
+type UserInfo = {
+  username: string;
+  avatar_url: string | null;
+  role: "user" | "admin";
+  display_name: string;
+};
+
+export type TReviewBlob = {
+  user: UserInfo;
+  id: number;
+  user_id: number;
+  media_id: number;
+  username: string;
+  display_name: string;
+  comment: string;
+  created_at: string;
+  rating: number;
+  likes: number;
+};
+
+export type TReplyBlob = {
+  user: UserInfo;
+  id: number;
+  parent_id: number;
+  user_id: number;
+  text: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type TReviewResponse = {
-  user: {
-    username: string;
-    avatar_url: string | null;
-    role: "user" | "admin";
-    display_name: string;
-  };
-  review: {
-    id: number;
-    user_id: number;
-    media_id: number;
-    username: string;
-    display_name: string;
-    comment: string;
-    created_at: string;
-    rating: number;
-    likes: number;
-  };
+  reviews: TReviewBlob[];
+  replies: TReplyBlob[];
 };
 
 export const getReviews = async ({ mediaId }: { mediaId: string }) => {
@@ -86,7 +101,7 @@ export const getReviews = async ({ mediaId }: { mediaId: string }) => {
     throw new Error("Failed to fetch reviews");
   }
 
-  return reviewsData.reviews as TReviewResponse[];
+  return reviewsData.data as TReviewResponse;
 };
 
 export const deleteReview = async (reviewId: number) => {
@@ -167,4 +182,44 @@ export const getUserReviewAndRating = async (mediaId: number) => {
   const data = await response.json();
 
   return data.data as { rating: number | null; review: string | null };
+};
+
+export const postReply = async (reply: { reviewId: number; text: string }) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/reviews/reply`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify(reply),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to post reply");
+  }
+
+  const data = await response.json();
+
+  return data;
+};
+
+export const deleteReply = async (replyId: number) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/reviews/reply/${replyId}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeader(),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete reply");
+  }
+
+  const data = await response.json();
+
+  return data;
 };

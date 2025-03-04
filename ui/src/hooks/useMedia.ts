@@ -119,7 +119,7 @@ export const useMedia = (mediaId: string, userId: string) => {
     isLiked: mediaData?.isLiked ?? false,
     numLikes: mediaData?.numLikes ?? 0,
     updateLikes: updateLikesMutation,
-    reviews: reviewsData,
+    reviewData: reviewsData,
     updateReview: updateReviewMutation,
     userRating: ratingData,
   };

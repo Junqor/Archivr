@@ -13,7 +13,7 @@ import { formatDateYear } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
 import { formatInteger } from "@/utils/formatInteger";
 import { StarRatings } from "./components/starRatings";
-import { ReviewCard } from "./components/reviewCard";
+import { ReviewSection } from "./components/reviewSection";
 import { cn } from "@/lib/utils";
 import {
   SignalCellularAlt,
@@ -21,7 +21,11 @@ import {
   CalendarMonthRounded,
   AccessTimeRounded,
 } from "@mui/icons-material";
-import { checkLikes, getUserReviewAndRating } from "@/api/reviews";
+import {
+  checkLikes,
+  getUserReviewAndRating,
+  TReviewResponse,
+} from "@/api/reviews";
 import { getWatchProviders } from "@/api/watch";
 import {
   Select,
@@ -33,7 +37,7 @@ import {
 
 export function MediaPage() {
   const { id } = useParams();
-  const match = id?.match(/\d+/); // Check that the id is an integer
+  const match = id?.match(/^\d+$/); // Check that the id is an integer
   if (!match) {
     return <Navigate to="/404" />;
   }
@@ -57,8 +61,14 @@ export function MediaPage() {
     setReview(e.target.value);
   }
 
-  const { isLiked, updateLikes, numLikes, reviews, updateReview, userRating } =
-    useMedia(id as string, user ? `${user.id}` : "");
+  const {
+    isLiked,
+    updateLikes,
+    numLikes,
+    reviewData,
+    updateReview,
+    userRating,
+  } = useMedia(id as string, user ? `${user.id}` : "");
 
   const { data: reviewsLikedByUser } = useQuery({
     queryKey: ["media", id, "reviews/check-likes"],
@@ -77,7 +87,7 @@ export function MediaPage() {
   });
 
   const { data: ratingAndReview } = useQuery({
-    queryKey: ["media", user?.id, "rating"],
+    queryKey: ["media", id, "ratingAndReview"],
     queryFn: () => getUserReviewAndRating(parseInt(id as string)),
     enabled: !!user,
   });
@@ -365,9 +375,9 @@ export function MediaPage() {
         </section>
         <section className="flex h-full w-full flex-col justify-start sm:w-3/4">
           <h3 className="font-light">See What Others Are Saying</h3>
-          {reviews && (
-            <div className="mt-3 flex flex-col">
-              {!reviews?.length ? (
+          {reviewData && (
+            <div className="mt-3 flex flex-col gap-y-4">
+              {!reviewData.reviews.length ? (
                 <>
                   <h4 className="text-gray-400">
                     Be the first to write a review!
@@ -378,20 +388,20 @@ export function MediaPage() {
                   />
                 </>
               ) : (
-                reviews.map(
-                  (userReview) =>
-                    userReview.review.comment !== "" &&
-                    userReview.review.comment !== undefined && (
-                      <ReviewCard
+                constructReviewLog(reviewData).map((userReview) => {
+                  if (!userReview.comment) return null;
+                  return (
+                    <div key={userReview.id}>
+                      <ReviewSection
                         userReview={userReview}
                         isLiked={
                           !!reviewsLikedByUser &&
-                          reviewsLikedByUser.includes(userReview.review.id)
+                          reviewsLikedByUser.includes(userReview.id)
                         }
-                        key={crypto.randomUUID()}
                       />
-                    ),
-                )
+                    </div>
+                  );
+                })
               )}
             </div>
           )}
@@ -400,3 +410,16 @@ export function MediaPage() {
     </div>
   );
 }
+
+const constructReviewLog = (reviewData: TReviewResponse) => {
+  const { reviews, replies } = reviewData;
+  const reviewLog = reviews.map((review) => {
+    return {
+      ...review,
+      replies: replies.filter((reply) => reply.parent_id === review.id),
+    };
+  });
+  return reviewLog;
+};
+
+export type TReviewLog = ReturnType<typeof constructReviewLog>;

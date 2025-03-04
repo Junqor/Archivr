@@ -69,6 +69,16 @@ function ActivitySwitch({ item }: { item: TEnhancedActivity }) {
           {user.username} Liked {media.title}
         </div>
       );
+    case "reply":
+      return (
+        <div className="flex flex-row gap-x-4">
+          <MediaPoster media={media} className="w-20" />{" "}
+          <div className="flex flex-col gap-y-2">
+            <h5 className="font-bold">Commented on {media.title}</h5>
+            <p>{activity.content}</p>
+          </div>
+        </div>
+      );
     default:
       return <div>Unknown activity type</div>;
   }
