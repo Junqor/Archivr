@@ -25,6 +25,7 @@ router.use("/genre", genreRouter);
 router.use("/popular", popularRouter);
 router.use("/email", emailRouter);
 router.use("/activity", activityRouter);
+
 router.get("/", (req, res) => {
   res.send("Server is up and running! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
 });

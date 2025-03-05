@@ -16,6 +16,8 @@ const schema = z.object({
   S3_REGION: z.string(),
   S3_ACCESS_TOKEN: z.string(),
   S3_SECRET_TOKEN: z.string(),
+  EMAIL_USER: z.string(),
+  EMAIL_PASSWORD: z.string(),
   FRONTEND_URL: z.string(),
 });
 
@@ -32,6 +34,8 @@ const envVariables = {
   S3_REGION: process.env.S3_REGION,
   S3_ACCESS_TOKEN: process.env.S3_ACCESS_TOKEN,
   S3_SECRET_TOKEN: process.env.S3_SECRET_TOKEN,
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   FRONTEND_URL: process.env.FRONTEND_URL,
 };
 
