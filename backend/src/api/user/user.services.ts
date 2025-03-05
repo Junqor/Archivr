@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { logger } from "../../configs/logger.js";
 import { z } from "zod";
 import { updateSettingsSchema } from "./user.route.js";
+import { serverConfig } from "../../configs/secrets.js";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -151,7 +152,7 @@ export async function setPfp(
       })
     );
 
-    const avatarUrl = `https://archivr-pfp.sfo3.cdn.digitaloceanspaces.com/pfp-${user_id}.jpeg`;
+    const avatarUrl = `https://archivr-pfp.${serverConfig.S3_REGION}.${serverConfig.S3_HOST}/pfp-${user_id}.jpeg`;
 
     // Update the user's pfp in the database
     const rows = await db
