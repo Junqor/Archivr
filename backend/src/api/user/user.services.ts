@@ -84,13 +84,15 @@ export async function getUserSettingsForSettingsContext(user_id: number) {
   try {
     const [result] = await conn.query<(RowDataPacket & number)[]>(
       "SELECT " +
-        "display_name, " +
-        "show_adult_content, " +
-        "theme, " +
-        "font_size, " +
-        "grant_personal_data, " +
-        "show_personalized_content" +
-        " FROM User_Settings WHERE user_id = ?;",
+        "Users.display_name, " +
+        "User_Settings.show_adult_content, " +
+        "User_Settings.theme, " +
+        "User_Settings.font_size, " +
+        "User_Settings.grant_personal_data, " +
+        "User_Settings.show_personalized_content " +
+        "FROM User_Settings " +
+        "INNER JOIN Users ON Users.id = User_Settings.user_id " +
+        "WHERE user_id = ?;",
       [user_id]
     );
     return result[0];
