@@ -12,6 +12,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useAuth } from "@/context/auth";
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useSettings } from "@/context/settings";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -53,6 +54,7 @@ export function ProfileSettings() {
   const [selectedMenu, setSelectedMenu] = useState("Profile");
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { refetchSettings } = useSettings();
 
   if (!user) return <Navigate to="/login" />;
 
@@ -70,6 +72,7 @@ export function ProfileSettings() {
     mutationFn: () => setUserSettings(newSettings),
     onSuccess: () => {
       setChangedSettingsKeys(new Set());
+      refetchSettings();
       toast.success("Settings updated successfully");
       queryClient.invalidateQueries({ queryKey: ["settingsCurrentSettings"] });
     },
