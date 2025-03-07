@@ -1,6 +1,6 @@
 import { Router } from "express";
 import z from "zod";
-import { getMediaById, searchMedia } from "./search.service.js";
+import { getMediaById, searchMedia, searchUsers } from "./search.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const searchBodySchema = z.object({
@@ -23,6 +23,22 @@ searchRouter.post(
     }
     const { query, limit, offset } = parsed.data;
     const result = await searchMedia(query, limit, offset);
+    res.status(200).json(result);
+  })
+);
+
+// (POST /api/search/users)
+// Search for media by name with specified limit
+searchRouter.post(
+  "/users",
+  asyncHandler(async (req, res) => {
+    const parsed = searchBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      res.status(400).json({ message: "Bad Request", error: parsed.error });
+      return;
+    }
+    const { query, limit, offset } = parsed.data;
+    const result = await searchUsers(query, limit, offset);
     res.status(200).json(result);
   })
 );

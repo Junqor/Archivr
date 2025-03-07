@@ -3,7 +3,7 @@ import { conn } from "../../db/database.js";
 import { TMedia } from "../../types/index.js";
 import { db } from "../../db/database.js";
 import { desc, eq, sql } from "drizzle-orm";
-import { media, mediaGenre } from "../../db/schema.js";
+import { media, mediaGenre, users } from "../../db/schema.js";
 type TSearchResult = {
   status: "success" | "failed";
   media: TMedia[];
@@ -35,6 +35,31 @@ export async function searchMedia(
   return {
     status: "success",
     media: Media,
+  };
+}
+
+// Search for users by name
+export async function searchUsers(
+  query: string,
+  limit: number,
+  offset: number
+) {
+  const rows = await db
+    .selectDistinct({
+      id: users.id,
+      username: users.username,
+      displayName: users.displayName,
+      avatar_url: users.avatarUrl,
+      role: users.role
+    })
+    .from(users)
+    .where(sql`${users.username} LIKE ${"%" + query + "%"} OR ${users.displayName} LIKE ${"%" + query + "%"} OR ${users.id} = ${query}`)
+    .limit(limit)
+    .offset((offset - 1) * limit);
+
+  return {
+    status: "success",
+    users: rows,
   };
 }
 
