@@ -5,6 +5,7 @@ import { ActivityFeed } from "./components/activityFeed";
 import { cn } from "@/lib/utils";
 import { RankedUserMedia } from "./components/rankedUserMedia";
 import { PersonRounded, PublicRounded } from "@mui/icons-material";
+import { Separator } from "@/components/ui/separator";
 
 export function ActivityPage() {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ export function ActivityPage() {
             className={cn(
               isOnFollowing
                 ? "bg-primary"
-                : "bg-[#1B1B1A] text-[rgba(242,_242,_240,_0.75)] hover:bg-primary/40",
+                : "bg-[#1B1B1A] text-white/75 hover:bg-primary/40",
               "gap-x-2 rounded-sm py-5",
             )}
             onClick={() => setIsOnFollowing(!isOnFollowing)}
@@ -41,7 +42,7 @@ export function ActivityPage() {
           className={cn(
             !isOnFollowing
               ? "bg-primary"
-              : "bg-[#1B1B1A] text-[rgba(242,_242,_240,_0.75)] hover:bg-primary/40",
+              : "bg-[#1B1B1A] text-white/75 hover:bg-primary/40",
             "gap-x-2 rounded-sm py-5",
           )}
           onClick={() => setIsOnFollowing(!isOnFollowing)}
@@ -54,8 +55,15 @@ export function ActivityPage() {
         <section className="flex flex-col items-center gap-y-3 md:w-3/4">
           <ActivityFeed type={isOnFollowing ? "following" : "global"} />
         </section>
-        <section className="flex h-fit flex-col rounded-xl bg-slate-800 p-3 px-12 outline outline-white/30 md:w-1/4 md:p-3">
+        <section className="flex h-fit flex-col gap-y-3 md:w-1/4">
+          <div>
+            <h4 className="mb-2 pt-3 leading-3 text-white/75">
+              Top Rated By Users
+            </h4>
+            <Separator className="bg-white/75" />
+          </div>
           <RankedUserMedia />
+          <Separator className="bg-white/75 md:hidden" />
         </section>
       </div>
     </main>

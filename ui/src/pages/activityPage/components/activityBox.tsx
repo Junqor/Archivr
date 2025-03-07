@@ -145,20 +145,19 @@ export function MediaPoster({
   className?: string;
 }) {
   return (
-    <Link to={`/media/${media.id}`}>
-      <div
-        title={media.title}
-        style={{
-          backgroundImage: `url(${media.thumbnail_url?.replace(
-            ".jpg",
-            "_t.jpg",
-          )})`,
-        }}
-        className={cn(
-          "relative aspect-[2/3] cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10 transition-transform ease-in-out hover:scale-105",
-          className,
-        )}
-      />
-    </Link>
+    <div
+      className={cn(
+        "relative aspect-[2/3] cursor-pointer overflow-hidden rounded-sm transition-transform ease-in-out hover:scale-105",
+        className,
+      )}
+    >
+      <Link to={`/media/${media.id}`}>
+        <img
+          title={media.title}
+          src={`${media.thumbnail_url?.replace(".jpg", "_t.jpg")}`}
+          className="outline outline-1 -outline-offset-1 outline-white/10"
+        />
+      </Link>
+    </div>
   );
 }
