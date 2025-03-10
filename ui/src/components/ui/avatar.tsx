@@ -51,7 +51,7 @@ const UserAvatar = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
     user: {
       username: string;
-      avatar_url: string | null;
+      avatar_url: string | null | undefined;
       role?: "admin" | "user";
     };
   } & {

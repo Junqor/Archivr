@@ -107,10 +107,8 @@ export async function logIn(
     user: {
       id: user.id,
       username: user.username,
-      displayName: user.displayName,
       email: user.email,
       role: user.role,
-      avatar_url: user.avatarUrl,
     },
   };
 }

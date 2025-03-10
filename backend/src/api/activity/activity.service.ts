@@ -45,6 +45,7 @@ function returnBaseQuery() {
       },
       followee: {
         username: usersAliased.username,
+        display_name: usersAliased.displayName,
         avatar_url: usersAliased.avatarUrl,
         role: usersAliased.role,
       },
@@ -55,32 +56,23 @@ function returnBaseQuery() {
       or(
         and(
           eq(activity.activityType, "like_review"),
-          eq(media.id, activity.relatedId)
+          eq(media.id, activity.relatedId) // Get the media that was liked (related to the review)
         ),
         and(
           eq(activity.activityType, "like_media"),
-          eq(media.id, activity.targetId)
+          eq(media.id, activity.targetId) // Get the media that was liked (main target)
         ),
         and(
           eq(activity.activityType, "review"),
-          eq(media.id, activity.targetId)
+          eq(media.id, activity.targetId) // Get the media that was reviewed
         ),
         and(
           eq(activity.activityType, "reply"),
-          eq(media.id, activity.relatedId)
+          eq(media.id, activity.relatedId) // Get the media related to the reply
         )
       )
     )
-    .leftJoin(users, eq(users.id, activity.userId))
-    .leftJoin(
-      usersAliased,
-      or(
-        and(
-          eq(activity.activityType, "follow"),
-          eq(usersAliased.id, activity.targetId)
-        )
-      )
-    )
+    .leftJoin(users, eq(users.id, activity.userId)) // Get the main user (initiator of the activity)
     .leftJoin(
       userReviews,
       or(
@@ -94,6 +86,10 @@ function returnBaseQuery() {
         and(
           eq(activity.activityType, "like_review"),
           and(eq(activity.targetId, userReviews.id))
+        ),
+        and(
+          eq(activity.activityType, "reply"),
+          and(eq(activity.targetId, userReviews.id))
         )
       )
     )
@@ -102,6 +98,23 @@ function returnBaseQuery() {
       and(
         eq(activity.activityType, "review"),
         and(eq(ratings.id, activity.relatedId))
+      )
+    )
+    .leftJoin(
+      usersAliased,
+      or(
+        and(
+          eq(activity.activityType, "follow"),
+          eq(usersAliased.id, activity.targetId) // Get the user who is being followed
+        ),
+        and(
+          eq(activity.activityType, "like_review"),
+          eq(usersAliased.id, userReviews.userId) // Get the user who created the review (for likes)
+        ),
+        and(
+          eq(activity.activityType, "reply"),
+          eq(usersAliased.id, userReviews.userId) // Get the user who created the review (for replies)
+        )
       )
     );
 }

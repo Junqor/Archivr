@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ActivityBox } from "./activityBox";
 import { LoadingScreen } from "@/pages/loadingScreen";
+import { Separator } from "@/components/ui/separator";
 
 export function ActivityFeed({ type }: { type: "global" | "following" }) {
   const {
@@ -30,12 +31,18 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
 
   return (
     <>
-      <div className="flex flex-col gap-y-5">
+      <div className="flex w-full flex-col">
         {activity.pages.flat().map((activityObject) => (
-          <ActivityBox key={activityObject.activity.id} item={activityObject} />
+          <>
+            <ActivityBox
+              key={activityObject.activity.id}
+              item={activityObject}
+            />
+            <Separator className="bg-muted" />
+          </>
         ))}
       </div>
-      {hasNextPage && (
+      {hasNextPage ? (
         <Button
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
@@ -43,6 +50,8 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
         >
           {isFetchingNextPage ? "Loading more..." : "Show More"}
         </Button>
+      ) : (
+        <h4 className="text-center text-white/75">All Caught Up!</h4>
       )}
     </>
   );
