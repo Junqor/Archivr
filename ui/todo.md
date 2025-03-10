@@ -39,3 +39,6 @@
 
 - ~~FIX SIGN UP~~
 - ~~LIKING RERENDERING~~
+
+- Add navigation to header on mobile
+- Add color picker to media rankings
