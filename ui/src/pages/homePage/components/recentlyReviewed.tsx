@@ -55,7 +55,7 @@ export function RecentlyReviewed() {
                   </p>
                 )}
                 <p className="text-white/70">
-                  {formatDate(item.review.created_at)}
+                  {formatDate(item.review.created_at, true)}
                 </p>
               </div>
             </div>

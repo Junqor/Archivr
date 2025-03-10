@@ -20,7 +20,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
               <h5>
                 <strong>{user.display_name || user.username}</strong> reviewed
               </h5>
-              <p className="ml-auto">{formatDate(activity.createdAt)}</p>
+              <p className="ml-auto">{formatDate(activity.createdAt, true)}</p>
             </div>
             <Link to={`/media/${media.id}`}>
               <h4 className="font-semibold leading-tight transition-colors hover:text-primary">
@@ -51,7 +51,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
                 <strong>{followee.display_name || followee.username}'s</strong>{" "}
                 review of
               </h5>
-              <p className="ml-auto">{formatDate(activity.createdAt)}</p>
+              <p className="ml-auto">{formatDate(activity.createdAt, true)}</p>
             </div>
             <Link to={`/media/${media.id}`}>
               <h4 className="font-semibold leading-tight transition-colors hover:text-primary">
@@ -80,7 +80,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
                 <strong>{followee.display_name || followee.username}'s</strong>{" "}
                 review of
               </h5>
-              <p className="ml-auto">{formatDate(activity.createdAt)}</p>
+              <p className="ml-auto">{formatDate(activity.createdAt, true)}</p>
             </div>
             <Link to={`/media/${media.id}`}>
               <h4 className="font-semibold leading-tight transition-colors hover:text-primary">
@@ -111,7 +111,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
               <strong>{media.title}</strong>
             </Link>
           </p>
-          <p className="ml-auto">{formatDate(activity.createdAt)}</p>
+          <p className="ml-auto">{formatDate(activity.createdAt, true)}</p>
         </div>
       );
     case "follow":
@@ -129,7 +129,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
               <strong>{followee.display_name || followee.username}</strong>
             </Link>
           </p>
-          <p className="ml-auto">{formatDate(activity.createdAt)}</p>
+          <p className="ml-auto">{formatDate(activity.createdAt, true)}</p>
         </div>
       );
     default:
