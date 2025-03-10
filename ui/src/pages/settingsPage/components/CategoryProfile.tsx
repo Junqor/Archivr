@@ -108,7 +108,7 @@ export function ProfileSettingsCategoryProfile({
                   ref={pfp_upload_input}
                   type="file"
                   id="pfp"
-                  accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"
+                  accept="image/jpeg, image/bmp, image/png, image/tiff, image/webp"
                 />
                 {pfpSelected && <Button onClick={handleSetPfp}>Upload</Button>}
                 <DialogClose>
