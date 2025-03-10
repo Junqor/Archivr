@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 
@@ -9,7 +10,7 @@ export function ProfileSettingsCategoryAccount() {
 
   return (
     <div className="flex flex-col gap-2 self-stretch">
-      <h4>Email</h4>
+      <Label>Email</Label>
       <Input
         disabled
         value={email ? email : "???"}
@@ -17,25 +18,25 @@ export function ProfileSettingsCategoryAccount() {
       ></Input>
       <h3>Change Password</h3>
       <hr className="h-px self-stretch bg-[#7F7F7E]"></hr>
-      <h4>Current Password</h4>
+      <Label>Current Password</Label>
       <Input
         type="password"
         placeholder="Enter current password"
         className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
       ></Input>
-      <h4>New Password</h4>
+      <Label>New Password</Label>
       <Input
         type="password"
         placeholder="Enter new password"
         className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
       ></Input>
-      <h4>Confirm New Password</h4>
+      <Label>Confirm New Password</Label>
       <Input
         type="password"
         placeholder="Enter new password again"
         className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
       ></Input>
-      <Button className="mt-2 max-w-[130px]">Save Changes</Button>
+      <Button className="w-fit self-center">Save Changes</Button>
       <h3>Account Data</h3>
       <hr className="h-px self-stretch bg-[#7F7F7E]"></hr>
       {/*
