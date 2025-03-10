@@ -21,10 +21,10 @@ export const formatDate = (
     const year = 365 * day;
 
     if (diffInSeconds < minute) {
-      return "1min ago";
+      return "1m ago";
     }
     if (diffInSeconds < hour) {
-      return `${Math.floor(diffInSeconds / minute)}min ago`;
+      return `${Math.floor(diffInSeconds / minute)}m ago`;
     }
     if (diffInSeconds < day) {
       return `${Math.floor(diffInSeconds / hour)}hr ago`;
