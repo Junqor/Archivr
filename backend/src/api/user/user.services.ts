@@ -82,24 +82,21 @@ export async function getProfile(username: string) {
 }
 
 export async function getUserSettingsForSettingsContext(user_id: number) {
-  try {
-    const [result] = await conn.query<(RowDataPacket & number)[]>(
-      "SELECT " +
-        "Users.display_name, " +
-        "User_Settings.show_adult_content, " +
-        "User_Settings.theme, " +
-        "User_Settings.font_size, " +
-        "User_Settings.grant_personal_data, " +
-        "User_Settings.show_personalized_content " +
-        "FROM User_Settings " +
-        "INNER JOIN Users ON Users.id = User_Settings.user_id " +
-        "WHERE user_id = ?;",
-      [user_id]
-    );
-    return result[0];
-  } catch (error) {
-    console.error(error);
-  }
+  const [result] = await conn.query<(RowDataPacket & number)[]>(
+    "SELECT " +
+      "Users.display_name, " +
+      "Users.avatar_url, " +
+      "User_Settings.show_adult_content, " +
+      "User_Settings.theme, " +
+      "User_Settings.font_size, " +
+      "User_Settings.grant_personal_data, " +
+      "User_Settings.show_personalized_content " +
+      "FROM User_Settings " +
+      "INNER JOIN Users ON Users.id = User_Settings.user_id " +
+      "WHERE user_id = ?;",
+    [user_id]
+  );
+  return result[0];
 }
 
 export async function getAvatarUrl(user_id: number) {

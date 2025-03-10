@@ -120,7 +120,9 @@ export default function Header() {
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <UserAvatar user={user} />
+                <UserAvatar
+                  user={{ ...user, avatar_url: settings?.avatar_url }}
+                />
                 <div className="flex flex-row items-center gap-1">
                   <div className="flex flex-col items-start">
                     <h4 className="text-nowrap">
