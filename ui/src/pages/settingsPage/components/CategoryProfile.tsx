@@ -61,6 +61,10 @@ export function ProfileSettingsCategoryProfile({
       setPfpSelected(false);
       return;
     }
+    if (pfp_upload_input.current.files[0].size > 1024 * 1024) {
+      toast.warning("Image is too large!");
+      return;
+    }
     setPfpSelected(true);
     const file = pfp_upload_input.current.files[0];
     const url = URL.createObjectURL(file);
@@ -108,7 +112,7 @@ export function ProfileSettingsCategoryProfile({
                   ref={pfp_upload_input}
                   type="file"
                   id="pfp"
-                  accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"
+                  accept="image/jpeg, image/bmp, image/png, image/tiff, image/webp"
                 />
                 {pfpSelected && <Button onClick={handleSetPfp}>Upload</Button>}
                 <DialogClose>
