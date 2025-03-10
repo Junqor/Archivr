@@ -61,6 +61,10 @@ export function ProfileSettingsCategoryProfile({
       setPfpSelected(false);
       return;
     }
+    if (pfp_upload_input.current.files[0].size > 1024 * 1024) {
+      toast.warning("Image is too large!");
+      return;
+    }
     setPfpSelected(true);
     const file = pfp_upload_input.current.files[0];
     const url = URL.createObjectURL(file);
