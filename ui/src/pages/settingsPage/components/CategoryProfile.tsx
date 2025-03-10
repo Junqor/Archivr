@@ -20,6 +20,7 @@ import { useRef, useState } from "react";
 import { uploadPfp } from "@/api/user";
 import { toast } from "sonner";
 import { TUserSettings } from "../settingsPage";
+import { useSettings } from "@/context/settings";
 
 export function ProfileSettingsCategoryProfile({
   updateSetting,
@@ -29,13 +30,12 @@ export function ProfileSettingsCategoryProfile({
   settings: TUserSettings;
 }) {
   const { user } = useAuth();
+  const { settings: _settings, refetchSettings } = useSettings();
 
   const [pfpSelected, setPfpSelected] = useState<boolean>(false);
 
   const pfp_upload_preview = useRef<HTMLDivElement>(null);
   const pfp_upload_input = useRef<HTMLInputElement>(null);
-
-  const api_url: string = import.meta.env.VITE_API_URL;
 
   const handleSetPfp = async () => {
     if (!pfp_upload_input.current || !pfp_upload_input.current.files) return;
@@ -43,6 +43,7 @@ export function ProfileSettingsCategoryProfile({
 
     try {
       await uploadPfp(avatar);
+      refetchSettings();
       toast.success("Avatar Updated");
     } catch (error) {
       toast.error("Failed to upload avatar");
@@ -77,8 +78,7 @@ export function ProfileSettingsCategoryProfile({
           <DialogTrigger asChild>
             <div
               style={{
-                backgroundImage:
-                  "url(" + api_url + "/user/pfp/" + user?.id + ")",
+                backgroundImage: `url(${_settings?.avatar_url})`,
               }}
               className={
                 "h-[200px] w-[200px] cursor-pointer rounded-[200px] bg-neutral-900 bg-cover bg-center"

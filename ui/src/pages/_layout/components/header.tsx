@@ -13,9 +13,11 @@ import { TGenre } from "@/types/genre";
 import { useQuery } from "@tanstack/react-query";
 import { ArchivrIcon } from "@/components/archivrIcon";
 import { UserAvatar } from "@/components/ui/avatar";
+import { useSettings } from "@/context/settings";
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const { settings } = useSettings();
   const navigate = useNavigate();
 
   // Fetch genres
@@ -118,11 +120,13 @@ export default function Header() {
           {user ? (
             <Dropdown>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
-                <UserAvatar user={user} />
+                <UserAvatar
+                  user={{ ...user, avatar_url: settings?.avatar_url }}
+                />
                 <div className="flex flex-row items-center gap-1">
                   <div className="flex flex-col items-start">
                     <h4 className="text-nowrap">
-                      {user.displayName || user.username}
+                      {settings?.display_name || user.username}
                     </h4>
                     <h5 className="text-nowrap text-[#7F7F7E]">
                       {"@" + user.username}
