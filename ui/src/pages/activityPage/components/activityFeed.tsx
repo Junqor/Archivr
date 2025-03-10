@@ -42,7 +42,7 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
           </>
         ))}
       </div>
-      {hasNextPage && (
+      {hasNextPage ? (
         <Button
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
@@ -50,6 +50,8 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
         >
           {isFetchingNextPage ? "Loading more..." : "Show More"}
         </Button>
+      ) : (
+        <h4 className="text-center text-white/75">All Caught Up!</h4>
       )}
     </>
   );
