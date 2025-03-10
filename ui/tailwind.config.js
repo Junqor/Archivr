@@ -24,6 +24,7 @@ export const theme = {
       primary: "#5616EC",
       dark: "#242424",
       pill: "#242424",
+      muted: "#7F7F7E",
     },
     borderRadius: {
       lg: "var(--radius)",

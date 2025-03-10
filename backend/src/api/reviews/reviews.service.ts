@@ -25,23 +25,26 @@ export async function updateReview(
       })
       .$returningId();
 
-    if (new_comment.length > 0) {
-      await tx
-        .insert(userReviews)
-        .values({
-          mediaId: media_id,
-          userId: user_id,
+    // Exit early if it was just a rating
+    if (new_comment.trim().length < 1) {
+      return;
+    }
+
+    await tx
+      .insert(userReviews)
+      .values({
+        mediaId: media_id,
+        userId: user_id,
+        comment: new_comment,
+        ratingId: ratingId.id,
+      })
+      .onDuplicateKeyUpdate({
+        set: {
           comment: new_comment,
           ratingId: ratingId.id,
-        })
-        .onDuplicateKeyUpdate({
-          set: {
-            comment: new_comment,
-            ratingId: ratingId.id,
-            createdAt: sql`CURRENT_TIMESTAMP`,
-          },
-        });
-    }
+          createdAt: sql`CURRENT_TIMESTAMP`,
+        },
+      });
 
     // Try to update the review activity
     const rows = await tx
@@ -51,7 +54,11 @@ export async function updateReview(
         createdAt: sql`CURRENT_TIMESTAMP`,
       })
       .where(
-        and(eq(activity.userId, user_id), eq(activity.targetId, media_id))
+        and(
+          eq(activity.activityType, "review"),
+          eq(activity.userId, user_id),
+          eq(activity.targetId, media_id)
+        )
       );
 
     // If the update was successful, do not insert a new activity
