@@ -31,7 +31,7 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="flex w-full flex-col">
         {activity.pages.flat().map((activityObject) => (
           <>
             <ActivityBox

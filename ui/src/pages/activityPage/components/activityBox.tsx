@@ -15,7 +15,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
             <UserAvatar user={user} />
           </Link>
           <MediaPoster media={media} className="w-20" />
-          <div className="flex w-full flex-col gap-y-1">
+          <div className="flex w-full flex-col gap-y-1 overflow-hidden">
             <div className="text-muted flex flex-row">
               <h5>
                 <strong>{user.display_name || user.username}</strong> reviewed
@@ -29,7 +29,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
             </Link>
             <div className="flex flex-row gap-x-2">
               <MessageSquareQuote className="mt-1 size-4 min-h-4 min-w-4" />
-              <p className="align-center line-clamp-4 overflow-hidden text-ellipsis italic text-white/80">
+              <p className="align-center line-clamp-4 w-full overflow-hidden text-ellipsis whitespace-break-spaces italic text-white/80">
                 {review.reviewText}
               </p>
             </div>
@@ -43,7 +43,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
             <UserAvatar user={user} />
           </Link>
           <MediaPoster media={media} className="w-20" />
-          <div className="flex w-full flex-col gap-y-1">
+          <div className="flex w-full flex-col gap-y-1 overflow-hidden">
             <div className="text-muted flex flex-row">
               <h5>
                 <strong>{user.display_name || user.username}</strong> commented
@@ -59,7 +59,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
               </h4>
             </Link>
             <div className="flex flex-row gap-x-2">
-              <p className="align-center line-clamp-4 overflow-hidden text-ellipsis italic text-white/80">
+              <p className="align-center line-clamp-4 overflow-hidden text-ellipsis whitespace-break-spaces italic text-white/80">
                 {activity.content}
               </p>
             </div>
