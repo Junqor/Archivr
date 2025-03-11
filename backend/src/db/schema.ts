@@ -321,3 +321,22 @@ export const users = mysqlTable(
     unique("username").on(table.username),
   ]
 );
+
+export const userFavorites = mysqlTable(
+  "UserFavorites",
+  {
+    id: int().autoincrement().notNull().primaryKey(),
+    userId: int("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    mediaId: int("media_id")
+      .notNull()
+      .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    addedAt: timestamp("added_at", { mode: "string" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("user_id_idx").on(table.userId),
+    index("media_id_idx").on(table.mediaId),
+    unique("unique_user_media").on(table.userId, table.mediaId),
+  ]
+);
