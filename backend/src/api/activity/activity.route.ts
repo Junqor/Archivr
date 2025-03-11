@@ -6,6 +6,7 @@ import {
   getFollowingActivity,
   getGlobalActivity,
   getTopUserMedia,
+  getUserActivity,
 } from "./activity.service.js";
 import { z } from "zod";
 
@@ -59,5 +60,18 @@ activityRouter.get(
   asyncHandler(async (req, res) => {
     const media = await getTopUserMedia();
     res.json({ status: "success", media: media });
+  })
+);
+
+// (GET /activity/user/:userId?limit=15&offset=0)
+// Get activity for a user
+activityRouter.get(
+  "/user/:userId",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const limit = parseInt(req.query.limit as string) || 15;
+    const offset = parseInt(req.query.offset as string) || 0;
+    const activity = await getUserActivity(userId, limit, offset);
+    res.json({ status: "success", activity: activity });
   })
 );
