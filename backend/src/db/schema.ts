@@ -276,7 +276,7 @@ export const userSettings = mysqlTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     status: char({ length: 128 }).default("").notNull(),
-    bio: text().notNull(),
+    bio: varchar({ length: 215 }).default("").notNull(),
     pronouns: char({ length: 32 }).default("").notNull(),
     location: char({ length: 128 }).default("").notNull(),
     social_instagram: char("social_instagram", { length: 255 })
