@@ -93,3 +93,53 @@ export const getTopUserMedia = async () => {
 
   return data.media as TUserRatedMedia[];
 };
+
+export const getUserTopMedia = async (username: string) => {
+  const userId = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userId.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + `/activity/user/${userId}/top-media`,
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch user top media");
+  }
+
+  const data = await response.json();
+
+  return data.media;
+};
+
+export const getUserActivity = async (
+  username: string,
+  limit?: number,
+  offset?: number,
+) => {
+  const userId = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userId.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/activity/user/${userId}` +
+      (limit || offset ? "?" : "") +
+      (limit ? `limit=${limit}` : "") +
+      (offset ? `&offset=${offset}` : ""),
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.activity;
+};

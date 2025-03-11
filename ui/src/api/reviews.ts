@@ -223,3 +223,38 @@ export const deleteReply = async (replyId: number) => {
 
   return data;
 };
+
+export const getUserReviews = async (
+  username: string,
+  limit?: number,
+  offset?: number,
+  sort_by?: string,
+  sort_order?: string,
+  ratingMax?: number,
+) => {
+  const userId = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userId.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/reviews/user/${userId}` +
+      (limit || offset || sort_by || sort_order || ratingMax ? "?" : "") +
+      (limit ? `limit=${limit}` : "") +
+      (offset ? `&offset=${offset}` : "") +
+      (sort_by ? `&sort_by=${sort_by}` : "") +
+      (sort_order ? `&sort_order=${sort_order}` : "") +
+      (ratingMax ? `&ratingMax=${ratingMax}` : ""),
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.data;
+};

@@ -118,7 +118,7 @@ export default function Header() {
         <div className="flex flex-row items-center justify-center gap-2 sm:gap-6">
           <SearchBar />
           {user ? (
-            <Dropdown>
+            <Dropdown modal={false}>
               <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
                 <UserAvatar
                   user={{ ...user, avatar_url: settings?.avatar_url }}

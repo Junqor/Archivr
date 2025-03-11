@@ -1,4 +1,4 @@
-import { Router, Request } from "express";
+import { Router } from "express";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
 import {
   addReply,
@@ -8,6 +8,7 @@ import {
   getUserReviewAndRating,
   likeReview,
   updateReview,
+  getUserReviews,
 } from "./reviews.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
@@ -113,6 +114,37 @@ reviewsRouter.delete(
     }
     await deleteReply(replyId, user.id);
     res.json({ status: "success" });
+  })
+);
+
+// (GET /reviews/user/:userId?limit=5&offset=0&sort_by=userReviews.createdAt&sort_order=desc&ratingMax=10)
+// get reviews for a user
+reviewsRouter.get(
+  "/user/:userId",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const limit = parseInt(req.query.limit as string) || 5;
+    const offset = parseInt(req.query.offset as string) || 0;
+    const sort_by = req.query.sort_by as
+      | "userReviews.createdAt"
+      | "media.title"
+      | "media.rating"
+      | "media.release_date"
+      | "media.runtime"
+      | "ratings.rating"
+      | undefined;
+    const sort_order = req.query.sort_order as string;
+    const ratingMax = parseInt(req.query.ratingMax as string) || 10;
+
+    const reviews = await getUserReviews(
+      userId,
+      limit,
+      offset,
+      sort_by,
+      sort_order,
+      ratingMax
+    );
+    res.json({ status: "success", data: reviews });
   })
 );
 

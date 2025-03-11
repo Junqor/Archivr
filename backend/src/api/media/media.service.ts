@@ -27,6 +27,8 @@ import {
 import { count, sql, avg, getTableColumns } from "drizzle-orm";
 import { serverConfig } from "../../configs/secrets.js";
 import { union } from "drizzle-orm/mysql-core";
+import { getTvdbToken } from "../../utils/tvdbToken.js";
+import { get } from "http";
 
 export async function update_rating(
   media_id: number,
@@ -442,16 +444,21 @@ export const getMediaBackground = async (id: number) => {
     .from(remoteId)
     .leftJoin(media, eq(media.id, remoteId.id))
     .where(eq(remoteId.id, id));
+
   if (!tvdbId) {
     throw new Error("Failed to fetch media background");
   }
+
+  const token = await getTvdbToken();
+
   const url = `https://api4.thetvdb.com/v4/${
     type === "movie" ? "movies" : "series"
   }/${tvdbId}/extended`;
+
   const response = await fetch(url, {
     headers: {
       accept: "application/json",
-      Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -503,16 +510,21 @@ export const getMediaTrailer = async (id: number) => {
     .from(remoteId)
     .leftJoin(media, eq(media.id, remoteId.id))
     .where(eq(remoteId.id, id));
+
   if (!tvdbId) {
     throw new Error("Failed to fetch media trailer");
   }
+
+  const token = await getTvdbToken();
+
   const url = `https://api4.thetvdb.com/v4/${
     type === "movie" ? "movies" : "series"
   }/${tvdbId}/extended`;
+
   const response = await fetch(url, {
     headers: {
       accept: "application/json",
-      Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 

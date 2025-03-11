@@ -276,7 +276,7 @@ export const userSettings = mysqlTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     status: char({ length: 128 }).default("").notNull(),
-    bio: text().notNull(),
+    bio: varchar({ length: 215 }).default("").notNull(),
     pronouns: char({ length: 32 }).default("").notNull(),
     location: char({ length: 128 }).default("").notNull(),
     social_instagram: char("social_instagram", { length: 255 })
@@ -319,5 +319,24 @@ export const users = mysqlTable(
     primaryKey({ columns: [table.id], name: "Users_id" }),
     unique("email").on(table.email),
     unique("username").on(table.username),
+  ]
+);
+
+export const userFavorites = mysqlTable(
+  "User_Favorites",
+  {
+    id: int().autoincrement().notNull().primaryKey(),
+    userId: int("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    mediaId: int("media_id")
+      .notNull()
+      .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    addedAt: timestamp("added_at", { mode: "string" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("user_id_idx").on(table.userId),
+    index("media_id_idx").on(table.mediaId),
+    unique("unique_user_media").on(table.userId, table.mediaId),
   ]
 );
