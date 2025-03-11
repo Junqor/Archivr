@@ -15,6 +15,7 @@ import {
   removeFavorite,
   getUserFavorites,
   checkFavorite,
+  getUserIdFromUsername,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -290,6 +291,25 @@ userRouter.get(
       const mediaId = parseInt(req.params.mediaId);
       const isFavorite = await checkFavorite(userId, mediaId);
       res.json({ status: "success", isFavorite });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/:username/id)
+// Get a user's id by username
+userRouter.get(
+  "/:username/id",
+  asyncHandler(async (req, res) => {
+    try {
+      const username = req.params.username;
+      const userId = await getUserIdFromUsername(username);
+      res.json({ status: "success", userId });
     } catch (error) {
       console.error(error);
       res.status(400).json({

@@ -561,3 +561,17 @@ export async function checkFavorite(user_id: number, media_id: number) {
 
   return favorites.length > 0;
 }
+
+// Get a user id from a username
+export async function getUserIdFromUsername(username: string) {
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.username, username));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
+
+  return user[0].id;
+}
