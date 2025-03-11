@@ -323,7 +323,7 @@ export const users = mysqlTable(
 );
 
 export const userFavorites = mysqlTable(
-  "UserFavorites",
+  "User_Favorites",
   {
     id: int().autoincrement().notNull().primaryKey(),
     userId: int("user_id")

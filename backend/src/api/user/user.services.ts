@@ -5,11 +5,13 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../../configs/s3.js";
 import fs from "fs";
 import {
+  media,
   users,
   userSettings,
   follows,
   userReviews,
   likes,
+  userFavorites,
 } from "../../db/schema.js";
 import { logger } from "../../configs/logger.js";
 import { z } from "zod";
@@ -19,7 +21,7 @@ import { getUserLikes } from "../likes/likes.service.js";
 import { getUserReviews } from "../reviews/reviews.service.js";
 import { getUserActivity } from "../activity/activity.service.js";
 import { serverConfig } from "../../configs/secrets.js";
-import { desc, asc, eq, inArray } from "drizzle-orm/expressions";
+import { desc, asc, eq, inArray, and } from "drizzle-orm/expressions";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -382,4 +384,93 @@ export async function getUserFollowsExtended(
     review_count: reviewCountMap[follow.id] || 0,
     like_count: likeCountMap[follow.id] || 0,
   }));
+}
+
+// User adds a media to their favorites
+export async function addFavorite(user_id: number, media_id: number) {
+  // Check if the user has less than 4 favorites
+  const favoriteCount = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(userFavorites)
+    .where(eq(userFavorites.userId, user_id));
+
+  if (favoriteCount[0].count >= 4) {
+    throw new Error("You can only have 4 favorites at a time");
+  }
+
+  // Check if the user already has the media favorited
+  const existingFavorite = await db
+    .select({ id: userFavorites.id })
+    .from(userFavorites)
+    .where(
+      and(
+        eq(userFavorites.userId, user_id),
+        eq(userFavorites.mediaId, media_id)
+      )
+    );
+
+  if (existingFavorite.length > 0) {
+    throw new Error("Media already favorited");
+  }
+
+  // Add the favorite
+  await db.insert(userFavorites).values({ userId: user_id, mediaId: media_id });
+}
+
+// User removes a media from their favorites
+export async function removeFavorite(user_id: number, media_id: number) {
+  // Check if the user has the media favorited
+  const existingFavorite = await db
+    .select({ id: userFavorites.id })
+    .from(userFavorites)
+    .where(
+      and(
+        eq(userFavorites.userId, user_id),
+        eq(userFavorites.mediaId, media_id)
+      )
+    );
+
+  if (existingFavorite.length === 0) {
+    throw new Error("Media not favorited");
+  }
+
+  await db
+    .delete(userFavorites)
+    .where(
+      and(
+        eq(userFavorites.userId, user_id),
+        eq(userFavorites.mediaId, media_id)
+      )
+    );
+}
+
+// Get a user's favorites
+export async function getUserFavorites(user_id: number) {
+  // id, media_id, title, thumbnail_url, added_at
+  return db
+    .select({
+      id: userFavorites.id,
+      media_id: userFavorites.mediaId,
+      title: media.title,
+      thumbnail_url: media.thumbnail_url,
+      added_at: userFavorites.addedAt,
+    })
+    .from(userFavorites)
+    .innerJoin(media, eq(media.id, userFavorites.mediaId))
+    .where(eq(userFavorites.userId, user_id));
+}
+
+// Check if a user has favorited a media
+export async function checkFavorite(user_id: number, media_id: number) {
+  const favorites = await db
+    .select({ id: userFavorites.id })
+    .from(userFavorites)
+    .where(
+      and(
+        eq(userFavorites.userId, user_id),
+        eq(userFavorites.mediaId, media_id)
+      )
+    );
+
+  return favorites.length > 0;
 }

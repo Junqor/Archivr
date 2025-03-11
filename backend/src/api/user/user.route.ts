@@ -11,6 +11,10 @@ import {
   getProfileTab,
   getUserFollows,
   getUserFollowsExtended,
+  addFavorite,
+  removeFavorite,
+  getUserFavorites,
+  checkFavorite,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -180,5 +184,54 @@ userRouter.get(
       sort_order
     );
     res.json({ status: "success", follows });
+  })
+);
+
+// (POST /user/add-favorite)
+// Add a favorite media
+userRouter.post(
+  "/add-favorite",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { mediaId } = req.body;
+    await addFavorite(user.id, mediaId);
+    res.json({ status: "success" });
+  })
+);
+
+// (POST /user/remove-favorite)
+// Remove a favorite media
+userRouter.post(
+  "/remove-favorite",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { mediaId } = req.body;
+    await removeFavorite(user.id, mediaId);
+    res.json({ status: "success" });
+  })
+);
+
+// (GET /user/get-favorites/:userId)
+// Get a user's favorite media
+userRouter.get(
+  "/get-favorites/:userId",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const favorites = await getUserFavorites(userId);
+    res.json({ status: "success", favorites });
+  })
+);
+
+// (GET /user/check-favorite/:userId/:mediaId)
+// Check if a media is a user's favorite
+userRouter.get(
+  "/check-favorite/:userId/:mediaId",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const mediaId = parseInt(req.params.mediaId);
+    const isFavorite = await checkFavorite(userId, mediaId);
+    res.json({ status: "success", isFavorite });
   })
 );
