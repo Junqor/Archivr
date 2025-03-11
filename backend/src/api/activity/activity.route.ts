@@ -6,6 +6,7 @@ import {
   getFollowingActivity,
   getGlobalActivity,
   getTopUserMedia,
+  getUserTopMedia,
   getUserActivity,
 } from "./activity.service.js";
 import { z } from "zod";
@@ -59,6 +60,17 @@ activityRouter.get(
   "/top-user-media",
   asyncHandler(async (req, res) => {
     const media = await getTopUserMedia();
+    res.json({ status: "success", media: media });
+  })
+);
+
+// (GET /activity/user/:userId/top-media)
+// Get top media for a user
+activityRouter.get(
+  "/user/:userId/top-media",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const media = await getUserTopMedia(userId);
     res.json({ status: "success", media: media });
   })
 );

@@ -178,6 +178,25 @@ export const getTopUserMedia = async () => {
   return rows;
 };
 
+export const getUserTopMedia = async (userId: number) => {
+  const rows = await db
+    .select({
+      id: media.id,
+      title: media.title,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      userRating: ratings.rating,
+      ratedAt: ratings.ratedAt,
+    })
+    .from(media)
+    .leftJoin(ratings, eq(media.id, ratings.mediaId))
+    .where(eq(ratings.userId, userId))
+    .orderBy(desc(avg(ratings.rating)), desc(ratings.ratedAt))
+    .groupBy(media.id, ratings.ratedAt)
+    .limit(10);
+  return rows;
+};
+
 export async function getUserActivity(
   user_id: number,
   limit = PAGESIZE,
