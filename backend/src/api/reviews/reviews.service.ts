@@ -5,10 +5,12 @@ import {
   ratings,
   activity,
   Replies,
+  media,
+  likes,
 } from "../../db/schema.js";
-import { and, eq } from "drizzle-orm/expressions";
+import { desc, asc, eq, and, lte, or } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../../utils/error.class.js";
-import { sql } from "drizzle-orm/sql";
+import { count, avg, sql, isNull, exists } from "drizzle-orm";
 
 export async function updateReview(
   media_id: number,
@@ -193,3 +195,87 @@ export const addReply = async (
     });
   });
 };
+
+const sortFields = {
+  "userReviews.createdAt": userReviews.createdAt,
+  "media.title": media.title,
+  "media.rating": media.rating,
+  "media.release_date": media.release_date,
+  "media.runtime": media.runtime,
+  "ratings.rating": ratings.rating,
+  review_likes: sql`review_likes`,
+};
+
+const avgRatingsSubquery = db
+  .select({
+    mediaId: ratings.mediaId,
+    avg_rating: sql`ROUND(${avg(ratings.rating)}, 0)`.as("avg_rating"),
+  })
+  .from(ratings)
+  .groupBy(ratings.mediaId)
+  .as("avgRatings");
+
+export async function getUserReviews(
+  user_id: number,
+  limit = 5,
+  offset = 0,
+  sort_by: keyof typeof sortFields = "userReviews.createdAt",
+  sort_order = "desc",
+  ratingMax = 10
+) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user id");
+  }
+
+  let orderByClause =
+    sort_order === "asc" ? asc(sortFields[sort_by]) : desc(sortFields[sort_by]);
+
+  const reviews = await db
+    .select({
+      review: {
+        id: userReviews.id,
+        comment: userReviews.comment,
+        review_likes: count(likesReviewsTable.id).as("review_likes"),
+        createdAt: userReviews.createdAt,
+      },
+      media: {
+        id: userReviews.mediaId,
+        title: media.title,
+        release_date: media.release_date,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+        avg_rating: avgRatingsSubquery.avg_rating,
+        like_count: count(likes.id).as("like_count"),
+      },
+      user_rating: ratings.rating,
+      is_liked: exists(
+        db
+          .select()
+          .from(likes)
+          .where(and(eq(likes.mediaId, media.id), eq(likes.userId, user_id)))
+      ),
+    })
+    .from(userReviews)
+    .innerJoin(ratings, eq(userReviews.ratingId, ratings.id))
+    .innerJoin(media, eq(userReviews.mediaId, media.id))
+    .leftJoin(
+      avgRatingsSubquery,
+      eq(userReviews.mediaId, avgRatingsSubquery.mediaId)
+    )
+    .leftJoin(likesReviewsTable, eq(userReviews.id, likesReviewsTable.reviewId))
+    .leftJoin(likes, eq(userReviews.mediaId, likes.mediaId))
+    .where(
+      and(
+        eq(userReviews.userId, user_id),
+        ratingMax < 10
+          ? or(lte(ratings.rating, ratingMax), isNull(ratings.rating))
+          : sql`1=1`
+      )
+    )
+    .groupBy(userReviews.id)
+    .orderBy(orderByClause)
+    .limit(limit)
+    .offset(offset);
+
+  return reviews;
+}
