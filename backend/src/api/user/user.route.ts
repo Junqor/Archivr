@@ -124,9 +124,17 @@ userRouter.post(
 userRouter.get(
   "/profile-page/:userId",
   asyncHandler(async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const profilePage = await getProfilePage(userId);
-    res.json({ status: "success", profilePage });
+    try {
+      const userId = parseInt(req.params.userId);
+      const profilePage = await getProfilePage(userId);
+      res.json({ status: "success", profilePage });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -135,9 +143,17 @@ userRouter.get(
 userRouter.get(
   "/profile-tab/:userId",
   asyncHandler(async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const profileTab = await getProfileTab(userId);
-    res.json({ status: "success", profileTab });
+    try {
+      const userId = parseInt(req.params.userId);
+      const profileTab = await getProfileTab(userId);
+      res.json({ status: "success", profileTab });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -146,21 +162,29 @@ userRouter.get(
 userRouter.get(
   "/:userId/:type",
   asyncHandler(async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const type = req.params.type as "followers" | "following";
-    const limit = parseInt(req.query.limit as string) || 15;
-    const offset = parseInt(req.query.offset as string) || 0;
-    const sort_by = req.query.sort_by as "follows.createdAt";
-    const sort_order = req.query.sort_order as "desc";
-    const follows = await getUserFollows(
-      userId,
-      type,
-      limit,
-      offset,
-      sort_by,
-      sort_order
-    );
-    res.json({ status: "success", follows });
+    try {
+      const userId = parseInt(req.params.userId);
+      const type = req.params.type as "followers" | "following";
+      const limit = parseInt(req.query.limit as string) || 15;
+      const offset = parseInt(req.query.offset as string) || 0;
+      const sort_by = req.query.sort_by as "follows.createdAt";
+      const sort_order = req.query.sort_order as "desc";
+      const follows = await getUserFollows(
+        userId,
+        type,
+        limit,
+        offset,
+        sort_by,
+        sort_order
+      );
+      res.json({ status: "success", follows });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -169,21 +193,29 @@ userRouter.get(
 userRouter.get(
   "/:userId/:type/extended",
   asyncHandler(async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const type = req.params.type as "followers" | "following";
-    const limit = parseInt(req.query.limit as string) || 15;
-    const offset = parseInt(req.query.offset as string) || 0;
-    const sort_by = req.query.sort_by as "follows.createdAt";
-    const sort_order = req.query.sort_order as "desc";
-    const follows = await getUserFollowsExtended(
-      userId,
-      type,
-      limit,
-      offset,
-      sort_by,
-      sort_order
-    );
-    res.json({ status: "success", follows });
+    try {
+      const userId = parseInt(req.params.userId);
+      const type = req.params.type as "followers" | "following";
+      const limit = parseInt(req.query.limit as string) || 15;
+      const offset = parseInt(req.query.offset as string) || 0;
+      const sort_by = req.query.sort_by as "follows.createdAt";
+      const sort_order = req.query.sort_order as "desc";
+      const follows = await getUserFollowsExtended(
+        userId,
+        type,
+        limit,
+        offset,
+        sort_by,
+        sort_order
+      );
+      res.json({ status: "success", follows });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -193,10 +225,18 @@ userRouter.post(
   "/add-favorite",
   authenticateToken,
   asyncHandler(async (req, res) => {
-    const { user } = res.locals;
-    const { mediaId } = req.body;
-    await addFavorite(user.id, mediaId);
-    res.json({ status: "success" });
+    try {
+      const { user } = res.locals;
+      const { mediaId } = req.body;
+      await addFavorite(user.id, mediaId);
+      res.json({ status: "success" });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -206,10 +246,18 @@ userRouter.post(
   "/remove-favorite",
   authenticateToken,
   asyncHandler(async (req, res) => {
-    const { user } = res.locals;
-    const { mediaId } = req.body;
-    await removeFavorite(user.id, mediaId);
-    res.json({ status: "success" });
+    try {
+      const { user } = res.locals;
+      const { mediaId } = req.body;
+      await removeFavorite(user.id, mediaId);
+      res.json({ status: "success" });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -218,9 +266,17 @@ userRouter.post(
 userRouter.get(
   "/get-favorites/:userId",
   asyncHandler(async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const favorites = await getUserFavorites(userId);
-    res.json({ status: "success", favorites });
+    try {
+      const userId = parseInt(req.params.userId);
+      const favorites = await getUserFavorites(userId);
+      res.json({ status: "success", favorites });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 
@@ -229,9 +285,17 @@ userRouter.get(
 userRouter.get(
   "/check-favorite/:userId/:mediaId",
   asyncHandler(async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const mediaId = parseInt(req.params.mediaId);
-    const isFavorite = await checkFavorite(userId, mediaId);
-    res.json({ status: "success", isFavorite });
+    try {
+      const userId = parseInt(req.params.userId);
+      const mediaId = parseInt(req.params.mediaId);
+      const isFavorite = await checkFavorite(userId, mediaId);
+      res.json({ status: "success", isFavorite });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );

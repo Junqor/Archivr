@@ -179,6 +179,19 @@ export async function setPfp(
 
 // New Profile Page Function
 export async function getProfilePage(user_id: number) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user id");
+  }
+
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
   // PFP link, display name, pronouns, username, location, bio, socials, # of followers, # of following, # of reviews
   const [profile] = await db
     .select({
@@ -230,6 +243,20 @@ export async function getProfilePage(user_id: number) {
 
 // Get all data needed for profile tab
 export async function getProfileTab(user_id: number) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user id");
+  }
+
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
+
   const likes = await getUserLikes(user_id, 4);
   const recentReviews = await getUserReviews(user_id, 5);
   const popularReviews = await getUserReviews(user_id, 5, 0, "review_likes");
@@ -258,6 +285,16 @@ export async function getUserFollows(
 ) {
   if (!user_id || isNaN(user_id)) {
     throw new Error("Invalid user id");
+  }
+
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
   }
 
   if (!(sort_by in sortFields)) {
@@ -299,6 +336,16 @@ export async function getUserFollowsExtended(
 ) {
   if (!user_id || isNaN(user_id)) {
     throw new Error("Invalid user id");
+  }
+
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
   }
 
   if (!(sort_by in sortFields)) {
@@ -388,6 +435,16 @@ export async function getUserFollowsExtended(
 
 // User adds a media to their favorites
 export async function addFavorite(user_id: number, media_id: number) {
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
+
   // Check if the user has less than 4 favorites
   const favoriteCount = await db
     .select({ count: sql<number>`COUNT(*)` })
@@ -419,6 +476,15 @@ export async function addFavorite(user_id: number, media_id: number) {
 
 // User removes a media from their favorites
 export async function removeFavorite(user_id: number, media_id: number) {
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
   // Check if the user has the media favorited
   const existingFavorite = await db
     .select({ id: userFavorites.id })
@@ -446,7 +512,17 @@ export async function removeFavorite(user_id: number, media_id: number) {
 
 // Get a user's favorites
 export async function getUserFavorites(user_id: number) {
-  // id, media_id, title, thumbnail_url, added_at
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
+
+  // Get the user's favorites
   return db
     .select({
       id: userFavorites.id,
@@ -462,6 +538,17 @@ export async function getUserFavorites(user_id: number) {
 
 // Check if a user has favorited a media
 export async function checkFavorite(user_id: number, media_id: number) {
+  // Check if user exists
+  const user = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, user_id));
+
+  if (user.length === 0) {
+    throw new Error("User not found");
+  }
+
+  // Check if the user has the media favorited
   const favorites = await db
     .select({ id: userFavorites.id })
     .from(userFavorites)
