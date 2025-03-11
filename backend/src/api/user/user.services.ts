@@ -4,8 +4,13 @@ import { Jimp } from "jimp";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../../configs/s3.js";
 import fs from "fs";
-import { users, userSettings, follows, userReviews } from "../../db/schema.js";
-import { eq } from "drizzle-orm";
+import {
+  users,
+  userSettings,
+  follows,
+  userReviews,
+  likes,
+} from "../../db/schema.js";
 import { logger } from "../../configs/logger.js";
 import { z } from "zod";
 import { updateSettingsSchema } from "./user.route.js";
@@ -14,6 +19,7 @@ import { getUserLikes } from "../likes/likes.service.js";
 import { getUserReviews } from "../reviews/reviews.service.js";
 import { getUserActivity } from "../activity/activity.service.js";
 import { serverConfig } from "../../configs/secrets.js";
+import { desc, asc, eq, inArray } from "drizzle-orm/expressions";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -222,7 +228,6 @@ export async function getProfilePage(user_id: number) {
 
 // Get all data needed for profile tab
 export async function getProfileTab(user_id: number) {
-  // 4 Recent Likes (TMedia), 5 Recent Reviews (TReview), 5 Popular Reviews (TReview), 5 Recent Activity
   const likes = await getUserLikes(user_id, 4);
   const recentReviews = await getUserReviews(user_id, 5);
   const popularReviews = await getUserReviews(user_id, 5, 0, "review_likes");
@@ -234,4 +239,147 @@ export async function getProfileTab(user_id: number) {
     popularReviews,
     recentActivity,
   };
+}
+
+const sortFields = {
+  "follows.created_at": follows.createdAt,
+  "users.username": users.username,
+};
+
+export async function getUserFollows(
+  user_id: number,
+  type: "followers" | "following" = "followers",
+  limit = 30,
+  offset = 0,
+  sort_by = "follows.created_at",
+  sort_order = "desc"
+) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user id");
+  }
+
+  if (!(sort_by in sortFields)) {
+    throw new Error("Invalid sort field");
+  }
+
+  let orderByClause =
+    sort_order === "asc"
+      ? asc(sortFields[sort_by as keyof typeof sortFields])
+      : desc(sortFields[sort_by as keyof typeof sortFields]);
+  const targetColumn =
+    type === "followers" ? follows.followerId : follows.followeeId;
+  const userColumn =
+    type === "followers" ? follows.followeeId : follows.followerId;
+
+  return db
+    .select({
+      id: users.id,
+      username: users.username,
+      displayName: users.displayName,
+      avatarUrl: users.avatarUrl,
+      createdAt: follows.createdAt,
+    })
+    .from(follows)
+    .innerJoin(users, eq(users.id, targetColumn))
+    .where(eq(userColumn, user_id))
+    .orderBy(orderByClause)
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function getUserFollowsExtended(
+  user_id: number,
+  type: "followers" | "following" = "followers",
+  limit = 30,
+  offset = 0,
+  sort_by = "follows.created_at",
+  sort_order = "desc"
+) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user id");
+  }
+
+  if (!(sort_by in sortFields)) {
+    throw new Error("Invalid sort field");
+  }
+
+  let orderByClause =
+    sort_order === "asc"
+      ? asc(sortFields[sort_by as keyof typeof sortFields])
+      : desc(sortFields[sort_by as keyof typeof sortFields]);
+  const targetColumn =
+    type === "followers" ? follows.followerId : follows.followeeId;
+  const userColumn =
+    type === "followers" ? follows.followeeId : follows.followerId;
+
+  // Get list of follows with user info
+  const followsData = await db
+    .select({
+      id: users.id,
+      username: users.username,
+      displayName: users.displayName,
+      avatarUrl: users.avatarUrl,
+      pronouns: userSettings.pronouns,
+    })
+    .from(follows)
+    .innerJoin(users, eq(users.id, targetColumn))
+    .leftJoin(userSettings, eq(users.id, userSettings.user_id))
+    .where(eq(userColumn, user_id))
+    .orderBy(orderByClause)
+    .limit(limit)
+    .offset(offset);
+
+  // Fetch counts individually per user
+  const userIds = followsData.map((follow) => follow.id);
+
+  if (userIds.length === 0) {
+    return [];
+  }
+
+  const followerCounts = await db
+    .select({ userId: follows.followeeId, count: sql<number>`COUNT(*)` })
+    .from(follows)
+    .where(inArray(follows.followeeId, userIds))
+    .groupBy(follows.followeeId);
+
+  const followingCounts = await db
+    .select({ userId: follows.followerId, count: sql<number>`COUNT(*)` })
+    .from(follows)
+    .where(inArray(follows.followerId, userIds))
+    .groupBy(follows.followerId);
+
+  const reviewCounts = await db
+    .select({ userId: userReviews.userId, count: sql<number>`COUNT(*)` })
+    .from(userReviews)
+    .where(inArray(userReviews.userId, userIds))
+    .groupBy(userReviews.userId);
+
+  const likeCounts = await db
+    .select({ userId: likes.userId, count: sql<number>`COUNT(*)` })
+    .from(likes)
+    .where(inArray(likes.userId, userIds))
+    .groupBy(likes.userId);
+
+  // Convert counts to a lookup map for quick access
+  const followerCountMap = Object.fromEntries(
+    followerCounts.map((item) => [item.userId, item.count])
+  );
+  const followingCountMap = Object.fromEntries(
+    followingCounts.map((item) => [item.userId, item.count])
+  );
+  const reviewCountMap = Object.fromEntries(
+    reviewCounts.map((item) => [item.userId, item.count])
+  );
+  const likeCountMap = Object.fromEntries(
+    likeCounts.map((item) => [item.userId, item.count])
+  );
+
+  // Append individual counts to each follow
+  return followsData.map((follow) => ({
+    ...follow,
+    follower_count: followerCountMap[follow.id] || 0,
+    following_count: followingCountMap[follow.id] || 0,
+    review_count: reviewCountMap[follow.id] || 0,
+    like_count: likeCountMap[follow.id] || 0,
+  }));
 }

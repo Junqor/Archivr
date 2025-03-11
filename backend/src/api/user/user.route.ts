@@ -9,6 +9,8 @@ import {
   getAvatarUrl,
   getProfilePage,
   getProfileTab,
+  getUserFollows,
+  getUserFollowsExtended,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -132,5 +134,51 @@ userRouter.get(
     const userId = parseInt(req.params.userId);
     const profileTab = await getProfileTab(userId);
     res.json({ status: "success", profileTab });
+  })
+);
+
+// (GET /user/:userId/:type?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
+// Get a user's follows
+userRouter.get(
+  "/:userId/:type",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const type = req.params.type as "followers" | "following";
+    const limit = parseInt(req.query.limit as string) || 15;
+    const offset = parseInt(req.query.offset as string) || 0;
+    const sort_by = req.query.sort_by as "follows.createdAt";
+    const sort_order = req.query.sort_order as "desc";
+    const follows = await getUserFollows(
+      userId,
+      type,
+      limit,
+      offset,
+      sort_by,
+      sort_order
+    );
+    res.json({ status: "success", follows });
+  })
+);
+
+// (GET /user/:userId/:type/extended?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
+// Get a user's follows with extended info
+userRouter.get(
+  "/:userId/:type/extended",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const type = req.params.type as "followers" | "following";
+    const limit = parseInt(req.query.limit as string) || 15;
+    const offset = parseInt(req.query.offset as string) || 0;
+    const sort_by = req.query.sort_by as "follows.createdAt";
+    const sort_order = req.query.sort_order as "desc";
+    const follows = await getUserFollowsExtended(
+      userId,
+      type,
+      limit,
+      offset,
+      sort_by,
+      sort_order
+    );
+    res.json({ status: "success", follows });
   })
 );
