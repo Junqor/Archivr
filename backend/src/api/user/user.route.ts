@@ -7,6 +7,8 @@ import {
   setPfp,
   getProfile,
   getAvatarUrl,
+  getProfilePage,
+  getProfileTab,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -108,5 +110,27 @@ userRouter.post(
     const { user } = res.locals;
     const avatarUrl = await setPfp(user.id, req.file);
     res.json({ status: "success", avatarUrl });
+  })
+);
+
+// (GET /user/profile-page/:userId)
+// Get data needed to construct a user's hero and nav sections on their profile page
+userRouter.get(
+  "/profile-page/:userId",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const profilePage = await getProfilePage(userId);
+    res.json({ status: "success", profilePage });
+  })
+);
+
+// (GET /user/profile-tab/:userId)
+// Get data needed to construct a user's profile tab
+userRouter.get(
+  "/profile-tab/:userId",
+  asyncHandler(async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const profileTab = await getProfileTab(userId);
+    res.json({ status: "success", profileTab });
   })
 );

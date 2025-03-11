@@ -4,11 +4,15 @@ import { Jimp } from "jimp";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../../configs/s3.js";
 import fs from "fs";
-import { users, userSettings } from "../../db/schema.js";
+import { users, userSettings, follows, userReviews } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import { logger } from "../../configs/logger.js";
 import { z } from "zod";
 import { updateSettingsSchema } from "./user.route.js";
+import { count, sql } from "drizzle-orm";
+import { getUserLikes } from "../likes/likes.service.js";
+import { getUserReviews } from "../reviews/reviews.service.js";
+import { getUserActivity } from "../activity/activity.service.js";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -163,4 +167,71 @@ export async function setPfp(
     if (file) fs.unlink(file.path, () => {});
     throw error;
   }
+}
+
+// New Profile Page Function
+export async function getProfilePage(user_id: number) {
+  // PFP link, display name, pronouns, username, location, bio, socials, # of followers, # of following, # of reviews
+  const [profile] = await db
+    .select({
+      id: users.id,
+      avatarUrl: users.avatarUrl,
+      displayName: users.displayName,
+      pronouns: userSettings.pronouns,
+      username: users.username,
+      location: userSettings.location,
+      bio: userSettings.bio,
+      tiktok: userSettings.social_tiktok,
+      youtube: userSettings.social_youtube,
+      instagram: userSettings.social_instagram,
+    })
+    .from(users)
+    .leftJoin(userSettings, eq(users.id, userSettings.user_id))
+    .where(eq(users.id, user_id))
+    .limit(1);
+
+  if (!profile) {
+    throw new Error("User not found");
+  }
+
+  // Followers
+  const [{ count: follower_count }] = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(follows)
+    .where(eq(follows.followeeId, user_id));
+
+  // Following
+  const [{ count: following_count }] = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(follows)
+    .where(eq(follows.followerId, user_id));
+
+  // Reviews
+  const [{ count: review_count }] = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(userReviews)
+    .where(eq(userReviews.userId, user_id));
+
+  return {
+    ...profile,
+    follower_count,
+    following_count,
+    review_count,
+  };
+}
+
+// Get all data needed for profile tab
+export async function getProfileTab(user_id: number) {
+  // 4 Recent Likes (TMedia), 5 Recent Reviews (TReview), 5 Popular Reviews (TReview), 5 Recent Activity
+  const likes = await getUserLikes(user_id, 4);
+  const recentReviews = await getUserReviews(user_id, 5);
+  const popularReviews = await getUserReviews(user_id, 5, 0, "review_likes");
+  const recentActivity = await getUserActivity(user_id, 5);
+
+  return {
+    likes,
+    recentReviews,
+    popularReviews,
+    recentActivity,
+  };
 }
