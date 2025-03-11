@@ -12,15 +12,6 @@ const sortFields = {
   "ratings.rating": ratings.rating,
 };
 
-const avgRatingsSubquery = db
-  .select({
-    mediaId: ratings.mediaId,
-    avg_rating: sql<number>`ROUND(AVG(${ratings.rating}))`.as("avg_rating"), // Ensuring whole number avg rating
-  })
-  .from(ratings)
-  .groupBy(ratings.mediaId)
-  .as("avgRatings");
-
 export async function getUserLikes(
   user_id: number,
   limit = 4,
@@ -36,6 +27,15 @@ export async function getUserLikes(
 
   let orderByClause =
     sort_order === "asc" ? asc(sortFields[sort_by]) : desc(sortFields[sort_by]);
+
+  const avgRatingsSubquery = db
+    .select({
+      mediaId: ratings.mediaId,
+      avg_rating: sql<number>`ROUND(AVG(${ratings.rating}))`.as("avg_rating"), // Ensuring whole number avg rating
+    })
+    .from(ratings)
+    .groupBy(ratings.mediaId)
+    .as("avgRatings");
 
   const likedMedia = await db
     .select({
