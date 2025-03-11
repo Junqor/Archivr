@@ -1,4 +1,4 @@
-import { StarRatings } from "./starRatings";
+import { StarRatings } from "../../../components/starRatings";
 import { ChevronDown, ChevronUp, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReviewKebab } from "./reviewKebab";
@@ -155,26 +155,14 @@ export const ReviewSection = ({
             </h5>
           </Link>
           <div className="ml-auto flex items-center">
-            {[...Array(10)].map((_, i) => (
-              <StarRatings
-                key={i}
-                i={i}
-                className={cn(
-                  "text-gray-200",
-                  i < review.rating && "fill-gray-200",
-                  i % 2 === 0 && "ml-1",
-                )}
-                width="8px"
-                height="16px"
-              />
-            ))}
+            <StarRatings readOnly value={review.rating / 2} />
           </div>
           <ReviewKebab review={review} />
         </div>
         <CollapsedText text={review.comment} max_length={400}></CollapsedText>
         <div className="flex flex-row items-center justify-start gap-x-4">
           <p className="text-sm text-gray-400">
-            {formatDate(review.created_at)}
+            {formatDate(review.created_at, true)}
           </p>
           <Button
             variant="ghost"
@@ -251,7 +239,7 @@ export const ReviewSection = ({
                   <CollapsedText text={reply.text} max_length={400} />
                   <div className="flex flex-row items-center justify-start gap-x-4">
                     <p className="text-sm text-gray-400">
-                      {formatDate(review.created_at)}
+                      {formatDate(review.created_at, true)}
                     </p>
                     <Button
                       variant="ghost"

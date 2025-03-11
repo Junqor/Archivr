@@ -138,7 +138,13 @@ export const getUserStats = async (userId: number) => {
     import.meta.env.VITE_API_URL + `/media/stats/${userId}`,
   );
   const data = await response.json();
-  return data;
+  return data as {
+    stats: {
+      likes: number;
+      ratings: number;
+      reviews: number;
+    };
+  };
 };
 
 type GetLikesArgs = {

@@ -13,6 +13,7 @@ import { count, sql } from "drizzle-orm";
 import { getUserLikes } from "../likes/likes.service.js";
 import { getUserReviews } from "../reviews/reviews.service.js";
 import { getUserActivity } from "../activity/activity.service.js";
+import { serverConfig } from "../../configs/secrets.js";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -85,22 +86,21 @@ export async function getProfile(username: string) {
 }
 
 export async function getUserSettingsForSettingsContext(user_id: number) {
-  try {
-    const [result] = await conn.query<(RowDataPacket & number)[]>(
-      "SELECT " +
-        "display_name, " +
-        "show_adult_content, " +
-        "theme, " +
-        "font_size, " +
-        "grant_personal_data, " +
-        "show_personalized_content" +
-        " FROM User_Settings WHERE user_id = ?;",
-      [user_id]
-    );
-    return result[0];
-  } catch (error) {
-    console.error(error);
-  }
+  const [result] = await conn.query<(RowDataPacket & number)[]>(
+    "SELECT " +
+      "Users.display_name, " +
+      "Users.avatar_url, " +
+      "User_Settings.show_adult_content, " +
+      "User_Settings.theme, " +
+      "User_Settings.font_size, " +
+      "User_Settings.grant_personal_data, " +
+      "User_Settings.show_personalized_content " +
+      "FROM User_Settings " +
+      "INNER JOIN Users ON Users.id = User_Settings.user_id " +
+      "WHERE user_id = ?;",
+    [user_id]
+  );
+  return result[0];
 }
 
 export async function getAvatarUrl(user_id: number) {
@@ -153,7 +153,7 @@ export async function setPfp(
       })
     );
 
-    const avatarUrl = `https://archivr-pfp.sfo3.cdn.digitaloceanspaces.com/pfp-${user_id}.jpeg`;
+    const avatarUrl = `https://archivr-pfp.${serverConfig.S3_REGION}.${serverConfig.S3_HOST}/pfp-${user_id}.jpeg`;
 
     // Update the user's pfp in the database
     const rows = await db

@@ -39,3 +39,9 @@
 
 - ~~FIX SIGN UP~~
 - ~~LIKING RERENDERING~~
+
+- Add navigation to header on mobile
+- ~~Add color picker to media rankings~~
+- Scroll to top button on activity page
+- Add loading indicator to user stats
+- Cache routes on server
