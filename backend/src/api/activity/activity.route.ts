@@ -49,10 +49,18 @@ activityRouter.post(
   "/follow",
   authenticateToken,
   asyncHandler(async (req, res) => {
-    const { user } = res.locals;
-    const { followeeId } = followRouteSchema.parse(req.body);
-    await followUser(user.id, followeeId);
-    res.json({ status: "success" });
+    try {
+      const { user } = res.locals;
+      const { followeeId } = followRouteSchema.parse(req.body);
+      await followUser(user.id, followeeId);
+      res.json({ status: "success" });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 

@@ -146,6 +146,23 @@ export const getFollowingActivity = async (userId: number, page: number) => {
 };
 
 export const followUser = async (userId: number, followeeId: number) => {
+  if (userId === followeeId) {
+    throw new Error("Users cannot follow themselves");
+  }
+
+  const [userExists, followeeExists] = await Promise.all([
+    db.select().from(users).where(eq(users.id, userId)).limit(1),
+    db.select().from(users).where(eq(users.id, followeeId)).limit(1),
+  ]);
+
+  if (userExists.length === 0) {
+    throw new Error("User does not exist");
+  }
+
+  if (followeeExists.length === 0) {
+    throw new Error("Followee does not exist");
+  }
+
   await db.transaction(async (tx) => {
     const result = await tx
       .insert(follows)
