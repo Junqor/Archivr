@@ -7,8 +7,11 @@ import {
   ratings,
   userReviews,
   users,
+  likesReviews as likesReviewsTable,
+  likes,
 } from "../../db/schema.js";
 import { and, desc, eq, inArray, or } from "drizzle-orm/expressions";
+import { count, exists } from "drizzle-orm";
 import { logger } from "../../configs/logger.js";
 
 const PAGESIZE = 15;
@@ -149,7 +152,7 @@ export const followUser = async (userId: number, followeeId: number) => {
       .values({ followerId: userId, followeeId: followeeId })
       .onDuplicateKeyUpdate({ set: { followerId: userId } })
       .$returningId();
-    if (result.length === 0 || result[0].id === 0) return; // If no id is returned, the user is already following the followee
+    if (result.length === 0 || result[0].id === 0) return;
     await tx.insert(activity).values({
       userId: userId,
       targetId: followeeId,
@@ -174,3 +177,144 @@ export const getTopUserMedia = async () => {
     .limit(10);
   return rows;
 };
+
+export const getUserTopMedia = async (userId: number) => {
+  const rows = await db
+    .select({
+      id: media.id,
+      title: media.title,
+      thumbnail_url: media.thumbnail_url,
+      rating: media.rating,
+      userRating: ratings.rating,
+      ratedAt: ratings.ratedAt,
+    })
+    .from(media)
+    .leftJoin(ratings, eq(media.id, ratings.mediaId))
+    .where(eq(ratings.userId, userId))
+    .orderBy(desc(avg(ratings.rating)), desc(ratings.ratedAt))
+    .groupBy(media.id, ratings.ratedAt)
+    .limit(10);
+  return rows;
+};
+
+export async function getUserActivity(
+  user_id: number,
+  limit = PAGESIZE,
+  offset = 0
+) {
+  if (!user_id || isNaN(user_id)) {
+    throw new Error("Invalid user id");
+  }
+
+  const userActivity = await db
+    .select({
+      activity: {
+        id: activity.id,
+        userId: activity.userId,
+        activityType: activity.activityType,
+        targetId: activity.targetId,
+        relatedId: activity.relatedId,
+        content: activity.content,
+        createdAt: activity.createdAt,
+      },
+      media: {
+        title: media.title,
+        thumbnail_url: media.thumbnail_url,
+        rating: media.rating,
+        like_count: count(likes.id).as("like_count"),
+        is_liked: exists(
+          db
+            .select()
+            .from(likes)
+            .where(and(eq(likes.mediaId, media.id), eq(likes.userId, user_id)))
+        ),
+      },
+      user: {
+        username: users.username,
+        release_date: media.release_date,
+        avatar_url: users.avatarUrl,
+        role: users.role,
+        display_name: users.displayName,
+        rating: ratings.rating,
+      },
+      review: {
+        created_at: userReviews.createdAt,
+        review_likes: count(likesReviewsTable.id).as("review_likes"),
+      },
+      followee: {
+        username: usersAliased.username,
+        avatar_url: usersAliased.avatarUrl,
+        role: usersAliased.role,
+      },
+    })
+    .from(activity)
+    .leftJoin(
+      media,
+      or(
+        and(
+          eq(activity.activityType, "like_review"),
+          eq(media.id, activity.relatedId)
+        ),
+        and(
+          eq(activity.activityType, "like_media"),
+          eq(media.id, activity.targetId)
+        ),
+        and(
+          eq(activity.activityType, "review"),
+          eq(media.id, activity.targetId)
+        ),
+        and(
+          eq(activity.activityType, "reply"),
+          eq(media.id, activity.relatedId)
+        )
+      )
+    )
+    .leftJoin(users, eq(users.id, activity.userId))
+    .leftJoin(
+      usersAliased,
+      and(
+        eq(activity.activityType, "follow"),
+        eq(usersAliased.id, activity.targetId)
+      )
+    )
+    .leftJoin(
+      userReviews,
+      or(
+        and(
+          eq(activity.activityType, "review"),
+          and(
+            eq(users.id, userReviews.userId),
+            eq(activity.targetId, userReviews.mediaId)
+          )
+        ),
+        and(
+          eq(activity.activityType, "like_review"),
+          eq(activity.targetId, userReviews.id)
+        )
+      )
+    )
+    .leftJoin(
+      ratings,
+      and(
+        eq(activity.activityType, "review"),
+        eq(ratings.id, activity.relatedId)
+      )
+    )
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(likesReviewsTable, eq(userReviews.id, likesReviewsTable.reviewId))
+    .where(eq(activity.userId, user_id))
+    .groupBy(activity.id, media.id, users.id, userReviews.id, usersAliased.id)
+    .orderBy(desc(activity.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  return userActivity.map((entry) => {
+    return {
+      activity: entry.activity,
+      media: entry.media?.title ? entry.media : undefined,
+      user: entry.user,
+      review: entry.review?.created_at ? entry.review : undefined,
+      followee: entry.followee?.username ? entry.followee : undefined,
+    };
+  });
+}

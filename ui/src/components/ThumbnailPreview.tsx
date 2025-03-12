@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
 import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 export type TThumbnailPreview = {
   media: {
@@ -23,7 +24,9 @@ export type TThumbnailPreview = {
 
 function ThumbnailPreview({ media, className }: TThumbnailPreview) {
   const [likes, setLikes] = useState<number | null>(null);
-  const [userRating, setUserRating] = useState<number | null>(null);
+  const [userRating, setUserRating] = useState<number | null | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     async function fetchLikes() {
@@ -66,9 +69,17 @@ function ThumbnailPreview({ media, className }: TThumbnailPreview) {
           <SignalCellularAlt fontSize="medium" />
           <p>{media.rating ? formatInteger(media.rating) : "~"}</p>
           <StarRounded fontSize="medium" />
-          <p>{userRating ? userRating / 2 : "~"}/5</p>
+          {userRating !== undefined ? (
+            <p>{userRating ? userRating / 2 : "~"}/5</p>
+          ) : (
+            <LoadingSpinner size="small" />
+          )}
           <FavoriteRounded fontSize="medium" />
-          <p>{likes !== null ? likes.toString() : "Loading..."}</p>
+          {likes !== null ? (
+            <p>{likes.toString()}</p>
+          ) : (
+            <LoadingSpinner size="small" />
+          )}
         </div>
       </Link>
     </div>

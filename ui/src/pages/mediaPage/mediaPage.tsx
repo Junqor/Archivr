@@ -12,7 +12,6 @@ import empty from "@/assets/empty.png";
 import { formatDateYear } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
 import { formatInteger } from "@/utils/formatInteger";
-import { StarRatings } from "./components/starRatings";
 import { ReviewSection } from "./components/reviewSection";
 import { cn } from "@/lib/utils";
 import {
@@ -20,6 +19,7 @@ import {
   StarRounded,
   CalendarMonthRounded,
   AccessTimeRounded,
+  StarBorderRounded,
 } from "@mui/icons-material";
 import {
   checkLikes,
@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { StarRatings } from "../../components/starRatings";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -42,17 +43,16 @@ export function MediaPage() {
     return <Navigate to="/404" />;
   }
   const { user } = useAuth();
-  const [rating, setRating] = useState(0);
-  const [ratingPreview, setRatingPreview] = useState(0);
+  const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState("");
   const [userWasSilly, setUserWasSilly] = useState(false);
   const [region, setRegion] = useState("US");
 
   function handleAddReview() {
-    if (rating === 0) {
+    if (rating === null) {
       setUserWasSilly(true);
     } else {
-      updateReview({ comment: review, rating: rating });
+      updateReview({ comment: review, rating: rating * 2 });
     }
   }
 
@@ -96,7 +96,7 @@ export function MediaPage() {
   useEffect(() => {
     if (!ratingAndReview) return;
     if (ratingAndReview.rating) {
-      setRating(ratingAndReview.rating);
+      setRating(ratingAndReview.rating / 2);
     }
     if (ratingAndReview.review) {
       setReview(ratingAndReview.review);
@@ -190,22 +190,26 @@ export function MediaPage() {
         <section className="relative z-10 order-3 hidden h-full w-1/4 flex-col space-y-2 sm:flex">
           <p>Leave a Rating</p>
           <div className="flex">
-            {[...Array(10)].map((_, i) => (
-              <StarRatings
-                key={i}
-                className={cn(
-                  ratingPreview > i || rating > i
-                    ? `fill-primary text-primary`
-                    : `text-white`,
-                )}
-                i={i}
-                width="16px"
-                height="32px"
-                onMouseOver={() => setRatingPreview(i + 1)}
-                onMouseOut={() => setRatingPreview(0)}
-                onClick={() => setRating(i + 1)}
-              />
-            ))}
+            <StarRatings
+              name="user-rating-d"
+              value={rating}
+              onChange={(_, newValue) => {
+                setRating(newValue);
+              }}
+              icon={
+                <StarRounded
+                  className="m-[-3px] text-primary"
+                  fontSize="inherit"
+                />
+              }
+              emptyIcon={
+                <StarBorderRounded
+                  className="m-[-3px] text-white/90"
+                  fontSize="inherit"
+                />
+              }
+              sx={{ fontSize: "3rem" }}
+            />
           </div>
           <p>Share your thoughts</p>
           <Textarea
@@ -250,22 +254,27 @@ export function MediaPage() {
           <div className="flex flex-row items-center gap-4">
             <h4>Leave a Rating</h4>
             <div className="flex">
-              {[...Array(10)].map((_, i) => (
-                <StarRatings
-                  key={i}
-                  className={cn(
-                    ratingPreview > i || rating > i
-                      ? `fill-primary text-primary`
-                      : `text-white`,
-                  )}
-                  i={i}
-                  width="16px"
-                  height="32px"
-                  onMouseOver={() => setRatingPreview(i + 1)}
-                  onMouseOut={() => setRatingPreview(0)}
-                  onClick={() => setRating(i + 1)}
-                />
-              ))}
+              <StarRatings
+                name="user-rating-mb"
+                defaultValue={rating ? rating / 2 : 0}
+                value={rating}
+                onChange={(_, newValue) => {
+                  setRating(newValue);
+                }}
+                icon={
+                  <StarRounded
+                    className="m-[-3px] text-primary"
+                    fontSize="inherit"
+                  />
+                }
+                emptyIcon={
+                  <StarBorderRounded
+                    className="m-[-3px] text-white/90"
+                    fontSize="inherit"
+                  />
+                }
+                sx={{ fontSize: "3rem" }}
+              />
             </div>
           </div>
           <h4>Share your thoughts</h4>

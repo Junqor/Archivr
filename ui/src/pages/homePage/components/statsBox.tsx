@@ -4,25 +4,19 @@ import {
   StarRounded,
 } from "@mui/icons-material";
 import { getUserStats } from "@/api/media";
-import { useEffect, useState } from "react";
 import { formatInteger } from "@/utils/formatInteger";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatsBoxProps {
   userId: number;
 }
 
 export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
-  const [stats, setStats] = useState({
-    stats: {
-      likes: 0,
-      ratings: 0,
-      reviews: 0,
-    },
+  const { data: stats } = useQuery({
+    queryKey: ["stats", userId],
+    queryFn: () => getUserStats(userId),
   });
-
-  useEffect(() => {
-    getUserStats(userId).then((data) => setStats(data));
-  }, [userId]);
 
   return (
     <div className="mx-0 grid w-full grid-cols-3 gap-6 text-white md:mx-auto">
@@ -31,8 +25,14 @@ export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
           <FavoriteRounded sx={{ fontSize: "3rem" }} />
         </div>
         <div>
-          <h3 className="font-bold">{formatInteger(stats.stats.likes)}</h3>
-          <p>{stats.stats.likes != 1 ? "Likes" : "Like"}</p>
+          {stats ? (
+            <>
+              <h3 className="font-bold">{formatInteger(stats.stats.likes)}</h3>
+              <p>{stats.stats.likes != 1 ? "Likes" : "Like"}</p>
+            </>
+          ) : (
+            <StatsSkeleton />
+          )}
         </div>
       </div>
       <div className="mx-auto flex w-fit max-w-xs flex-row items-center justify-start gap-4">
@@ -40,8 +40,16 @@ export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
           <QuestionAnswerRounded sx={{ fontSize: "3rem" }} />
         </div>
         <div>
-          <h3 className="font-bold">{formatInteger(stats.stats.reviews)}</h3>
-          <p>{stats.stats.reviews != 1 ? "Reviews" : "Review"}</p>
+          {stats ? (
+            <>
+              <h3 className="font-bold">
+                {formatInteger(stats.stats.reviews)}
+              </h3>
+              <p>{stats.stats.reviews != 1 ? "Reviews" : "Review"}</p>
+            </>
+          ) : (
+            <StatsSkeleton />
+          )}
         </div>
       </div>
       <div className="mx-auto flex w-fit max-w-xs flex-row items-center justify-start gap-4">
@@ -49,11 +57,27 @@ export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
           <StarRounded sx={{ fontSize: "3rem" }} />
         </div>
         <div>
-          {/* TODO: Change this to actual ratings. Need to separate them in the table */}
-          <h3 className="font-bold">{formatInteger(stats.stats.ratings)}</h3>
-          <p>{stats.stats.reviews != 1 ? "Ratings" : "Rating"}</p>
+          {stats ? (
+            <>
+              <h3 className="font-bold">
+                {formatInteger(stats.stats.ratings)}
+              </h3>
+              <p>{stats.stats.ratings != 1 ? "Ratings" : "Rating"}</p>
+            </>
+          ) : (
+            <StatsSkeleton />
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+const StatsSkeleton = () => {
+  return (
+    <>
+      <Skeleton className="mt-2 h-8 w-8" />
+      <Skeleton className="mt-2 h-4 w-12" />
+    </>
+  );
+};
