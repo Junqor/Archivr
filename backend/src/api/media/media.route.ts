@@ -21,6 +21,7 @@ import {
 import { z } from "zod";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { cacheRoute } from "../../middleware/cacheRoute.js";
 
 export const mediaRouter = Router();
 
@@ -100,6 +101,7 @@ mediaRouter.get(
 // Get the most popular media as defined by the data retrieved from the api
 mediaRouter.get(
   "/popular",
+  cacheRoute(60 * 60 * 24 * 7), // Cache for 7 days
   asyncHandler(async (req, res) => {
     const media = await getMostPopular();
     res.json({ status: "success", media: media });
@@ -130,6 +132,7 @@ mediaRouter.get(
 // Get the trending media
 mediaRouter.get(
   "/trending",
+  cacheRoute(60 * 60 * 24), // Cache for 24 hours
   asyncHandler(async (req, res) => {
     const movies = await getTrending("movie");
     const shows = await getTrending("tv");

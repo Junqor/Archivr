@@ -5,8 +5,11 @@ import {
   getMostPopularShows,
 } from "./popular.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { cacheRoute } from "../../middleware/cacheRoute.js";
 
 const popularRouter = Router();
+
+popularRouter.use(cacheRoute(60 * 60 * 48)); // Cache for 48 hours
 
 // (GET /api/popular/movies)
 // Get the most popular movies
