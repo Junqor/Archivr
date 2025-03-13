@@ -92,7 +92,7 @@ export function ActionButtons({
 
 function BanForm({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
   const input_expiry_timestamp = useRef<HTMLInputElement>(null);
-  const input_permanant = useRef<HTMLInputElement>(null);
+  const input_permanent = useRef<HTMLInputElement>(null);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,13 +102,13 @@ function BanForm({ children, selectedItems } : { children: React.ReactNode, sele
       user_ids: Array.from(selectedItems.keys()) as Array<number>,
       message: form.get("message") as string,
       expiry_timestamp: `${expiry_date.getUTCFullYear()}-${expiry_date.getUTCMonth()+1}-${expiry_date.getUTCDate()} ${expiry_date.getUTCHours()}:${expiry_date.getUTCMinutes()}:${expiry_date.getUTCMilliseconds()}` as string,
-      permanant: form.get("permanant") as string,
+      permanent: form.get("permanent") as string,
     }
-    if (data.permanant==null && ( expiry_date.getTime() <= Date.now() || !expiry_date.getTime())){
+    if (data.permanent==null && ( expiry_date.getTime() <= Date.now() || !expiry_date.getTime())){
       toast.error("Invalid date");
       return;
     }
-    await ban_users(data.user_ids, data.permanant=="on" ? null : data.expiry_timestamp, data.message)
+    await ban_users(data.user_ids, data.permanent=="on" ? null : data.expiry_timestamp, data.message)
       .then(() => toast.success("Users banned successfully"))
       .catch((err) => toast.error("Error banning users", err.message));
   };
@@ -143,22 +143,22 @@ function BanForm({ children, selectedItems } : { children: React.ReactNode, sele
                   className="col-span-3"
                 />
               </div>
-              {/* Permanant */}
+              {/* permanent */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="permanant" className="text-right">
+                <Label htmlFor="permanent" className="text-right">
                   Ban them Forever
                 </Label>
                 <Input
                   onChange={()=>{
                     if (input_expiry_timestamp.current == null) return;
-                    if (input_permanant.current?.checked)
+                    if (input_permanent.current?.checked)
                       input_expiry_timestamp.current.disabled = true;
                     else
                       input_expiry_timestamp.current.disabled = false;
                   }}
-                  ref={input_permanant}
-                  id="permanant"
-                  name="permanant"
+                  ref={input_permanent}
+                  id="permanent"
+                  name="permanent"
                   type="checkbox"
                   className="col-span-3"
                 />
