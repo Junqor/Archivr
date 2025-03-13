@@ -6,6 +6,7 @@ import {
 } from "./genre.service.js";
 import { z } from "zod";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { cacheRoute } from "../../middleware/cacheRoute.js";
 
 export const genreRouter = Router();
 
@@ -62,6 +63,7 @@ genreRouter.get(
 // get a list of distinct genres
 genreRouter.get(
   "/",
+  cacheRoute(60 * 60 * 24 * 7), // Cache for 7 days
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const genres = await get_genres();
     if (genres.length === 0) {
@@ -71,6 +73,7 @@ genreRouter.get(
       });
       return;
     }
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24 * 7);
     res.json({ status: "success", genres });
   })
 );

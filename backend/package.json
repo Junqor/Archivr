@@ -21,6 +21,7 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
+    "@cacheable/node-cache": "^1.5.3",
     "@types/multer": "^1.4.12",
     "@types/tmp": "^0.2.6",
     "body-parser": "^1.20.3",
