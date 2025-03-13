@@ -200,10 +200,12 @@ mediaRouter.get(
 // get media trailer by id
 mediaRouter.get(
   "/trailer/:id",
+  cacheRoute(60 * 60 * 24 * 7),
   asyncHandler(async (req, res) => {
     try {
       const { id } = req.params;
       const result = await getMediaTrailer(parseInt(id));
+      res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24 * 7);
       res.status(200).json({ status: "success", result });
     } catch (error) {
       res
