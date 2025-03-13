@@ -14,7 +14,6 @@ export const cacheRoute = (ttl: number) =>
     const cacheKey = req.originalUrl;
     const cacheData = cache.get(cacheKey);
     if (cacheData) {
-      logger.info("HIT");
       res.json(cacheData);
       return;
     }

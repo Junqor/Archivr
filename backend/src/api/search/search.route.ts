@@ -36,7 +36,7 @@ searchRouter.get(
   asyncHandler(async (req, res) => {
     const id = parseInt(req.params.id);
     const result = await getMediaById(id);
-    res.setHeader("Cache-Control", "max-age=604800");
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24);
     res.status(200).json(result);
   })
 );

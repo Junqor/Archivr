@@ -50,6 +50,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const mediaId = parseInt(req.params.mediaId);
     const likes = await get_likes(mediaId);
+    res.setHeader("Cache-Control", "max-age=" + 60 * 15); // Browser cache for 15 mins
     res.json({ status: "success", likes });
   })
 );
@@ -84,6 +85,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const mediaId = parseInt(req.params.mediaId);
     const rating = await get_media_rating(mediaId);
+    res.setHeader("Cache-Control", "max-age=" + 60 * 15); // Browser cache for 15 mins
     res.json({ status: "success", rating: rating });
   })
 );
@@ -104,6 +106,7 @@ mediaRouter.get(
   cacheRoute(60 * 60 * 24 * 7), // Cache for 7 days
   asyncHandler(async (req, res) => {
     const media = await getMostPopular();
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24 * 7);
     res.json({ status: "success", media: media });
   })
 );
@@ -122,8 +125,10 @@ mediaRouter.get(
 // Get the trending media
 mediaRouter.get(
   "/top-rated-picks",
+  cacheRoute(60 * 60 * 12), // Cache for 12 hrs
   asyncHandler(async (req, res) => {
     const { media } = await getTopRatedPicks();
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 12);
     res.json({ status: "success", media: media });
   })
 );
@@ -136,6 +141,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const movies = await getTrending("movie");
     const shows = await getTrending("tv");
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24);
     res.json({ status: "success", media: { movies, shows } });
   })
 );
@@ -181,9 +187,11 @@ mediaRouter.get(
 // get media background by id
 mediaRouter.get(
   "/background/:id",
+  cacheRoute(60 * 60 * 24 * 7), // Cache for 7 days
   asyncHandler(async (req, res) => {
     const { id } = req.params;
     const result = await getMediaBackground(parseInt(id));
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24 * 7); // Browser cache for 7 days
     res.status(200).json({ status: "success", result });
   })
 );
@@ -212,6 +220,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.query.user_id as string);
     const result = await get_recommended_for_you(userId);
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24); // Browser cache for 1 day
     res.json({ status: "success", media: result });
   })
 );
@@ -223,6 +232,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.query.user_id as string);
     const result = await get_similar_to_watched(userId);
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24); // Browser cache for 1 day
     res.json({
       status: "success",
       media: result.media,

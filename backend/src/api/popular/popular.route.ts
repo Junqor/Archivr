@@ -10,6 +10,10 @@ import { cacheRoute } from "../../middleware/cacheRoute.js";
 const popularRouter = Router();
 
 popularRouter.use(cacheRoute(60 * 60 * 48)); // Cache for 48 hours
+popularRouter.use((req, res, next) => {
+  res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 48); // Browser cache as well
+  next();
+});
 
 // (GET /api/popular/movies)
 // Get the most popular movies

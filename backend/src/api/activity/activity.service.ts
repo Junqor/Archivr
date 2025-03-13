@@ -1,4 +1,4 @@
-import { aliasedTable, avg, sql, sum } from "drizzle-orm";
+import { aliasedTable, avg, count, sql, sum } from "drizzle-orm";
 import { db } from "../../db/database.js";
 import {
   activity,
@@ -169,7 +169,11 @@ export const getTopUserMedia = async () => {
     })
     .from(media)
     .leftJoin(ratings, eq(media.id, ratings.mediaId))
-    .orderBy(desc(avg(ratings.rating)), desc(media.rating))
+    .orderBy(
+      desc(avg(ratings.rating)),
+      desc(count(ratings.rating)),
+      desc(media.rating)
+    )
     .groupBy(media.id)
     .limit(10);
   return rows;

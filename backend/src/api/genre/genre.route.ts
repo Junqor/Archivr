@@ -73,6 +73,7 @@ genreRouter.get(
       });
       return;
     }
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24 * 7);
     res.json({ status: "success", genres });
   })
 );
