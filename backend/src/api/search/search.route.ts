@@ -2,6 +2,7 @@ import { Router } from "express";
 import z from "zod";
 import { getMediaById, searchMedia } from "./search.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { cacheRoute } from "../../middleware/cacheRoute.js";
 
 const searchBodySchema = z.object({
   query: z.string().min(1),
@@ -31,9 +32,11 @@ searchRouter.post(
 // Get a single media entry by its id
 searchRouter.get(
   "/:id",
+  cacheRoute(60 * 60 * 24), // Cache for 24 hours
   asyncHandler(async (req, res) => {
     const id = parseInt(req.params.id);
     const result = await getMediaById(id);
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24);
     res.status(200).json(result);
   })
 );
