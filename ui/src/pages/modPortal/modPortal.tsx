@@ -11,7 +11,7 @@ import { keyframes } from "@emotion/react";
 
 export default function ModPortal() {
   const [searchParams] = useSearchParams();
-  const [selectedItems, setSelectedItems] = useState<Map<Number,TUser>>(new Map<Number,TUser>);
+  const [selectedItems, setSelectedItems] = useState<Map<number,TUser>>(new Map<number,TUser>);
 
   const pageNumber = parseInt(searchParams.get("page") || "1");
   const query = searchParams.get("q") || "";
@@ -52,7 +52,7 @@ export default function ModPortal() {
       <h4 className="text-red-500">Selected Users</h4>
       <div className="rounded-2xl border border-red-500 bg-red-500 bg-opacity-20 p-2 inline-block min-w-40">
         {[...selectedItems].map((user)=>{return(
-            <div>
+            <div key={user[1].id}>
                 <button onClick={()=>{handleSelectItem(user[1])}}>{(user[1].displayName||user[1].username)+" [@"+user[1].username+" ID:"+user[1].id+"]"}</button>
             </div>
         );})}

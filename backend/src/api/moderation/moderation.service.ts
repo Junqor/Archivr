@@ -1,15 +1,16 @@
 import { conn } from "../../db/database.js";
 
-export async function ban_users(user_ids: Array<number>, expiry_date_timestamp: number, message: string) {
+export async function ban_users(user_ids: Array<number>, expiry_date_timestamp: string|null, message: string) {
     if (user_ids.length <= 0){
         throw new Error("Recieved 0 user_ids");
     }
     let values:Array<any> = [];
     let insert_values:string = "";
     user_ids.forEach(user_id => {
-        insert_values = insert_values + "(?,'ban',?,?)"
-        values.push(user_id,message,expiry_date_timestamp)
+        insert_values = insert_values + "(?,'ban',?,?),"
+        values.push(user_id,message,expiry_date_timestamp || null)
     });
+    insert_values = insert_values.substring(0,insert_values.length-1);
 
     const res = await conn.query("INSERT INTO Moderator_Actions (user_id, action_type, message, expiry_date) VALUES "+insert_values,values);
     return res;
@@ -25,7 +26,7 @@ export async function pardon_users(user_ids: Array<number>) {
     });
     insert_values = insert_values.substring(0,insert_values.length-1);
 
-    const res = await conn.query("DELETE FROM Moderator_Actions WHERE user_id IN ("+insert_values+")",user_ids);
+    const res = await conn.query("UPDATE Moderator_Actions SET pardon_timestamp = CURRENT_TIMESTAMP WHERE user_id IN ("+insert_values+")",user_ids);
     return res;
 }
 

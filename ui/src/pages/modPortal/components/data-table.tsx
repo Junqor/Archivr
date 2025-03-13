@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Check } from "lucide-react";
+import { Check, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/avatar";
 import { TUser } from "@/types/user";
 
@@ -26,6 +26,7 @@ export function DataTable({
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead className="w-[50px]">Select</TableHead>
+          <TableHead className="w-[50px]">Inspect</TableHead>
           <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Avatar</TableHead>
@@ -38,6 +39,9 @@ export function DataTable({
           <TableRow key={item.id} onClick={()=>{onSelectItem(item)}}>
             <TableCell>
               {selectedItems.has(item.id) && <Check/>}
+            </TableCell>
+            <TableCell>
+              <Search/>
             </TableCell>
             <TableCell>{item.id}</TableCell>
             <TableCell>{item.displayName || item.username}</TableCell>
