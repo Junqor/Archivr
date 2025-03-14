@@ -42,7 +42,7 @@ export const ReplyKebab = ({ reply, mediaId }: ReplyKebabProps) => {
       <PopoverTrigger>
         <EllipsisVertical className="size-5"></EllipsisVertical>
       </PopoverTrigger>
-      <PopoverContent className="flex w-48 flex-col p-2" align="end">
+      <PopoverContent className="flex w-auto flex-col p-2" align="end">
         {user && user.id === reply.user_id && (
           // ONLY show delete button if the user is the reviewer
           <>
