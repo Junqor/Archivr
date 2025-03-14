@@ -639,7 +639,7 @@ export default function ProfilePage() {
           </TabContent>
           <TabContent value="reviews" className="flex w-full items-start gap-5">
             <div className="flex w-full flex-col items-start gap-5 sm:w-3/4">
-              <section className="flex w-full items-center justify-end self-stretch sm:justify-between">
+              <section className="flex w-full items-center justify-end self-stretch">
                 <form className="flex flex-col items-center gap-5 sm:flex-row">
                   <fieldset className="flex items-center gap-3">
                     <h4>
@@ -927,22 +927,43 @@ export default function ProfilePage() {
                   ))}
             </section>
             <section className="flex w-full justify-center gap-3">
-              <button
-                onClick={() =>
-                  handleChangeLikePage(Math.max(0, mediaLikesParams.page - 1))
-                }
-                disabled={mediaLikesParams.page === 0}
-                className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
-              >
-                <ChevronLeftRounded />
-              </button>
-              <button
-                onClick={() => handleChangeLikePage(mediaLikesParams.page + 1)}
-                disabled={!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE} // Disable if no more media
-                className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
-              >
-                <ChevronRightRounded />
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() =>
+                    handleChangeLikePage(Math.max(0, mediaLikesParams.page - 1))
+                  }
+                  disabled={mediaLikesParams.page === 0}
+                  className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                >
+                  <ChevronLeftRounded />
+                </button>
+                <h3
+                  className={`${mediaLikesParams.page === 0 ? "text-muted" : "text-white"}`}
+                >
+                  Previous
+                </h3>
+              </div>
+              <Separator orientation="vertical" className="h-auto" decorative />
+              <div className="flex items-center gap-3">
+                <h3
+                  className={`${
+                    !mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE
+                      ? "text-muted"
+                      : "text-white"
+                  }`}
+                >
+                  Next
+                </h3>
+                <button
+                  onClick={() =>
+                    handleChangeLikePage(mediaLikesParams.page + 1)
+                  }
+                  disabled={!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE} // Disable if no more media
+                  className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                >
+                  <ChevronRightRounded />
+                </button>
+              </div>
             </section>
           </TabContent>
         </TabsContainer>
