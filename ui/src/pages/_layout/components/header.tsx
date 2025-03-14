@@ -1,5 +1,5 @@
 import SearchBar from "../../../components/searchBar";
-import { LoginRounded, KeyboardArrowDownRounded } from "@mui/icons-material";
+import { LoginRounded } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import {
@@ -51,34 +51,29 @@ export default function Header() {
         <div className="hidden flex-row items-center justify-center gap-6 md:flex">
           <Link
             to="/"
-            className="text-white transition-colors hover:text-purple"
+            className="font-medium text-white transition-colors hover:text-purple"
           >
             Home
           </Link>
           <Dropdown modal={false}>
-            <DropdownTrigger className="flex flex-row items-center justify-center gap-1 text-base text-white transition-colors hover:text-purple">
-              Genres
-              <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
-            </DropdownTrigger>
-            <DropdownContent className="grid grid-cols-5 gap-2 bg-black p-2">
-              {isGenresLoading && <DropdownItem>Loading...</DropdownItem>}
-              {genresError && <DropdownItem>Error loading genres</DropdownItem>}
-              {genres?.map((genre) => (
-                <DropdownItem
-                  key={genre.slug}
-                  onSelect={() => navigate(`/genre/${genre.slug}`)}
-                >
-                  {genre.genre}
-                </DropdownItem>
-              ))}
+            <DropdownTrigger>Genres</DropdownTrigger>
+            <DropdownContent>
+              <div className="grid grid-cols-5 gap-2 p-2">
+                {isGenresLoading && <DropdownItem>Loading...</DropdownItem>}
+                {genresError && (
+                  <DropdownItem>Error loading genres</DropdownItem>
+                )}
+                {genres?.map((genre) => (
+                  <DropdownItem asChild key={genre.slug}>
+                    <Link to={`/genre/${genre.slug}`}>{genre.genre}</Link>
+                  </DropdownItem>
+                ))}
+              </div>
             </DropdownContent>
           </Dropdown>
 
           <Dropdown modal={false}>
-            <DropdownTrigger className="flex flex-row items-center gap-3 text-base text-white transition-colors hover:text-purple">
-              Explore
-              <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
-            </DropdownTrigger>
+            <DropdownTrigger>Explore</DropdownTrigger>
             <DropdownContent>
               <DropdownItem asChild>
                 <Link
@@ -132,7 +127,6 @@ export default function Header() {
                       {"@" + user.username}
                     </h5>
                   </div>
-                  <KeyboardArrowDownRounded sx={{ fontSize: "1.5rem" }} />
                 </div>
               </DropdownTrigger>
               <DropdownContent>
