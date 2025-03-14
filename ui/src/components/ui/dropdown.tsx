@@ -2,21 +2,29 @@ import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 
 const Dropdown = DropdownMenuPrimitive.Root;
 
 const DropdownTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <DropdownMenuPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-      className
+      "gap-x-1 text-base text-white transition-colors hover:text-purple",
+      "group inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+      className,
     )}
     {...props}
-  />
+  >
+    {children}
+    <ChevronDown
+      className="top-px size-4 transition-transform duration-300 group-data-[state=open]:rotate-180"
+      aria-hidden
+    />
+  </DropdownMenuPrimitive.Trigger>
 ));
 DropdownTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 
@@ -29,8 +37,9 @@ const DropdownContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] rounded-md border border-neutral-200 bg-black p-1 shadow-md animate-in data-[side=top]:slide-in-from-top-2 data-[side=bottom]:slide-in-from-bottom-2 dark:border-neutral-800 dark:bg-neutral-950",
-        className
+        "z-50 min-w-[8rem] rounded-md border border-neutral-200 bg-black p-1 shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        className,
       )}
       {...props}
     />
@@ -45,8 +54,9 @@ const DropdownItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-purple focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-purple dark:focus:text-white",
-      className
+      "text-sm",
+      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 outline-none focus:bg-purple focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-purple dark:focus:text-white",
+      className,
     )}
     {...props}
   />
@@ -73,7 +83,7 @@ const DropdownLabel = React.forwardRef<
     ref={ref}
     className={cn(
       "px-2 py-1.5 text-sm font-semibold text-neutral-900 dark:text-neutral-50",
-      className
+      className,
     )}
     {...props}
   />

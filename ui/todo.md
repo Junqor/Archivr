@@ -14,27 +14,27 @@
 
 ### Media Page
 
-- add shield icon or sum indicator to admins when displayed on pages
-- replace 'critic score' with user rating avg
+- ~~add shield icon or sum indicator to admins when displayed on pages~~
+- ~~replace 'critic score' with user rating avg~~
 
 ## Other
 
-- [maybe] use trakt api for dynamic cast info
+- ~~[maybe] use trakt api for dynamic cast info~~
 
-- replace protected route with auth guard on certain actions (e.g. like, review...)
+- ~~replace protected route with auth guard on certain actions (e.g. like, review...)~~
 
-- make profile icon a clickable dropdown
+- ~~make profile icon a clickable dropdown~~
 
   - profile page
-  - admin page here
+  - ~~admin page here~~
 
-- mobile view for home page
+- ~~mobile view for home page~~
 
   - fix auth/sign up; use cookies instead of local storage
 
-- add red outline for incorrect sign in details instead of erasing inputs
-- use react query for fetching movies
-- Loading screen
+- ~~add red outline for incorrect sign in details instead of erasing inputs~~
+- ~~use react query for fetching movies~~
+- ~~Loading screen~~
 - show movie poster in search bar
 
 - ~~FIX SIGN UP~~
@@ -42,8 +42,8 @@
 
 - Add navigation to header on mobile
 - ~~Add color picker to media rankings~~
-- Scroll to top button on activity page
-- Add loading indicator to user stats
-- Cache routes on server
-- Stop scroll restoration on genre page
+- ~~Scroll to top button on activity page~~
+- ~~Add loading indicator to user stats~~
+- ~~Cache routes on server~~
+- ~~Stop scroll restoration on genre page~~
 - Try out tRPC

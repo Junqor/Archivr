@@ -92,6 +92,10 @@ const router = createBrowserRouter([
         element: <PopularPage />,
       },
       {
+        path: "/privacy",
+        element: <UnderConstruction />,
+      },
+      {
         path: "/profile/:username",
         element: <ProfilePage />,
       },
