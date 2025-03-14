@@ -95,13 +95,15 @@ export const getTopUserMedia = async () => {
 };
 
 export const getUserTopMedia = async (username: string) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const response = await fetch(
     import.meta.env.VITE_API_URL + `/activity/user/${userId}/top-media`,
@@ -120,13 +122,15 @@ export const getUserActivity = async (
   limit?: number,
   offset?: number,
 ) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL +

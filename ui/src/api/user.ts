@@ -91,13 +91,15 @@ export const uploadPfp = async (file: File) => {
 };
 
 export const getProfilePageData = async (username: string) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL + `/user/profile-page/${userId}`,
@@ -112,13 +114,15 @@ export const getProfilePageData = async (username: string) => {
 };
 
 export const getProfileTabData = async (username: string) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL + `/user/profile-tab/${userId}`,
@@ -141,13 +145,15 @@ export const getUserFollows = async (
   sort_by?: string,
   sort_order?: string,
 ) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL +
@@ -207,13 +213,15 @@ export const removeFavorite = async (mediaId: number) => {
 };
 
 export const getFavorites = async (username: string) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL + `/user/get-favorites/${userId}`,
@@ -228,13 +236,15 @@ export const getFavorites = async (username: string) => {
 };
 
 export const checkFavorite = async (username: string, mediaId: number) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL + `/user/check-favorite/${userId}/${mediaId}`,

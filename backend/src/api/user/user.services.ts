@@ -259,7 +259,7 @@ export async function getProfileTab(user_id: number) {
 
   const likes = await getUserLikes(user_id, 4);
   const recentReviews = await getUserReviews(user_id, 5);
-  const popularReviews = await getUserReviews(user_id, 5, 0, "review_likes");
+  const popularReviews = await getUserReviews(user_id, 5, 0, "review-likes");
   const recentActivity = await getUserActivity(user_id, 5);
 
   return {
@@ -316,6 +316,7 @@ export async function getUserFollows(
       username: users.username,
       displayName: users.displayName,
       avatarUrl: users.avatarUrl,
+      role: users.role,
       createdAt: follows.createdAt,
     })
     .from(follows)
@@ -533,7 +534,8 @@ export async function getUserFavorites(user_id: number) {
     })
     .from(userFavorites)
     .innerJoin(media, eq(media.id, userFavorites.mediaId))
-    .where(eq(userFavorites.userId, user_id));
+    .where(eq(userFavorites.userId, user_id))
+    .orderBy(desc(userFavorites.addedAt));
 }
 
 // Check if a user has favorited a media

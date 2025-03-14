@@ -238,6 +238,7 @@ export async function getUserActivity(
         title: media.title,
         thumbnail_url: media.thumbnail_url,
         rating: media.rating,
+        release_date: media.release_date,
         like_count: count(likes.id).as("like_count"),
         is_liked: exists(
           db
@@ -248,7 +249,6 @@ export async function getUserActivity(
       },
       user: {
         username: users.username,
-        release_date: media.release_date,
         avatar_url: users.avatarUrl,
         role: users.role,
         display_name: users.displayName,
@@ -260,11 +260,41 @@ export async function getUserActivity(
       },
       followee: {
         username: usersAliased.username,
+        display_name: usersAliased.displayName,
         avatar_url: usersAliased.avatarUrl,
         role: usersAliased.role,
       },
+      reply: {
+        user_id: userReviews.userId,
+        username: usersAliased.username,
+        role: usersAliased.role,
+        avatar_url: usersAliased.avatarUrl,
+        display_name: usersAliased.displayName,
+        rating: ratings.rating,
+      },
     })
     .from(activity)
+    .leftJoin(users, eq(users.id, activity.userId))
+    .leftJoin(
+      userReviews,
+      or(
+        and(
+          eq(activity.activityType, "review"),
+          and(
+            eq(users.id, userReviews.userId),
+            eq(activity.targetId, userReviews.mediaId)
+          )
+        ),
+        and(
+          eq(activity.activityType, "like_review"),
+          eq(activity.targetId, userReviews.id)
+        ),
+        and(
+          eq(activity.activityType, "reply"),
+          eq(activity.targetId, userReviews.id)
+        )
+      )
+    )
     .leftJoin(
       media,
       or(
@@ -286,35 +316,28 @@ export async function getUserActivity(
         )
       )
     )
-    .leftJoin(users, eq(users.id, activity.userId))
     .leftJoin(
       usersAliased,
-      and(
-        eq(activity.activityType, "follow"),
-        eq(usersAliased.id, activity.targetId)
-      )
-    )
-    .leftJoin(
-      userReviews,
       or(
         and(
-          eq(activity.activityType, "review"),
-          and(
-            eq(users.id, userReviews.userId),
-            eq(activity.targetId, userReviews.mediaId)
-          )
+          eq(activity.activityType, "follow"),
+          eq(usersAliased.id, activity.targetId)
         ),
         and(
           eq(activity.activityType, "like_review"),
-          eq(activity.targetId, userReviews.id)
+          eq(usersAliased.id, userReviews.userId)
+        ),
+        and(
+          eq(activity.activityType, "reply"),
+          eq(usersAliased.id, userReviews.userId)
         )
       )
     )
     .leftJoin(
       ratings,
       and(
-        eq(activity.activityType, "review"),
-        eq(ratings.id, activity.relatedId)
+        eq(ratings.userId, userReviews.userId),
+        eq(ratings.mediaId, userReviews.mediaId)
       )
     )
     .leftJoin(likes, eq(likes.mediaId, media.id))
@@ -332,6 +355,7 @@ export async function getUserActivity(
       user: entry.user,
       review: entry.review?.created_at ? entry.review : undefined,
       followee: entry.followee?.username ? entry.followee : undefined,
+      reply: entry.reply?.username ? entry.reply : undefined,
     };
   });
 }

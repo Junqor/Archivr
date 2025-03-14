@@ -204,13 +204,13 @@ export const addReply = async (
 };
 
 const sortFields = {
-  "userReviews.createdAt": userReviews.createdAt,
-  "media.title": media.title,
-  "media.rating": media.rating,
-  "media.release_date": media.release_date,
-  "media.runtime": media.runtime,
-  "ratings.rating": ratings.rating,
-  review_likes: sql`review_likes`,
+  "when-reviewed": userReviews.createdAt,
+  title: media.title,
+  rating: media.rating,
+  "release-date": media.release_date,
+  runtime: media.runtime,
+  "user-rating": ratings.rating,
+  "review-likes": sql`review_likes`,
 };
 
 const avgRatingsSubquery = db
@@ -226,7 +226,7 @@ export async function getUserReviews(
   user_id: number,
   limit = 5,
   offset = 0,
-  sort_by: keyof typeof sortFields = "userReviews.createdAt",
+  sort_by: keyof typeof sortFields = "when-reviewed",
   sort_order = "desc",
   ratingMax = 10
 ) {
