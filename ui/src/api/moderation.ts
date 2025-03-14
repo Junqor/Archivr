@@ -16,10 +16,9 @@ export async function is_user_banned(user_id:number){
 }
 
 export async function get_user_offences(user_id:number){
-    const response = await fetch(import.meta.env.VITE_API_URL+"/moderation/get-user-offences",{
-        method: "POST",
+    const response = await fetch(import.meta.env.VITE_API_URL+"/moderation/get-user-offences/"+user_id.toString(),{
+        method: "GET",
         headers: getAuthHeader(),
-        body: JSON.stringify({user_id: user_id}),
     });
 
     if (!response.ok) {

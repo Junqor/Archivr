@@ -8,6 +8,8 @@ import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "./components/data-table-skeleton";
 import { keyframes } from "@emotion/react";
+import { InspectDialog } from "./components/inspect-dialog";
+import { Search } from "lucide-react";
 
 export default function ModPortal() {
   const [searchParams] = useSearchParams();
@@ -52,10 +54,12 @@ export default function ModPortal() {
       <h4 className="text-red-500">Selected Users</h4>
       <div className="rounded-2xl border border-red-500 bg-red-500 bg-opacity-20 p-2 inline-block min-w-40">
         {[...selectedItems].map((user)=>{return(
-            <div key={user[1].id}>
-                <button onClick={()=>{handleSelectItem(user[1])}}>{(user[1].displayName||user[1].username)+" [@"+user[1].username+" ID:"+user[1].id+"]"}</button>
+            <div key={user[1].id} className="flex items-center gap-2">
+              <InspectDialog user={user[1]}><Search className="size-5 cursor-pointer hover:stroke-purple"/></InspectDialog>
+              <button className="hover:text-red-500" onClick={()=>{handleSelectItem(user[1])}}>{(user[1].displayName||user[1].username)+" [@"+user[1].username+" ID:"+user[1].id+"]"}</button>
             </div>
         );})}
+        <button className="text-sm text-gray-400 hover:text-red-500" onClick={()=>{setSelectedItems(new Map<number,TUser>())}}>[Deselect All]</button>
       </div>
       </>}
       {isFetching ? (

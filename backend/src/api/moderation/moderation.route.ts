@@ -32,14 +32,10 @@ moderationRouter.post("/is-user-banned", async (req, res) => {
     }
 });
 
-const getUserOffencesSchema = z.object({
-    user_id: z.number(),
-})
-
-moderationRouter.post("/get-user-offences", authenticateToken, authenticateAdmin, async (req, res) => {
+moderationRouter.get("/get-user-offences:userId", authenticateToken, authenticateAdmin, async (req, res) => {
     try {
-        const body = getUserOffencesSchema.parse(req.body);
-        const result = await get_user_offences(body.user_id);
+        const {user_id} = req.params;
+        const result = await get_user_offences(parseInt(user_id));
         res.json(result);
     }
     catch (error) {

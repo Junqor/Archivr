@@ -26,22 +26,23 @@ export function DataTable({
     <Table>
       <TableHeader>
         <TableRow className="hover:bg-transparent">
+          <TableHead className="w-[50px]">Inspect</TableHead>
           <TableHead className="w-[50px]">Select</TableHead>
           <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Avatar</TableHead>
           <TableHead>Username</TableHead>
           <TableHead>Role</TableHead>
-          <TableHead className="w-[50px]">Inspect</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {data.map((item) => (
           <>
           <InspectDialog user={item}>
-            <button className="cursor-pointer absolute size-10 right-4 " onClick={(e)=>{e.stopPropagation()}}><Search className="hover:stroke-purple"/></button>
+            <button className="cursor-pointer absolute size-10 left-4 " onClick={(e)=>{e.stopPropagation()}}><Search className="hover:stroke-purple"/></button>
           </InspectDialog>
           <TableRow key={item.id} onClick={()=>{onSelectItem(item)}}>
+            <TableCell></TableCell>
             <TableCell>
               {selectedItems.has(item.id) && <Check/>}
             </TableCell>
