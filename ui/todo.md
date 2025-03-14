@@ -47,3 +47,4 @@
 - ~~Cache routes on server~~
 - ~~Stop scroll restoration on genre page~~
 - Try out tRPC
+- make genres on media page navigate to corresponding genre page
