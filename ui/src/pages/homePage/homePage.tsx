@@ -7,11 +7,11 @@ import { RecommendedCarousel } from "./components/recommendedCarousel";
 import { MostPopularCarousel } from "./components/mostPopularCarousel";
 import { RecentlyReviewed } from "./components/recentlyReviewed";
 import { TrendingCarousel } from "./components/trendingCarousel";
-import { Info, MessageCircleHeart, Sparkles, TrendingUp } from "lucide-react";
+import { Info, Sparkles, TrendingUp } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Separator } from "@/components/ui/separator";
 import { TopRatedPicksCarousel } from "./components/topRatedPicksCarousel";
-import { TvRounded } from "@mui/icons-material";
+import { QuestionAnswerRounded, TvRounded } from "@mui/icons-material";
 import {
   Popover,
   PopoverContent,
@@ -85,7 +85,7 @@ export default function HomePage() {
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center gap-x-4">
-          <MessageCircleHeart />
+          <QuestionAnswerRounded />
           <h4 className="uppercase">Recently Reviewed...</h4>
         </div>
         <Separator />
@@ -159,7 +159,7 @@ export default function HomePage() {
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center space-x-4">
-          <MessageCircleHeart />
+          <QuestionAnswerRounded />
           <h4 className="uppercase">Recently Reviewed...</h4>
         </div>
         <Separator />

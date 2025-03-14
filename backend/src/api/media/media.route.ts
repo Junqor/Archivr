@@ -234,7 +234,7 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.query.user_id as string);
     const result = await get_similar_to_watched(userId);
-    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24); // Browser cache for 1 day
+    res.setHeader("Cache-Control", "max-age=" + 60 * 15); // Browser cache for 15 mins
     res.json({
       status: "success",
       media: result.media,

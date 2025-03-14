@@ -104,16 +104,16 @@ const router = createBrowserRouter([
         element: <Random />,
       },
       {
+        path: "/search",
+        element: <UnderConstruction />,
+      },
+      {
         path: "/settings",
         element: (
           <LoginRequiredRoute>
             <ProfileSettings />
           </LoginRequiredRoute>
         ),
-      },
-      {
-        path: "/genre",
-        element: <UnderConstruction />,
       },
       {
         path: "/tos",
