@@ -31,6 +31,8 @@ import {
   SwapVertRounded,
   ChevronLeftRounded,
   ChevronRightRounded,
+  PersonRounded,
+  GroupsRounded,
 } from "@mui/icons-material";
 import { StarBadgeSVG } from "@/components/svg/starBadgeSVG";
 import { Vibrant } from "node-vibrant/browser";
@@ -39,6 +41,7 @@ import MediaGrid from "./components/media4Grid";
 import { ratingToStars, ratingToTextStars } from "@/utils/ratingToStars";
 import ReviewList from "./components/reviewList";
 import MiniActivity from "./components/miniActivity";
+import FullActivity from "./components/fullActivity";
 
 type Palette = Awaited<ReturnType<typeof getColorPalette>>;
 
@@ -275,13 +278,24 @@ function useMediaReviewsState() {
   };
 }
 
+function useUserActivityState() {
+  const [page, setPage] = useState<number>(0);
+
+  return {
+    page,
+    setPage,
+  };
+}
+
 export default function ProfilePage() {
   const { user } = useAuth();
   const { username } = useParams();
   const mediaLikesParams = useMediaLikesState();
   const mediaReviewsParams = useMediaReviewsState();
+  const userActivityParams = useUserActivityState();
   const [background, setBackground] = useState<string>("");
   const [tab, setTab] = useState("profile");
+  const [subActivityTab, setActivitySubTab] = useState("self");
 
   // Fetch profile data
   const { data: profilePage, isLoading: isProfilePageLoading } = useQuery({
@@ -328,8 +342,31 @@ export default function ProfilePage() {
   const { data: userFollows } = useQuery({
     queryKey: ["userFollows", username],
     queryFn: () => getUserFollows(username || "", "following"),
-    enabled: tab === "profile" || (tab === "activity" && !!username),
+    enabled:
+      (tab === "profile" && !!username) || (tab === "activity" && !!username),
   });
+
+  const ACTIVITY_PAGE_SIZE = 15;
+
+  const {
+    data: userActivity,
+    isFetching: isActivityFetching,
+    isPending: isActivityPending,
+    error: activityError,
+  } = useQuery({
+    queryKey: ["userActivity", username, userActivityParams.page],
+    queryFn: () =>
+      getUserActivity(
+        username || "",
+        ACTIVITY_PAGE_SIZE,
+        (userActivityParams.page as number) * ACTIVITY_PAGE_SIZE,
+      ),
+    enabled: tab === "activity" && subActivityTab === "self" && !!username,
+  });
+
+  const handleChangeActivityPage = (newPage: number) => {
+    userActivityParams.setPage(newPage);
+  };
 
   const REVIEW_PAGE_SIZE = 15;
 
@@ -634,8 +671,136 @@ export default function ProfilePage() {
             value="activity"
             className="flex w-full items-start gap-5"
           >
-            <div className="flex w-3/4 flex-shrink-0 flex-col items-start gap-5"></div>
-            <div className="flex w-1/4 flex-[1_0_0] flex-col items-start gap-3"></div>
+            <div className="flex w-3/4 flex-shrink-0 flex-col items-start gap-5">
+              <section className="flex w-full items-center justify-end self-stretch">
+                <TabsContainer
+                  value={subActivityTab}
+                  onValueChange={setActivitySubTab}
+                >
+                  <TabList className="flex w-full items-start gap-2 self-stretch sm:w-auto">
+                    <TabTrigger
+                      value="self"
+                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "self" ? "bg-purple text-white" : "bg-[#1B1B1A] text-muted"} transition-all hover:scale-105 hover:no-underline`}
+                    >
+                      <PersonRounded />
+                      {profilePage.displayName || profilePage.username}
+                    </TabTrigger>
+                    <TabTrigger
+                      value="following"
+                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "following" ? "bg-purple text-white" : "bg-[#1B1B1A] text-muted"} transition-all hover:scale-105 hover:no-underline`}
+                    >
+                      <GroupsRounded />
+                      Following
+                    </TabTrigger>
+                  </TabList>
+                </TabsContainer>
+              </section>
+              <section className="flex w-full flex-col items-start">
+                <TabsContainer
+                  value={subActivityTab}
+                  onValueChange={setActivitySubTab}
+                >
+                  <TabContent
+                    value="self"
+                    className="flex w-full flex-col items-start gap-5"
+                  >
+                    {isActivityFetching || isActivityPending ? (
+                      [...Array(15)].map((_, i) => (
+                        <Skeleton
+                          key={i}
+                          className="flex w-full items-start gap-3"
+                        />
+                      ))
+                    ) : (
+                      <FullActivity activity={userActivity} isSelf />
+                    )}
+                    <section className="flex w-full justify-center gap-5">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() =>
+                            handleChangeActivityPage(
+                              Math.max(0, userActivityParams.page - 1),
+                            )
+                          }
+                          disabled={userActivityParams.page === 0}
+                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${userActivityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                        >
+                          <ChevronLeftRounded />
+                        </button>
+                        <h3
+                          className={`${userActivityParams.page === 0 ? "text-muted" : "text-white"}`}
+                        >
+                          Previous
+                        </h3>
+                      </div>
+                      <Separator
+                        orientation="vertical"
+                        className="h-auto"
+                        decorative
+                      />
+                      <div className="flex items-center gap-3">
+                        <h3
+                          className={`${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : "text-white"}`}
+                        >
+                          Next
+                        </h3>
+                        <button
+                          onClick={() =>
+                            handleChangeActivityPage(
+                              userActivityParams.page + 1,
+                            )
+                          }
+                          disabled={
+                            !userActivity ||
+                            userActivity.length < ACTIVITY_PAGE_SIZE
+                          } // Disable if no more media
+                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                        >
+                          <ChevronRightRounded />
+                        </button>
+                      </div>
+                    </section>
+                  </TabContent>
+                </TabsContainer>
+              </section>
+            </div>
+            <div className="flex w-1/4 flex-[1_0_0] flex-col items-start gap-3">
+              {userFollows && userFollows.length > 0 && (
+                <div className="flex w-full flex-col items-start gap-3 self-stretch">
+                  <div className="flex flex-col items-start gap-1 self-stretch">
+                    <div className="flex w-full items-start justify-between gap-2 self-stretch">
+                      <h4 className="text-muted">Following</h4>
+                      <button
+                        className="text-muted hover:underline"
+                        onClick={() => setTab("activity")}
+                      >
+                        <h4>More</h4>
+                      </button>
+                    </div>
+                    <Separator orientation="horizontal" />
+                  </div>
+                  <div className="flex w-full flex-wrap content-start items-start gap-2 self-stretch">
+                    {userFollows.map((follow: followProps) => (
+                      <Link
+                        to={`/profile/${follow.username}`}
+                        key={follow.id}
+                        className="flex items-center gap-2"
+                        title={follow.displayName || follow.username}
+                      >
+                        <UserAvatar
+                          user={{
+                            username: follow.username,
+                            avatar_url: follow.avatarUrl,
+                            role: follow.role,
+                          }}
+                          className="size-[2.9rem] border border-muted"
+                        />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </TabContent>
           <TabContent value="reviews" className="flex w-full items-start gap-5">
             <div className="flex w-full flex-col items-start gap-5 sm:w-3/4">

@@ -38,7 +38,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
             key={review.review.id}
             className="flex w-full items-start gap-4 self-stretch"
           >
-            <div className="flex flex-col items-start justify-center gap-1">
+            <div className="flex flex-col items-start gap-1">
               <ThumbnailPreview
                 media={{
                   id: review.media.id,
@@ -48,15 +48,16 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 }}
                 className="w-full"
               />
-              <div className="flex items-center gap-1">
-                <div className="flex items-center">
-                  {ratingToStars(review.user_rating)}
-                </div>
-                <span
-                  className={`text-sm ${review.is_liked === 1 ? "" : "invisible"}`}
-                >
-                  <FavoriteRounded fontSize="inherit" className="text-muted" />
-                </span>
+              <div className="flex items-center gap-1 text-xl sm:text-2xl">
+                {review.user_rating !== null && (
+                  <div className="flex items-center">
+                    {ratingToStars(review.user_rating)}
+                  </div>
+                )}
+                <FavoriteRounded
+                  fontSize="inherit"
+                  className={`text-muted ${review.is_liked === 1 ? "" : "invisible"} scale-75`}
+                />
               </div>
             </div>
             <div className="flex flex-[1_0_0] flex-col items-end gap-1 self-stretch">
@@ -79,7 +80,10 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                   fontSize="inherit"
                   className="text-muted"
                 />
-                <p>{formatInteger(review.review.review_likes)}</p>
+                <p>
+                  {formatInteger(review.review.review_likes)}
+                  {review.review.review_likes === 1 ? " Like" : " Likes"}
+                </p>
               </div>
             </div>
           </div>
