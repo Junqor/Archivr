@@ -6,6 +6,7 @@ import { ratingToStars, ratingToTextStars } from "@/utils/ratingToStars";
 import { FavoriteBorderRounded, FavoriteRounded } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
 import { Separator } from "@/components/ui/separator";
+import React from "react";
 
 interface ActivityProps {
   activity: {
@@ -65,7 +66,7 @@ export default function FullActivity({
         const { activity: act, media, user, followee, reply } = activityItem;
 
         return (
-          <>
+          <React.Fragment key={act.id}>
             {act.activityType === "review" && (
               <div className="flex w-full items-start gap-3 px-3 py-4">
                 {!isSelf && (
@@ -340,7 +341,7 @@ export default function FullActivity({
               </div>
             )}
             <Separator />
-          </>
+          </React.Fragment>
         );
       })}
     </div>

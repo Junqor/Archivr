@@ -675,7 +675,7 @@ export default function ProfilePage() {
             value="activity"
             className="flex w-full items-start gap-5"
           >
-            <div className="flex w-3/4 flex-shrink-0 flex-col items-start gap-5">
+            <div className="flex w-full flex-shrink-0 flex-col items-start gap-5 sm:w-3/4">
               <section className="flex w-full items-center justify-end self-stretch">
                 <TabsContainer
                   value={subActivityTab}
@@ -779,7 +779,7 @@ export default function ProfilePage() {
                 </TabsContainer>
               </section>
             </div>
-            <div className="flex w-1/4 flex-[1_0_0] flex-col items-start gap-3">
+            <div className="hidden w-1/4 flex-[1_0_0] flex-col items-start gap-3 sm:flex">
               {userFollows && userFollows.length > 0 && (
                 <div className="flex w-full flex-col items-start gap-3 self-stretch">
                   <div className="flex flex-col items-start gap-1 self-stretch">

@@ -4,6 +4,7 @@ import { formatDate, formatDateYear } from "@/utils/formatDate";
 import { formatInteger } from "@/utils/formatInteger";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
 import { Separator } from "@/components/ui/separator";
+import React from "react";
 
 interface reviewProps {
   review: {
@@ -33,12 +34,12 @@ export default function ReviewList({ reviews }: ReviewListProps) {
   return (
     <div className="flex w-full flex-col items-start gap-3 self-stretch">
       {reviews.map((review) => (
-        <>
+        <React.Fragment key={review.review.id}>
           <div
             key={review.review.id}
             className="flex w-full items-start gap-4 self-stretch"
           >
-            <div className="flex flex-col items-start gap-1">
+            <div className="flex w-2/12 flex-col items-start gap-1">
               <ThumbnailPreview
                 media={{
                   id: review.media.id,
@@ -60,8 +61,8 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 />
               </div>
             </div>
-            <div className="flex flex-[1_0_0] flex-col items-end gap-1 self-stretch">
-              <div className="flex items-center justify-between gap-1 self-stretch">
+            <div className="flex w-10/12 flex-[1_0_0] flex-col items-end gap-1 self-stretch">
+              <div className="flex w-full items-center justify-between gap-1 self-stretch">
                 <div className="flex items-end gap-1 self-stretch">
                   <h3>{review.media.title}</h3>
                   <p className="leading-loose text-muted">
@@ -72,7 +73,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                   {formatDate(review.review.createdAt, true)}
                 </p>
               </div>
-              <p className="flex-[1_0_0] self-stretch">
+              <p className="w-full flex-[1_0_0] self-stretch text-ellipsis whitespace-break-spaces">
                 {review.review.comment}
               </p>
               <div className="flex items-center gap-2">
@@ -90,7 +91,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
           {reviews.indexOf(review) !== reviews.length - 1 && (
             <Separator orientation="horizontal" />
           )}
-        </>
+        </React.Fragment>
       ))}
     </div>
   );
