@@ -353,6 +353,7 @@ export default function ProfilePage() {
     isFetching: isActivityFetching,
     isPending: isActivityPending,
     error: activityError,
+    refetch: activityRefetch,
   } = useQuery({
     queryKey: ["userActivity", username, userActivityParams.page],
     queryFn: () =>
@@ -375,6 +376,7 @@ export default function ProfilePage() {
     isFetching: isReviewsFetching,
     isPending: isReviewsPending,
     error: reviewsError,
+    refetch: reviewsRefetch,
   } = useQuery({
     queryKey: [
       "mediaReviews",
@@ -425,6 +427,7 @@ export default function ProfilePage() {
     isFetching: isTopMediaFetching,
     isPending: isTopMediaPending,
     error: topMediaError,
+    refetch: topMediaRefetch,
   } = useQuery({
     queryKey: ["userTopMedia", username],
     queryFn: () => getUserTopMedia(username || ""),
@@ -456,6 +459,7 @@ export default function ProfilePage() {
     isFetching: isLikesFetching,
     isPending: isLikesPending,
     error: likesError,
+    refetch: likesRefetch,
   } = useQuery({
     queryKey: [
       "mediaLikes",
@@ -704,6 +708,17 @@ export default function ProfilePage() {
                     value="self"
                     className="flex w-full flex-col items-start gap-5"
                   >
+                    {activityError && (
+                      <div className="flex w-full items-center justify-center gap-3">
+                        <h4 className="text-red">Failed to fetch activity</h4>
+                        <button
+                          onClick={() => activityRefetch()}
+                          className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    )}
                     {isActivityFetching || isActivityPending ? (
                       [...Array(15)].map((_, i) => (
                         <Skeleton
@@ -869,6 +884,17 @@ export default function ProfilePage() {
                 </form>
               </section>
               <section className="flex w-full flex-col items-start">
+                {reviewsError && (
+                  <div className="flex w-full items-center justify-center gap-3">
+                    <h4 className="text-red">Failed to fetch reviews</h4>
+                    <button
+                      onClick={() => reviewsRefetch()}
+                      className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
                 {isReviewsFetching || isReviewsPending ? (
                   [...Array(15)].map((_, i) => (
                     <Skeleton
@@ -933,6 +959,17 @@ export default function ProfilePage() {
               </section>
             </div>
             <div className="hidden flex-[1_0_0] flex-col items-start gap-3 sm:flex sm:w-1/4">
+              {topMediaError && (
+                <div className="flex w-full items-center justify-center gap-3">
+                  <h4 className="text-red">Failed to fetch top media</h4>
+                  <button
+                    onClick={() => topMediaRefetch()}
+                    className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
               {isTopMediaFetching || isTopMediaPending || !topUserMedia ? (
                 <div className="flex flex-row items-center gap-x-5 overflow-auto px-10 py-5 md:grid md:grid-cols-2 md:gap-3 md:overflow-hidden md:p-0">
                   {[...Array(10)].map((_, i) => (
@@ -1060,6 +1097,17 @@ export default function ProfilePage() {
               </form>
             </section>
             <section className="grid w-full grid-cols-3 gap-4 md:grid-cols-5">
+              {likesError && (
+                <div className="flex w-full items-center justify-center gap-3">
+                  <h4 className="text-red">Failed to fetch likes</h4>
+                  <button
+                    onClick={() => likesRefetch()}
+                    className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
               {isLikesFetching || isLikesPending
                 ? [...Array(30)].map((_, i) => (
                     <Skeleton
