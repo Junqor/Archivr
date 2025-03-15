@@ -92,6 +92,10 @@ const router = createBrowserRouter([
         element: <PopularPage />,
       },
       {
+        path: "/privacy",
+        element: <UnderConstruction />,
+      },
+      {
         path: "/profile/:username",
         element: <ProfilePage />,
       },
@@ -100,16 +104,16 @@ const router = createBrowserRouter([
         element: <Random />,
       },
       {
+        path: "/search",
+        element: <UnderConstruction />,
+      },
+      {
         path: "/settings",
         element: (
           <LoginRequiredRoute>
             <ProfileSettings />
           </LoginRequiredRoute>
         ),
-      },
-      {
-        path: "/genre",
-        element: <UnderConstruction />,
       },
       {
         path: "/tos",

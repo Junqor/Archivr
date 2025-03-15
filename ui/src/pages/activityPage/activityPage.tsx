@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { RankedUserMedia } from "./components/rankedUserMedia";
 import { PersonRounded, PublicRounded } from "@mui/icons-material";
 import { Separator } from "@/components/ui/separator";
+import { ScrollTopButton } from "@/components/scrollTopButton";
+import { ChevronUp } from "lucide-react";
 
 export function ActivityPage() {
   const { user } = useAuth();
@@ -66,6 +68,9 @@ export function ActivityPage() {
           <Separator className="bg-white/75 md:hidden" />
         </section>
       </div>
+      <ScrollTopButton className="fixed bottom-10 right-10 size-10">
+        <ChevronUp className="size-6" />
+      </ScrollTopButton>
     </main>
   );
 }
