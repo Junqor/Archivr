@@ -11,7 +11,12 @@ import {
 } from "@/api/user";
 import { getUserReviews } from "@/api/reviews";
 import { getUserLikes } from "@/api/likes";
-import { getUserTopMedia, getUserActivity } from "@/api/activity";
+import {
+  getUserTopMedia,
+  getUserActivity,
+  TUserRatedMedia,
+  getUserFollowingActivity,
+} from "@/api/activity";
 import { getGenres } from "@/api/genre";
 import {
   TabsContainer,
@@ -45,23 +50,6 @@ import FullActivity from "./components/fullActivity";
 
 type Palette = Awaited<ReturnType<typeof getColorPalette>>;
 
-interface TopMediaProps {
-  pallette: {
-    Vibrant: string;
-    DarkVibrant: string;
-    LightVibrant: string;
-    Muted: string;
-    DarkMuted: string;
-    LightMuted: string;
-  };
-  id: number;
-  title: string;
-  thumbnail_url: string;
-  rating: number;
-  user_rating: number;
-  ratedAt: string;
-}
-
 interface followProps {
   id: number;
   username: string;
@@ -80,149 +68,6 @@ interface likedMediaProps {
   avg_rating: number;
   user_rating: number;
   is_liked: number;
-}
-
-{
-  /*
-interface FavoriteProps {
-  id: number;
-  media_id: number;
-  title: string;
-  thumbnail_url: string;
-  added_at: string;
-}
-*/
-}
-
-{
-  /*
-interface ProfileTabProps {
-  likes: [
-    {
-      id: number;
-      title: string;
-      thumbnail_url: string;
-      rating: number;
-      like_count: number;
-      average_rating: number;
-      user_rating: number;
-      is_liked: number;
-    },
-  ];
-  recentReviews: [
-    {
-      review: {
-        id: number;
-        comment: string;
-        review_likes: number;
-        createdAt: string;
-      };
-      media: {
-        id: number;
-        title: string;
-        release_date: string;
-        thumbnail_url: string;
-        rating: number;
-        avg_rating: number;
-        like_count: number;
-      };
-      user_rating: number;
-      is_liked: number;
-    },
-  ];
-  popularReviews: [
-    {
-      review: {
-        id: number;
-        comment: string;
-        review_likes: number;
-        createdAt: string;
-      };
-      media: {
-        id: number;
-        title: string;
-        release_date: string;
-        thumbnail_url: string;
-        rating: number;
-        avg_rating: number;
-        like_count: number;
-      };
-      user_rating: number;
-      is_liked: number;
-    },
-  ];
-  recentActivity: [
-    {
-      activity: {
-        id: number;
-        userId: number;
-        activityType: string;
-        targetId: number;
-        relatedId: number;
-        content: string;
-        createdAt: string;
-      };
-      media?: {
-        title: string;
-        thumbnail_url: string;
-        rating: number;
-        release_date: string;
-        like_count: number;
-        is_liked: number;
-      };
-      user: {
-        username: string;
-        avatar_url: string;
-        role: string;
-        display_name: string;
-        rating: number;
-      };
-      review?: {
-        created_at: string;
-        review_likes: number;
-      };
-      followee?: {
-        username: string;
-        display_name: string;
-        avatar_url: string;
-        role: string;
-      };
-      reply?: {
-        user_id: number;
-        username: string;
-        avatar_url: string;
-        role: string;
-        display_name: string;
-        rating: number;
-      };
-    },
-  ];
-}
-*/
-}
-
-{
-  /*
-interface reviewProps {
-  review: {
-    id: number;
-    comment: string;
-    review_likes: number;
-    createdAt: string;
-  };
-  media: {
-    id: number;
-    title: string;
-    release_date: string;
-    thumbnail_url: string;
-    rating: number;
-    avg_rating: number;
-    like_count: number;
-  };
-  user_rating: number;
-  is_liked: number;
-}
-*/
 }
 
 function useMediaLikesState() {
@@ -287,12 +132,22 @@ function useUserActivityState() {
   };
 }
 
+function useFollowingActivityState() {
+  const [page, setPage] = useState<number>(0);
+
+  return {
+    page,
+    setPage,
+  };
+}
+
 export default function ProfilePage() {
   const { user } = useAuth();
   const { username } = useParams();
   const mediaLikesParams = useMediaLikesState();
   const mediaReviewsParams = useMediaReviewsState();
   const userActivityParams = useUserActivityState();
+  const followingActivityParams = useFollowingActivityState();
   const [background, setBackground] = useState<string>("");
   const [tab, setTab] = useState("profile");
   const [subActivityTab, setActivitySubTab] = useState("self");
@@ -369,6 +224,23 @@ export default function ProfilePage() {
     userActivityParams.setPage(newPage);
   };
 
+  const {
+    data: followingActivity,
+    isFetching: isFollowingActivityFetching,
+    isPending: isFollowingActivityPending,
+    error: followingActivityError,
+    refetch: followingActivityRefetch,
+  } = useQuery({
+    queryKey: ["followingActivity", username, followingActivityParams.page],
+    queryFn: () =>
+      getUserFollowingActivity(
+        username || "",
+        ACTIVITY_PAGE_SIZE,
+        (followingActivityParams.page as number) * ACTIVITY_PAGE_SIZE,
+      ),
+    enabled: tab === "activity" && subActivityTab === "following" && !!username,
+  });
+
   const REVIEW_PAGE_SIZE = 15;
 
   const {
@@ -435,14 +307,14 @@ export default function ProfilePage() {
   });
 
   const [topUserMedia, setTopUserMedia] = useState<
-    (TopMediaProps & { pallette: Palette })[] | null
+    (TUserRatedMedia & { pallette: Palette })[] | null
   >(null);
 
   useEffect(() => {
     if (!userTopMedia) return;
     const getColors = async () => {
       const media = await Promise.all(
-        userTopMedia.map(async (m: TopMediaProps) => {
+        userTopMedia.map(async (m: TUserRatedMedia) => {
           const pallette = await getColorPalette(m.thumbnail_url);
           return { ...m, pallette };
         }),
@@ -727,7 +599,7 @@ export default function ProfilePage() {
                         />
                       ))
                     ) : (
-                      <FullActivity activity={userActivity} isSelf />
+                      <FullActivity activity={userActivity || []} isSelf />
                     )}
                     <section className="flex w-full justify-center gap-5">
                       <div className="flex items-center gap-3">
@@ -770,6 +642,82 @@ export default function ProfilePage() {
                             userActivity.length < ACTIVITY_PAGE_SIZE
                           } // Disable if no more media
                           className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                        >
+                          <ChevronRightRounded />
+                        </button>
+                      </div>
+                    </section>
+                  </TabContent>
+                  <TabContent
+                    value="following"
+                    className="flex w-full flex-col items-start gap-5"
+                  >
+                    {followingActivityError && (
+                      <div className="flex w-full items-center justify-center gap-3">
+                        <h4 className="text-red">Failed to fetch activity</h4>
+                        <button
+                          onClick={() => followingActivityRefetch()}
+                          className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    )}
+                    {isFollowingActivityFetching ||
+                    isFollowingActivityPending ? (
+                      [...Array(15)].map((_, i) => (
+                        <Skeleton
+                          key={i}
+                          className="flex w-full items-start gap-3"
+                        />
+                      ))
+                    ) : (
+                      <FullActivity
+                        activity={followingActivity || []}
+                        isSelf={false}
+                      />
+                    )}
+                    <section className="flex w-full justify-center gap-5">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() =>
+                            followingActivityParams.setPage(
+                              Math.max(0, followingActivityParams.page - 1),
+                            )
+                          }
+                          disabled={followingActivityParams.page === 0}
+                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${followingActivityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                        >
+                          <ChevronLeftRounded />
+                        </button>
+                        <h3
+                          className={`${followingActivityParams.page === 0 ? "text-muted" : "text-white"}`}
+                        >
+                          Previous
+                        </h3>
+                      </div>
+                      <Separator
+                        orientation="vertical"
+                        className="h-auto"
+                        decorative
+                      />
+                      <div className="flex items-center gap-3">
+                        <h3
+                          className={`${!followingActivity || followingActivity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : "text-white"}`}
+                        >
+                          Next
+                        </h3>
+                        <button
+                          onClick={() =>
+                            followingActivityParams.setPage(
+                              followingActivityParams.page + 1,
+                            )
+                          }
+                          disabled={
+                            !followingActivity ||
+                            followingActivity.length < ACTIVITY_PAGE_SIZE
+                          } // Disable if no more media
+                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!followingActivity || followingActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
                         >
                           <ChevronRightRounded />
                         </button>
@@ -978,32 +926,37 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="grid w-full grid-cols-2 gap-3">
-                  {topUserMedia.map((media: TopMediaProps, index: number) => (
-                    <div
-                      key={media.id}
-                      className="relative flex aspect-2/3 w-full items-end justify-end"
-                    >
-                      <div className="pointer-events-none absolute left-0 top-0 z-10 flex size-9 items-center justify-center font-extrabold leading-[2.25rem] md:size-16 md:leading-[2.75rem]">
-                        <StarBadgeSVG
-                          className="absolute z-10 size-14"
-                          fill={media.pallette.DarkVibrant}
-                        />
-                        <h4 className="absolute z-20 font-bold">
-                          #{index + 1}
-                        </h4>
-                      </div>
-                      <ThumbnailPreview
+                  {topUserMedia.map(
+                    (
+                      media: TUserRatedMedia & { pallette: Palette },
+                      index: number,
+                    ) => (
+                      <div
                         key={media.id}
-                        media={{
-                          id: media.id,
-                          title: media.title,
-                          thumbnail_url: media.thumbnail_url,
-                          rating: media.rating,
-                        }}
-                        className="w-10/12"
-                      />
-                    </div>
-                  ))}
+                        className="relative flex aspect-2/3 w-full items-end justify-end"
+                      >
+                        <div className="pointer-events-none absolute left-0 top-0 z-10 flex size-9 items-center justify-center font-extrabold leading-[2.25rem] md:size-16 md:leading-[2.75rem]">
+                          <StarBadgeSVG
+                            className="absolute z-10 size-14"
+                            fill={media.pallette.DarkVibrant}
+                          />
+                          <h4 className="absolute z-20 font-bold">
+                            #{index + 1}
+                          </h4>
+                        </div>
+                        <ThumbnailPreview
+                          key={media.id}
+                          media={{
+                            id: media.id,
+                            title: media.title,
+                            thumbnail_url: media.thumbnail_url,
+                            rating: media.rating,
+                          }}
+                          className="w-10/12"
+                        />
+                      </div>
+                    ),
+                  )}
                 </div>
               )}
             </div>

@@ -7,57 +7,13 @@ import { FavoriteBorderRounded, FavoriteRounded } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-
-interface ActivityProps {
-  activity: {
-    id: number;
-    userId: number;
-    activityType: string;
-    targetId: number;
-    relatedId: number;
-    content: string;
-    createdAt: string;
-  };
-  media?: {
-    title?: string;
-    thumbnail_url?: string;
-    rating?: number;
-    release_date?: string;
-    like_count?: number;
-    is_liked?: number;
-  };
-  user: {
-    username: string;
-    avatar_url: string;
-    role?: "admin" | "user";
-    display_name?: string;
-    rating: number;
-  };
-  review?: {
-    created_at: string;
-    review_likes: number;
-  };
-  followee?: {
-    username: string;
-    display_name?: string;
-    avatar_url: string;
-    role: string;
-  };
-  reply?: {
-    user_id: number;
-    username: string;
-    avatar_url: string;
-    role: string;
-    display_name: string;
-    rating: number;
-  };
-}
+import { TEnhancedActivity } from "@/api/activity";
 
 export default function FullActivity({
   activity,
   isSelf,
 }: {
-  activity: ActivityProps[];
+  activity: TEnhancedActivity[];
   isSelf: boolean;
 }) {
   return (
@@ -96,12 +52,13 @@ export default function FullActivity({
                     <div className="flex items-center gap-1 text-xl">
                       {user.rating !== null && (
                         <div className="flex items-center">
-                          {ratingToStars(user.rating)}
+                          {user.rating !== undefined &&
+                            ratingToStars(user.rating)}
                         </div>
                       )}
                       <FavoriteRounded
                         fontSize="inherit"
-                        className={`text-muted ${media?.is_liked === 1 ? "" : "invisible"} scale-75`}
+                        className={`text-muted ${media?.is_liked ? "" : "invisible"} scale-75`}
                       />
                     </div>
                   </div>
@@ -169,7 +126,7 @@ export default function FullActivity({
                   <div className="flex w-2/12 flex-col items-start gap-1">
                     <ThumbnailPreview
                       media={{
-                        id: act.relatedId,
+                        id: act.relatedId ?? 0,
                         title: media?.title || "",
                         thumbnail_url: media?.thumbnail_url || "",
                         rating: media?.rating || 0,
@@ -233,7 +190,7 @@ export default function FullActivity({
                     </Link>
                   </div>
                 )}
-                <div className="flex w-full flex-[1_0_0] items-start justify-between gap-3 self-stretch text-white/75">
+                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
                   <p>
                     {isSelf ? (
                       <span className="font-bold">
@@ -279,7 +236,7 @@ export default function FullActivity({
                     </Link>
                   </div>
                 )}
-                <div className="flex w-full flex-[1_0_0] items-start justify-between gap-3 self-stretch text-white/75">
+                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
                   <p>
                     {isSelf ? (
                       <span className="font-bold">
@@ -318,7 +275,7 @@ export default function FullActivity({
                     </Link>
                   </div>
                 )}
-                <div className="flex w-full flex-[1_0_0] items-start justify-between gap-3 self-stretch text-white/75">
+                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
                   <p>
                     {isSelf ? (
                       <span className="font-bold">

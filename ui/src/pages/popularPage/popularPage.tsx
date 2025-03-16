@@ -54,7 +54,7 @@ export function PopularPage() {
               height="2"
               fill="white"
               stroke="white"
-              stroke-width="0.1"
+              strokeWidth="0.1"
             />
             <circle
               cx="1.5"
@@ -62,7 +62,7 @@ export function PopularPage() {
               r="0.6"
               fill="red"
               stroke="red"
-              stroke-width="0.1"
+              strokeWidth="0.1"
             />
           </svg>
           <h4 className="uppercase">Most popular anime</h4>

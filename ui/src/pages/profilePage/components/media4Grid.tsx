@@ -3,7 +3,13 @@ import { Separator } from "@/components/ui/separator";
 
 interface MediaGridProps {
   title: string;
-  items: { id: number; title: string; thumbnail_url: string; rating: number }[];
+  items: {
+    id: number;
+    media_id?: number;
+    title: string;
+    thumbnail_url: string;
+    rating: number;
+  }[];
   onViewAll?: () => void;
 }
 
@@ -26,17 +32,20 @@ export default function MediaGrid({ title, items, onViewAll }: MediaGridProps) {
         <Separator orientation="horizontal" />
       </div>
       <div className="grid w-full grid-cols-4 items-start gap-3 self-stretch">
-        {items.map((item) => (
-          <ThumbnailPreview
-            key={item.id}
-            media={{
-              id: item.id,
-              title: item.title,
-              thumbnail_url: item.thumbnail_url,
-              rating: item.rating,
-            }}
-          />
-        ))}
+        {items.map((item) => {
+          const isFavoriteMedia = title === "Favorite Media";
+          return (
+            <ThumbnailPreview
+              key={isFavoriteMedia ? item.media_id : item.id}
+              media={{
+                id: isFavoriteMedia ? (item.media_id ?? 0) : item.id,
+                title: item.title,
+                thumbnail_url: item.thumbnail_url,
+                rating: item.rating,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );

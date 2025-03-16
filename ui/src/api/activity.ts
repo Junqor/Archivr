@@ -12,42 +12,60 @@ export type TActivity = {
 
 export type TEnhancedActivity = {
   activity: TActivity;
-  media: {
-    id: number;
-    title: string;
-    thumbnail_url: string;
-    rating: number;
+  media?: {
+    title?: string;
+    thumbnail_url?: string;
+    rating?: number;
+    release_date?: string;
+    like_count?: number;
+    is_liked?: boolean;
   };
   user: {
     username: string;
     avatar_url: string;
-    role: "admin" | "user";
-    display_name: string;
+    role?: "admin" | "user";
+    display_name?: string;
+    rating?: number;
   };
-  review: {
-    mediaId: number;
-    rating: number;
-    reviewText: string;
+  review?: {
     created_at: string;
+    review_likes: number;
   };
-  followee: {
+  followee?: {
+    username: string;
+    display_name?: string;
+    avatar_url: string;
+    role: string;
+  };
+  reply?: {
+    user_id: number;
     username: string;
     avatar_url: string;
-    role: "admin" | "user";
+    role: string;
     display_name: string;
+    rating: number;
   };
 };
 
 export const getPaginatedActivity = async (
   type: "global" | "following",
-  page: number,
+  limit = 15,
+  offset = 0,
+  userId?: number,
 ) => {
-  const url =
-    import.meta.env.VITE_API_URL +
-    `/activity${type === "following" ? "/following" : ""}?page=${page}`;
-  const response = await fetch(url, {
-    headers: type === "following" ? getAuthHeader() : undefined,
-  });
+  let url = "";
+
+  if (type === "global") {
+    url = `${import.meta.env.VITE_API_URL}/activity/global?limit=${limit}&offset=${offset}`;
+  } else if (type === "following") {
+    if (!userId) {
+      throw new Error("userId is required for following activity");
+    }
+    url = `${import.meta.env.VITE_API_URL}/activity/user/${userId}/following?limit=${limit}&offset=${offset}`;
+  }
+
+  const response = await fetch(url);
+
   if (!response.ok) {
     throw new Error("Failed to fetch activity");
   }
@@ -79,22 +97,22 @@ export type TUserRatedMedia = {
   thumbnail_url: string | null;
   rating: number | null;
   userRating: number;
+  ratedAt?: string;
 };
 
-export const getTopUserMedia = async () => {
+export const getTopUserMedia = async (limit = 10) => {
   const response = await fetch(
-    import.meta.env.VITE_API_URL + "/activity/top-user-media",
+    `${import.meta.env.VITE_API_URL}/activity/top-user-media?limit=${limit}`,
   );
   if (!response.ok) {
     throw new Error("Failed to fetch top user media");
   }
 
   const data = await response.json();
-
   return data.media as TUserRatedMedia[];
 };
 
-export const getUserTopMedia = async (username: string) => {
+export const getUserTopMedia = async (username: string, limit = 10) => {
   const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
@@ -106,21 +124,20 @@ export const getUserTopMedia = async (username: string) => {
   const { userId } = await userIdResponse.json();
 
   const response = await fetch(
-    import.meta.env.VITE_API_URL + `/activity/user/${userId}/top-media`,
+    `${import.meta.env.VITE_API_URL}/activity/user/${userId}/top-media?limit=${limit}`,
   );
   if (!response.ok) {
     throw new Error("Failed to fetch user top media");
   }
 
   const data = await response.json();
-
-  return data.media;
+  return data.media as TUserRatedMedia[];
 };
 
 export const getUserActivity = async (
   username: string,
-  limit?: number,
-  offset?: number,
+  limit = 15,
+  offset = 0,
 ) => {
   const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
@@ -132,18 +149,49 @@ export const getUserActivity = async (
 
   const { userId } = await userIdResponse.json();
 
-  const result = await fetch(
-    import.meta.env.VITE_API_URL +
-      `/activity/user/${userId}` +
-      (limit || offset ? "?" : "") +
-      (limit ? `limit=${limit}` : "") +
-      (offset ? `&offset=${offset}` : ""),
+  const url = new URL(
+    `${import.meta.env.VITE_API_URL}/activity/user/${userId}`,
   );
+  url.searchParams.append("limit", limit.toString());
+  url.searchParams.append("offset", offset.toString());
+
+  const result = await fetch(url.toString());
 
   if (!result.ok) {
     throw { status: 404, message: "User not found" };
   }
 
   const data = await result.json();
-  return data.activity;
+  return data.activity as TEnhancedActivity[];
+};
+
+export const getUserFollowingActivity = async (
+  username: string,
+  limit = 15,
+  offset = 0,
+) => {
+  const userIdResponse = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userIdResponse.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const { userId } = await userIdResponse.json();
+
+  const url = new URL(
+    `${import.meta.env.VITE_API_URL}/activity/user/${userId}/following`,
+  );
+  url.searchParams.append("limit", limit.toString());
+  url.searchParams.append("offset", offset.toString());
+
+  const result = await fetch(url.toString());
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.activity as TEnhancedActivity[];
 };

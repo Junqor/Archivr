@@ -13,30 +13,30 @@ import { z } from "zod";
 
 export const activityRouter = Router();
 
-const activityRouteSchema = z.object({
-  page: z.coerce.number(),
+const activityLimitOffsetSchema = z.object({
+  limit: z.coerce.number().optional().default(15),
+  offset: z.coerce.number().optional().default(0),
 });
 
-// /api/activity
+// /api/activity/global
 // Get global activity
 activityRouter.get(
-  "/",
+  "/global",
   asyncHandler(async (req, res) => {
-    const { page } = activityRouteSchema.parse(req.query);
-    const activity = await getGlobalActivity(page);
+    const { limit, offset } = activityLimitOffsetSchema.parse(req.query);
+    const activity = await getGlobalActivity(limit, offset);
     res.json({ status: "success", activity: activity });
   })
 );
 
-// /api/activity/following
+// /api/activity/:userId/following
 // Get activity of people the user is following
 activityRouter.get(
-  "/following",
-  authenticateToken,
+  "/user/:userId(\\d+)/following",
   asyncHandler(async (req, res) => {
-    const { user } = res.locals;
-    const { page } = activityRouteSchema.parse(req.query);
-    const activity = await getFollowingActivity(user.id, page);
+    const userId = parseInt(req.params.userId);
+    const { limit, offset } = activityLimitOffsetSchema.parse(req.query);
+    const activity = await getFollowingActivity(userId, limit, offset);
     res.json({ status: "success", activity: activity });
   })
 );
@@ -45,6 +45,8 @@ const followRouteSchema = z.object({
   followeeId: z.number(),
 });
 
+// /api/activity/follow
+// Follow a user
 activityRouter.post(
   "/follow",
   authenticateToken,
@@ -64,10 +66,13 @@ activityRouter.post(
   })
 );
 
+// (GET /activity/top-user-media?limit=10)
+// Get top media for users
 activityRouter.get(
   "/top-user-media",
   asyncHandler(async (req, res) => {
-    const media = await getTopUserMedia();
+    const limit = parseInt(req.query.limit as string) || 10;
+    const media = await getTopUserMedia(limit);
     res.json({ status: "success", media: media });
   })
 );
@@ -78,7 +83,8 @@ activityRouter.get(
   "/user/:userId/top-media",
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.params.userId);
-    const media = await getUserTopMedia(userId);
+    const limit = parseInt(req.query.limit as string) || 10;
+    const media = await getUserTopMedia(userId, limit);
     res.json({ status: "success", media: media });
   })
 );
@@ -89,8 +95,7 @@ activityRouter.get(
   "/user/:userId",
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.params.userId);
-    const limit = parseInt(req.query.limit as string) || 15;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const { limit, offset } = activityLimitOffsetSchema.parse(req.query);
     const activity = await getUserActivity(userId, limit, offset);
     res.json({ status: "success", activity: activity });
   })
