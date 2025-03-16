@@ -16,7 +16,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
           </Link>
           <MediaPoster media={media} className="w-20" />
           <div className="flex w-full flex-col gap-y-1 overflow-hidden">
-            <div className="text-muted flex flex-row">
+            <div className="flex flex-row text-muted">
               <h5>
                 <strong>{user.display_name || user.username}</strong> reviewed
               </h5>
@@ -44,7 +44,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
           </Link>
           <MediaPoster media={media} className="w-20" />
           <div className="flex w-full flex-col gap-y-1 overflow-hidden">
-            <div className="text-muted flex flex-row">
+            <div className="flex flex-row text-muted">
               <h5>
                 <strong>{user.display_name || user.username}</strong> commented
                 on{" "}
@@ -74,7 +74,7 @@ export function ActivityBox({ item }: { item: TEnhancedActivity }) {
           </Link>
           <MediaPoster media={media} className="w-20" />
           <div className="flex w-full flex-col gap-y-1">
-            <div className="text-muted flex flex-row">
+            <div className="flex flex-row text-muted">
               <h5>
                 <strong>{user.display_name || user.username}</strong> liked{" "}
                 <strong>{followee.display_name || followee.username}'s</strong>{" "}

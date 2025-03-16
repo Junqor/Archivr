@@ -135,7 +135,9 @@ export default function FullActivity({
                         {formatDateYear(media?.release_date || "")}
                       </p>
                     </div>
-                    <p className="flex-[1_0_0] self-stretch">{act.content}</p>
+                    <p className="w-full flex-[1_0_0] self-stretch text-ellipsis break-words">
+                      {act.content}
+                    </p>
                     <div className="flex items-center gap-2">
                       <FavoriteBorderRounded
                         fontSize="inherit"
@@ -211,7 +213,9 @@ export default function FullActivity({
                         {formatDateYear(media?.release_date || "")}
                       </p>
                     </div>
-                    <p className="flex-[1_0_0] self-stretch">{act.content}</p>
+                    <p className="w-full flex-[1_0_0] self-stretch text-ellipsis break-words">
+                      {act.content}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -32,14 +32,14 @@ interface ReviewListProps {
 
 export default function ReviewList({ reviews }: ReviewListProps) {
   return (
-    <div className="flex w-full flex-col items-start gap-3 self-stretch">
+    <div className="flex w-full flex-col items-start gap-3 self-stretch px-3 py-4">
       {reviews.map((review) => (
         <React.Fragment key={review.review.id}>
           <div
             key={review.review.id}
             className="flex w-full items-start gap-4 self-stretch"
           >
-            <div className="flex w-2/12 flex-col items-start gap-1">
+            <div className="flex w-1/4 flex-col items-start gap-1 sm:w-2/12">
               <ThumbnailPreview
                 media={{
                   id: review.media.id,
@@ -49,7 +49,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 }}
                 className="w-full"
               />
-              <div className="flex items-center gap-1 text-xl sm:text-2xl">
+              <div className="flex items-center gap-1 text-xl">
                 {review.user_rating !== null && (
                   <div className="flex items-center">
                     {ratingToStars(review.user_rating)}
@@ -61,7 +61,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 />
               </div>
             </div>
-            <div className="flex w-10/12 flex-[1_0_0] flex-col items-end gap-1 self-stretch">
+            <div className="flex w-3/4 flex-[1_0_0] flex-col items-end gap-1 self-stretch sm:w-10/12">
               <div className="flex w-full items-center justify-between gap-1 self-stretch">
                 <div className="flex items-end gap-1 self-stretch">
                   <h3>{review.media.title}</h3>
@@ -73,7 +73,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                   {formatDate(review.review.createdAt, true)}
                 </p>
               </div>
-              <p className="w-full flex-[1_0_0] self-stretch text-ellipsis whitespace-break-spaces">
+              <p className="w-full flex-[1_0_0] self-stretch text-ellipsis break-words">
                 {review.review.comment}
               </p>
               <div className="flex items-center gap-2">

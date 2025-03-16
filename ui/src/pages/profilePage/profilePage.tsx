@@ -582,7 +582,7 @@ export default function ProfilePage() {
                 />
               )}
               {profileTab && profileTab.recentReviews.length > 0 && (
-                <div className="flex w-full flex-col items-start gap-3 self-stretch">
+                <div className="flex w-full flex-col items-start self-stretch">
                   <div className="flex flex-col items-start gap-1 self-stretch">
                     <div className="flex w-full items-start justify-between gap-2 self-stretch">
                       <h4 className="text-muted">Recent Reviews</h4>
@@ -599,7 +599,7 @@ export default function ProfilePage() {
                 </div>
               )}
               {profileTab && profileTab.popularReviews && (
-                <div className="flex w-full flex-col items-start gap-3 self-stretch">
+                <div className="flex w-full flex-col items-start self-stretch">
                   <div className="flex flex-col items-start gap-1 self-stretch">
                     <div className="flex w-full items-start justify-between gap-2 self-stretch">
                       <h4 className="text-muted">Popular Reviews</h4>
