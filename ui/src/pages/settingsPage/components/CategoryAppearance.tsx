@@ -208,7 +208,11 @@ export function ProfileSettingsCategoryAppearance({
             </div>
           ))}
           {favorites?.length < 4 ? (
-            <Dialog>
+            <Dialog
+              onOpenChange={(open) =>
+                !open && setSearchQuery("") && setSearchResults([])
+              }
+            >
               <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed bg-white/10 hover:bg-white/25">
                 <h3>Add New Favorite</h3>
               </DialogTrigger>
