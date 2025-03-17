@@ -19,6 +19,7 @@ import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginate
 import { ResetPassword } from "@/pages/resetPassword";
 import { Random } from "@/pages/random";
 import { ActivityPage } from "@/pages/activityPage/activityPage";
+import { Genres } from "@/pages/genrePage/genres";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
         element: <MediaPage />,
       },
       // Genre Page
+      {
+        path: "/genre",
+        element: <Genres />,
+      },
       {
         path: "/genre/:genre",
         element: <GenrePage />,

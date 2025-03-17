@@ -81,3 +81,49 @@ export async function get_genres(): Promise<{ genre: string; slug: string }[]> {
     slug: slugify(row.genre),
   }));
 }
+
+export async function getGenresFull() {
+  // THANKS DEEPSEEK
+  let rows = await db.execute(sql`
+  WITH genre_ranking AS (
+    SELECT 
+        media_id,
+        genre,
+        ROW_NUMBER() OVER (
+            PARTITION BY media_id 
+            ORDER BY genre
+        ) AS media_genre_rank
+    FROM Media_Genre
+    ),
+    ranked_genres AS (
+        SELECT
+            gr.genre,
+            m.id,
+            m.rating,
+            ROW_NUMBER() OVER (
+                PARTITION BY gr.genre 
+                ORDER BY m.rating DESC
+            ) AS genre_rank,
+            ROW_NUMBER() OVER (
+                PARTITION BY m.id 
+                ORDER BY m.rating DESC
+            ) AS thumbnail_rank
+        FROM genre_ranking gr
+        LEFT JOIN Media m ON gr.media_id = m.id
+        WHERE gr.media_genre_rank = 1  -- Only consider primary genre per media
+    )
+    SELECT
+        genre,
+        id,
+        rating
+    FROM ranked_genres
+    WHERE genre_rank = 1  -- Get top-rated per genre
+      AND thumbnail_rank = 1  -- Ensure unique thumbnails across all genres
+    ORDER BY rating DESC;`);
+
+  return (rows[0] as any).map((row) => ({
+    genre: row.genre,
+    id: row.id,
+    slug: slugify(row.genre),
+  }));
+}
