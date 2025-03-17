@@ -15,6 +15,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<TUser | null>(null);
 
   const setLoginData = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setUser(null);
+      return;
+    }
     try {
       const userData = await getUserInfoFromToken();
       setUser(userData);

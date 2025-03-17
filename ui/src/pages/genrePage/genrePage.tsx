@@ -122,8 +122,9 @@ export default function GenrePage() {
                 onClick={() =>
                   handleChangeOrder(order === "asc" ? "desc" : "asc")
                 }
-                className="flex items-center justify-center p-1 transition-transform duration-300"
-                style={{ transform: `rotate(${order === "asc" ? 0 : 180}deg)` }}
+                className={`flex items-center justify-center p-1 transition-transform duration-300 ${
+                  order === "asc" ? "rotate-0" : "rotate-180"
+                }`}
               >
                 <SwapVertRounded />
               </button>

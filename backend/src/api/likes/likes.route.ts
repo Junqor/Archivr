@@ -15,12 +15,12 @@ likesRouter.get(
     const limit = parseInt(req.query.limit as string) || 4;
     const offset = parseInt(req.query.offset as string) || 0;
     const sort_by = req.query.sort_by as
-      | "likes.liked_at"
-      | "media.title"
-      | "media.rating"
-      | "media.release_date"
-      | "media.runtime"
-      | "ratings.rating"
+      | "When Liked"
+      | "Media Title"
+      | "Media Rating"
+      | "Media Release Date"
+      | "Media Runtime"
+      | "Rating"
       | undefined;
     const sort_order = req.query.sort_order as string;
     const ratingMax = parseInt(req.query.ratingMax as string) || 10;
