@@ -179,7 +179,10 @@ export const addFavorite = async (mediaId: number) => {
     import.meta.env.VITE_API_URL + "/user/add-favorite",
     {
       method: "POST",
-      headers: getAuthHeader(),
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
       body: JSON.stringify({ mediaId }),
     },
   );
@@ -198,10 +201,15 @@ export const removeFavorite = async (mediaId: number) => {
     import.meta.env.VITE_API_URL + "/user/remove-favorite",
     {
       method: "POST",
-      headers: getAuthHeader(),
-      body: JSON.stringify({ mediaId }),
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify({ mediaId: mediaId }),
     },
   );
+
+  console.log(response);
 
   if (!response.ok) {
     throw new Error("Failed to remove favorite");
