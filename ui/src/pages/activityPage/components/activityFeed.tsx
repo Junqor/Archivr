@@ -42,10 +42,7 @@ export function ActivityFeed({
       <div className="flex w-full flex-col">
         {activity.pages.flat().map((activityObject) => (
           <React.Fragment key={activityObject.activity.id}>
-            <ActivityBox
-              key={activityObject.activity.id}
-              item={activityObject}
-            />
+            <ActivityBox activity={activityObject} />
             <Separator className="bg-muted" />
           </React.Fragment>
         ))}
