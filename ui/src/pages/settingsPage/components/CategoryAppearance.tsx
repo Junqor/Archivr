@@ -189,7 +189,7 @@ export function ProfileSettingsCategoryAppearance({
           spot to add a media item to your favorites. You can have a maximum of
           4 favorite media items.
         </p>
-        <div className="grid w-full grid-cols-2 gap-3">
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
           {updatedFavorites.map((media: MediaWithBackground) => (
             <div
               key={media.id}
@@ -219,7 +219,7 @@ export function ProfileSettingsCategoryAppearance({
               <DialogPortal>
                 <DialogOverlay className="fixed inset-0 bg-[#111111AA]" />
                 <DialogContent>
-                  <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-min w-2/3 translate-x-[-50%] translate-y-[-50%] flex-col items-start gap-5 rounded-xl border border-white bg-black p-10">
+                  <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-min w-10/12 translate-x-[-50%] translate-y-[-50%] flex-col items-start gap-5 rounded-xl border border-white bg-black p-6 sm:w-2/3 sm:p-10">
                     <div className="flex flex-col items-center gap-3 self-stretch">
                       <div className="flex flex-col items-center gap-1">
                         <h1>Search Archivr</h1>
@@ -232,11 +232,11 @@ export function ProfileSettingsCategoryAppearance({
                         placeholder="Start typing to see results"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-3/4 px-3 py-5"
+                        className="w-full px-2 py-3 sm:w-3/4 sm:px-3 sm:py-5"
                       />
                     </div>
                     {searchResults.length === 0 && <h2>No search results</h2>}
-                    <div className="grid w-full grid-cols-3 gap-3">
+                    <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
                       {searchResults.map((media) => (
                         <div
                           key={media.id}
