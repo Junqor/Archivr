@@ -44,3 +44,12 @@ export const formatDateYear = (date: any, locale: string = "en-US") => {
     year: "numeric",
   }).format(new Date(date));
 };
+
+export const formatFormalDate = (date: any, locale: string = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(date));
+};

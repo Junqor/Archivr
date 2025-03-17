@@ -161,7 +161,7 @@ userRouter.get(
 // (GET /user/:userId/:type?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
 // Get a user's follows
 userRouter.get(
-  "/:userId/:type",
+  "/:userId/:type(followers|following)",
   asyncHandler(async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -192,7 +192,7 @@ userRouter.get(
 // (GET /user/:userId/:type/extended?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
 // Get a user's follows with extended info
 userRouter.get(
-  "/:userId/:type/extended",
+  "/:userId/:type(followers|following)/extended",
   asyncHandler(async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);

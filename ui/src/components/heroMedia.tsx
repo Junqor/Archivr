@@ -14,10 +14,10 @@ import {
   StarRounded,
   ChatBubbleRounded,
 } from "@mui/icons-material";
-
 function formatReleaseDate(date: string) {
   return date.split("-")[0];
 }
+import React from "react";
 
 function heroMedia({ media }: { media: TMedia }) {
   const [likes, setLikes] = useState<number | null>(null);
@@ -56,6 +56,7 @@ function heroMedia({ media }: { media: TMedia }) {
 
   return (
     <div
+      key={media.id}
       title={media.title}
       style={{
         background: `linear-gradient(0deg, rgba(13, 13, 13, 0.05) 0%, rgba(13, 13, 13, 0.05) 100%), radial-gradient(50% 50% at 50% 50%, rgba(13, 13, 13, 0.00) 0%, rgba(13, 13, 13, 0.75) 100%), url(${background}) lightgray 50% / cover no-repeat`,
@@ -76,7 +77,7 @@ function heroMedia({ media }: { media: TMedia }) {
           {media.genres.map((genre) => {
             const genreObj = genresList?.find((g: TGenre) => g.genre === genre);
             return (
-              <>
+              <React.Fragment key={genre}>
                 <Link
                   key={genre}
                   to={`/genre/${genreObj?.slug}`}
@@ -87,7 +88,7 @@ function heroMedia({ media }: { media: TMedia }) {
                 {media.genres.indexOf(genre) !== media.genres.length - 1 && (
                   <h4 className="text-white">|</h4>
                 )}
-              </>
+              </React.Fragment>
             );
           })}
         </div>

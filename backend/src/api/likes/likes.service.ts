@@ -4,19 +4,19 @@ import { desc, asc, eq, and, inArray, lte, or } from "drizzle-orm/expressions";
 import { count, avg, sql, isNull, exists } from "drizzle-orm";
 
 const sortFields = {
-  "likes.liked_at": likes.likedAt,
-  "media.title": media.title,
-  "media.rating": media.rating,
-  "media.release_date": media.release_date,
-  "media.runtime": media.runtime,
-  "ratings.rating": ratings.rating,
+  "When Liked": likes.likedAt,
+  "Media Title": media.title,
+  "Media Rating": media.rating,
+  "Media Release Date": media.release_date,
+  "Media Runtime": media.runtime,
+  Rating: ratings.rating,
 };
 
 export async function getUserLikes(
   user_id: number,
   limit = 4,
   offset = 0,
-  sort_by: keyof typeof sortFields = "likes.liked_at",
+  sort_by: keyof typeof sortFields = "When Liked",
   sort_order = "desc",
   ratingMax = 10,
   genre: string | null = null
@@ -26,7 +26,11 @@ export async function getUserLikes(
   }
 
   let orderByClause =
-    sort_order === "asc" ? asc(sortFields[sort_by]) : desc(sortFields[sort_by]);
+    sort_by in sortFields
+      ? sort_order === "asc"
+        ? asc(sortFields[sort_by])
+        : desc(sortFields[sort_by])
+      : desc(sortFields["When Liked"]);
 
   const avgRatingsSubquery = db
     .select({
