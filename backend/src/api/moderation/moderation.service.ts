@@ -26,7 +26,7 @@ export async function pardon_users(user_ids: Array<number>) {
     });
     insert_values = insert_values.substring(0,insert_values.length-1);
 
-    const res = await conn.query("UPDATE Moderator_Actions SET pardon_timestamp = CURRENT_TIMESTAMP WHERE user_id IN ("+insert_values+")",user_ids);
+    const res = await conn.query("UPDATE Moderator_Actions SET pardon_timestamp = CURRENT_TIMESTAMP WHERE user_id IN ("+insert_values+") AND pardon_timestamp IS NULL",user_ids);
     return res;
 }
 
@@ -36,7 +36,9 @@ export async function is_user_banned(user_id: number) {
     console.log(res);
 }
 
-export async function get_user_offences(user_id: number) {
-    const res = await conn.query("SELECT * FROM Moderator_Actions WHERE user_id = ?", [user_id]);
+export async function get_user_offences(user_id: number, limit: number, offset: number) {
+    limit = Math.max(Math.floor(limit),0);
+    offset = Math.max(Math.floor(offset),0);
+    const res = await conn.query("SELECT * FROM Moderator_Actions WHERE user_id = ? ORDER BY timestamp DESC LIMIT ?, ?", [user_id,offset,limit]);
     return res;
 }

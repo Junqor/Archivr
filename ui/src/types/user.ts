@@ -6,3 +6,13 @@ export type TUser = {
   role: "admin" | "user";
   avatar_url: string | null;
 };
+
+export type TUserOffence = {
+  id: number;
+  user_id: number;
+  action_type: string;
+  message: string;
+  expiry_date: string;
+  timestamp: string;
+  pardon_timestamp: string;
+}

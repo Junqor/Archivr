@@ -1,3 +1,4 @@
+import { TUserOffence } from "@/types/user";
 import { getAuthHeader } from "@/utils/authHeader";
 
 
@@ -12,20 +13,23 @@ export async function is_user_banned(user_id:number){
         throw new Error("Nuh uh");
     }
 
-    return response;
+    return response.json();
 }
 
-export async function get_user_offences(user_id:number){
+export async function get_user_offences(user_id:number,limit:number,offset:number){
     const response = await fetch(import.meta.env.VITE_API_URL+"/moderation/get-user-offences/"+user_id.toString(),{
-        method: "GET",
-        headers: getAuthHeader(),
+        method: "POST",
+        headers: {...getAuthHeader(),
+            "content-type": "application/json"
+        },
+        body: JSON.stringify({limit:limit,offset:offset})
     });
 
     if (!response.ok) {
         throw new Error("Nuh uh");
     }
 
-    return response;
+    return response.json();
 }
 
 export async function ban_users(user_ids:Array<number>, expiry_timestamp:string|null, message:string){
