@@ -3,6 +3,7 @@ import {
   get_popular_media_genre,
   get_media_genre,
   get_genres,
+  getGenresWithTopMedia,
 } from "./genre.service.js";
 import { z } from "zod";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
@@ -75,5 +76,13 @@ genreRouter.get(
     }
     res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24 * 7);
     res.json({ status: "success", genres });
+  })
+);
+
+genreRouter.get(
+  "/list",
+  asyncHandler(async (req, res) => {
+    const data = await getGenresWithTopMedia();
+    res.json({ status: "success", data });
   })
 );
