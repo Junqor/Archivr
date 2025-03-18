@@ -260,7 +260,7 @@ export function ProfileSettingsCategoryProfile({
                   updateSetting("social_youtube", event.target.value);
                 }}
                 defaultValue={settings.social_youtube || ""}
-                placeholder="https://www.youtube.com/username/"
+                placeholder="https://www.youtube.com/@username/"
                 className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
                 id="social_youtube"
               />

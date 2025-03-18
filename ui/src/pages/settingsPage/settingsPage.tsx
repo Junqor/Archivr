@@ -68,7 +68,7 @@ export function ProfileSettings() {
     queryFn: () => getUserSettings(),
   });
 
-  const { error: mutate_error, mutate: applyChangedSettings } = useMutation({
+  const { mutate: applyChangedSettings } = useMutation({
     mutationFn: () => setUserSettings(newSettings),
     onSuccess: () => {
       setChangedSettingsKeys(new Set());
@@ -76,8 +76,8 @@ export function ProfileSettings() {
       toast.success("Settings updated successfully");
       queryClient.invalidateQueries({ queryKey: ["settingsCurrentSettings"] });
     },
-    onError: () => {
-      toast.error("Failed to update settings");
+    onError: (e) => {
+      toast.error(e.message);
     },
   });
 
@@ -96,7 +96,7 @@ export function ProfileSettings() {
     }));
   };
 
-  if (query_error || mutate_error) {
+  if (query_error) {
     throw new Error("Error fetching settings");
   }
 
