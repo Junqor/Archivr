@@ -65,11 +65,11 @@ export default function SearchBar() {
             setIsLoading(true);
             handleSearch(e.target.value);
           }}
-          className="peer border-white/70 pl-4 focus:border-white"
+          className="peer border-white/70 pl-2 focus:border-white"
         />
         <Search className="peer absolute right-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
         {query && showResults && (
-          <Command className="absolute right-0 top-full mt-1 h-max w-96 rounded-lg border bg-black text-white shadow-md">
+          <Command className="w-lg absolute right-0 top-full mt-1 h-max rounded-lg border bg-black text-white shadow-md">
             <CommandList>
               <CommandGroup heading="Media">
                 {results.map((media) => (

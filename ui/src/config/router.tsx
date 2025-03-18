@@ -3,6 +3,7 @@ import { Login } from "@/pages/login";
 import ErrorPage from "@/pages/errorPage";
 import HomePage from "@/pages/homePage/homePage";
 import GenrePage from "@/pages/genrePage/genrePage";
+import BrowsePage from "@/pages/browsePage/browsePage";
 import { Layout } from "@/pages/_layout/layout";
 import { MediaPage } from "@/pages/mediaPage/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
@@ -45,6 +46,12 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //Browse Page
+      {
+        path: "/browse",
+        element: <BrowsePage />,
+      },
+      // Error Pages
       {
         path: "/forbidden",
         element: <ErrorPage />,
