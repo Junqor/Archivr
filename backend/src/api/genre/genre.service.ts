@@ -82,7 +82,7 @@ export async function get_genres(): Promise<{ genre: string; slug: string }[]> {
   }));
 }
 
-export async function getGenresFull() {
+export async function getGenresWithTopMedia() {
   // THANKS DEEPSEEK
   let rows = await db.execute(sql`
   WITH genre_ranking AS (
@@ -121,7 +121,13 @@ export async function getGenresFull() {
       AND thumbnail_rank = 1  -- Ensure unique thumbnails across all genres
     ORDER BY rating DESC;`);
 
-  return (rows[0] as any).map((row) => ({
+  return (
+    rows[0] as any as {
+      genre: string;
+      id: number;
+      rating: number;
+    }[]
+  ).map((row) => ({
     genre: row.genre,
     id: row.id,
     slug: slugify(row.genre),

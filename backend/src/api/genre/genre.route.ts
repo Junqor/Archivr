@@ -3,7 +3,7 @@ import {
   get_popular_media_genre,
   get_media_genre,
   get_genres,
-  getGenresFull,
+  getGenresWithTopMedia,
 } from "./genre.service.js";
 import { z } from "zod";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
@@ -82,7 +82,7 @@ genreRouter.get(
 genreRouter.get(
   "/list",
   asyncHandler(async (req, res) => {
-    const data = await getGenresFull();
+    const data = await getGenresWithTopMedia();
     res.json({ status: "success", data });
   })
 );
