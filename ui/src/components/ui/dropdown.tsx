@@ -8,8 +8,10 @@ const Dropdown = DropdownMenuPrimitive.Root;
 
 const DropdownTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger> & {
+    indicator?: boolean;
+  }
+>(({ className, children, indicator, ...props }, ref) => (
   <DropdownMenuPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -20,10 +22,12 @@ const DropdownTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronDown
-      className="top-px size-4 transition-transform duration-300 group-data-[state=open]:rotate-180"
-      aria-hidden
-    />
+    {indicator && (
+      <ChevronDown
+        className="top-px size-4 transition-transform duration-300 group-data-[state=open]:rotate-180"
+        aria-hidden
+      />
+    )}
   </DropdownMenuPrimitive.Trigger>
 ));
 DropdownTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;

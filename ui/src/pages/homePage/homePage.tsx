@@ -66,11 +66,10 @@ export default function HomePage() {
               <Info />
             </PopoverTrigger>
             <PopoverContent
-              className="inline-flex border-white text-sm text-white"
+              className="inline-flex w-72 border-white text-sm text-white"
               side="top"
               align="end"
             >
-              <></>
               <p>
                 Recommendations are based on what you like and rate. Interact
                 with more media to get more personalized recommendations.

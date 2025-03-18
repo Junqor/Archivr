@@ -60,15 +60,17 @@ export const getUserProfile = async (username: string) => {
 };
 
 export const setUserSettings = async (new_settings: TUserSettings) => {
-  try {
-    await fetch(import.meta.env.VITE_API_URL + "/user/settings", {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/user/settings",
+    {
       method: "POST",
       headers: { "content-type": "application/json", ...getAuthHeader() },
       body: JSON.stringify(new_settings),
-    });
-    return;
-  } catch (error) {
-    console.error(error);
+    },
+  );
+  const data = await response.json();
+  if (data.status !== "success") {
+    throw new Error(data.message);
   }
 };
 

@@ -70,7 +70,7 @@ userRouter.get(
 export const updateSettingsSchema = z.object({
   displayName: z.string(),
   status: z.string(),
-  bio: z.string(),
+  bio: z.string().max(215),
   pronouns: z.string(),
   location: z.string(),
   social_instagram: z.string(),
