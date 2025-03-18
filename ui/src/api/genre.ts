@@ -97,3 +97,25 @@ export const getGenres = async (): Promise<TGenre[]> => {
     return [];
   }
 };
+
+export const getGenresFull = async () => {
+  const url = import.meta.env.VITE_API_URL + "/genre/list";
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch genres");
+    }
+
+    const { data } = (await response.json()) as {
+      status: string;
+      data: { genre: string; id: string; slug: string }[];
+    };
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
