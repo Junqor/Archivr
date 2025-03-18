@@ -31,12 +31,12 @@ export default function FullActivity({
                       to={`/profile/${user.username}`}
                       className="h-fit w-fit"
                     >
-                      <UserAvatar user={user} />
+                      <UserAvatar user={user} className="size-8" />
                     </Link>
                   </div>
                 )}
                 <div className="flex w-full flex-[1_0_0] items-start gap-3">
-                  <div className="flex w-2/12 flex-col items-start gap-1">
+                  <div className="flex w-1/4 flex-col items-start gap-1 sm:w-2/12">
                     <ThumbnailPreview
                       media={{
                         id: act.targetId,
@@ -46,23 +46,22 @@ export default function FullActivity({
                       }}
                       className="w-full"
                     />
-                    {/*
-                    Check if this works for following
-                    */}
-                    <div className="flex items-center gap-1 text-xl">
+                    <div className="flex items-center gap-1 text-lg sm:text-xl">
                       {user.rating !== null && (
                         <div className="flex items-center">
                           {user.rating !== undefined &&
                             ratingToStars(user.rating)}
                         </div>
                       )}
-                      <FavoriteRounded
-                        fontSize="inherit"
-                        className={`text-muted ${media?.is_liked ? "" : "invisible"} scale-75`}
-                      />
+                      {isSelf && (
+                        <FavoriteRounded
+                          fontSize="inherit"
+                          className={`text-muted ${media?.is_liked ? "" : "invisible"} scale-75`}
+                        />
+                      )}
                     </div>
                   </div>
-                  <div className="flex w-full flex-[1_0_0] flex-col items-end gap-y-1 self-stretch">
+                  <div className="flex w-3/4 flex-[1_0_0] flex-col items-end gap-1 self-stretch sm:w-10/12">
                     <div className="flex-start flex w-full justify-between self-stretch text-muted">
                       <p>
                         {isSelf ? (
@@ -88,7 +87,7 @@ export default function FullActivity({
                       >
                         <h3>{media?.title}</h3>
                       </Link>
-                      <p className="leading-loose text-muted">
+                      <p className="hidden w-full leading-loose text-muted sm:block">
                         {formatDateYear(media?.release_date || "")}
                       </p>
                     </div>
@@ -118,12 +117,12 @@ export default function FullActivity({
                       to={`/profile/${user.username}`}
                       className="h-fit w-fit"
                     >
-                      <UserAvatar user={user} />
+                      <UserAvatar user={user} className="size-8" />
                     </Link>
                   </div>
                 )}
                 <div className="flex w-full flex-[1_0_0] items-start gap-3">
-                  <div className="flex w-2/12 flex-col items-start gap-1">
+                  <div className="flex w-1/4 flex-col items-start gap-1 sm:w-2/12">
                     <ThumbnailPreview
                       media={{
                         id: act.relatedId ?? 0,
@@ -134,7 +133,7 @@ export default function FullActivity({
                       className="w-full"
                     />
                   </div>
-                  <div className="flex w-full flex-[1_0_0] flex-col items-end gap-y-1 self-stretch">
+                  <div className="flex w-3/4 flex-[1_0_0] flex-col items-end gap-1 self-stretch sm:w-10/12">
                     <div className="flex-start flex w-full justify-between self-stretch text-muted">
                       <p>
                         {isSelf ? (
@@ -166,7 +165,7 @@ export default function FullActivity({
                           {media?.title}
                         </h3>
                       </Link>
-                      <p className="leading-loose text-muted">
+                      <p className="hidden leading-loose text-muted sm:block">
                         {formatDateYear(media?.release_date || "")}
                       </p>
                     </div>
@@ -186,7 +185,7 @@ export default function FullActivity({
                       to={`/profile/${user.username}`}
                       className="h-fit w-fit"
                     >
-                      <UserAvatar user={user} />
+                      <UserAvatar user={user} className="size-8" />
                     </Link>
                   </div>
                 )}
@@ -232,7 +231,7 @@ export default function FullActivity({
                       to={`/profile/${user.username}`}
                       className="h-fit w-fit"
                     >
-                      <UserAvatar user={user} />
+                      <UserAvatar user={user} className="size-8" />
                     </Link>
                   </div>
                 )}
@@ -271,7 +270,7 @@ export default function FullActivity({
                       to={`/profile/${user.username}`}
                       className="h-fit w-fit"
                     >
-                      <UserAvatar user={user} />
+                      <UserAvatar user={user} className="size-8" />
                     </Link>
                   </div>
                 )}
