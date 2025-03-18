@@ -49,7 +49,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 }}
                 className="w-full"
               />
-              <div className="flex items-center gap-1 text-xl">
+              <div className="flex items-center gap-1 text-[1.1rem] sm:text-xl">
                 {review.user_rating !== null && (
                   <div className="flex items-center">
                     {ratingToStars(review.user_rating)}
