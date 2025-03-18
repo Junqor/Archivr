@@ -11,7 +11,7 @@ export const searchMedias = async (
     return []; // Do not search if no query is provided
   }
 
-  const url = import.meta.env.VITE_API_URL + "/search";
+  const url = import.meta.env.VITE_API_URL + "/search/media";
 
   try {
     const response = await fetch(url, {
@@ -44,7 +44,7 @@ export const searchMedias = async (
 
 // Search for a specific media by ID
 export const searchMedia = async ({ id }: { id: string }) =>
-  await fetch(import.meta.env.VITE_API_URL + `/search/${id}`).then(
+  await fetch(import.meta.env.VITE_API_URL + `/search/media/${id}`).then(
     async (res) => {
       if (!res.ok) {
         throw new Error("Failed to fetch media");

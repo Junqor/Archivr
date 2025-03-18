@@ -20,6 +20,7 @@ import { ResetPassword } from "@/pages/resetPassword";
 import { Random } from "@/pages/random";
 import { ActivityPage } from "@/pages/activityPage/activityPage";
 import { GenresList } from "@/pages/genrePage/genresList";
+import { MembersPage } from "@/pages/membersPage/membersPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -83,7 +84,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/members",
-        element: <UnderConstruction />,
+        element: <MembersPage />,
       },
       {
         path: "/popular",
