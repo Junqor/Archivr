@@ -65,7 +65,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
               <div className="flex w-full items-center justify-between gap-1 self-stretch">
                 <div className="flex items-end gap-1 self-stretch">
                   <h3>{review.media.title}</h3>
-                  <p className="leading-loose text-muted">
+                  <p className="hidden leading-loose text-muted sm:block">
                     {formatDateYear(review.media.release_date)}
                   </p>
                 </div>

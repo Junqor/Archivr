@@ -54,7 +54,7 @@ export function ActivityPage() {
         </Button>
       </div>
       <div className="flex flex-col-reverse gap-x-5 gap-y-5 md:flex-row">
-        <section className="flex flex-col items-center gap-y-3 md:w-3/4">
+        <section className="flex w-full flex-col items-start gap-y-3 md:w-3/4">
           <ActivityFeed
             type={isOnFollowing ? "following" : "global"}
             userId={user?.id}
