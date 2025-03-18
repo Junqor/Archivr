@@ -22,6 +22,7 @@ import { getUserReviews } from "../reviews/reviews.service.js";
 import { getUserActivity } from "../activity/activity.service.js";
 import { serverConfig } from "../../configs/secrets.js";
 import { desc, asc, eq, inArray, and } from "drizzle-orm/expressions";
+import { ClientError } from "../../utils/error.class.js";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -124,6 +125,21 @@ export async function setUserSettings(
   settings: z.infer<typeof updateSettingsSchema>
 ) {
   const { displayName, ...otherSettings } = settings;
+
+  // Validate social media URLs
+  const { social_instagram, social_youtube, social_tiktok } = otherSettings;
+  const instagramRegex = /^https:\/\/www.instagram.com\/[a-zA-Z0-9_.]+$/;
+  const youtubeRegex = /^https:\/\/www.youtube.com\/@[a-zA-Z0-9_.]+$/;
+  const tiktokRegex = /^https:\/\/www.tiktok.com\/@[a-zA-Z0-9_.]+$/;
+  if (social_instagram && !instagramRegex.test(social_instagram)) {
+    throw new ClientError("Invalid Instagram URL");
+  }
+  if (social_youtube && !youtubeRegex.test(social_youtube)) {
+    throw new ClientError("Invalid YouTube URL");
+  }
+  if (social_tiktok && !tiktokRegex.test(social_tiktok)) {
+    throw new ClientError("Invalid TikTok URL");
+  }
 
   await db.transaction(async (tx) => {
     await tx.update(users).set({ displayName }).where(eq(users.id, user_id));
