@@ -23,18 +23,9 @@ export async function searchMedia(
     .limit(limit)
     .offset((offset - 1) * limit);
 
-  // Get genres for the media
-
-  const Media = await Promise.all(
-    rows.map(async (row) => {
-      const genres = await getGenres(row.id);
-      return { ...row, genres: genres };
-    })
-  );
-
   return {
     status: "success",
-    media: Media,
+    media: rows,
   };
 }
 
