@@ -21,7 +21,7 @@ export async function searchMedia(
     .where(sql`${media.title} LIKE ${"%" + query + "%"}`)
     .orderBy(desc(media.rating))
     .limit(limit)
-    .offset((offset - 1) * limit);
+    .offset(offset);
 
   return {
     status: "success",

@@ -18,7 +18,7 @@ export default function AdminPortal() {
   const { data: searchResults, isFetching } = useQuery<TMedia[]>({
     queryKey: ["adminSearch", query, pageNumber],
     queryFn: async () => {
-      const data = await searchMedias(query, 10, pageNumber);
+      const data = await searchMedias(query, 10, pageNumber - 1);
       return data;
     },
   });
@@ -34,9 +34,9 @@ export default function AdminPortal() {
   };
 
   return (
-    <div className="container p-4 mx-auto">
+    <div className="container mx-auto p-4">
       <h1 className="mb-4 text-2xl font-bold">Admin Portal</h1>
-      <div className="flex mb-4 space-x-4">
+      <div className="mb-4 flex space-x-4">
         <SearchBar />
         <ActionButtons
           selectedItem={selectedItem}

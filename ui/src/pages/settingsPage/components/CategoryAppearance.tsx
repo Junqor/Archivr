@@ -48,7 +48,7 @@ export function ProfileSettingsCategoryAppearance({
   >([]);
   const [searchResults, setSearchResults] = useState<MediaWithBackground[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchOffset, setSearchOffset] = useState(1);
+  const [searchOffset, setSearchOffset] = useState(0);
 
   const { data: favorites, refetch } = useQuery({
     queryKey: ["favorites", username],
@@ -103,7 +103,7 @@ export function ProfileSettingsCategoryAppearance({
   }, 500);
 
   useEffect(() => {
-    setSearchOffset(1);
+    setSearchOffset(0);
   }, [searchQuery]);
 
   useEffect(() => {
@@ -253,14 +253,14 @@ export function ProfileSettingsCategoryAppearance({
                         </div>
                       ))}
                     </div>
-                    {searchResults.length > 0 && searchOffset >= 1 && (
+                    {searchResults.length > 0 && (
                       <div className="mt-4 flex w-full justify-center gap-3">
                         <button
                           onClick={() =>
                             setSearchOffset((prev) => Math.max(prev - 6, 1))
                           }
                           className="flex items-center gap-3"
-                          disabled={searchOffset <= 1}
+                          disabled={searchOffset <= 0}
                         >
                           <div
                             className={`flex items-center justify-center rounded-md border p-1 transition-all duration-300 ${searchOffset <= 1 ? "cursor-not-allowed border-muted text-muted" : "hover:bg-white hover:text-black"}`}
@@ -268,7 +268,7 @@ export function ProfileSettingsCategoryAppearance({
                             <ChevronLeftRounded />
                           </div>
                           <h3
-                            className={`${searchOffset <= 1 ? "text-muted" : "text-white"}`}
+                            className={`${searchOffset <= 0 ? "cursor-not-allowed text-muted" : "text-white"}`}
                           >
                             Previous
                           </h3>
