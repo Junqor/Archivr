@@ -29,7 +29,7 @@ export function ratingToStars(rating: number) {
       <StarBorderRounded
         key={fullStars + halfStars + i}
         fontSize="inherit"
-        className="text-purple"
+        className="text-muted"
       />,
     );
   }
