@@ -19,7 +19,7 @@ import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginate
 import { ResetPassword } from "@/pages/resetPassword";
 import { Random } from "@/pages/random";
 import { ActivityPage } from "@/pages/activityPage/activityPage";
-import { Genres } from "@/pages/genrePage/genres";
+import { GenresList } from "@/pages/genrePage/genresList";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -33,21 +33,18 @@ const router = createBrowserRouter([
         path: "/",
         element: <HomePage />,
       },
-      // Movie Page
       {
-        path: "/media/:id",
-        element: <MediaPage />,
-      },
-      // Genre Page
-      {
-        path: "/genre",
-        element: <Genres />,
+        path: "/activity",
+        element: <ActivityPage />,
       },
       {
-        path: "/genre/:genre",
-        element: <GenrePage />,
+        path: "/admin",
+        element: (
+          <ProtectedRoute>
+            <AdminPortal />
+          </ProtectedRoute>
+        ),
       },
-      // Error Pages
       {
         path: "/forbidden",
         element: <ErrorPage />,
@@ -55,6 +52,14 @@ const router = createBrowserRouter([
         loader: () => {
           throw { status: 403 };
         },
+      },
+      {
+        path: "/genre",
+        element: <GenresList />,
+      },
+      {
+        path: "/genre/:genre",
+        element: <GenrePage />,
       },
       {
         path: "/internal-error",
@@ -73,20 +78,8 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/activity",
-        element: <ActivityPage />,
-      },
-      {
-        path: "/admin",
-        element: (
-          <ProtectedRoute>
-            <AdminPortal />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/genre",
-        element: <UnderConstruction />,
+        path: "/media/:id",
+        element: <MediaPage />,
       },
       {
         path: "/members",
