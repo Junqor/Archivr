@@ -7,13 +7,15 @@ export const getUserLikes = async (
   ratingMax?: number,
   genre?: string,
 ) => {
-  const userId = await fetch(
+  const userIdResponse = await fetch(
     import.meta.env.VITE_API_URL + `/user/${username}/id`,
   );
 
-  if (!userId.ok) {
+  if (!userIdResponse.ok) {
     throw { status: 404, message: "User not found" };
   }
+
+  const { userId } = await userIdResponse.json();
 
   const result = await fetch(
     import.meta.env.VITE_API_URL +

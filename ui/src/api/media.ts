@@ -5,7 +5,7 @@ import { getAuthHeader } from "@/utils/authHeader";
 export const searchMedias = async (
   query: string,
   limit: number = 5,
-  offset: number = 1,
+  offset: number = 0,
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided

@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { RankedUserMedia } from "./components/rankedUserMedia";
 import { PersonRounded, PublicRounded } from "@mui/icons-material";
 import { Separator } from "@/components/ui/separator";
+import { ScrollTopButton } from "@/components/scrollTopButton";
+import { ChevronUp } from "lucide-react";
 
 export function ActivityPage() {
   const { user } = useAuth();
@@ -52,8 +54,11 @@ export function ActivityPage() {
         </Button>
       </div>
       <div className="flex flex-col-reverse gap-x-5 gap-y-5 md:flex-row">
-        <section className="flex flex-col items-center gap-y-3 md:w-3/4">
-          <ActivityFeed type={isOnFollowing ? "following" : "global"} />
+        <section className="flex w-full flex-col items-start gap-y-3 md:w-3/4">
+          <ActivityFeed
+            type={isOnFollowing ? "following" : "global"}
+            userId={user?.id}
+          />
         </section>
         <section className="flex h-fit flex-col gap-y-3 md:w-1/4">
           <div>
@@ -66,6 +71,9 @@ export function ActivityPage() {
           <Separator className="bg-white/75 md:hidden" />
         </section>
       </div>
+      <ScrollTopButton className="fixed bottom-10 right-10 size-10">
+        <ChevronUp className="size-6" />
+      </ScrollTopButton>
     </main>
   );
 }

@@ -126,12 +126,12 @@ reviewsRouter.get(
     const limit = parseInt(req.query.limit as string) || 5;
     const offset = parseInt(req.query.offset as string) || 0;
     const sort_by = req.query.sort_by as
-      | "userReviews.createdAt"
-      | "media.title"
-      | "media.rating"
-      | "media.release_date"
-      | "media.runtime"
-      | "ratings.rating"
+      | "when-reviewed"
+      | "title"
+      | "rating"
+      | "release-date"
+      | "runtime"
+      | "user-rating"
       | undefined;
     const sort_order = req.query.sort_order as string;
     const ratingMax = parseInt(req.query.ratingMax as string) || 10;

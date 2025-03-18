@@ -87,13 +87,11 @@ export const plugins = [
         transform: "scaleX(-1)",
       },
     });
-    matchUtilities(
-      {
-        "text-shadow": (value) => ({
-          textShadow: value,
-        }),
-      },
-      { values: theme("textShadow") },
-    );
+    matchUtilities({
+      "text-shadow": (value) => ({
+        textShadow: value,
+      }),
+      values: theme("textShadow"),
+    });
   }),
 ];

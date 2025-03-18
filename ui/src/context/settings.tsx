@@ -35,6 +35,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
     },
+    enabled: !!user,
   });
 
   return (

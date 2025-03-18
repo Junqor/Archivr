@@ -63,12 +63,12 @@ export function ActionButtons({
   };
 
   const handlePageUp = () => {
-    searchParams.set("page", `${pageNumber + 1}`);
+    searchParams.set("page", `${pageNumber + 10}`);
     navigate(`${location.pathname}?${searchParams.toString()}`);
   };
 
   const handlePageDown = () => {
-    searchParams.set("page", `${pageNumber - 1}`);
+    searchParams.set("page", `${pageNumber - 10}`);
     navigate(`${location.pathname}?${searchParams.toString()}`);
   };
 
