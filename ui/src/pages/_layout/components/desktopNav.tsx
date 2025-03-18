@@ -53,7 +53,7 @@ export const DesktopNav = ({
           Home
         </Link>
         <Dropdown modal={false}>
-          <DropdownTrigger>Genres</DropdownTrigger>
+          <DropdownTrigger indicator>Genres</DropdownTrigger>
           <DropdownContent>
             <div className="grid grid-cols-5 gap-2 p-2">
               {isGenresLoading && <DropdownItem>Loading...</DropdownItem>}
@@ -68,7 +68,7 @@ export const DesktopNav = ({
         </Dropdown>
 
         <Dropdown modal={false}>
-          <DropdownTrigger>Explore</DropdownTrigger>
+          <DropdownTrigger indicator>Explore</DropdownTrigger>
           <DropdownContent>
             <DropdownItem asChild>
               <Link
@@ -109,7 +109,10 @@ export const DesktopNav = ({
         <SearchBar />
         {user ? (
           <Dropdown modal={false}>
-            <DropdownTrigger className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple">
+            <DropdownTrigger
+              className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple"
+              indicator
+            >
               <UserAvatar
                 user={{ ...user, avatar_url: settings?.avatar_url }}
               />
