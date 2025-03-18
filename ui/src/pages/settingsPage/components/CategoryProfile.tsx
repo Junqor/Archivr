@@ -167,7 +167,7 @@ export function ProfileSettingsCategoryProfile({
       <div className="flex flex-col items-start justify-center gap-2 self-stretch">
         <Label htmlFor="bio">Bio</Label>
         <Textarea
-          maxLength={30000}
+          maxLength={215}
           onChange={(event) => {
             updateSetting("bio", event.target.value);
           }}
