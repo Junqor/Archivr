@@ -23,20 +23,11 @@ export async function searchMedia(
     .where(sql`${media.title} LIKE ${"%" + query + "%"}`)
     .orderBy(desc(media.rating))
     .limit(limit)
-    .offset((offset - 1) * limit);
-
-  // Get genres for the media
-
-  const Media = await Promise.all(
-    rows.map(async (row) => {
-      const genres = await getGenres(row.id);
-      return { ...row, genres: genres };
-    })
-  );
+    .offset(offset);
 
   return {
     status: "success",
-    media: Media,
+    media: rows,
   };
 }
 

@@ -243,8 +243,6 @@ export const removeFavorite = async (mediaId: number) => {
     },
   );
 
-  console.log(response);
-
   if (!response.ok) {
     throw new Error("Failed to remove favorite");
   }

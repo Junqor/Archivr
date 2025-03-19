@@ -7,7 +7,7 @@ import { cacheRoute } from "../../middleware/cacheRoute.js";
 const searchBodySchema = z.object({
   query: z.string().min(1),
   limit: z.coerce.number().min(1).max(100),
-  offset: z.coerce.number().min(1),
+  offset: z.coerce.number().min(0),
 });
 
 const searchRouter = Router();
