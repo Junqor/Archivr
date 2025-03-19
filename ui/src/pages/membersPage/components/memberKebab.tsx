@@ -1,7 +1,6 @@
 import {
   MoreVertRounded,
   CopyAllRounded,
-  QrCodeRounded,
   BlockRounded,
   OutlinedFlagRounded,
 } from "@mui/icons-material";
@@ -39,15 +38,6 @@ export const MemberKebab = ({
           >
             <CopyAllRounded />
             Copy Profile Link
-          </Button>
-        </PopoverClose>
-        <PopoverClose asChild>
-          <Button
-            variant="outline"
-            className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-          >
-            <QrCodeRounded />
-            Show QR Code
           </Button>
         </PopoverClose>
         <PopoverClose asChild>

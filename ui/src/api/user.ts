@@ -8,9 +8,6 @@ export const searchUsers = async (
   sortBy: "username" | "followers",
   orderBy: "asc" | "desc",
 ) => {
-  if (!query) {
-    return []; // Do not search if no query is provided
-  }
   const url =
     import.meta.env.VITE_API_URL +
     "/search/users" +

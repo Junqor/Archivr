@@ -38,7 +38,7 @@ searchRouter.get(
 );
 
 const searchUsersQuery = z.object({
-  query: z.string().min(1),
+  query: z.string().min(0),
   limit: z.coerce.number().min(1).max(100),
   offset: z.coerce.number().min(0),
   sortBy: z.enum(["username", "followers"]),
