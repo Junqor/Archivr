@@ -10,7 +10,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  logger.error(err);
+  logger.error(err, "Error in Request: " + req.originalUrl);
   if (err instanceof UnauthorizedError) {
     res.status(401).json({ status: "failed", message: "Unauthorized" });
   } else if (err instanceof ZodError) {

@@ -211,35 +211,6 @@ export const Replies = mysqlTable(
   ]
 );
 
-export const reviews = mysqlTable(
-  "Reviews",
-  {
-    id: int().autoincrement().notNull(),
-    userId: int("user_id")
-      .notNull()
-      .references(() => users.id, {
-        onDelete: "cascade",
-        onUpdate: "restrict",
-      }),
-    mediaId: int("media_id")
-      .notNull()
-      .references(() => media.id, {
-        onDelete: "cascade",
-        onUpdate: "restrict",
-      }),
-    comment: text(),
-    createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
-    rating: int(),
-  },
-  (table) => [
-    index("media_index").on(table.mediaId, table.userId),
-    index("Reviews_media_id_IDX").on(table.mediaId),
-    index("user_id").on(table.userId),
-    primaryKey({ columns: [table.id], name: "Reviews_id" }),
-    unique("unique_media_user").on(table.mediaId, table.userId),
-  ]
-);
-
 export const userReviews = mysqlTable(
   "UserReviews",
   {
