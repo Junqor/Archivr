@@ -37,13 +37,23 @@ searchRouter.get(
   })
 );
 
-// (GET /api/search/users?query=&limit=&offset=)
+const searchUsersQuery = z.object({
+  query: z.string().min(1),
+  limit: z.coerce.number().min(1).max(100),
+  offset: z.coerce.number().min(1),
+  sortBy: z.enum(["username", "followers"]),
+  orderBy: z.enum(["asc", "desc"]),
+});
+
+// (GET /api/search/users?query=&limit=&offset=&sortBy=username&orderBy=asc)
 // Search for users by username/display name
 searchRouter.get(
   "/users",
   asyncHandler(async (req, res) => {
-    const { query, limit, offset } = searchBodySchema.parse(req.query);
-    const result = await searchUsers(query, limit, offset);
+    const { query, limit, offset, sortBy, orderBy } = searchUsersQuery.parse(
+      req.query
+    );
+    const result = await searchUsers(query, limit, offset, sortBy, orderBy);
     res.status(200).json(result);
   })
 );

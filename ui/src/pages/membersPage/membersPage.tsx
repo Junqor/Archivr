@@ -4,14 +4,18 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
 import { MemberBox } from "./components/memberBox";
 import { Input } from "@/components/ui/input";
-import { SearchRounded } from "@mui/icons-material";
+import { SearchRounded, SouthRounded } from "@mui/icons-material";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
+// TODO: add pagination
 export const MembersPage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [sortBy, setSortBy] = useState<"username" | "followers">("followers");
+  const [orderBy, setOrderBy] = useState<"asc" | "desc">("desc");
 
   const pageNumber = searchParams.get("page") || "1";
   const query = searchParams.get("q") || "";
@@ -29,8 +33,8 @@ export const MembersPage = () => {
   }, 300);
 
   const { data, isLoading, isPending, isError } = useQuery({
-    queryKey: ["members", pageNumber, query],
-    queryFn: () => searchUsers(query, 15, pageNumber),
+    queryKey: ["members", pageNumber, query, sortBy, orderBy],
+    queryFn: () => searchUsers(query, 15, pageNumber, sortBy, orderBy),
   });
 
   return (
@@ -51,6 +55,29 @@ export const MembersPage = () => {
             <span className="sr-only">Search</span>
           </div>
         </div>
+      </div>
+      <div className="flex w-3/4 items-end justify-end">
+        <select
+          name="sortBy"
+          id="sortBy"
+          value={sortBy}
+          onChange={(e) =>
+            setSortBy(e.target.value as "username" | "followers")
+          }
+          className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+        >
+          <option value="username">Username</option>
+          <option value="followers">Followers</option>
+        </select>
+        <button
+          type="button"
+          onClick={() => setOrderBy(orderBy === "asc" ? "desc" : "asc")}
+          className={`flex items-center justify-center p-1 transition-transform duration-300 ${
+            orderBy === "asc" ? "flip-y" : ""
+          }`}
+        >
+          <SouthRounded />
+        </button>
       </div>
       <div className="flex w-full flex-col justify-center overflow-hidden rounded-md">
         {isLoading || isPending ? (

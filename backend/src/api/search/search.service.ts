@@ -1,5 +1,5 @@
 import { db } from "../../db/database.js";
-import { aliasedTable, count, desc, eq, sql, or } from "drizzle-orm";
+import { aliasedTable, count, desc, eq, sql, or, asc } from "drizzle-orm";
 import {
   follows,
   likes,
@@ -79,7 +79,9 @@ async function getGenres(mediaId: number) {
 export async function searchUsers(
   query: string,
   limit: number,
-  offset: number
+  offset: number,
+  sortBy: "username" | "followers",
+  orderBy: "asc" | "desc"
 ) {
   const followsAlias = aliasedTable(follows, "following");
   const rows = await db
@@ -105,6 +107,20 @@ export async function searchUsers(
         sql`${users.username} LIKE ${"%" + query + "%"}`,
         sql`${users.displayName} LIKE ${"%" + query + "%"}`
       )
+    )
+    .orderBy(
+      orderBy === "desc"
+        ? desc(
+            sortBy === "username"
+              ? users.username
+              : count(sql`DISTINCT ${follows.id}`)
+          )
+        : asc(
+            sortBy === "username"
+              ? users.username
+              : count(sql`DISTINCT ${follows.id}`)
+          ),
+      orderBy === "desc" ? desc(users.username) : asc(users.username) // incase they don't have a display name
     )
     .groupBy(users.id)
     .limit(limit)

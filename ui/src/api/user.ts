@@ -5,6 +5,8 @@ export const searchUsers = async (
   query: string,
   limit: number,
   offset: string,
+  sortBy: "username" | "followers",
+  orderBy: "asc" | "desc",
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided
@@ -12,7 +14,7 @@ export const searchUsers = async (
   const url =
     import.meta.env.VITE_API_URL +
     "/search/users" +
-    `?query=${query}&limit=${limit}&offset=${offset}`;
+    `?query=${query}&limit=${limit}&offset=${offset}&sortBy=${sortBy}&orderBy=${orderBy}`;
   const result = await fetch(url);
   if (!result.ok) {
     throw new Error("Failed to fetch users");
