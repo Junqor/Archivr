@@ -20,9 +20,12 @@ export const MemberBox = ({
           </Link>
           <div className="flex flex-col items-start gap-1">
             <div className="flex items-end gap-1">
-              <h4 className="text-white">
-                {user.displayName || user.username}
-              </h4>
+              <Link
+                to={"/profile/" + user.username}
+                className="transition-colors hover:text-primary"
+              >
+                <h4>{user.displayName || user.username}</h4>
+              </Link>
               {user.pronouns && <p className="text-muted">({user.pronouns})</p>}
             </div>
             <div className="flex items-start gap-2 text-nowrap text-sm text-muted md:gap-3">
