@@ -205,7 +205,8 @@ function BanTimer({unban_time}:{unban_time: Date}){
       const diff = (unban_time.getTime() - Date.now());
       const date = new Date(0);
       date.setMilliseconds(diff);
-      setTime(date.toISOString().slice(11, 23));
+      const days = Math.floor(diff/86400000);
+      setTime(days+":"+date.toISOString().slice(11, 23));
     }, 20);
 
     return () => clearInterval(interval);
