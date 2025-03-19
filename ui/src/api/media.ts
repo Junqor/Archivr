@@ -302,3 +302,11 @@ export const getSimilarToWatched = async (userId: number) => {
     basedOn: data.basedOn as string,
   };
 };
+
+export const getRecommendations = async (mediaId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + `/media/recommended/${mediaId}`,
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
+};
