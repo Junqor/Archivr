@@ -15,6 +15,7 @@ import { ArchivrIcon } from "@/components/archivrIcon";
 import { UserAvatar } from "@/components/ui/avatar";
 import { is_user_banned, TUserBanData } from "@/api/moderation";
 import { useEffect, useState } from "react";
+import { BANner } from "./ban-alert";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -179,42 +180,12 @@ export default function Header() {
         </div>
       </header>
       {
-      // BANner
       banned?.is_banned
       ?
-      <div className="bg-gradient-to-tr from-red-900 via-red-600 to-orange-600">
-        <div className="flex flex-col items-center justify-center p-3">
-          <p className="text-4xl font-extrabold">Hey, IDIOT! You've been BANNED!</p>
-          <p className="text-xl font-light">Reason: {banned.message ? '"'+banned.message+'"' : "WHO CARES"}</p>
-          <p className="text-2xl font-bold">You can wreak more havok in</p>
-          <p className="text-4xl font-bold">{banned.expiry_date ? <BanTimer unban_time={new Date(banned.expiry_date)}/> : "NEVER"}</p>
-        </div>
-      </div>
+      <BANner banned={banned}/>
       :
       null
       }  
     </header>
-  );
-}
-
-function BanTimer({unban_time}:{unban_time: Date}){
-  const [time, setTime] = useState<string>("XX:XX:XX");
-
-  useEffect(()=>{
-    const interval = setInterval(() => {
-      const diff = (unban_time.getTime() - Date.now());
-      const date = new Date(0);
-      date.setMilliseconds(diff);
-      const days = Math.floor(diff/86400000);
-      setTime(days+":"+date.toISOString().slice(11, 23));
-    }, 20);
-
-    return () => clearInterval(interval);
-  });
-
-  return (
-    <span>
-      {time}
-    </span>
   );
 }

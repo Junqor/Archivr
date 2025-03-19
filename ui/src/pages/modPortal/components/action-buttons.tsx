@@ -102,7 +102,7 @@ function BanGroupDialog({ children, selectedItems } : { children: React.ReactNod
       expiry_timestamp: `${expiry_date.getUTCFullYear()}-${expiry_date.getUTCMonth()+1}-${expiry_date.getUTCDate()} ${expiry_date.getUTCHours()}:${expiry_date.getUTCMinutes()}:${expiry_date.getUTCSeconds()}` as string,
       permanent: form.get("permanent") as string,
     }
-    if (data.permanent==null && ( expiry_date.getTime() <= Date.now() || !expiry_date.getTime())){
+    if (data.permanent==null && ( !expiry_date.getTime() || expiry_date.getTime() <= Date.now() || expiry_date.getTime() > 2147483647000)){
       toast.error("Invalid date");
       return;
     }
