@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
 import { authenticateAdmin } from "../../middleware/authenticateAdmin.js";
-import { ban_users, get_user_offences, is_user_banned, pardon_users } from "./moderation.service.js";
+import { ban_users, get_user_offences, is_user_banned, pardon_action, pardon_users } from "./moderation.service.js";
 import z from "zod";
 
 export const moderationRouter = Router();
@@ -20,10 +20,10 @@ const isUserBannedSchema = z.object({
     user_id: z.number(),
 })
 
-moderationRouter.post("/is-user-banned", async (req, res) => {
+moderationRouter.get("/is-user-banned/:userId", async (req, res) => {
     try {
-        const body = isUserBannedSchema.parse(req.body);
-        const result = await is_user_banned(body.user_id);
+        const {userId} = req.params;
+        const result = await is_user_banned(parseInt(userId));
         res.json(result);
     }
     catch (error) {
@@ -83,3 +83,19 @@ moderationRouter.post("/pardon-users", authenticateToken, authenticateAdmin, asy
         throw error;
     }
 });
+
+const pardonActionSchema = z.object({
+    id: z.number(),
+})
+
+moderationRouter.post("/pardon-action", authenticateToken, authenticateAdmin, async (req, res) => {
+    try {
+        const body = pardonActionSchema.parse(req.body);
+        const result = await pardon_action(body.id);
+        res.json(result);
+    }
+    catch (error) {
+        res.status(400);
+        throw error;
+    } 
+})

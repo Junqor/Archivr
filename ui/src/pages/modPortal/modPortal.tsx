@@ -7,7 +7,6 @@ import { searchUsers } from "@/api/user";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "./components/data-table-skeleton";
-import { keyframes } from "@emotion/react";
 import { InspectDialog } from "./components/inspect-dialog";
 import { Search } from "lucide-react";
 

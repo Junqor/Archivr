@@ -1,19 +1,22 @@
-import { TUserOffence } from "@/types/user";
 import { getAuthHeader } from "@/utils/authHeader";
 
-
+export type TUserBanData = {
+  is_banned: boolean | undefined;
+  expiry_date: string | undefined;
+  message: string | undefined;
+}
 
 export async function is_user_banned(user_id:number){
-    const response = await fetch(import.meta.env.VITE_API_URL+"/moderation/is-user-banned",{
-        method: "POST",
-        body: JSON.stringify({user_id: user_id}),
+    const response = await fetch(import.meta.env.VITE_API_URL+"/moderation/is-user-banned/"+user_id.toString(),{
+        method: "GET",
     });
 
     if (!response.ok) {
         throw new Error("Nuh uh");
     }
 
-    return response.json();
+    const response_decode = await response.json();
+    return response_decode as TUserBanData;
 }
 
 export async function get_user_offences(user_id:number,limit:number,offset:number){
@@ -53,6 +56,20 @@ export async function pardon_users(user_ids:Array<number>){
             "content-type": "application/json"
         },
         body: JSON.stringify({user_ids:user_ids}),
+    });
+
+    if (!response.ok) {
+        throw new Error("Nuh uh");
+    }
+}
+
+export async function pardon_action(id: number){
+    const response = await fetch(import.meta.env.VITE_API_URL+"/moderation/pardon-action",{
+        method: "POST",
+        headers: {...getAuthHeader(),
+            "content-type": "application/json"
+        },
+        body: JSON.stringify({id:id}),
     });
 
     if (!response.ok) {

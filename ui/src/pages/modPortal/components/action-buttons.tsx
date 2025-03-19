@@ -1,5 +1,4 @@
-import { addMedia, deleteMedia, editMedia } from "@/api/admin";
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { TUser } from "@/types/user";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Gavel, Bird, ChevronLeft, ChevronRight } from "lucide-react";
@@ -15,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useRef } from "react";
 import { ban_users, pardon_users } from "@/api/moderation";
@@ -47,7 +45,7 @@ export function ActionButtons({
 
   return (
     <div className="flex w-full space-x-2">
-      <BanForm selectedItems={selectedItems}>
+      <BanGroupDialog selectedItems={selectedItems}>
         <Button
           title="Ban"
           variant="outline"
@@ -57,8 +55,8 @@ export function ActionButtons({
         >
           <Gavel className="h-4 w-4 text-red-500" />
         </Button>
-      </BanForm>
-      <PardonForm selectedItems={selectedItems}>
+      </BanGroupDialog>
+      <PardonGroupDialog selectedItems={selectedItems}>
         <Button
           title="Pardon"
           variant="outline"
@@ -68,7 +66,7 @@ export function ActionButtons({
         >
           <Bird className="h-4 w-4 text-white" />
         </Button>
-      </PardonForm>
+      </PardonGroupDialog>
       <Button
         variant="outline"
         size="icon"
@@ -90,7 +88,7 @@ export function ActionButtons({
   );
 }
 
-function BanForm({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
+function BanGroupDialog({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
   const input_expiry_timestamp = useRef<HTMLInputElement>(null);
   const input_permanent = useRef<HTMLInputElement>(null);
   
@@ -101,7 +99,7 @@ function BanForm({ children, selectedItems } : { children: React.ReactNode, sele
     const data = {
       user_ids: Array.from(selectedItems.keys()) as Array<number>,
       message: form.get("message") as string,
-      expiry_timestamp: `${expiry_date.getUTCFullYear()}-${expiry_date.getUTCMonth()+1}-${expiry_date.getUTCDate()} ${expiry_date.getUTCHours()}:${expiry_date.getUTCMinutes()}:${expiry_date.getUTCMilliseconds()}` as string,
+      expiry_timestamp: `${expiry_date.getUTCFullYear()}-${expiry_date.getUTCMonth()+1}-${expiry_date.getUTCDate()} ${expiry_date.getUTCHours()}:${expiry_date.getUTCMinutes()}:${expiry_date.getUTCSeconds()}` as string,
       permanent: form.get("permanent") as string,
     }
     if (data.permanent==null && ( expiry_date.getTime() <= Date.now() || !expiry_date.getTime())){
@@ -190,7 +188,7 @@ function BanForm({ children, selectedItems } : { children: React.ReactNode, sele
 }
 
 
-function PardonForm({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
+function PardonGroupDialog({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
   
   const handleSubmit = async () => {
     const data = {
@@ -207,9 +205,9 @@ function PardonForm({ children, selectedItems } : { children: React.ReactNode, s
       <DialogContent>
         <>
           <DialogHeader>
-            <DialogTitle>Pardon</DialogTitle>
+            <DialogTitle>Mass Pardon</DialogTitle>
             <DialogDescription>
-              This action will unban these nerds:<br/>
+              This action will fully pardon all actions issued against these nerds:<br/>
               {[...selectedItems].map((user)=>{return(
                 <p key={user[1].id}>
                   {(user[1].displayName||user[1].username)+" [@"+user[1].username+" ID:"+user[1].id+"]"}
