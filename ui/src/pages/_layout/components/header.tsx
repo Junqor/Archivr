@@ -179,13 +179,15 @@ export default function Header() {
         </div>
       </header>
       {
+      // BANner
       banned?.is_banned
       ?
       <div className="bg-gradient-to-tr from-red-900 via-red-600 to-orange-600">
         <div className="flex flex-col items-center justify-center p-3">
-          <p className="text-4xl font-bold">Hey, IDIOT! You've been BANNED!</p>
-          <p className="text-2xl font-bold">Reason: {banned.message ? '"'+banned.message+'"' : "WHO CARES"}</p>
-          <p className="text-4xl font-bold">{banned.expiry_date ? <>You can wreak more havoc in <BanTimer unban_time={new Date(banned.expiry_date)}/></> : "You will be unbanned: NEVER"}</p>
+          <p className="text-4xl font-extrabold">Hey, IDIOT! You've been BANNED!</p>
+          <p className="text-xl font-light">Reason: {banned.message ? '"'+banned.message+'"' : "WHO CARES"}</p>
+          <p className="text-2xl font-bold">You can wreak more havok in</p>
+          <p className="text-4xl font-bold">{banned.expiry_date ? <BanTimer unban_time={new Date(banned.expiry_date)}/> : "NEVER"}</p>
         </div>
       </div>
       :
