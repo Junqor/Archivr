@@ -4,25 +4,36 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
 import { MemberBox } from "./components/memberBox";
 import { Input } from "@/components/ui/input";
-import { SearchRounded, SouthRounded } from "@mui/icons-material";
+import {
+  ChevronLeftRounded,
+  ChevronRightRounded,
+  SearchRounded,
+  SouthRounded,
+} from "@mui/icons-material";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 
-// TODO: add pagination
+const PAGE_SIZE = 15;
+
 export const MembersPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<"username" | "followers">("followers");
   const [orderBy, setOrderBy] = useState<"asc" | "desc">("desc");
 
-  const pageNumber = searchParams.get("page") || "1";
+  const pageNumber = parseInt(searchParams.get("page") || "0");
   const query = searchParams.get("q") || "";
+
+  const { data, isLoading, isPending, isError } = useQuery({
+    queryKey: ["members", pageNumber, query, sortBy, orderBy],
+    queryFn: () => searchUsers(query, PAGE_SIZE, pageNumber, sortBy, orderBy),
+  });
 
   const handleSearch = useDebouncedCallback((val: string) => {
     const params = new URLSearchParams({ q: val });
-    params.set("page", "1");
+    params.set("page", "0");
     if (val.length) {
       params.set("q", val);
     } else {
@@ -32,10 +43,10 @@ export const MembersPage = () => {
     navigate(url, { replace: true });
   }, 300);
 
-  const { data, isLoading, isPending, isError } = useQuery({
-    queryKey: ["members", pageNumber, query, sortBy, orderBy],
-    queryFn: () => searchUsers(query, 15, pageNumber, sortBy, orderBy),
-  });
+  const handleChangePage = (newPage: number) => {
+    searchParams.set("page", newPage.toString());
+    setSearchParams(searchParams);
+  };
 
   return (
     <main className="flex h-full w-full flex-col items-center justify-center gap-y-5 pt-10">
@@ -89,6 +100,41 @@ export const MembersPage = () => {
             {data.map((user) => (
               <MemberBox user={user} key={user.id} />
             ))}
+            <section className="mt-5 flex w-full justify-center gap-5">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleChangePage(Math.max(0, pageNumber - 1))}
+                  disabled={pageNumber === 0}
+                  className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 enabled:hover:bg-white enabled:hover:text-black disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  <ChevronLeftRounded />
+                </button>
+                <h3
+                  className={`${pageNumber === 0 ? "text-muted" : "text-white"}`}
+                >
+                  Previous
+                </h3>
+              </div>
+              <Separator orientation="vertical" className="h-auto" decorative />
+              <div className="flex items-center gap-3">
+                <h3
+                  className={`${
+                    !data || data.length < PAGE_SIZE
+                      ? "text-muted"
+                      : "text-white"
+                  }`}
+                >
+                  Next
+                </h3>
+                <button
+                  onClick={() => handleChangePage(pageNumber + 1)}
+                  disabled={!data || data.length < PAGE_SIZE}
+                  className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 enabled:hover:bg-white enabled:hover:text-black disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  <ChevronRightRounded />
+                </button>
+              </div>
+            </section>
           </>
         ) : (
           <p className="self-center">No members found</p>

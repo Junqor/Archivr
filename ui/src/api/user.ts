@@ -4,7 +4,7 @@ import { getAuthHeader } from "@/utils/authHeader";
 export const searchUsers = async (
   query: string,
   limit: number,
-  offset: string,
+  offset: number,
   sortBy: "username" | "followers",
   orderBy: "asc" | "desc",
 ) => {

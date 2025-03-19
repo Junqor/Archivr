@@ -115,7 +115,7 @@ export async function searchUsers(
     )
     .groupBy(users.id)
     .limit(limit)
-    .offset((offset - 1) * limit);
+    .offset(offset * limit);
 
   return {
     status: "success",
