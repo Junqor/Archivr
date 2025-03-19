@@ -181,7 +181,7 @@ export default function Header() {
       {
       banned?.is_banned
       ?
-      <div className="bg-red-500 z-50">
+      <div className="bg-gradient-to-tr from-red-900 via-red-600 to-orange-600">
         <div className="flex flex-col items-center justify-center p-3">
           <p className="text-4xl font-bold">Hey, IDIOT! You've been BANNED!</p>
           <p className="text-2xl font-bold">Reason: {banned.message ? '"'+banned.message+'"' : "WHO CARES"}</p>
