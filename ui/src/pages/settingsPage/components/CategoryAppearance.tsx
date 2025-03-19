@@ -257,7 +257,7 @@ export function ProfileSettingsCategoryAppearance({
                       <div className="mt-4 flex w-full justify-center gap-3">
                         <button
                           onClick={() =>
-                            setSearchOffset((prev) => Math.max(prev - 6, 1))
+                            setSearchOffset((prev) => Math.max(prev - 6, 0))
                           }
                           className="flex items-center gap-3"
                           disabled={searchOffset <= 0}
