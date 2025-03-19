@@ -48,3 +48,4 @@
 - ~~Stop scroll restoration on genre page~~
 - Try out tRPC
 - make genres on media page navigate to corresponding genre page
+- disable fetch settings if not logged in
