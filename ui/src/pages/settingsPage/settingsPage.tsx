@@ -12,6 +12,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useAuth } from "@/context/auth";
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useSettings } from "@/context/settings";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -53,6 +54,7 @@ export function ProfileSettings() {
   const [selectedMenu, setSelectedMenu] = useState("Profile");
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { refetchSettings } = useSettings();
 
   if (!user) return <Navigate to="/login" />;
 
@@ -66,15 +68,16 @@ export function ProfileSettings() {
     queryFn: () => getUserSettings(),
   });
 
-  const { error: mutate_error, mutate: applyChangedSettings } = useMutation({
+  const { mutate: applyChangedSettings } = useMutation({
     mutationFn: () => setUserSettings(newSettings),
     onSuccess: () => {
       setChangedSettingsKeys(new Set());
+      refetchSettings();
       toast.success("Settings updated successfully");
       queryClient.invalidateQueries({ queryKey: ["settingsCurrentSettings"] });
     },
-    onError: () => {
-      toast.error("Failed to update settings");
+    onError: (e) => {
+      toast.error(e.message);
     },
   });
 
@@ -93,7 +96,7 @@ export function ProfileSettings() {
     }));
   };
 
-  if (query_error || mutate_error) {
+  if (query_error) {
     throw new Error("Error fetching settings");
   }
 

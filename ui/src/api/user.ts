@@ -2,6 +2,35 @@ import { TUserSettings } from "@/pages/settingsPage/settingsPage";
 import { TUser } from "@/types/user";
 import { getAuthHeader } from "@/utils/authHeader";
 
+export const searchUsers = async (
+  query: string,
+  limit: number,
+  offset: number,
+  sortBy: "username" | "followers",
+  orderBy: "asc" | "desc",
+) => {
+  const url =
+    import.meta.env.VITE_API_URL +
+    "/search/users" +
+    `?query=${query}&limit=${limit}&offset=${offset}&sortBy=${sortBy}&orderBy=${orderBy}`;
+  const result = await fetch(url);
+  if (!result.ok) {
+    throw new Error("Failed to fetch users");
+  }
+  const data = await result.json();
+  return data.data as {
+    id: number;
+    displayName: string | null;
+    username: string;
+    avatarUrl: string | null;
+    followers: number;
+    following: number;
+    pronouns: string | null;
+    reviews: number;
+    likes: number;
+  }[];
+};
+
 export const getUserSettings = async () => {
   try {
     const result = await fetch(
@@ -61,15 +90,17 @@ export const getUserProfile = async (username: string) => {
 };
 
 export const setUserSettings = async (new_settings: TUserSettings) => {
-  try {
-    await fetch(import.meta.env.VITE_API_URL + "/user/settings", {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/user/settings",
+    {
       method: "POST",
       headers: { "content-type": "application/json", ...getAuthHeader() },
       body: JSON.stringify(new_settings),
-    });
-    return;
-  } catch (error) {
-    console.error(error);
+    },
+  );
+  const data = await response.json();
+  if (data.status !== "success") {
+    throw new Error(data.message);
   }
 };
 
@@ -92,16 +123,16 @@ export const uploadPfp = async (file: File) => {
 };
 
 // Search for user(s) by name, username or id
-export const searchUsers = async (
+export const searchUsersModPortal = async (
   query: string,
   limit: number = 5,
-  offset: number = 1,
+  offset: number = 0,
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided
   }
 
-  const url = import.meta.env.VITE_API_URL + "/search/users";
+  const url = import.meta.env.VITE_API_URL + "/search/users-mod-portal";
 
   try {
     const response = await fetch(url, {
@@ -130,4 +161,178 @@ export const searchUsers = async (
     console.error(error);
     return [];
   }
+};
+
+export const getProfilePageData = async (username: string) => {
+  const userIdResponse = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userIdResponse.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const { userId } = await userIdResponse.json();
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL + `/user/profile-page/${userId}`,
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.profilePage;
+};
+
+export const getProfileTabData = async (username: string) => {
+  const userIdResponse = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userIdResponse.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const { userId } = await userIdResponse.json();
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL + `/user/profile-tab/${userId}`,
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.profileTab;
+};
+
+export const getUserFollows = async (
+  username: string,
+  type: "followers" | "following",
+  extended?: boolean,
+  limit?: number,
+  offset?: number,
+  sort_by?: string,
+  sort_order?: string,
+) => {
+  const userIdResponse = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userIdResponse.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const { userId } = await userIdResponse.json();
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL +
+      `/user/${userId}/${type}` +
+      (extended ? "/extended" : "") +
+      (limit || offset || sort_by || sort_order ? "?" : "") +
+      (limit ? `limit=${limit}` : "") +
+      (offset ? `&offset=${offset}` : "") +
+      (sort_by ? `&sort_by=${sort_by}` : "") +
+      (sort_order ? `&sort_order=${sort_order}` : ""),
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.follows;
+};
+
+export const addFavorite = async (mediaId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/user/add-favorite",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify({ mediaId }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to add favorite");
+  }
+
+  const data = await response.json();
+
+  return data;
+};
+
+export const removeFavorite = async (mediaId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + "/user/remove-favorite",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify({ mediaId: mediaId }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to remove favorite");
+  }
+
+  const data = await response.json();
+
+  return data;
+};
+
+export const getFavorites = async (username: string) => {
+  const userIdResponse = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userIdResponse.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const { userId } = await userIdResponse.json();
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL + `/user/get-favorites/${userId}`,
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.favorites;
+};
+
+export const checkFavorite = async (username: string, mediaId: number) => {
+  const userIdResponse = await fetch(
+    import.meta.env.VITE_API_URL + `/user/${username}/id`,
+  );
+
+  if (!userIdResponse.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const { userId } = await userIdResponse.json();
+
+  const result = await fetch(
+    import.meta.env.VITE_API_URL + `/user/check-favorite/${userId}/${mediaId}`,
+  );
+
+  if (!result.ok) {
+    throw { status: 404, message: "User not found" };
+  }
+
+  const data = await result.json();
+  return data.favorite;
 };

@@ -17,7 +17,7 @@ export const fileUploadMiddleware = multer({
       "image/bmp",
       "image/png",
       "image/tiff",
-      "image/gif",
+      "image/webp",
     ];
 
     if (allowedMimes.includes(file.mimetype)) {

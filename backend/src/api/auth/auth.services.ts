@@ -33,6 +33,15 @@ export async function signUp(
   }
   const email = parsedEmail.data;
 
+  // Validate username characters
+  const regex = /^[a-zA-Z0-9_]+$/;
+  if (!regex.test(inputUsername)) {
+    return {
+      status: "failed",
+      message: "Username can only contain letters, numbers, and underscores",
+    };
+  }
+
   // Validate username length
   const parsedUsername = z.string().min(3).max(20).safeParse(inputUsername);
   if (!parsedUsername.success) {
@@ -107,10 +116,8 @@ export async function logIn(
     user: {
       id: user.id,
       username: user.username,
-      displayName: user.displayName,
       email: user.email,
       role: user.role,
-      avatar_url: user.avatarUrl,
     },
   };
 }

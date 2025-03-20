@@ -5,13 +5,13 @@ import { getAuthHeader } from "@/utils/authHeader";
 export const searchMedias = async (
   query: string,
   limit: number = 5,
-  offset: number = 1,
+  offset: number = 0,
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided
   }
 
-  const url = import.meta.env.VITE_API_URL + "/search";
+  const url = import.meta.env.VITE_API_URL + "/search/media";
 
   try {
     const response = await fetch(url, {
@@ -44,7 +44,7 @@ export const searchMedias = async (
 
 // Search for a specific media by ID
 export const searchMedia = async ({ id }: { id: string }) =>
-  await fetch(import.meta.env.VITE_API_URL + `/search/${id}`).then(
+  await fetch(import.meta.env.VITE_API_URL + `/search/media/${id}`).then(
     async (res) => {
       if (!res.ok) {
         throw new Error("Failed to fetch media");
@@ -138,7 +138,13 @@ export const getUserStats = async (userId: number) => {
     import.meta.env.VITE_API_URL + `/media/stats/${userId}`,
   );
   const data = await response.json();
-  return data;
+  return data as {
+    stats: {
+      likes: number;
+      ratings: number;
+      reviews: number;
+    };
+  };
 };
 
 type GetLikesArgs = {

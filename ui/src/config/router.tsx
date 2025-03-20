@@ -11,7 +11,7 @@ import { UnderConstruction } from "@/pages/underConstruction";
 import ProtectedRoute from "@/components/protectedRoute";
 import { ProfileSettings } from "@/pages/settingsPage/settingsPage";
 import LoginRequiredRoute from "@/components/loginRequiredRoute";
-import { ProfilePage } from "@/pages/profilePage/profilePage";
+import ProfilePage from "@/pages/profilePage/profilePage";
 import { PopularPage } from "@/pages/popularPage/popularPage";
 import TermsOfServicePage from "@/pages/termsOfService";
 import { TrendingPage } from "@/pages/trendingPage/trendingPage";
@@ -20,6 +20,8 @@ import { ResetPassword } from "@/pages/resetPassword";
 import { Random } from "@/pages/random";
 import { ActivityPage } from "@/pages/activityPage/activityPage";
 import ModPortal from "@/pages/modPortal/modPortal";
+import { GenresList } from "@/pages/genrePage/genresList";
+import { MembersPage } from "@/pages/membersPage/membersPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -32,41 +34,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage />,
-      },
-      // Movie Page
-      {
-        path: "/media/:id",
-        element: <MediaPage />,
-      },
-      // Genre Page
-      {
-        path: "/genre/:genre",
-        element: <GenrePage />,
-      },
-      // Error Pages
-      {
-        path: "/forbidden",
-        element: <ErrorPage />,
-        errorElement: <ErrorPage />,
-        loader: () => {
-          throw { status: 403 };
-        },
-      },
-      {
-        path: "/internal-error",
-        element: <ErrorPage />,
-        errorElement: <ErrorPage />,
-        loader: () => {
-          throw { status: 500 };
-        },
-      },
-      {
-        path: "/maintenance",
-        element: <ErrorPage />,
-        errorElement: <ErrorPage />,
-        loader: () => {
-          throw { status: 503 };
-        },
       },
       {
         path: "/activity",
@@ -89,16 +56,52 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/forbidden",
+        element: <ErrorPage />,
+        errorElement: <ErrorPage />,
+        loader: () => {
+          throw { status: 403 };
+        },
+      },
+      {
         path: "/genre",
-        element: <UnderConstruction />,
+        element: <GenresList />,
+      },
+      {
+        path: "/genre/:genre",
+        element: <GenrePage />,
+      },
+      {
+        path: "/internal-error",
+        element: <ErrorPage />,
+        errorElement: <ErrorPage />,
+        loader: () => {
+          throw { status: 500 };
+        },
+      },
+      {
+        path: "/maintenance",
+        element: <ErrorPage />,
+        errorElement: <ErrorPage />,
+        loader: () => {
+          throw { status: 503 };
+        },
+      },
+      {
+        path: "/media/:id",
+        element: <MediaPage />,
       },
       {
         path: "/members",
-        element: <UnderConstruction />,
+        element: <MembersPage />,
       },
       {
         path: "/popular",
         element: <PopularPage />,
+      },
+      {
+        path: "/privacy",
+        element: <UnderConstruction />,
       },
       {
         path: "/profile/:username",
@@ -109,16 +112,16 @@ const router = createBrowserRouter([
         element: <Random />,
       },
       {
+        path: "/search",
+        element: <UnderConstruction />,
+      },
+      {
         path: "/settings",
         element: (
           <LoginRequiredRoute>
             <ProfileSettings />
           </LoginRequiredRoute>
         ),
-      },
-      {
-        path: "/genre",
-        element: <UnderConstruction />,
       },
       {
         path: "/tos",
@@ -145,10 +148,6 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
-  },
-  {
-    path: "/magnapinna-ceptis",
-    element: null,
   },
 ]);
 

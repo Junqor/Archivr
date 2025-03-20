@@ -10,23 +10,14 @@ import {
   userReviews,
   users,
   remoteId,
-  userSettings,
   activity,
   Replies,
 } from "../../db/schema.js";
-import {
-  desc,
-  eq,
-  and,
-  inArray,
-  not,
-  gte,
-  asc,
-  or,
-} from "drizzle-orm/expressions";
+import { desc, eq, and, inArray, not, gte, asc } from "drizzle-orm/expressions";
 import { count, sql, avg, getTableColumns } from "drizzle-orm";
 import { serverConfig } from "../../configs/secrets.js";
 import { union } from "drizzle-orm/mysql-core";
+import { getTvdbToken } from "../../utils/tvdbToken.js";
 
 export async function update_rating(
   media_id: number,
@@ -278,7 +269,7 @@ export async function getTopRatedPicks() {
       release_date: WeightedMovies.mediaRelease_Date,
       age_rating: WeightedMovies.mediaAge_Rating,
       thumbnail_url: WeightedMovies.mediaThumbnailURL,
-      base_rating: WeightedMovies.base_rating,
+      rating: WeightedMovies.base_rating,
       average_rating: WeightedMovies.average_rating,
       num_rating: WeightedMovies.num_ratings,
       weighted_rating: WeightedMovies.weighted_rating,
@@ -442,16 +433,21 @@ export const getMediaBackground = async (id: number) => {
     .from(remoteId)
     .leftJoin(media, eq(media.id, remoteId.id))
     .where(eq(remoteId.id, id));
+
   if (!tvdbId) {
     throw new Error("Failed to fetch media background");
   }
+
+  const token = await getTvdbToken();
+
   const url = `https://api4.thetvdb.com/v4/${
     type === "movie" ? "movies" : "series"
   }/${tvdbId}/extended`;
+
   const response = await fetch(url, {
     headers: {
       accept: "application/json",
-      Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -503,16 +499,21 @@ export const getMediaTrailer = async (id: number) => {
     .from(remoteId)
     .leftJoin(media, eq(media.id, remoteId.id))
     .where(eq(remoteId.id, id));
+
   if (!tvdbId) {
     throw new Error("Failed to fetch media trailer");
   }
+
+  const token = await getTvdbToken();
+
   const url = `https://api4.thetvdb.com/v4/${
     type === "movie" ? "movies" : "series"
   }/${tvdbId}/extended`;
+
   const response = await fetch(url, {
     headers: {
       accept: "application/json",
-      Authorization: `Bearer ${process.env.TVDB_API_KEY}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 

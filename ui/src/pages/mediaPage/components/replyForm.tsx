@@ -2,6 +2,7 @@ import { UserAvatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth";
+import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";
 import { Send } from "lucide-react";
 import React, { useEffect, useRef } from "react";
@@ -14,6 +15,7 @@ type ReplyFormProps = React.HTMLAttributes<HTMLDivElement> & {
 export const ReplyForm = React.forwardRef<HTMLDivElement, ReplyFormProps>(
   ({ handleSubmit, handleCancel, replyTo, className, ...props }, ref) => {
     const { user } = useAuth();
+    const { settings } = useSettings();
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
     if (!user) return null;
@@ -42,9 +44,12 @@ export const ReplyForm = React.forwardRef<HTMLDivElement, ReplyFormProps>(
         ref={ref}
       >
         <div className="flex flex-row items-center gap-x-2 space-y-0">
-          <UserAvatar user={user} size="small" />
+          <UserAvatar
+            user={{ ...user, avatar_url: settings?.avatar_url }}
+            size="small"
+          />
           <h5 className="transition-colors hover:text-purple">
-            {user.displayName || user.username}
+            {settings?.display_name || user.username}
           </h5>
         </div>
         <Textarea

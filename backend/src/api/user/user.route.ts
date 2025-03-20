@@ -7,6 +7,15 @@ import {
   setPfp,
   getProfile,
   getAvatarUrl,
+  getProfilePage,
+  getProfileTab,
+  getUserFollows,
+  getUserFollowsExtended,
+  addFavorite,
+  removeFavorite,
+  getUserFavorites,
+  checkFavorite,
+  getUserIdFromUsername,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -61,7 +70,7 @@ userRouter.get(
 export const updateSettingsSchema = z.object({
   displayName: z.string(),
   status: z.string(),
-  bio: z.string(),
+  bio: z.string().max(215),
   pronouns: z.string(),
   location: z.string(),
   social_instagram: z.string(),
@@ -108,5 +117,205 @@ userRouter.post(
     const { user } = res.locals;
     const avatarUrl = await setPfp(user.id, req.file);
     res.json({ status: "success", avatarUrl });
+  })
+);
+
+// (GET /user/profile-page/:userId)
+// Get data needed to construct a user's hero and nav sections on their profile page
+userRouter.get(
+  "/profile-page/:userId",
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const profilePage = await getProfilePage(userId);
+      res.json({ status: "success", profilePage });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/profile-tab/:userId)
+// Get data needed to construct a user's profile tab
+userRouter.get(
+  "/profile-tab/:userId",
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const profileTab = await getProfileTab(userId);
+      res.json({ status: "success", profileTab });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/:userId/:type?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
+// Get a user's follows
+userRouter.get(
+  "/:userId/:type(followers|following)",
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const type = req.params.type as "followers" | "following";
+      const limit = parseInt(req.query.limit as string) || 15;
+      const offset = parseInt(req.query.offset as string) || 0;
+      const sort_by = req.query.sort_by as "follows.createdAt";
+      const sort_order = req.query.sort_order as "desc";
+      const follows = await getUserFollows(
+        userId,
+        type,
+        limit,
+        offset,
+        sort_by,
+        sort_order
+      );
+      res.json({ status: "success", follows });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/:userId/:type/extended?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
+// Get a user's follows with extended info
+userRouter.get(
+  "/:userId/:type(followers|following)/extended",
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const type = req.params.type as "followers" | "following";
+      const limit = parseInt(req.query.limit as string) || 15;
+      const offset = parseInt(req.query.offset as string) || 0;
+      const sort_by = req.query.sort_by as "follows.createdAt";
+      const sort_order = req.query.sort_order as "desc";
+      const follows = await getUserFollowsExtended(
+        userId,
+        type,
+        limit,
+        offset,
+        sort_by,
+        sort_order
+      );
+      res.json({ status: "success", follows });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (POST /user/add-favorite)
+// Add a favorite media
+userRouter.post(
+  "/add-favorite",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    try {
+      const { user } = res.locals;
+      const { mediaId } = req.body;
+      await addFavorite(user.id, mediaId);
+      res.json({ status: "success" });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (POST /user/remove-favorite)
+// Remove a favorite media
+userRouter.post(
+  "/remove-favorite",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    try {
+      const { user } = res.locals;
+      const { mediaId } = req.body;
+      await removeFavorite(user.id, mediaId);
+      res.json({ status: "success" });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/get-favorites/:userId)
+// Get a user's favorite media
+userRouter.get(
+  "/get-favorites/:userId",
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const favorites = await getUserFavorites(userId);
+      res.json({ status: "success", favorites });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/check-favorite/:userId/:mediaId)
+// Check if a media is a user's favorite
+userRouter.get(
+  "/check-favorite/:userId/:mediaId",
+  asyncHandler(async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const mediaId = parseInt(req.params.mediaId);
+      const isFavorite = await checkFavorite(userId, mediaId);
+      res.json({ status: "success", isFavorite });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// (GET /user/:username/id)
+// Get a user's id by username
+userRouter.get(
+  "/:username/id",
+  asyncHandler(async (req, res) => {
+    try {
+      const username = req.params.username;
+      const userId = await getUserIdFromUsername(username);
+      res.json({ status: "success", userId });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({
+        status: "failed",
+        message: (error as Error).message,
+      });
+    }
   })
 );

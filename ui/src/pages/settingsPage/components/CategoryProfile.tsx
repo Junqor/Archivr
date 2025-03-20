@@ -20,6 +20,7 @@ import { useRef, useState } from "react";
 import { uploadPfp } from "@/api/user";
 import { toast } from "sonner";
 import { TUserSettings } from "../settingsPage";
+import { useSettings } from "@/context/settings";
 
 export function ProfileSettingsCategoryProfile({
   updateSetting,
@@ -29,13 +30,12 @@ export function ProfileSettingsCategoryProfile({
   settings: TUserSettings;
 }) {
   const { user } = useAuth();
+  const { settings: _settings, refetchSettings } = useSettings();
 
   const [pfpSelected, setPfpSelected] = useState<boolean>(false);
 
   const pfp_upload_preview = useRef<HTMLDivElement>(null);
   const pfp_upload_input = useRef<HTMLInputElement>(null);
-
-  const api_url: string = import.meta.env.VITE_API_URL;
 
   const handleSetPfp = async () => {
     if (!pfp_upload_input.current || !pfp_upload_input.current.files) return;
@@ -43,6 +43,7 @@ export function ProfileSettingsCategoryProfile({
 
     try {
       await uploadPfp(avatar);
+      refetchSettings();
       toast.success("Avatar Updated");
     } catch (error) {
       toast.error("Failed to upload avatar");
@@ -58,6 +59,10 @@ export function ProfileSettingsCategoryProfile({
       pfp_upload_input.current.files.length === 0
     ) {
       setPfpSelected(false);
+      return;
+    }
+    if (pfp_upload_input.current.files[0].size > 1024 * 1024) {
+      toast.warning("Image is too large!");
       return;
     }
     setPfpSelected(true);
@@ -77,8 +82,7 @@ export function ProfileSettingsCategoryProfile({
           <DialogTrigger asChild>
             <div
               style={{
-                backgroundImage:
-                  "url(" + api_url + "/user/pfp/" + user?.id + ")",
+                backgroundImage: `url(${_settings?.avatar_url})`,
               }}
               className={
                 "h-[200px] w-[200px] cursor-pointer rounded-[200px] bg-neutral-900 bg-cover bg-center"
@@ -108,7 +112,7 @@ export function ProfileSettingsCategoryProfile({
                   ref={pfp_upload_input}
                   type="file"
                   id="pfp"
-                  accept="image/jpeg, image/bmp, image/png, image/tiff, image/gif"
+                  accept="image/jpeg, image/bmp, image/png, image/tiff, image/webp"
                 />
                 {pfpSelected && <Button onClick={handleSetPfp}>Upload</Button>}
                 <DialogClose>
@@ -163,7 +167,7 @@ export function ProfileSettingsCategoryProfile({
       <div className="flex flex-col items-start justify-center gap-2 self-stretch">
         <Label htmlFor="bio">Bio</Label>
         <Textarea
-          maxLength={30000}
+          maxLength={215}
           onChange={(event) => {
             updateSetting("bio", event.target.value);
           }}
@@ -256,7 +260,7 @@ export function ProfileSettingsCategoryProfile({
                   updateSetting("social_youtube", event.target.value);
                 }}
                 defaultValue={settings.social_youtube || ""}
-                placeholder="https://www.youtube.com/username/"
+                placeholder="https://www.youtube.com/@username/"
                 className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
                 id="social_youtube"
               />

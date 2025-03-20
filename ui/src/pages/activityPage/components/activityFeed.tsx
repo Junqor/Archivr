@@ -3,8 +3,16 @@ import { Button } from "@/components/ui/button";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ActivityBox } from "./activityBox";
 import { LoadingScreen } from "@/pages/loadingScreen";
+import { Separator } from "@/components/ui/separator";
+import React from "react";
 
-export function ActivityFeed({ type }: { type: "global" | "following" }) {
+export function ActivityFeed({
+  type,
+  userId,
+}: {
+  type: "global" | "following";
+  userId?: number;
+}) {
   const {
     data: activity,
     fetchNextPage,
@@ -14,12 +22,13 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
     isError,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["activity", type],
-    queryFn: ({ pageParam }) => getPaginatedActivity(type, pageParam),
+    queryKey: ["activity", type, userId],
+    queryFn: ({ pageParam = 0 }) =>
+      getPaginatedActivity(type, 15, pageParam, userId),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _pages, lastPageParam) => {
       if (lastPage.length === 0) return undefined;
-      else return lastPageParam + 1;
+      else return lastPageParam + 15;
     },
   });
 
@@ -30,12 +39,15 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
 
   return (
     <>
-      <div className="flex flex-col gap-y-5">
+      <div className="flex w-full flex-col items-start">
         {activity.pages.flat().map((activityObject) => (
-          <ActivityBox key={activityObject.activity.id} item={activityObject} />
+          <React.Fragment key={activityObject.activity.id}>
+            <ActivityBox activity={activityObject} />
+            <Separator className="bg-muted" />
+          </React.Fragment>
         ))}
       </div>
-      {hasNextPage && (
+      {hasNextPage ? (
         <Button
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
@@ -43,6 +55,8 @@ export function ActivityFeed({ type }: { type: "global" | "following" }) {
         >
           {isFetchingNextPage ? "Loading more..." : "Show More"}
         </Button>
+      ) : (
+        <h4 className="text-center text-white/75">All Caught Up!</h4>
       )}
     </>
   );
