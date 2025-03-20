@@ -1,6 +1,6 @@
 import { Router } from "express";
 import z from "zod";
-import { getMediaById, searchMedia, searchUsers } from "./search.service.js";
+import { getMediaById, searchMedia, searchUsers, searchUsersModPortal } from "./search.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { cacheRoute } from "../../middleware/cacheRoute.js";
 
@@ -20,6 +20,22 @@ searchRouter.post(
     const parsed = searchBodySchema.parse(req.body);
     const { query, limit, offset } = parsed;
     const result = await searchMedia(query, limit, offset);
+    res.status(200).json(result);
+  })
+);
+
+// (POST /api/search/users)
+// Search for media by name with specified limit
+searchRouter.post(
+  "/users-mod-portal",
+  asyncHandler(async (req, res) => {
+    const parsed = searchBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      res.status(400).json({ message: "Bad Request", error: parsed.error });
+      return;
+    }
+    const { query, limit, offset } = parsed.data;
+    const result = await searchUsersModPortal(query, limit, offset);
     res.status(200).json(result);
   })
 );

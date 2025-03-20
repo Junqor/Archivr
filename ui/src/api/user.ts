@@ -63,7 +63,7 @@ export const getUserSettingsForSettingsContext = async () => {
   }
 };
 
-type TUserProfile = {
+export type TUserProfile = {
   id: number;
   username: string;
   avatarUrl: string | null;
@@ -119,6 +119,47 @@ export const uploadPfp = async (file: File) => {
   }
   const data = await response.json();
   return data.avatarUrl as string;
+};
+
+// Search for user(s) by name, username or id
+export const searchUsersModPortal = async (
+  query: string,
+  limit: number = 5,
+  offset: number = 0,
+) => {
+  if (!query) {
+    return []; // Do not search if no query is provided
+  }
+
+  const url = import.meta.env.VITE_API_URL + "/search/users-mod-portal";
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query, limit, offset }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    const data = (await response.json()) satisfies {
+      status: string;
+      users: TUserProfile[];
+    };
+
+    if (data.status !== "success") {
+      throw new Error("Failed to fetch users");
+    }
+
+    return data.users;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 export const getProfilePageData = async (username: string) => {

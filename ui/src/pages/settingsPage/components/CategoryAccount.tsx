@@ -48,7 +48,7 @@ export function ProfileSettingsCategoryAccount() {
             */}
       <p
         onClick={() => {
-          toast.success("Your account has been permanantly deleted");
+          toast.success("Your account has been permanently deleted");
         }}
         className="cursor-pointer py-2 underline transition-colors hover:text-red-500"
       >

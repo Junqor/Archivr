@@ -19,6 +19,7 @@ import { TrendingPagePaginated } from "@/pages/trendingPage/trendingPagePaginate
 import { ResetPassword } from "@/pages/resetPassword";
 import { Random } from "@/pages/random";
 import { ActivityPage } from "@/pages/activityPage/activityPage";
+import ModPortal from "@/pages/modPortal/modPortal";
 import { GenresList } from "@/pages/genrePage/genresList";
 import { MembersPage } from "@/pages/membersPage/membersPage";
 
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AdminPortal />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/mod",
+        element: (
+          <ProtectedRoute>
+            <ModPortal />
           </ProtectedRoute>
         ),
       },

@@ -12,6 +12,7 @@ import {
 } from "./reviews.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
+import { authenticateNotBanned } from "../../middleware/authenticateNotBanned.js";
 
 const reviewsRouter = Router();
 
@@ -26,6 +27,7 @@ const reviewBodySchema = z.object({
 reviewsRouter.post(
   "/",
   authenticateToken,
+  authenticateNotBanned,
   asyncHandler(async (req, res) => {
     const { user } = res.locals;
     const { media_id, comment, rating } = reviewBodySchema.parse(req.body);
@@ -38,6 +40,7 @@ reviewsRouter.post(
 reviewsRouter.delete(
   "/:reviewId",
   authenticateToken,
+  authenticateNotBanned,
   asyncHandler(async (req, res) => {
     const { reviewId } = req.params;
     const { user } = res.locals;
@@ -94,6 +97,7 @@ const replyBodySchema = z.object({
 reviewsRouter.post(
   "/reply",
   authenticateToken,
+  authenticateNotBanned,
   asyncHandler(async (req, res) => {
     const { user } = res.locals;
     const { reviewId, text } = replyBodySchema.parse(req.body);
@@ -105,6 +109,7 @@ reviewsRouter.post(
 reviewsRouter.delete(
   "/reply/:replyId",
   authenticateToken,
+  authenticateNotBanned,
   asyncHandler(async (req, res) => {
     const { user } = res.locals;
     const replyId = parseInt(req.params.replyId);

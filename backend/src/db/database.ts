@@ -8,6 +8,7 @@ const access: PoolOptions = {
   user: serverConfig.DB_USER,
   password: serverConfig.DB_PASSWORD,
   database: serverConfig.DB_NAME,
+  timezone: "Z",
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
