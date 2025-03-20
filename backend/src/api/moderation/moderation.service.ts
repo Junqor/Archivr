@@ -43,23 +43,30 @@ export async function is_user_banned(user_id: number) {
         // no date found = FREE
         return {is_banned: false, message: null, expiry_date: null};
     }
-    else if (res[0][0].expiry_date == null){
-        // found date is an indefinite time = BANNED
-        return {is_banned: true, message: res[0][0].message, expiry_date: res[0][0].expiry_date};
-    }
     else {
-        const date = new Date(Date.parse(res[0][0].expiry_date));
-        if (isNaN(date.getTime())) {
-            // found date is f***** up = BANNED
-            return {is_banned: true, message: res[0][0].message, expiry_date: res[0][0].expiry_date};
-        }
-        if (date <= current_timestamp) {
-            // found date is in the past = FREE
-            return {is_banned: false, message: res[0][0].message, expiry_date: res[0][0].expiry_date};
+        let response = {is_banned: true, message: res[0][0].message, expiry_date: res[0][0].expiry_date};
+        if (res[0][0].expiry_date == null){
+            // found date is an indefinite time = BANNED
+            response.is_banned = true;
+            return response;
         }
         else {
-            // found date is in the future = BANNED
-            return {is_banned: true, message: res[0][0].message, expiry_date: res[0][0].expiry_date};
+            const date = new Date(Date.parse(res[0][0].expiry_date));
+            if (isNaN(date.getTime())) {
+                // found date is f***** up = BANNED
+                response.is_banned = true;
+                return response;
+            }
+            if (date <= current_timestamp) {
+                // found date is in the past = FREE
+                response.is_banned = false;
+                return response;
+            }
+            else {
+                // found date is in the future = BANNED
+                response.is_banned = true;
+                return response;
+            }
         }
     }
 }

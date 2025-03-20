@@ -12,7 +12,7 @@ export async function is_user_banned(user_id:number){
     });
 
     if (!response.ok) {
-        throw new Error("Nuh uh");
+        throw new Error("A problem occurred: bad response");
     }
 
     const response_decode = await response.json();
@@ -29,7 +29,7 @@ export async function get_user_offences(user_id:number,limit:number,offset:numbe
     });
 
     if (!response.ok) {
-        throw new Error("Nuh uh");
+        throw new Error("A problem occurred: bad response");
     }
 
     return response.json();
@@ -45,7 +45,7 @@ export async function ban_users(user_ids:Array<number>, expiry_timestamp:string|
     });
 
     if (!response.ok) {
-        throw new Error("Nuh uh");
+        throw new Error("A problem occurred: bad response");
     }
 }
 
@@ -59,7 +59,7 @@ export async function pardon_users(user_ids:Array<number>){
     });
 
     if (!response.ok) {
-        throw new Error("Nuh uh");
+        throw new Error("A problem occurred: bad response");
     }
 }
 
@@ -73,6 +73,6 @@ export async function pardon_action(id: number){
     });
 
     if (!response.ok) {
-        throw new Error("Nuh uh");
+        throw new Error("A problem occurred: bad response");
     }
 }

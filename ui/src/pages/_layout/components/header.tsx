@@ -14,7 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArchivrIcon } from "@/components/archivrIcon";
 import { UserAvatar } from "@/components/ui/avatar";
 import { is_user_banned, TUserBanData } from "@/api/moderation";
-import { useEffect, useState } from "react";
 import { BANner } from "./ban-alert";
 
 export default function Header() {
@@ -33,7 +32,7 @@ export default function Header() {
   });
 
   // fetch ban status
-  const {data: banned} = useQuery<TUserBanData | undefined>({
+  const {data: banData} = useQuery<TUserBanData | undefined>({
     queryKey: ["headerIsUserBanned", user?.id],
     queryFn: async () => {
       if (!user){
@@ -180,9 +179,9 @@ export default function Header() {
         </div>
       </header>
       {
-      banned?.is_banned
+      banData?.is_banned
       ?
-      <BANner banned={banned}/>
+      <BANner banData={banData}/>
       :
       null
       }  
