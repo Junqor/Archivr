@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/table";
 import { Check, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/avatar";
-import { TUser } from "@/types/user";
 import { InspectDialog } from "./inspect-dialog";
+import { TUserProfile } from "@/api/user";
 
 interface DataTableProps {
   data: any[];
-  selectedItems: Map<Number,TUser>;
-  onSelectItem: (user: TUser) => void;
+  selectedItems: Map<Number,TUserProfile>;
+  onSelectItem: (user: TUserProfile) => void;
 }
 
 export function DataTable({

@@ -2,8 +2,7 @@ import { useState } from "react";
 import { SearchBar } from "./components/search-bar";
 import { ActionButtons } from "./components/action-buttons";
 import { DataTable } from "./components/data-table";
-import { TUser } from "@/types/user";
-import { searchUsers } from "@/api/user";
+import { searchUsersModPortal, TUserProfile } from "@/api/user";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "./components/data-table-skeleton";
@@ -12,20 +11,20 @@ import { Search } from "lucide-react";
 
 export default function ModPortal() {
   const [searchParams] = useSearchParams();
-  const [selectedItems, setSelectedItems] = useState<Map<number,TUser>>(new Map<number,TUser>);
+  const [selectedItems, setSelectedItems] = useState<Map<number,TUserProfile>>(new Map<number,TUserProfile>);
 
   const pageNumber = parseInt(searchParams.get("page") || "1");
   const query = searchParams.get("q") || "";
 
-  const { data: searchResults, isFetching } = useQuery<TUser[]>({
+  const { data: searchResults, isFetching } = useQuery<TUserProfile[]>({
     queryKey: ["modSearch", query, pageNumber],
     queryFn: async () => {
-      const data = await searchUsers(query, 10, pageNumber);
+      const data = await searchUsersModPortal(query, 10, pageNumber);
       return data;
     },
   });
 
-  const handleSelectItem = (selection: TUser) => {
+  const handleSelectItem = (selection: TUserProfile) => {
     if (!selection) return;
     if (selectedItems.get(selection.id)){
         selectedItems.delete(selection.id);
@@ -58,7 +57,7 @@ export default function ModPortal() {
               <button className="hover:text-red-500" onClick={()=>{handleSelectItem(user[1])}}>{(user[1].displayName||user[1].username)+" [@"+user[1].username+" ID:"+user[1].id+"]"}</button>
             </div>
         );})}
-        <button className="text-sm text-gray-400 hover:text-red-500" onClick={()=>{setSelectedItems(new Map<number,TUser>())}}>[Deselect All]</button>
+        <button className="text-sm text-gray-400 hover:text-red-500" onClick={()=>{setSelectedItems(new Map<number,TUserProfile>())}}>[Deselect All]</button>
       </div>
       </>}
       {isFetching ? (

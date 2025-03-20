@@ -1,15 +1,16 @@
 import { get_user_offences, is_user_banned, pardon_action } from "@/api/moderation";
+import { TUserProfile } from "@/api/user";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger, DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TUser, TUserOffence } from "@/types/user";
+import { TUserOffence } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { Bird, ChevronLeft, ChevronRight, Frown, Laugh } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function InspectDialog({ children, user } : { children: React.ReactNode, user: TUser }) {
+export function InspectDialog({ children, user } : { children: React.ReactNode, user: TUserProfile }) {
   const [page,setPage] = useState<number>(0);
   const [open,setOpen] = useState<boolean>(false);
   const {data: inspectData, isFetching} = useQuery<TUserOffence[]>({

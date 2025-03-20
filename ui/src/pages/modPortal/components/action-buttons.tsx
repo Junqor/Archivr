@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { TUser } from "@/types/user";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Gavel, Bird, ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -17,9 +16,10 @@ import { toast } from "sonner";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useRef } from "react";
 import { ban_users, pardon_users } from "@/api/moderation";
+import { TUserProfile } from "@/api/user";
 
 interface ActionButtonsProps {
-  selectedItems: Map<number,TUser>;
+  selectedItems: Map<number,TUserProfile>;
   pageNumber: number;
   numResults: number;
 }
@@ -88,7 +88,7 @@ export function ActionButtons({
   );
 }
 
-function BanGroupDialog({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
+function BanGroupDialog({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUserProfile> }) {
   const input_expiry_timestamp = useRef<HTMLInputElement>(null);
   const input_permanent = useRef<HTMLInputElement>(null);
   
@@ -188,7 +188,7 @@ function BanGroupDialog({ children, selectedItems } : { children: React.ReactNod
 }
 
 
-function PardonGroupDialog({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUser> }) {
+function PardonGroupDialog({ children, selectedItems } : { children: React.ReactNode, selectedItems: Map<number,TUserProfile> }) {
   
   const handleSubmit = async () => {
     const data = {

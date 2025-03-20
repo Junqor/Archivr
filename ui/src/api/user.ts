@@ -1,5 +1,4 @@
 import { TUserSettings } from "@/pages/settingsPage/settingsPage";
-import { TUser } from "@/types/user";
 import { getAuthHeader } from "@/utils/authHeader";
 
 export const searchUsers = async (
@@ -64,7 +63,7 @@ export const getUserSettingsForSettingsContext = async () => {
   }
 };
 
-type TUserProfile = {
+export type TUserProfile = {
   id: number;
   username: string;
   avatarUrl: string | null;
@@ -149,7 +148,7 @@ export const searchUsersModPortal = async (
 
     const data = (await response.json()) satisfies {
       status: string;
-      users: TUser[];
+      users: TUserProfile[];
     };
 
     if (data.status !== "success") {

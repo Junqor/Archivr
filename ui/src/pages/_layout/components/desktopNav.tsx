@@ -133,6 +133,11 @@ export const DesktopNav = ({
                   <Link to="/admin">Admin Portal{" { }"}</Link>
                 </DropdownItem>
               )}
+              {user.role === "admin" && (
+                <DropdownItem asChild>
+                  <Link to="/mod">Mod Portal{" { }"}</Link>
+                </DropdownItem>
+              )}
               <DropdownItem asChild>
                 <Link to={`/profile/${user.username}`}>Profile</Link>
               </DropdownItem>
