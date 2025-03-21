@@ -1,6 +1,35 @@
 import { TUserSettings } from "@/pages/settingsPage/settingsPage";
 import { getAuthHeader } from "@/utils/authHeader";
 
+export const searchUsers = async (
+  query: string,
+  limit: number,
+  offset: number,
+  sortBy: "username" | "followers",
+  orderBy: "asc" | "desc",
+) => {
+  const url =
+    import.meta.env.VITE_API_URL +
+    "/search/users" +
+    `?query=${query}&limit=${limit}&offset=${offset}&sortBy=${sortBy}&orderBy=${orderBy}`;
+  const result = await fetch(url);
+  if (!result.ok) {
+    throw new Error("Failed to fetch users");
+  }
+  const data = await result.json();
+  return data.data as {
+    id: number;
+    displayName: string | null;
+    username: string;
+    avatarUrl: string | null;
+    followers: number;
+    following: number;
+    pronouns: string | null;
+    reviews: number;
+    likes: number;
+  }[];
+};
+
 export const getUserSettings = async () => {
   try {
     const result = await fetch(

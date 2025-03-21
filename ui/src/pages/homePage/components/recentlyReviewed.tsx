@@ -2,10 +2,9 @@ import { getRecentlyReviewed } from "@/api/media";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
 import { UserAvatar } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StarRatings } from "@/components/starRatings";
 import { formatDate } from "@/utils/formatDate";
-import { StarBorderRounded, StarRounded } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
+import { ratingToStars } from "@/utils/ratingToStars";
 
 export function RecentlyReviewed() {
   const { data: media } = useQuery({
@@ -32,15 +31,8 @@ export function RecentlyReviewed() {
                       ? item.user.display_name
                       : item.user.username}
                   </p>
-                  <div className="flex flex-row">
-                    <StarRatings
-                      icon={<StarRounded className="text-primary" />}
-                      emptyIcon={
-                        <StarBorderRounded className="text-white/80" />
-                      }
-                      value={item.review.reviewRating / 2}
-                      readOnly
-                    />
+                  <div className="flex flex-row text-2xl">
+                    {ratingToStars(item.review.reviewRating)}
                   </div>
                 </div>
                 {item.review && (

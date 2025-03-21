@@ -28,22 +28,22 @@ export default function IconBox({
   return link ? (
     <Link
       to={link}
-      className="flex sm:flex-row flex-col items-center justify-center w-full h-auto px-5 py-3 sm:gap-6 gap-4 bg-gray rounded-lg transition-colors cursor-pointer hover:bg-purple"
+      className="flex h-auto w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-lg bg-muted px-5 py-3 transition-colors hover:bg-purple sm:flex-row sm:gap-6"
     >
       <div className="flex items-center justify-center text-5xl">
         {getIcon(iconName)}
       </div>
-      <div className="flex flex-col gap-3 justify-start items-start h-full">
+      <div className="flex h-full flex-col items-start justify-start gap-3">
         {title ? <h4>{title}</h4> : null}
         {description ? <p>{description}</p> : null}
       </div>
     </Link>
   ) : (
-    <div className="flex sm:flex-row flex-col items-center justify-center w-full h-auto px-5 py-3 sm:gap-6 gap-4 bg-gray rounded-lg transition-colors cursor-default hover:bg-purple">
+    <div className="flex h-auto w-full cursor-default flex-col items-center justify-center gap-4 rounded-lg bg-muted px-5 py-3 transition-colors hover:bg-purple sm:flex-row sm:gap-6">
       <div className="flex items-center justify-center text-5xl">
         {getIcon(iconName)}
       </div>
-      <div className="flex flex-col gap-3 justify-start items-start h-full">
+      <div className="flex h-full flex-col items-start justify-start gap-3">
         {title ? <h4>{title}</h4> : null}
         {description ? <p>{description}</p> : null}
       </div>
