@@ -445,7 +445,7 @@ export function MediaPage() {
             </TabsContent>
             <TabsContent value="recommendations">
               <h3 className="font-light leading-tight">
-                Recommended Picks for You
+                Similar to {data.title}
               </h3>
               <Separator className="mb-3" />
               {isRecommendationsLoading || isRecommendationsPending ? (
