@@ -1,8 +1,19 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 
+enum GAME_STATE {
+    INIT,
+    PLAYING,
+    LEVEL_END,
+    LEVEL_BEGIN,
+    DIE,
+    GAME_OVER,
+}
+
 export class Game extends Scene
 {
+    
+    game_state: GAME_STATE = GAME_STATE.INIT;
     paddle_speed: number = 400;
     paddle_focus_speed: number = 215;
     ball_speed: number = 175;
@@ -26,19 +37,24 @@ export class Game extends Scene
     update (): void {
         if (!this.Keys) return;
         if (!this.Paddle) return;
-        let speed = this.paddle_speed;
-        if (this.Keys['focus'].isUp){
-            speed = this.paddle_focus_speed;
-        }
-        if (this.Keys['left'].isDown){
-            this.Paddle.setVelocity(-speed,0);
-        }
-        else if (this.Keys['right'].isDown){
-            this.Paddle.setVelocity(speed,0);
+        if (this.game_state == GAME_STATE.PLAYING){
+            let speed = this.paddle_speed;
+            if (this.Keys['focus'].isUp){
+                speed = this.paddle_focus_speed;
+            }
+            let vel = 0;
+            if (this.Keys['left'].isDown){
+                vel = -speed;
+            }
+            else if (this.Keys['right'].isDown){
+                vel = speed;
+            }
+            this.Paddle.setVelocity(vel,0);
         }
         else {
             this.Paddle.setVelocity(0,0);
         }
+
     }
 
     create () {
@@ -49,7 +65,7 @@ export class Game extends Scene
             'focus': Phaser.Input.Keyboard.KeyCodes.SHIFT,
         });
 
-        this.physics.world.setBounds(0,0,400,300);
+        this.physics.world.setBounds(0,0,400,332);
 
         this.Camera = this.cameras.main;
         this.Camera.setBackgroundColor(0x202020);
@@ -59,7 +75,6 @@ export class Game extends Scene
         this.Bricks = this.physics.add.staticGroup();
         this.physics.world.addCollider(this.Bricks,this.Balls,(brick)=>{
             let Brick = brick as Phaser.Types.Physics.Arcade.SpriteWithStaticBody;
-            if (!Brick.body) return;
             if (Brick.anims.getName() == 'brick_0') {
                 Brick.play('brick_1');
             }
@@ -68,7 +83,7 @@ export class Game extends Scene
                 Brick.destroy();
             }
         })
-
+        
         this.Paddle = this.physics.add.sprite(200,275,'paddle');
         this.Paddle.setCollideWorldBounds();
         this.Paddle.setPushable(false);
@@ -81,14 +96,83 @@ export class Game extends Scene
         });
 
         this.Pickups = this.physics.add.group();
-        this.physics.world.addCollider(this.Pickups,this.Paddle,(pickup,paddle)=>{
+        // When matching a group with a sprite, the first callback parameter is always the sprite
+        this.physics.world.addCollider(this.Pickups,this.Paddle,(_,pickup)=>{
             let Pickup = pickup as Phaser.Physics.Arcade.Sprite;
-            let Paddle = paddle as Phaser.Physics.Arcade.Sprite;
-            if (!Paddle.body) return;
-            // todo: figure out wtf is going on
             if (this.addScore) this.addScore(1);
-            Paddle.destroy();
+            Pickup.destroy();
         });
+
+        this.physics.world.on('worldbounds',this.onWorldBounds);
+
+        EventBus.emit('current-scene-ready', this);
+    }
+
+    onWorldBounds (body:Phaser.Physics.Arcade.Body,_up:boolean,down:boolean,_left:boolean,_right:boolean) {
+        const Scene = body.gameObject.scene as Game;
+        if (!Scene.Balls) return;
+        if (!Scene.Pickups) return;
+        if (Scene.Balls.contains(body.gameObject)){
+            if (down) {
+                body.gameObject.destroy();
+            }
+        }
+        else if (Scene.Pickups.contains(body.gameObject)){
+            if (down) {
+                body.gameObject.destroy();
+            }
+        }
+    }
+
+    changeGameState(new_state:GAME_STATE){
+        if (!this.Balls) return;
+        if (!this.Pickups) return;
+        if (!this.Paddle) return;
+        //const old_state = this.game_state;
+        this.game_state = new_state;
+        switch (new_state) {
+            case GAME_STATE.LEVEL_BEGIN:
+                this.Balls.active = false;
+                break;
+            case GAME_STATE.PLAYING:
+                this.Balls.active = true;
+                break;
+            case GAME_STATE.LEVEL_END:
+                this.Balls.active = false;
+                this.Pickups.children.iterate((pickup:Phaser.GameObjects.GameObject)=>{
+                    if (!this.Paddle) return null;
+                    if (!this.Paddle.body) return null;
+                    const Pickup = pickup as Phaser.Physics.Arcade.Sprite;
+                    if (!Pickup.body) return null;
+                    if (Pickup) {
+                        Pickup.setAcceleration(0,0);
+                        Pickup.setVelocity(this.Paddle.body.position.x-Pickup.body.position.x,this.Paddle.body.position.y-Pickup.body.position.y);
+                    }
+                    return null;
+                })
+                break;
+            case GAME_STATE.DIE:
+                this.Balls.active = false;
+                break;
+            case GAME_STATE.GAME_OVER:
+                this.Balls.active = false;
+                break;
+        }
+    }
+
+    clearLevel() {
+        if (!this.Balls) return;
+        if (!this.Bricks) return;
+        if (!this.Pickups) return;
+        if (!this.Paddle) return;
+        this.Balls.clear();
+        this.Bricks.clear();
+        this.Pickups.clear();
+        this.Paddle.setPosition(200,275);
+    }
+
+    startLevel() {
+        this.clearLevel();
 
         this.createBall(200,250);
 
@@ -97,8 +181,6 @@ export class Game extends Scene
                 this.createBrick(i+1,2+l*3);
             }
         }
-
-        EventBus.emit('current-scene-ready', this);
     }
 
     createBall (x:number,y:number) {
@@ -106,7 +188,8 @@ export class Game extends Scene
         let Ball = this.physics.add.sprite(x,y,'ball');
         this.Balls.add(Ball);
         Ball.setDepth(100);
-        Ball.setCollideWorldBounds();
+        Ball.setCollideWorldBounds(true);
+        Ball.body.onWorldBounds = true;
         Ball.setVelocity(Phaser.Math.FloatBetween(-30,30),-this.ball_speed);
         Ball.setBounce(1,1);
     }
@@ -122,6 +205,8 @@ export class Game extends Scene
         if (!this.Pickups) return;
         let Pickup = this.physics.add.sprite(x,y,'meth');
         this.Pickups.add(Pickup);
+        Pickup.setCollideWorldBounds(true);
+        Pickup.body.onWorldBounds = true;
         Pickup.setAcceleration(0,100);
         Pickup.setMaxVelocity(0,50);
         Pickup.setVelocity(0,-75);

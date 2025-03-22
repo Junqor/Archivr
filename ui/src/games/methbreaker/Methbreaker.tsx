@@ -38,7 +38,7 @@ export const Methbreaker = () => {
                     Scene.addScore = addScore;
                 }
             }}/>
-            <p ref={counter} className='font-semibold'></p>
+            <p ref={counter} className='font-semibold'>Pounds of meth: {score.current}</p>
             <p>← →: Move<br/>Shift: Fast Move</p>
         </>
     )
