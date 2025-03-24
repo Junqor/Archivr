@@ -21,7 +21,8 @@ export class Game extends Scene
     
     game_state: GAME_STATE = GAME_STATE.INIT;
     lives: number = 0;
-    current_level: number = 0;
+    current_level: TLevel | null = null;
+    current_level_index: number = 0;
     state_timer: number = 0;
     paddle_speed: number = 400;
     paddle_focus_speed: number = 215;
@@ -75,8 +76,8 @@ export class Game extends Scene
         }
         else if (this.game_state == GAME_STATE.LEVEL_END){
             if (this.state_timer > 2){
-                this.current_level = this.current_level + 1;
-                this.buildLevel(this.current_level);
+                this.current_level_index = this.current_level_index + 1;
+                this.buildLevel(this.current_level_index);
                 this.changeGameState(GAME_STATE.LEVEL_BEGIN);
             }
         }
@@ -154,8 +155,8 @@ export class Game extends Scene
 
         this.physics.world.on('worldbounds',this.onWorldBounds);
 
-        this.current_level = 0;
-        this.buildLevel(this.current_level);
+        this.current_level_index = 0;
+        this.buildLevel(this.current_level_index);
         this.changeGameState(GAME_STATE.LEVEL_BEGIN)
 
         EventBus.emit('current-scene-ready', this);
@@ -194,12 +195,12 @@ export class Game extends Scene
         switch (new_state) {
             case GAME_STATE.LEVEL_BEGIN:
                 this.Balls.setVelocity(0,0);
-                this.SceneText.add(this.add.text(200, 125, 'LEVEL '+(this.current_level+1).toString(), {
+                this.SceneText.add(this.add.text(200, 125, 'LEVEL '+(this.current_level_index+1).toString(), {
                     fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
                     stroke: '#000000', strokeThickness: 4,
                     align: 'center',
                 }).setOrigin(0.5).setDepth(500));
-                this.SceneText.add(this.add.text(200, 175, this.level_data[this.current_level%this.level_data?.length].title, {
+                this.SceneText.add(this.add.text(200, 175, this.current_level ? this.current_level.title : "", {
                     fontFamily: 'Arial Black', fontSize: 20, color: '#ffffff',
                     stroke: '#000000', strokeThickness: 3,
                     align: 'center',
@@ -277,17 +278,17 @@ export class Game extends Scene
         this.Pickups.clear(true);
     }
 
-    buildLevel(v:number) {
+    buildLevel(index:number) {
         if (!this.level_data) return;
         this.clearLevel();
 
         this.resetPaddleBall();
 
-        let level = this.level_data[v%this.level_data.length];
+        this.current_level = this.level_data[index%this.level_data.length];
 
-        for (let y=0;y<level.body.length;y++){
-            for (let x=0;x<level.body[y].length;x++){
-                const c = level.body[y][x];
+        for (let y=0;y<this.current_level.body.length;y++){
+            for (let x=0;x<this.current_level.body[y].length;x++){
+                const c = this.current_level.body[y][x];
                 switch (c){
                     case '0':
 
