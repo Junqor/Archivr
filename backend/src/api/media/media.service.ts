@@ -201,15 +201,24 @@ export async function get_recently_reviewed() {
         role: users.role,
       },
       review: {
+        id: userReviews.id,
         reviewText: userReviews.comment,
         reviewRating: ratings.rating,
         created_at: userReviews.createdAt,
+        isLiked: sql<boolean>`${likes.id} IS NOT NULL`,
       },
     })
     .from(media)
     .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
     .innerJoin(users, eq(users.id, userReviews.userId))
     .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
+    .innerJoin(
+      likes,
+      and(
+        eq(likes.mediaId, userReviews.mediaId),
+        eq(likes.userId, userReviews.userId)
+      )
+    )
     .where(
       // Ensure only the most recent reviews for each media is selected. Still have to write raw sql for this one 🤕
       sql`UserReviews.created_at = (
