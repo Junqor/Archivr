@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessagesSquare, Send } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, Link } from "react-router-dom";
 import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { Textarea } from "@/components/ui/textarea";
@@ -173,8 +173,12 @@ export function MediaPage() {
             </Badge>
             <pre>|</pre>
             {data.genres.map((genre, i) => (
-              <Badge variant="outline" key={i}>
+              <Badge variant="outline" className="relative" key={i}>
                 {genre}
+                <Link
+                  to={`/genre/${genre.toLowerCase()}`}
+                  className="absolute left-0 top-0 h-full w-full"
+                />
               </Badge>
             ))}
           </div>

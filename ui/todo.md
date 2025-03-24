@@ -47,7 +47,7 @@
 - ~~Cache routes on server~~
 - ~~Stop scroll restoration on genre page~~
 - Try out tRPC
-- make genres on media page navigate to corresponding genre page
+- ~~make genres on media page navigate to corresponding genre page~~
 - ~~Change ThumbnailPreview to use img tag so we can lazy load~~
 - ~~restyle home page reviews section~~
 - (maybe) add more padding/spacing to home page
