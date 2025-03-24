@@ -10,7 +10,7 @@ import {
 import { useAuth } from "@/context/auth";
 import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";
-import { LoginRounded } from "@mui/icons-material";
+import { LoginRounded, ShieldRounded } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -128,22 +128,24 @@ export const DesktopNav = ({
               </div>
             </DropdownTrigger>
             <DropdownContent>
-              {user.role === "admin" && (
-                <DropdownItem asChild>
-                  <Link to="/admin">Admin Portal{" { }"}</Link>
-                </DropdownItem>
-              )}
-              {user.role === "admin" && (
-                <DropdownItem asChild>
-                  <Link to="/mod">Mod Portal{" { }"}</Link>
-                </DropdownItem>
-              )}
               <DropdownItem asChild>
                 <Link to={`/profile/${user.username}`}>Profile</Link>
               </DropdownItem>
               <DropdownItem asChild>
                 <Link to="/settings">Settings</Link>
               </DropdownItem>
+              {user.role === "admin" && (
+                <DropdownItem asChild>
+                  <Link to="/admin">
+                    Admin
+                    <ShieldRounded
+                      sx={{
+                        fontSize: "1.25rem",
+                      }}
+                    />
+                  </Link>
+                </DropdownItem>
+              )}
               <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
             </DropdownContent>
           </Dropdown>
