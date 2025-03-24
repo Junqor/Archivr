@@ -3,6 +3,7 @@ import MediaCarousel from "@/components/MediaCarousel";
 import { useAuth } from "@/context/auth";
 import { useQuery } from "@tanstack/react-query";
 
+// ! Not used
 export function NewForYouCarousel() {
   const { user } = useAuth();
   const { data: media } = useQuery({
@@ -15,8 +16,8 @@ export function NewForYouCarousel() {
       media={media}
       slidesPerViewMobile={3}
       slidesPerViewDesktop={6}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
+      spaceBetweenMobile={12}
+      spaceBetweenDesktop={24}
     />
   );
 }

@@ -24,7 +24,7 @@ export function PopularPage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row gap-x-4">
           <Clapperboard />
-          <h4 className="uppercase">Most popular movies</h4>
+          <h4>Most popular movies</h4>
         </div>
         <Separator />
         <section className="h-full">
@@ -34,7 +34,7 @@ export function PopularPage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex w-full flex-row gap-x-4">
           <Tv />
-          <h4 className="uppercase">Most popular shows</h4>
+          <h4>Most popular shows</h4>
         </div>
         <Separator />
         <section className="h-full">
@@ -65,7 +65,7 @@ export function PopularPage() {
               strokeWidth="0.1"
             />
           </svg>
-          <h4 className="uppercase">Most popular anime</h4>
+          <h4>Most popular anime</h4>
           <Button variant="ghost" asChild className="ml-auto">
             <Link to="/genre/anime">
               View All <ChevronsRight size="16" />

@@ -29,7 +29,7 @@ export function TrendingPage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row gap-x-4">
           <Clapperboard />
-          <h4 className="uppercase">Trending movies</h4>
+          <h4>Trending movies</h4>
           <Button variant="ghost" asChild className="ml-auto">
             <Link to="/trending/movies">
               View All <ChevronsRight size="16" />
@@ -42,15 +42,15 @@ export function TrendingPage() {
             media={media?.movies}
             slidesPerViewMobile={3}
             slidesPerViewDesktop={6}
-            spaceBetweenMobile={8}
-            spaceBetweenDesktop={16}
+            spaceBetweenMobile={12}
+            spaceBetweenDesktop={24}
           />
         </section>
       </section>
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex w-full flex-row gap-x-4">
           <Tv />
-          <h4 className="uppercase">Trending shows</h4>
+          <h4>Trending shows</h4>
           <Button variant="ghost" asChild className="ml-auto">
             <Link to="/trending/shows">
               View All <ChevronsRight size="16" />
@@ -63,8 +63,8 @@ export function TrendingPage() {
             media={media?.shows}
             slidesPerViewMobile={3}
             slidesPerViewDesktop={6}
-            spaceBetweenMobile={8}
-            spaceBetweenDesktop={16}
+            spaceBetweenMobile={12}
+            spaceBetweenDesktop={24}
           />
         </section>
       </section>

@@ -21,8 +21,12 @@ export function SimilarCarousel() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center space-x-4">
           <TvRounded sx={{ fontSize: "1.71428571rem" }} />
-          <h4 className="uppercase">
-            Because you watched {returnData?.basedOn || "something"}...
+          <h4>
+            Because you watched{" "}
+            <span className="font-bold">
+              {returnData?.basedOn || "something"}
+            </span>
+            ...
           </h4>
         </div>
         <Separator />
@@ -31,8 +35,8 @@ export function SimilarCarousel() {
             media={returnData?.media}
             slidesPerViewMobile={3}
             slidesPerViewDesktop={6}
-            spaceBetweenMobile={8}
-            spaceBetweenDesktop={16}
+            spaceBetweenMobile={12}
+            spaceBetweenDesktop={24}
           />
         </section>
       </section>
