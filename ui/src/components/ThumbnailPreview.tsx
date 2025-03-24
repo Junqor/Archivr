@@ -44,17 +44,17 @@ function ThumbnailPreview({ media, className }: TThumbnailPreview) {
   return (
     <div
       title={media.title}
-      style={{
-        backgroundImage: `url(${media.thumbnail_url?.replace(
-          ".jpg",
-          "_t.jpg",
-        )})`,
-      }}
       className={cn(
-        "relative aspect-[2/3] cursor-pointer rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10",
+        "relative cursor-pointer overflow-hidden rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10",
         className,
       )}
     >
+      <img
+        src={`${media.thumbnail_url?.replace(".jpg", "_t.jpg")}`}
+        loading="lazy"
+        width="340"
+        height="500"
+      />
       <Link
         to={`/media/${media.id}`}
         className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white opacity-0 transition-opacity duration-300 hover:opacity-100"

@@ -78,9 +78,11 @@ export type TRecentlyReviewed = {
     display_name: string;
   };
   review: {
+    id: number;
     reviewText: string | null;
     reviewRating: number;
     created_at: string;
+    isLiked: boolean;
   };
 }[];
 

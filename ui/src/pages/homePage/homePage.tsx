@@ -23,7 +23,7 @@ export default function HomePage() {
 
   return user ? (
     // Logged in Home Screen
-    <>
+    <div className="flex h-full w-full flex-col gap-6">
       <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
         <section className="flex flex-col items-center justify-center gap-3 md:items-start">
           <h1 className="font-extrabold">
@@ -39,7 +39,10 @@ export default function HomePage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center gap-x-4">
           <TrendingUp />
-          <h4 className="uppercase">Trending this week...</h4>
+          <h4>Trending this week...</h4>
+          <Link to="trending" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <section className="h-full overflow-visible">
@@ -50,7 +53,10 @@ export default function HomePage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center gap-x-4">
           <Sparkles />
-          <h4 className="uppercase">All time most popular...</h4>
+          <h4>All time most popular...</h4>
+          <Link to="popular" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <section className="h-full">
@@ -60,7 +66,7 @@ export default function HomePage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center justify-start gap-x-4">
           <TvRounded sx={{ fontSize: "1.71428571rem" }} />
-          <h4 className="uppercase">We think you'd love these...</h4>
+          <h4>We think you'd love these...</h4>
           <Popover>
             <PopoverTrigger className="ml-auto">
               <Info />
@@ -85,12 +91,15 @@ export default function HomePage() {
       <section className="flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center gap-x-4">
           <QuestionAnswerRounded />
-          <h4 className="uppercase">Recently Reviewed...</h4>
+          <h4>Recent Reviews...</h4>
+          <Link to="activity" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <RecentlyReviewed />
       </section>
-    </>
+    </div>
   ) : (
     // Not logged in Home Screen
     <>
@@ -122,7 +131,7 @@ export default function HomePage() {
           <TrendingCarousel
             slidesPerViewMobile={3}
             slidesPerViewDesktop={3}
-            spaceBetweenMobile={8}
+            spaceBetweenMobile={16}
             spaceBetweenDesktop={16}
           />
         </section>

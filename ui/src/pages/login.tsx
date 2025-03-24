@@ -13,6 +13,7 @@ import {
   LockResetRounded,
   NotificationsActiveRounded,
 } from "@mui/icons-material";
+import loginBackground from "@/assets/login-bg.png";
 
 // LoginPopUp component
 export function Login() {
@@ -89,7 +90,7 @@ export function Login() {
   // Return the login popup component
   return (
     <main className="flex h-screen w-screen flex-row overflow-y-auto bg-black font-normal">
-      <link rel="preload" as="image" href="/assets/login-bg.png"></link>
+      <link rel="preload" as="image" href={loginBackground}></link>
       <section className="hidden h-full w-full bg-black sm:block">
         <div className="flex h-full w-full flex-col items-center justify-center gap-4">
           <div className="flex flex-col items-center">
