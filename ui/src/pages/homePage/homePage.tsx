@@ -40,6 +40,9 @@ export default function HomePage() {
         <div className="flex flex-row items-center gap-x-4">
           <TrendingUp />
           <h4>Trending this week...</h4>
+          <Link to="trending" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <section className="h-full overflow-visible">
@@ -51,6 +54,9 @@ export default function HomePage() {
         <div className="flex flex-row items-center gap-x-4">
           <Sparkles />
           <h4>All time most popular...</h4>
+          <Link to="popular" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <section className="h-full">
@@ -86,6 +92,9 @@ export default function HomePage() {
         <div className="flex flex-row items-center gap-x-4">
           <QuestionAnswerRounded />
           <h4>Recent Reviews...</h4>
+          <Link to="activity" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <RecentlyReviewed />

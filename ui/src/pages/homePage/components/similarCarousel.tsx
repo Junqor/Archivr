@@ -28,6 +28,11 @@ export function SimilarCarousel() {
             </span>
             ...
           </h4>
+          {/* TODO: Add this after making the recommendations page
+           <Link to="" className="ml-auto text-white/80 hover:underline">
+            {" "}
+            See More{" "}
+          </Link> */}
         </div>
         <Separator />
         <section className="h-full">
