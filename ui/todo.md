@@ -48,4 +48,9 @@
 - ~~Stop scroll restoration on genre page~~
 - Try out tRPC
 - make genres on media page navigate to corresponding genre page
-- disable fetch settings if not logged in
+- ~~Change ThumbnailPreview to use img tag so we can lazy load~~
+- restyle home page reviews section
+- (maybe) add more padding/spacing to home page
+- make stats clickable
+- change dropdown order (move admin/mod portal to bottom)
+- [bug] profile page favorites not getting popularity score
