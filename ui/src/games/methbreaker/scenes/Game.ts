@@ -11,6 +11,11 @@ enum GAME_STATE {
     GAME_OVER,
 }
 
+type TLevel = {
+    title: string;
+    body: Array<string>;
+}
+
 export class Game extends Scene
 {
     
@@ -24,7 +29,7 @@ export class Game extends Scene
     ball_angle_coeff: number = 6;
     paddle_angle_influence: number = 0.75;
 
-    level_data: Array<Array<string>> | undefined;
+    level_data: Array<TLevel> | undefined;
 
     Camera: Phaser.Cameras.Scene2D.Camera | undefined;
     Paddle: Phaser.Physics.Arcade.Sprite | undefined;
@@ -149,7 +154,7 @@ export class Game extends Scene
 
         this.physics.world.on('worldbounds',this.onWorldBounds);
 
-        this.current_level = 1;
+        this.current_level = 0;
         this.buildLevel(this.current_level);
         this.changeGameState(GAME_STATE.LEVEL_BEGIN)
 
@@ -181,6 +186,7 @@ export class Game extends Scene
         if (!this.Pickups) return;
         if (!this.Paddle) return;
         if (!this.SceneText) return;
+        if (!this.level_data) return;
         this.state_timer = 0;
         this.SceneText.clear(true);
         //const old_state = this.game_state;
@@ -188,9 +194,14 @@ export class Game extends Scene
         switch (new_state) {
             case GAME_STATE.LEVEL_BEGIN:
                 this.Balls.setVelocity(0,0);
-                this.SceneText.add(this.add.text(200, 150, 'LEVEL '+this.current_level.toString(), {
+                this.SceneText.add(this.add.text(200, 125, 'LEVEL '+(this.current_level+1).toString(), {
                     fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
                     stroke: '#000000', strokeThickness: 4,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
+                this.SceneText.add(this.add.text(200, 175, this.level_data[this.current_level%this.level_data?.length].title, {
+                    fontFamily: 'Arial Black', fontSize: 20, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 3,
                     align: 'center',
                 }).setOrigin(0.5).setDepth(500));
                 break;
@@ -272,11 +283,11 @@ export class Game extends Scene
 
         this.resetPaddleBall();
 
-        let level = this.level_data[v];
+        let level = this.level_data[v%this.level_data.length];
 
-        for (let y=0;y<level.length;y++){
-            for (let x=0;x<level[y].length;x++){
-                const c = level[y][x];
+        for (let y=0;y<level.body.length;y++){
+            for (let x=0;x<level.body[y].length;x++){
+                const c = level.body[y][x];
                 switch (c){
                     case '0':
 
