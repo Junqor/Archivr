@@ -212,7 +212,7 @@ export async function get_recently_reviewed() {
     .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
     .innerJoin(users, eq(users.id, userReviews.userId))
     .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
-    .innerJoin(
+    .leftJoin(
       likes,
       and(
         eq(likes.mediaId, userReviews.mediaId),
