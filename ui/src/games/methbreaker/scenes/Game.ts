@@ -1,5 +1,6 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
+import levels from '../levels.json';
 
 enum GAME_STATE {
     INIT,
@@ -14,11 +15,16 @@ export class Game extends Scene
 {
     
     game_state: GAME_STATE = GAME_STATE.INIT;
+    lives: number = 0;
+    current_level: number = 0;
+    state_timer: number = 0;
     paddle_speed: number = 400;
     paddle_focus_speed: number = 215;
     ball_speed: number = 175;
     ball_angle_coeff: number = 6;
-    paddle_angle_influence: number = 0.75
+    paddle_angle_influence: number = 0.75;
+
+    level_data: Array<Array<string>> | undefined;
 
     Camera: Phaser.Cameras.Scene2D.Camera | undefined;
     Paddle: Phaser.Physics.Arcade.Sprite | undefined;
@@ -26,6 +32,8 @@ export class Game extends Scene
     Bricks: Phaser.Physics.Arcade.StaticGroup | undefined;
     Pickups: Phaser.Physics.Arcade.Group | undefined;
     Keys: any | undefined;
+    SceneText: Phaser.GameObjects.Group | undefined;
+    LivesCounter: Phaser.GameObjects.Text | undefined;
 
     addScore: ((v:number) => void) | undefined;
 
@@ -34,9 +42,10 @@ export class Game extends Scene
         super('Game');
     }
 
-    update (): void {
+    update(_time:number, delta:number): void {
         if (!this.Keys) return;
         if (!this.Paddle) return;
+        this.state_timer += delta/1000;
         if (this.game_state == GAME_STATE.PLAYING){
             let speed = this.paddle_speed;
             if (this.Keys['focus'].isUp){
@@ -54,7 +63,27 @@ export class Game extends Scene
         else {
             this.Paddle.setVelocity(0,0);
         }
+        if (this.game_state == GAME_STATE.LEVEL_BEGIN){
+            if (this.state_timer > 1){
+                this.changeGameState(GAME_STATE.PLAYING);
+            }
+        }
+        else if (this.game_state == GAME_STATE.LEVEL_END){
+            if (this.state_timer > 2){
+                this.current_level = this.current_level + 1;
+                this.buildLevel(this.current_level);
+                this.changeGameState(GAME_STATE.LEVEL_BEGIN);
+            }
+        }
+        else if (this.game_state == GAME_STATE.DIE){
+            if (this.state_timer > 1){
+                this.resetPaddleBall();
+                this.changeGameState(GAME_STATE.LEVEL_BEGIN);
+            }
+        }
+        else if (this.game_state == GAME_STATE.GAME_OVER){
 
+        }
     }
 
     create () {
@@ -64,6 +93,8 @@ export class Game extends Scene
             'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
             'focus': Phaser.Input.Keyboard.KeyCodes.SHIFT,
         });
+
+        this.level_data = levels;
 
         this.physics.world.setBounds(0,0,400,332);
 
@@ -81,6 +112,9 @@ export class Game extends Scene
             else{
                 this.createPickup(Brick.body.position.x+12.5,Brick.body.position.y+7.5);
                 Brick.destroy();
+                if (this.game_state == GAME_STATE.PLAYING && this.Bricks?.getLength() == 0) {
+                    this.changeGameState(GAME_STATE.LEVEL_END);
+                }
             }
         })
         
@@ -103,7 +137,21 @@ export class Game extends Scene
             Pickup.destroy();
         });
 
+        this.SceneText = this.add.group();
+
+        this.LivesCounter = this.add.text(10, 10, 'balls', {
+            fontFamily: 'Arial Black', fontSize: 14, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 2,
+            align: 'left',
+        }).setOrigin(0).setDepth(500);
+
+        this.setLives(3);
+
         this.physics.world.on('worldbounds',this.onWorldBounds);
+
+        this.current_level = 1;
+        this.buildLevel(this.current_level);
+        this.changeGameState(GAME_STATE.LEVEL_BEGIN)
 
         EventBus.emit('current-scene-ready', this);
     }
@@ -114,7 +162,11 @@ export class Game extends Scene
         if (!Scene.Pickups) return;
         if (Scene.Balls.contains(body.gameObject)){
             if (down) {
+                Scene.setLives(Scene.lives-1);
                 body.gameObject.destroy();
+                if (Scene.game_state == GAME_STATE.PLAYING && Scene.Balls.getLength() == 0) {
+                    Scene.changeGameState(GAME_STATE.DIE);
+                }
             }
         }
         else if (Scene.Pickups.contains(body.gameObject)){
@@ -128,36 +180,80 @@ export class Game extends Scene
         if (!this.Balls) return;
         if (!this.Pickups) return;
         if (!this.Paddle) return;
+        if (!this.SceneText) return;
+        this.state_timer = 0;
+        this.SceneText.clear(true);
         //const old_state = this.game_state;
         this.game_state = new_state;
         switch (new_state) {
             case GAME_STATE.LEVEL_BEGIN:
-                this.Balls.active = false;
+                this.Balls.setVelocity(0,0);
+                this.SceneText.add(this.add.text(200, 150, 'LEVEL '+this.current_level.toString(), {
+                    fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 4,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
                 break;
             case GAME_STATE.PLAYING:
-                this.Balls.active = true;
+                this.Balls.setVelocity(Phaser.Math.FloatBetween(-30,30),-this.ball_speed);
                 break;
             case GAME_STATE.LEVEL_END:
-                this.Balls.active = false;
+                this.Balls.setVelocity(0,0);
                 this.Pickups.children.iterate((pickup:Phaser.GameObjects.GameObject)=>{
-                    if (!this.Paddle) return null;
-                    if (!this.Paddle.body) return null;
                     const Pickup = pickup as Phaser.Physics.Arcade.Sprite;
+                    const Scene = pickup.scene as Game;
+                    if (!Scene) return null;
+                    if (!Scene.Paddle) return null;
+                    if (!Scene.Paddle.body) return null;
                     if (!Pickup.body) return null;
                     if (Pickup) {
                         Pickup.setAcceleration(0,0);
-                        Pickup.setVelocity(this.Paddle.body.position.x-Pickup.body.position.x,this.Paddle.body.position.y-Pickup.body.position.y);
+                        Pickup.setMaxVelocity(1000,1000);
+                        Pickup.setVelocity(Scene.Paddle.body.position.x+37.5-Pickup.body.position.x,Scene.Paddle.body.position.y-Pickup.body.position.y);
                     }
                     return null;
                 })
+                this.SceneText.add(this.add.text(200, 150, 'LEVEL CLEAR', {
+                    fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 4,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
                 break;
             case GAME_STATE.DIE:
-                this.Balls.active = false;
+                this.Balls.setVelocity(0,0);
                 break;
             case GAME_STATE.GAME_OVER:
-                this.Balls.active = false;
+                this.Balls.setVelocity(0,0);
+                this.Pickups.clear(true);
+                this.SceneText.add(this.add.text(200, 150, 'YOU DIED', {
+                    fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 4,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
                 break;
         }
+    }
+
+    setLives(v:number) {
+        this.lives = v;
+        if (this.LivesCounter) {   
+            if (this.lives < 0) {
+                this.LivesCounter.text = "Balls: ";
+                this.changeGameState(GAME_STATE.GAME_OVER);
+            }
+            else{
+                let s:string = "";
+                for (let i=0;i<this.lives;i++){
+                    s = s + "O"
+                }
+                this.LivesCounter.text = "Balls: "+s;
+            }
+        }   
+    }
+
+    resetPaddleBall() {
+        this.createBall(200,250);
+        this.Paddle?.setPosition(200,275);
     }
 
     clearLevel() {
@@ -165,20 +261,30 @@ export class Game extends Scene
         if (!this.Bricks) return;
         if (!this.Pickups) return;
         if (!this.Paddle) return;
-        this.Balls.clear();
-        this.Bricks.clear();
-        this.Pickups.clear();
-        this.Paddle.setPosition(200,275);
+        this.Balls.clear(true);
+        this.Bricks.clear(true);
+        this.Pickups.clear(true);
     }
 
-    startLevel() {
+    buildLevel(v:number) {
+        if (!this.level_data) return;
         this.clearLevel();
 
-        this.createBall(200,250);
+        this.resetPaddleBall();
 
-        for (let l=0;l<3;l++){
-            for (let i=0;i<14;i++){
-                this.createBrick(i+1,2+l*3);
+        let level = this.level_data[v];
+
+        for (let y=0;y<level.length;y++){
+            for (let x=0;x<level[y].length;x++){
+                const c = level[y][x];
+                switch (c){
+                    case '0':
+
+                        break;
+                    case '1':
+                        this.createBrick(x,y);
+                        break;
+                }
             }
         }
     }
@@ -190,7 +296,7 @@ export class Game extends Scene
         Ball.setDepth(100);
         Ball.setCollideWorldBounds(true);
         Ball.body.onWorldBounds = true;
-        Ball.setVelocity(Phaser.Math.FloatBetween(-30,30),-this.ball_speed);
+        Ball.setVelocity(0,0);
         Ball.setBounce(1,1);
     }
 
@@ -207,8 +313,8 @@ export class Game extends Scene
         this.Pickups.add(Pickup);
         Pickup.setCollideWorldBounds(true);
         Pickup.body.onWorldBounds = true;
-        Pickup.setAcceleration(0,100);
-        Pickup.setMaxVelocity(0,50);
+        Pickup.setAcceleration(0,150);
+        Pickup.setMaxVelocity(0,75);
         Pickup.setVelocity(0,-75);
     }
 
