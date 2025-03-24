@@ -7,7 +7,7 @@ import { TMedia } from "@/types/media";
 import { useMedia } from "@/hooks/useMedia";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
-import { searchMedia } from "@/api/media";
+import { getRecommendations, searchMedia } from "@/api/media";
 import empty from "@/assets/empty.png";
 import { formatDateYear } from "@/utils/formatDate";
 import { useAuth } from "@/context/auth";
@@ -35,6 +35,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StarRatings } from "../../components/starRatings";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs-shadCN";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import MediaCarousel from "@/components/MediaCarousel";
+import { Separator } from "@/components/ui/separator";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -47,6 +56,7 @@ export function MediaPage() {
   const [review, setReview] = useState("");
   const [userWasSilly, setUserWasSilly] = useState(false);
   const [region, setRegion] = useState("US");
+  const [tab, setTab] = useState<"reviews" | "recommendations">("reviews");
 
   function handleAddReview() {
     if (rating === null) {
@@ -90,6 +100,17 @@ export function MediaPage() {
     queryKey: ["media", id, "ratingAndReview"],
     queryFn: () => getUserReviewAndRating(parseInt(id as string)),
     enabled: !!user,
+  });
+
+  const {
+    data: recommendations,
+    isLoading: isRecommendationsLoading,
+    isPending: isRecommendationsPending,
+    isError: isRecommendationsError,
+  } = useQuery({
+    queryKey: ["media", id, "recommendations"],
+    queryFn: () => getRecommendations(parseInt(id as string)),
+    enabled: tab === "recommendations",
   });
 
   // Show the users current rating and review
@@ -301,7 +322,7 @@ export function MediaPage() {
           </Button>
         </section>
       </section>
-      {/* Bottom Section Reviews */}
+      {/* Bottom Section */}
       <section className="relative flex w-full flex-col gap-x-5 sm:flex-row">
         <section className="flex h-full w-full flex-col justify-start sm:w-1/4">
           {/* Media Stats */}
@@ -382,38 +403,68 @@ export function MediaPage() {
             )}
           </div>
         </section>
-        <section className="flex h-full w-full flex-col justify-start sm:w-3/4">
-          <h3 className="font-light">See What Others Are Saying</h3>
-          {reviewData && (
-            <div className="mt-3 flex flex-col gap-y-4">
-              {!reviewData.reviews.length ? (
-                <>
-                  <h4 className="text-gray-400">
-                    Be the first to write a review!
-                  </h4>
-                  <img
-                    src={empty}
-                    className="w-3/4 justify-self-center sm:h-1/3 sm:w-1/3"
-                  />
-                </>
-              ) : (
-                constructReviewLog(reviewData).map((userReview) => {
-                  if (!userReview.comment) return null;
-                  return (
-                    <div key={userReview.id}>
-                      <ReviewSection
-                        userReview={userReview}
-                        isLiked={
-                          !!reviewsLikedByUser &&
-                          reviewsLikedByUser.includes(userReview.id)
-                        }
+        <section className="flex h-full w-full flex-col justify-start pt-5 sm:w-3/4 sm:pt-0">
+          <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+            <TabsList>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+            </TabsList>
+            <TabsContent value="reviews">
+              <h3 className="font-light">See What Others Are Saying</h3>
+              <Separator />
+              {reviewData && (
+                <div className="mt-3 flex flex-col gap-y-4">
+                  {!reviewData.reviews.length ? (
+                    <>
+                      <h4 className="text-gray-400">
+                        Be the first to write a review!
+                      </h4>
+                      <img
+                        src={empty}
+                        className="w-3/4 justify-self-center sm:h-1/3 sm:w-1/3"
                       />
-                    </div>
-                  );
-                })
+                    </>
+                  ) : (
+                    constructReviewLog(reviewData).map((userReview) => {
+                      if (!userReview.comment) return null;
+                      return (
+                        <div key={userReview.id}>
+                          <ReviewSection
+                            userReview={userReview}
+                            isLiked={
+                              !!reviewsLikedByUser &&
+                              reviewsLikedByUser.includes(userReview.id)
+                            }
+                          />
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               )}
-            </div>
-          )}
+            </TabsContent>
+            <TabsContent value="recommendations">
+              <h3 className="font-light leading-tight">
+                Similar to {data.title}
+              </h3>
+              <Separator className="mb-3" />
+              {isRecommendationsLoading || isRecommendationsPending ? (
+                <LoadingSpinner />
+              ) : isRecommendationsError ? (
+                <div> An Error Occured </div>
+              ) : (
+                <div>
+                  <MediaCarousel
+                    media={recommendations}
+                    slidesPerViewMobile={3}
+                    slidesPerViewDesktop={4}
+                    spaceBetweenMobile={8}
+                    spaceBetweenDesktop={16}
+                  />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </section>
       </section>
     </div>

@@ -17,6 +17,7 @@ import {
   getTopRatedPicks,
   getTrendingPaginated,
   getRandomMedia,
+  getRecommendations,
 } from "./media.service.js";
 import { z } from "zod";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -240,5 +241,17 @@ mediaRouter.get(
       media: result.media,
       basedOn: result.basedOn,
     });
+  })
+);
+
+// (GET /media/recommended/:mediaId)
+// get recommendations for a media from TMDB api
+mediaRouter.get(
+  "/recommended/:mediaId",
+  asyncHandler(async (req, res) => {
+    const mediaId = parseInt(req.params.mediaId);
+    const result = await getRecommendations(mediaId);
+    res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24); // Browser cache for 1 day
+    res.json({ status: "success", media: result });
   })
 );

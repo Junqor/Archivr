@@ -9,7 +9,6 @@ import {
   users,
   userSettings,
 } from "../../db/schema.js";
-import { logger } from "../../configs/logger.js";
 
 // Search for media by name
 export async function searchMedia(
@@ -28,6 +27,31 @@ export async function searchMedia(
   return {
     status: "success",
     media: rows,
+  };
+}
+
+// Search for users by name
+export async function searchUsersModPortal(
+  query: string,
+  limit: number,
+  offset: number
+) {
+  const rows = await db
+    .selectDistinct({
+      id: users.id,
+      username: users.username,
+      displayName: users.displayName,
+      avatar_url: users.avatarUrl,
+      role: users.role
+    })
+    .from(users)
+    .where(sql`${users.username} LIKE ${"%" + query + "%"} OR ${users.displayName} LIKE ${"%" + query + "%"} OR ${users.id} = ${query}`)
+    .limit(limit)
+    .offset((offset - 1) * limit);
+
+  return {
+    status: "success",
+    users: rows,
   };
 }
 

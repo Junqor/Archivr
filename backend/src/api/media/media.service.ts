@@ -18,6 +18,7 @@ import { count, sql, avg, getTableColumns } from "drizzle-orm";
 import { serverConfig } from "../../configs/secrets.js";
 import { union } from "drizzle-orm/mysql-core";
 import { getTvdbToken } from "../../utils/tvdbToken.js";
+import { logger } from "../../configs/logger.js";
 
 export async function update_rating(
   media_id: number,
@@ -804,4 +805,48 @@ export async function getRandomMedia() {
     .limit(1);
 
   return data;
+}
+
+export async function getRecommendations(mediaId: number) {
+  const [{ tmdbId, type }] = await db
+    .select({ tmdbId: remoteId.tmdbId, type: media.category })
+    .from(remoteId)
+    .leftJoin(media, eq(media.id, remoteId.id))
+    .where(eq(remoteId.id, mediaId));
+
+  if (!tmdbId) {
+    logger.info(`No tmdbId found for media ${mediaId}`);
+    return [];
+  }
+
+  const response = await fetch(
+    `https://api.themoviedb.org/3/${
+      type === "movie" ? "movie" : "tv"
+    }/${tmdbId}/recommendations`,
+    {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${serverConfig.TMDB_API_KEY}`,
+      },
+    }
+  );
+  if (!response.ok) {
+    logger.info(`Failed to fetch recommendations for media ${mediaId}`);
+    return [];
+  }
+
+  const data = await response.json();
+  const tmdbRecommendations = data.results.map((r: any) => Number(r.id));
+
+  const ourRecommendations = await db
+    .select({ ...getTableColumns(media), tmdbId: remoteId.tmdbId })
+    .from(media)
+    .innerJoin(remoteId, eq(media.id, remoteId.id))
+    .where(inArray(remoteId.tmdbId, tmdbRecommendations));
+
+  return ourRecommendations.sort(
+    (a, b) =>
+      tmdbRecommendations.indexOf(a.tmdbId) -
+      tmdbRecommendations.indexOf(b.tmdbId)
+  ); // Sort by TMDB recommendation order
 }
