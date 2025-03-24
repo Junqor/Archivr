@@ -45,7 +45,7 @@ function ThumbnailPreview({ media, className }: TThumbnailPreview) {
     <div
       title={media.title}
       className={cn(
-        "relative aspect-[2/3] cursor-pointer overflow-hidden rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10",
+        "relative cursor-pointer overflow-hidden rounded-sm bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/10",
         className,
       )}
     >
