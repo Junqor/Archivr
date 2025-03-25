@@ -1,6 +1,11 @@
 import { Router } from "express";
 import z from "zod";
-import { getMediaById, searchMedia, searchUsers, searchUsersModPortal } from "./search.service.js";
+import {
+  getMediaById,
+  searchMedia,
+  searchUsers,
+  searchUsersModPortal,
+} from "./search.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { cacheRoute } from "../../middleware/cacheRoute.js";
 
@@ -49,7 +54,7 @@ searchRouter.get(
     const id = parseInt(req.params.id);
     const result = await getMediaById(id);
     res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24);
-    res.status(200).json(result);
+    res.status(200).json({ status: "success", media: result });
   })
 );
 
