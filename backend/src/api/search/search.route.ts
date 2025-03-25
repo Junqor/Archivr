@@ -1,6 +1,11 @@
 import { Router } from "express";
 import z from "zod";
-import { getMediaById, searchMedia, searchUsers } from "./search.service.js";
+import {
+  getMediaById,
+  searchMedia,
+  searchUsers,
+  searchUsersModPortal,
+} from "./search.service.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { cacheRoute } from "../../middleware/cacheRoute.js";
 
@@ -24,6 +29,22 @@ searchRouter.post(
   })
 );
 
+// (POST /api/search/users)
+// Search for media by name with specified limit
+searchRouter.post(
+  "/users-mod-portal",
+  asyncHandler(async (req, res) => {
+    const parsed = searchBodySchema.safeParse(req.body);
+    if (parsed.error) {
+      res.status(400).json({ message: "Bad Request", error: parsed.error });
+      return;
+    }
+    const { query, limit, offset } = parsed.data;
+    const result = await searchUsersModPortal(query, limit, offset);
+    res.status(200).json(result);
+  })
+);
+
 // (GET /api/search/:id)
 // Get a single media entry by its id
 searchRouter.get(
@@ -33,7 +54,7 @@ searchRouter.get(
     const id = parseInt(req.params.id);
     const result = await getMediaById(id);
     res.setHeader("Cache-Control", "max-age=" + 60 * 60 * 24);
-    res.status(200).json(result);
+    res.status(200).json({ status: "success", media: result });
   })
 );
 

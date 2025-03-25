@@ -42,19 +42,27 @@ export default function Footer() {
           Terms of Service
         </Link>
       </section>
-      <section className="flex flex-col gap-2">
-        <h4 className="font-bold">POWERED BY</h4>
+      <section className="flex w-[120px] flex-col gap-2">
+        <h4 className="w-full flex-grow font-bold">POWERED BY</h4>
         <a
           href="https://www.thetvdb.com/"
           className="size-10/12 text-white transition-colors hover:text-purple"
         >
-          <img src="https://www.thetvdb.com/images/logo.svg" />
+          <img
+            src="https://www.thetvdb.com/images/logo.svg"
+            width="100"
+            height="54"
+          />
         </a>
         <a
           href="https://www.themoviedb.org"
           className="size-10/12 text-white transition-colors hover:text-purple"
         >
-          <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg" />
+          <img
+            src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg"
+            width="208"
+            height="150"
+          />
         </a>
       </section>
     </footer>

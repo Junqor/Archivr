@@ -53,7 +53,11 @@ export const searchMedia = async ({ id }: { id: string }) =>
       if (result.status !== "success") {
         throw new Error("Failed to fetch media");
       }
-      return result.media as TMedia;
+      return result.media as TMedia & {
+        tvdbId: string | null;
+        tmdbId: string | null;
+        background: string | null;
+      };
     },
   );
 
@@ -78,9 +82,11 @@ export type TRecentlyReviewed = {
     display_name: string;
   };
   review: {
+    id: number;
     reviewText: string | null;
     reviewRating: number;
     created_at: string;
+    isLiked: boolean;
   };
 }[];
 
@@ -301,4 +307,12 @@ export const getSimilarToWatched = async (userId: number) => {
     media: data.media as TMedia[],
     basedOn: data.basedOn as string,
   };
+};
+
+export const getRecommendations = async (mediaId: number) => {
+  const response = await fetch(
+    import.meta.env.VITE_API_URL + `/media/recommended/${mediaId}`,
+  );
+  const data = await response.json();
+  return data.media as TMedia[];
 };

@@ -17,8 +17,8 @@ export function TrendingCarousel({ ...props }) {
       media={trendingMoviesAndShows}
       slidesPerViewMobile={3}
       slidesPerViewDesktop={6}
-      spaceBetweenMobile={8}
-      spaceBetweenDesktop={16}
+      spaceBetweenMobile={12}
+      spaceBetweenDesktop={24}
       {...props}
     />
   );

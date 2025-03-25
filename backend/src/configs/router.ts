@@ -10,6 +10,7 @@ import { genreRouter } from "../api/genre/genre.route.js";
 import { popularRouter } from "../api/popular/popular.route.js";
 import { emailRouter } from "../api/email/email.route.js";
 import { activityRouter } from "../api/activity/activity.route.js";
+import { moderationRouter } from "../api/moderation/moderation.route.js";
 import { likesRouter } from "../api/likes/likes.route.js";
 
 const router = Router();
@@ -26,6 +27,7 @@ router.use("/genre", genreRouter);
 router.use("/popular", popularRouter);
 router.use("/email", emailRouter);
 router.use("/activity", activityRouter);
+router.use("/moderation", moderationRouter);
 router.use("/likes", likesRouter);
 
 router.get("/", (req, res) => {

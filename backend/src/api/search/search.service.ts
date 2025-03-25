@@ -1,15 +1,25 @@
 import { db } from "../../db/database.js";
-import { aliasedTable, count, desc, eq, sql, or, asc } from "drizzle-orm";
+import {
+  aliasedTable,
+  count,
+  desc,
+  eq,
+  sql,
+  or,
+  asc,
+  getTableColumns,
+} from "drizzle-orm";
 import {
   follows,
   likes,
   media,
   mediaGenre,
+  remoteId,
   userReviews,
   users,
   userSettings,
 } from "../../db/schema.js";
-import { logger } from "../../configs/logger.js";
+import { getMediaBackground } from "../media/media.service.js";
 
 // Search for media by name
 export async function searchMedia(
@@ -31,11 +41,45 @@ export async function searchMedia(
   };
 }
 
+// Search for users by name
+export async function searchUsersModPortal(
+  query: string,
+  limit: number,
+  offset: number
+) {
+  const rows = await db
+    .selectDistinct({
+      id: users.id,
+      username: users.username,
+      displayName: users.displayName,
+      avatar_url: users.avatarUrl,
+      role: users.role,
+    })
+    .from(users)
+    .where(
+      sql`${users.username} LIKE ${"%" + query + "%"} OR ${
+        users.displayName
+      } LIKE ${"%" + query + "%"} OR ${users.id} = ${query}`
+    )
+    .limit(limit)
+    .offset((offset - 1) * limit);
+
+  return {
+    status: "success",
+    users: rows,
+  };
+}
+
 // Returns a single media entry by its id
 export async function getMediaById(id: number) {
   const rows = await db
-    .select()
+    .select({
+      ...getTableColumns(media),
+      tmdbId: remoteId.tmdbId,
+      tvdbId: remoteId.tvdbId,
+    })
     .from(media)
+    .leftJoin(remoteId, eq(media.id, remoteId.id))
     .where(sql`${media.id} = ${id}`);
 
   if (rows.length === 0) {
@@ -48,12 +92,15 @@ export async function getMediaById(id: number) {
 
   const genres = await getGenres(id);
 
-  const mediaAns = { ...rows[0], genres: genres };
+  const result = { ...rows[0], genres: genres };
 
-  return {
-    status: "success",
-    media: mediaAns,
-  };
+  try {
+    const background = await getMediaBackground(id); // Get a background image
+
+    return { ...result, background: background };
+  } catch (e) {
+    return result;
+  }
 }
 
 // Helper function for getting a media's genres

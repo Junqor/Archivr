@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db/database.js";
 import { media, remoteId } from "../../db/schema.js";
+import { logger } from "../../configs/logger.js";
 
 export const getWatchProviders = async (id: number) => {
   const [{ tmdbId, type }] = await db
@@ -9,7 +10,7 @@ export const getWatchProviders = async (id: number) => {
     .leftJoin(media, eq(media.id, remoteId.id))
     .where(eq(remoteId.id, id));
   if (!tmdbId) {
-    throw new Error("Failed to fetch watch providers");
+    return [];
   }
   const url = `https://api.themoviedb.org/3/${
     type === "movie" ? "movie" : "tv"
@@ -22,7 +23,8 @@ export const getWatchProviders = async (id: number) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch watch providers");
+    logger.error(`Failed to fetch watch providers for ${id}`);
+    return [];
   }
 
   const data = await response.json();
