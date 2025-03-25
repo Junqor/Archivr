@@ -25,10 +25,14 @@ export class Game extends Scene
     lives: number = 0;
     current_level: TLevel | null = null;
     current_level_index: number = 0;
+    level_stats_collected: number = 0;
+    level_stats_total_bricks: number = 0;
+    level_stats_time: number = 0;
     state_timer: number = 0;
     paddle_speed: number = 400;
     paddle_focus_speed: number = 215;
     ball_speed: number = 175;
+    ball_turbo_speed: number = 300;
     ball_angle_coeff: number = 6;
     paddle_angle_influence: number = 0.75;
 
@@ -37,6 +41,8 @@ export class Game extends Scene
     Background: Phaser.GameObjects.Image | undefined;
     Camera: Phaser.Cameras.Scene2D.Camera | undefined;
     Paddle: Phaser.Physics.Arcade.Sprite | undefined;
+    PaddleTween: Phaser.Tweens.Tween | undefined;
+    PaddleFX: Phaser.FX.Barrel | undefined;
     Balls: Phaser.Physics.Arcade.Group | undefined;
     Bricks: Phaser.Physics.Arcade.StaticGroup | undefined;
     Pickups: Phaser.Physics.Arcade.Group | undefined;
@@ -55,6 +61,7 @@ export class Game extends Scene
         if (!this.Keys) return;
         if (!this.Paddle) return;
         this.state_timer += delta/1000;
+        this.level_stats_time += delta/1000;
         let vel = 0;
         if (this.game_state == GAME_STATE.PLAYING || this.game_state == GAME_STATE.BALL_SHOOT){
             let speed = this.paddle_speed;
@@ -72,13 +79,20 @@ export class Game extends Scene
         else {
             this.Paddle.setVelocity(0,0);
         }
-        if (this.game_state == GAME_STATE.LEVEL_BEGIN){
+        if (this.game_state == GAME_STATE.PLAYING) {
+            if (this.PaddleTween) {
+                if (Phaser.Input.Keyboard.JustDown(this.Keys['shoot']) && !this.PaddleTween.isPlaying()) {
+                    this.PaddleTween.reset();
+                }
+            }
+        }
+        else if (this.game_state == GAME_STATE.LEVEL_BEGIN){
             if (this.state_timer > 1){
                 this.changeGameState(GAME_STATE.BALL_SHOOT);
             }
         }
         else if (this.game_state == GAME_STATE.LEVEL_END){
-            if (this.state_timer > 2){
+            if (this.state_timer > 5){
                 this.current_level_index = this.current_level_index + 1;
                 this.buildLevel(this.current_level_index);
                 this.changeGameState(GAME_STATE.LEVEL_BEGIN);
@@ -101,7 +115,7 @@ export class Game extends Scene
                 Ball.setPosition(Scene.Paddle.body.position.x+37.5,250);
                 return null;
             });
-            if (this.Keys['shoot'].isDown) {
+            if (Phaser.Input.Keyboard.JustDown(this.Keys['shoot'])) {
                 this.changeGameState(GAME_STATE.PLAYING);
             }
         }
@@ -113,7 +127,7 @@ export class Game extends Scene
             'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
             'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
             'focus': Phaser.Input.Keyboard.KeyCodes.SHIFT,
-            'shoot': Phaser.Input.Keyboard.KeyCodes.SPACE
+            'shoot': Phaser.Input.Keyboard.KeyCodes.UP,
         });
 
         this.level_data = levels;
@@ -126,9 +140,16 @@ export class Game extends Scene
         this.Balls = this.physics.add.group();
 
         this.Bricks = this.physics.add.staticGroup();
-        this.physics.world.addCollider(this.Bricks,this.Balls,(brick)=>{
+        this.physics.world.addCollider(this.Bricks,this.Balls,(brick, _ball)=>{
             let Brick = brick as Phaser.Types.Physics.Arcade.SpriteWithStaticBody;
+            //let Ball = ball as Phaser.Physics.Arcade.Sprite;
             if (Brick.anims.getName() == 'brick_0') {
+                const fx = Brick.preFX?.addBarrel(1.5);
+                this.tweens.add({
+                    targets: fx,
+                    amount: 1,
+                    duration: 100,
+                })
                 Brick.play('brick_1');
             }
             else{
@@ -144,19 +165,50 @@ export class Game extends Scene
         this.Paddle.scale = 0.5;
         this.Paddle.setCollideWorldBounds();
         this.Paddle.setPushable(false);
+        this.PaddleFX = this.Paddle.preFX?.addBarrel(1);
         this.physics.world.addCollider(this.Paddle,this.Balls,(paddle,ball)=>{
             let b = ball as Phaser.Physics.Arcade.Sprite;
             let p = paddle as Phaser.Physics.Arcade.Sprite;
             if (!b.body || !p.body) return;
+
             const d = (b.body.position.x-37.5 - p.body.position.x)*this.ball_angle_coeff
-            b.setVelocity(d*this.paddle_angle_influence+b.body.velocity.x*(1-this.paddle_angle_influence),-this.ball_speed);
+        
+            b.setVelocityX(d*this.paddle_angle_influence+b.body.velocity.x*(1-this.paddle_angle_influence));
+            if (this.PaddleTween && this.PaddleTween.isPlaying()) {
+                b.setVelocityY(-this.ball_turbo_speed);
+            }
+            else {
+                b.setVelocityY(-this.ball_speed);
+            }
+    
+            if (this.PaddleFX) {
+                this.PaddleFX.amount = 1.2;
+                this.tweens.add({
+                    targets: this.PaddleFX,
+                    amount: 1,
+                    duration: 200,
+                });
+            }
         });
+
+        this.PaddleTween = this.tweens.add({
+            targets: this.Paddle,
+            y: '-=20',
+            ease: 'linear',
+            duration: 100,
+            repeat: 0,
+            yoyo: true,
+            persist: true,
+        });
+        this.PaddleTween.stop();
+        
 
         this.Pickups = this.physics.add.group();
         // When matching a group with a sprite, the first callback parameter is always the sprite
         this.physics.world.addCollider(this.Pickups,this.Paddle,(_,pickup)=>{
             let Pickup = pickup as Phaser.Physics.Arcade.Sprite;
             if (this.addScore) this.addScore(1);
+            this.level_stats_collected += 1;
             Pickup.destroy();
         });
 
@@ -235,6 +287,7 @@ export class Game extends Scene
                     if (!Scene.Paddle) return null;
                     if (!Scene.Paddle.body) return null;
                     if (!Pickup.body) return null;
+                    this.level_stats_collected += 1;
                     if (Pickup) {
                         Pickup.setAcceleration(0,0);
                         Pickup.setMaxVelocity(1000,1000);
@@ -242,9 +295,52 @@ export class Game extends Scene
                     }
                     return null;
                 })
-                this.SceneText.add(this.add.text(200, 150, 'LEVEL CLEAR', {
-                    fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
+                this.SceneText.add(this.add.text(200, 115, 'LEVEL CLEAR', {
+                    fontFamily: 'Arial Black', fontSize: 30, color: '#ffffff',
                     stroke: '#000000', strokeThickness: 4,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
+                const t = Math.floor(this.level_stats_time);
+                this.SceneText.add(this.add.text(200, 150, 'TIME: '+Math.floor(t/60).toString()+(t<10?":0":":")+(t%60).toString(), {
+                    fontFamily: 'Arial Black', fontSize: 20, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 3,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
+                const purity = Math.ceil((this.level_stats_collected/this.level_stats_total_bricks)*1000)/10;
+                this.SceneText.add(this.add.text(200, 175, `COOK: ${purity}% Pure (${this.level_stats_collected}/${this.level_stats_total_bricks})`, {
+                    fontFamily: 'Arial Black', fontSize: 20, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 3,
+                    align: 'center',
+                }).setOrigin(0.5).setDepth(500));
+                let grade = "F";
+                let grade_color = '#FF8800';
+                if (purity >= 90){
+                    grade = "A";
+                    grade_color = "#FF0000"
+
+                    // 1up
+                    this.setLives(this.lives+1);
+                    this.SceneText.add(this.add.text(250, 215, "+1UP", {
+                        fontFamily: 'Arial Black', fontSize: 20, color: '#00FF00',
+                        stroke: '#000000', strokeThickness: 2,
+                        align: 'center',
+                    }).setOrigin(0.5).setDepth(500));
+                }
+                else if (purity >= 80){
+                    grade = "B";
+                    grade_color = "#00FF00"
+                }
+                else if (purity >= 70){
+                    grade = "C";
+                    grade_color = "#0088FF"
+                }
+                else if (purity >= 60){
+                    grade = "D";
+                    grade_color = "#880088"
+                }
+                this.SceneText.add(this.add.text(200, 215, grade, {
+                    fontFamily: 'Arial Black', fontSize: 40, color: grade_color,
+                    stroke: '#000000', strokeThickness: 5,
                     align: 'center',
                 }).setOrigin(0.5).setDepth(500));
                 break;
@@ -282,6 +378,9 @@ export class Game extends Scene
 
     resetPaddleBall() {
         this.createBall(200,250);
+        if (this.PaddleTween) {
+            this.PaddleTween.stop();
+        }
         this.Paddle?.setPosition(200,275);
     }
 
@@ -304,7 +403,12 @@ export class Game extends Scene
 
         this.resetPaddleBall();
 
+        this.level_stats_collected = 0;
+        this.level_stats_time = 0;
+        this.level_stats_total_bricks = 0;
+
         this.current_level = this.level_data[index%this.level_data.length];
+        this.current_level
 
         this.Background = this.add.image(200, 150, this.current_level.bg);
         this.Background.depth = -100;
@@ -314,10 +418,10 @@ export class Game extends Scene
                 const c = this.current_level.body[y][x];
                 switch (c){
                     case '0':
-
                         break;
                     case '1':
                         this.createBrick(x,y);
+                        this.level_stats_total_bricks += 1;
                         break;
                 }
             }
@@ -346,6 +450,13 @@ export class Game extends Scene
         if (!this.Pickups) return;
         let Pickup = this.physics.add.sprite(x,y,'meth');
         this.Pickups.add(Pickup);
+        Pickup.preFX?.addGlow(0x00ffff,1);
+        const fx = Pickup.preFX?.addBarrel(2);
+        this.tweens.add({
+            targets: fx,
+            amount: 1,
+            duration: 100,
+        })
         Pickup.setCollideWorldBounds(true);
         Pickup.body.onWorldBounds = true;
         Pickup.setAcceleration(0,150);
