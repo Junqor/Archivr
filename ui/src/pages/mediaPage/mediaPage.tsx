@@ -43,6 +43,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import MediaCarousel from "@/components/MediaCarousel";
 import { Separator } from "@/components/ui/separator";
+import { slugify } from "@/utils/slugify";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -417,6 +418,40 @@ export function MediaPage() {
               </div>
             )}
           </div>
+          {/* External Links */}
+          {(data.tmdbId || data.tvdbId) && (
+            <div className="my-2 flex w-full flex-col items-start justify-center overflow-hidden">
+              <p className="text-white/80">External Links</p>
+              <div className="flex h-10 w-full flex-row items-center overflow-hidden">
+                {data.tmdbId && (
+                  <a
+                    target="_blank"
+                    href={`https://www.themoviedb.org/${data.category === "tv_show" ? "tv" : "movie"}/${data.tmdbId}`}
+                    className="h-auto w-1/2"
+                  >
+                    <img
+                      src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+                      height="39"
+                      width="300"
+                    />
+                  </a>
+                )}
+                {data.tvdbId && (
+                  <a
+                    target="_blank"
+                    href={`https://www.thetvdb.com/${data.category === "tv_show" ? "series" : "movies"}/${slugify(data.title)}`}
+                    className="flex h-full w-auto"
+                  >
+                    <img
+                      src="https://www.thetvdb.com/images/logo.svg"
+                      height="54"
+                      width="100"
+                    />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </section>
         <section className="flex h-full w-full flex-col justify-start pt-5 sm:w-3/4 sm:pt-0">
           <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
