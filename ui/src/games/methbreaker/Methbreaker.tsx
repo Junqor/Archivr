@@ -39,7 +39,11 @@ export const Methbreaker = () => {
                 }
             }}/>
             <p ref={counter} className='font-semibold'>Pounds of meth: {score.current}</p>
-            <p>← →: Move<br/>Shift: Fast Move</p>
+            <p>
+            ← →: Move<br/>
+            Space: Shoot<br/>
+            Shift: Fast Move
+            </p>
         </>
     )
 }

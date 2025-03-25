@@ -5,6 +5,7 @@ import levels from '../levels.json';
 enum GAME_STATE {
     INIT,
     PLAYING,
+    BALL_SHOOT,
     LEVEL_END,
     LEVEL_BEGIN,
     DIE,
@@ -13,6 +14,7 @@ enum GAME_STATE {
 
 type TLevel = {
     title: string;
+    bg: string;
     body: Array<string>;
 }
 
@@ -32,6 +34,7 @@ export class Game extends Scene
 
     level_data: Array<TLevel> | undefined;
 
+    Background: Phaser.GameObjects.Image | undefined;
     Camera: Phaser.Cameras.Scene2D.Camera | undefined;
     Paddle: Phaser.Physics.Arcade.Sprite | undefined;
     Balls: Phaser.Physics.Arcade.Group | undefined;
@@ -52,12 +55,12 @@ export class Game extends Scene
         if (!this.Keys) return;
         if (!this.Paddle) return;
         this.state_timer += delta/1000;
-        if (this.game_state == GAME_STATE.PLAYING){
+        let vel = 0;
+        if (this.game_state == GAME_STATE.PLAYING || this.game_state == GAME_STATE.BALL_SHOOT){
             let speed = this.paddle_speed;
             if (this.Keys['focus'].isUp){
                 speed = this.paddle_focus_speed;
             }
-            let vel = 0;
             if (this.Keys['left'].isDown){
                 vel = -speed;
             }
@@ -71,7 +74,7 @@ export class Game extends Scene
         }
         if (this.game_state == GAME_STATE.LEVEL_BEGIN){
             if (this.state_timer > 1){
-                this.changeGameState(GAME_STATE.PLAYING);
+                this.changeGameState(GAME_STATE.BALL_SHOOT);
             }
         }
         else if (this.game_state == GAME_STATE.LEVEL_END){
@@ -90,6 +93,18 @@ export class Game extends Scene
         else if (this.game_state == GAME_STATE.GAME_OVER){
 
         }
+        else if (this.game_state == GAME_STATE.BALL_SHOOT){
+            this.Balls?.children.iterate((ball:Phaser.GameObjects.GameObject)=>{
+                let Ball = ball as Phaser.Physics.Arcade.Sprite;
+                const Scene = Ball.scene as Game;
+                if (!Scene.Paddle || !Scene.Paddle.body) return null;
+                Ball.setPosition(Scene.Paddle.body.position.x+37.5,250);
+                return null;
+            });
+            if (this.Keys['shoot'].isDown) {
+                this.changeGameState(GAME_STATE.PLAYING);
+            }
+        }
     }
 
     create () {
@@ -98,6 +113,7 @@ export class Game extends Scene
             'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
             'right': Phaser.Input.Keyboard.KeyCodes.RIGHT,
             'focus': Phaser.Input.Keyboard.KeyCodes.SHIFT,
+            'shoot': Phaser.Input.Keyboard.KeyCodes.SPACE
         });
 
         this.level_data = levels;
@@ -125,6 +141,7 @@ export class Game extends Scene
         })
         
         this.Paddle = this.physics.add.sprite(200,275,'paddle');
+        this.Paddle.scale = 0.5;
         this.Paddle.setCollideWorldBounds();
         this.Paddle.setPushable(false);
         this.physics.world.addCollider(this.Paddle,this.Balls,(paddle,ball)=>{
@@ -276,6 +293,9 @@ export class Game extends Scene
         this.Balls.clear(true);
         this.Bricks.clear(true);
         this.Pickups.clear(true);
+        if (this.Background) {
+            this.Background.destroy();
+        }
     }
 
     buildLevel(index:number) {
@@ -285,6 +305,9 @@ export class Game extends Scene
         this.resetPaddleBall();
 
         this.current_level = this.level_data[index%this.level_data.length];
+
+        this.Background = this.add.image(200, 150, this.current_level.bg);
+        this.Background.depth = -100;
 
         for (let y=0;y<this.current_level.body.length;y++){
             for (let x=0;x<this.current_level.body[y].length;x++){

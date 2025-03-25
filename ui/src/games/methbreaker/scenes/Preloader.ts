@@ -33,6 +33,11 @@ export class Preloader extends Scene
         this.load.image('ball', 'ball.png');
         this.load.spritesheet('brick','meth_block.png', { frameWidth:25, frameHeight:15 });
         this.load.image('meth', 'meth.png');
+        this.load.image('level_1', 'level_1.png');
+        this.load.image('level_2', 'level_2.png');
+        this.load.image('level_3', 'level_3.png');
+        this.load.image('level_4', 'level_4.png');
+        this.load.image('level_5', 'level_5.png');
     }
 
     create ()
