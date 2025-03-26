@@ -53,7 +53,11 @@ export const searchMedia = async ({ id }: { id: string }) =>
       if (result.status !== "success") {
         throw new Error("Failed to fetch media");
       }
-      return result.media as TMedia;
+      return result.media as TMedia & {
+        tvdbId: string | null;
+        tmdbId: string | null;
+        background: string | null;
+      };
     },
   );
 

@@ -12,7 +12,7 @@ export const PostersBackground = ({
     <div
       className={cn(
         "absolute -left-8 right-0 top-20 z-0",
-        "flex h-[250px] w-[120%] -skew-x-6 flex-wrap gap-3 overflow-hidden bg-transparent opacity-35 bg-blend-multiply sm:h-[300px]",
+        "h-max-[250px] flex w-[120%] -skew-x-6 flex-wrap gap-3 overflow-hidden bg-transparent opacity-35 bg-blend-multiply sm:max-h-[300px]",
         className,
       )}
     >

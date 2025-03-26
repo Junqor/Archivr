@@ -40,7 +40,7 @@
 - ~~FIX SIGN UP~~
 - ~~LIKING RERENDERING~~
 
-- Add navigation to header on mobile
+- ~~Add navigation to header on mobile~~
 - ~~Add color picker to media rankings~~
 - ~~Scroll to top button on activity page~~
 - ~~Add loading indicator to user stats~~
@@ -50,7 +50,7 @@
 - ~~make genres on media page navigate to corresponding genre page~~
 - ~~Change ThumbnailPreview to use img tag so we can lazy load~~
 - ~~restyle home page reviews section~~
-- (maybe) add more padding/spacing to home page
+- ~~(maybe) add more padding/spacing to home page~~
 - make stats clickable
 - ~~change dropdown order (move admin/mod portal to bottom)~~
 - [bug] profile page favorites not getting popularity score

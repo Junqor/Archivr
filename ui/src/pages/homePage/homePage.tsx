@@ -202,7 +202,10 @@ export default function HomePage() {
       <section className="relative flex w-full flex-col justify-start gap-3">
         <div className="flex flex-row items-center gap-x-4">
           <QuestionAnswerRounded />
-          <h4 className="uppercase">Recently Reviewed...</h4>
+          <h4>Recent Reviews...</h4>
+          <Link to="activity" className="ml-auto text-white/80 hover:underline">
+            See More
+          </Link>
         </div>
         <Separator />
         <RecentlyReviewed />
