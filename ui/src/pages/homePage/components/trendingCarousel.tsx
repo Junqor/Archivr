@@ -1,20 +1,12 @@
-import { getTrending } from "@/api/media";
-import MediaCarousel from "@/components/MediaCarousel";
-import { useQuery } from "@tanstack/react-query";
+import MediaCarousel, { MediaCarouselProps } from "@/components/MediaCarousel";
 
-export function TrendingCarousel({ ...props }) {
-  const { data: media } = useQuery({
-    queryKey: ["trending"],
-    queryFn: () => getTrending(),
-  });
-
-  const trendingMoviesAndShows = media
-    ? [...media.movies, ...media.shows]
-    : undefined;
-
+export function TrendingCarousel({
+  media,
+  ...props
+}: Partial<MediaCarouselProps>) {
   return (
     <MediaCarousel
-      media={trendingMoviesAndShows}
+      media={media}
       slidesPerViewMobile={3}
       slidesPerViewDesktop={6}
       spaceBetweenMobile={12}

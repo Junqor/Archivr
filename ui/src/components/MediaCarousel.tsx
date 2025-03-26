@@ -7,7 +7,7 @@ import "swiper/css";
 import "swiper/css/scrollbar";
 import { Skeleton } from "./ui/skeleton";
 
-interface MediaCarouselProps {
+export interface MediaCarouselProps {
   media: TMedia[] | undefined;
   spaceBetweenMobile?: number;
   spaceBetweenDesktop: number;
