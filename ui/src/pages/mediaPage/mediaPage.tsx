@@ -200,8 +200,9 @@ export function MediaPage() {
           </p>
           {/* Play Methbreaker */}
           {
-            data.id === 10014 &&
+            data.id === 10014 && <div className="hidden md:flex">
             <PlayMethbreaker/>
+            </div>
           }
           <div className="flex flex-row">
             <Button
