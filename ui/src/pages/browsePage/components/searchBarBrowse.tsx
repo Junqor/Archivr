@@ -25,13 +25,14 @@ export default function SearchBar() {
   const debouncedSearch = useDebouncedCallback(async (value) => {
     const searchResults = await searchMedias(value);
     setResults(searchResults);
+
     setIsLoading(false);
   }, 300);
 
   const handleSearch = (value: string) => {
     setQuery(value);
     if (value) {
-      setShowResults(true);
+      //setShowResults(true);
       debouncedSearch(value);
     } else {
       setShowResults(false);
@@ -55,6 +56,16 @@ export default function SearchBar() {
     };
   }, []);
 
+  const handleKeyDown = (event: { key: string }) => {
+    if (event.key === "Enter") {
+      //console.log("Enter key pressed");
+      const data = results;
+      navigate("/browse", { state: data });
+      setShowResults(true);
+      // Perform action
+    }
+  };
+
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="relative" ref={inputRef}>
@@ -65,38 +76,10 @@ export default function SearchBar() {
             setIsLoading(true);
             handleSearch(e.target.value);
           }}
+          onKeyDown={handleKeyDown}
           className="peer border-white/70 pl-2 focus:border-white"
         />
         <Search className="peer absolute right-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
-        {query && showResults && (
-          <Command className="w-lg absolute right-0 top-full mt-1 h-max rounded-lg border bg-black text-white shadow-md">
-            <CommandList>
-              <CommandGroup heading="Media">
-                {results.map((media) => (
-                  <CommandItem
-                    className="bg-black text-white"
-                    key={media.id}
-                    onSelect={() => {
-                      setQuery("");
-                      navigate(`/media/${media.id}`);
-                    }}
-                  >
-                    {media.title} <span className="hidden">{media.id}</span>
-                  </CommandItem>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-center pt-1.5">
-                    <LoadingSpinner
-                      className="items-center justify-center py-1 text-sm text-white/70"
-                      size="small"
-                    />
-                  </div>
-                )}
-              </CommandGroup>
-              <CommandEmpty>{!isLoading && "No results found."}</CommandEmpty>
-            </CommandList>
-          </Command>
-        )}
       </div>
     </div>
   );

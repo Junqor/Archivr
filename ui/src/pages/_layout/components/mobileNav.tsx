@@ -71,6 +71,9 @@ export const MobileNav = ({
           <NavLink to="/" onClick={() => setIsOpen(false)}>
             <House /> Home
           </NavLink>
+          <NavLink to="/browse" onClick={() => setIsOpen(false)}>
+            <House /> Browse
+          </NavLink>
           <NavLink to="/search" onClick={() => setIsOpen(false)}>
             <Search /> Search
           </NavLink>
