@@ -2,9 +2,9 @@ import { getPaginatedActivity } from "@/api/activity";
 import { Button } from "@/components/ui/button";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ActivityBox } from "./activityBox";
-import { LoadingScreen } from "@/pages/loadingScreen";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function ActivityFeed({
   type,
@@ -32,7 +32,12 @@ export function ActivityFeed({
     },
   });
 
-  if (isPending || isLoading) return <LoadingScreen />;
+  if (isPending || isLoading)
+    return (
+      <div className="w-full place-items-center">
+        <LoadingSpinner size="large" />
+      </div>
+    );
   if (isError) throw { status: 500 };
 
   if (activity.pages.flat().length === 0) return <div>No activity found</div>;

@@ -2,8 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessagesSquare, Send } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, Navigate } from "react-router-dom";
-import { TMedia } from "@/types/media";
+import { useParams, Navigate, Link } from "react-router-dom";
 import { useMedia } from "@/hooks/useMedia";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
@@ -44,6 +43,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import MediaCarousel from "@/components/MediaCarousel";
 import { Separator } from "@/components/ui/separator";
+import { slugify } from "@/utils/slugify";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -86,7 +86,7 @@ export function MediaPage() {
     enabled: !!user,
   });
 
-  const { isPending, error, data } = useQuery<TMedia>({
+  const { isPending, error, data } = useQuery({
     queryKey: ["media", id],
     queryFn: () => searchMedia({ id } as { id: string }),
   });
@@ -140,21 +140,33 @@ export function MediaPage() {
 
   return (
     <div className="flex h-fit w-full flex-col items-start justify-center gap-4 bg-black px-4 py-8 text-gray-100 sm:px-6 lg:px-8">
-      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:h-96">
-        {/* blurred background image */}
+      {/* blurred background image */}
+      {data.background && (
         <div
-          className="absolute z-0 h-5/6 w-full self-center justify-self-center overflow-hidden opacity-30"
+          className="absolute top-16 z-0 h-full max-h-[250px] w-full self-center justify-self-center overflow-hidden opacity-30 sm:max-h-[400px]"
           style={{
-            background: `url(${data.thumbnail_url}) lightgray 50% / cover no-repeat`,
-            filter: "blur(15px)",
+            background: `url(${data.background}) lightgray 50% 50% / cover no-repeat`,
           }}
-        />
+        >
+          <div
+            className="h-full w-full"
+            style={{
+              // Vignette effect
+              background:
+                "radial-gradient(ellipse at center, rgba(13,13,13,0) 0%,rgba(13,13,13,0.8) 70%,rgba(13,13,13,1) 100%)",
+            }}
+          />
+        </div>
+      )}
+      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:h-96">
         {/* Poster Image */}
         <div className="relative z-10 order-2 w-1/3 sm:order-1 sm:w-1/4">
           <img
             src={data.thumbnail_url}
             alt="Poster Thumbnail"
             className="max-h-full max-w-full rounded-lg object-scale-down shadow-lg"
+            width="680"
+            height="1000"
           />
         </div>
         {/* Media Info Section */}
@@ -173,8 +185,12 @@ export function MediaPage() {
             </Badge>
             <pre>|</pre>
             {data.genres.map((genre, i) => (
-              <Badge variant="outline" key={i}>
+              <Badge variant="outline" className="relative" key={i}>
                 {genre}
+                <Link
+                  to={`/genre/${genre.toLowerCase()}`}
+                  className="absolute left-0 top-0 h-full w-full"
+                />
               </Badge>
             ))}
           </div>
@@ -402,6 +418,40 @@ export function MediaPage() {
               </div>
             )}
           </div>
+          {/* External Links */}
+          {(data.tmdbId || data.tvdbId) && (
+            <div className="my-2 flex w-full flex-col items-start justify-center overflow-hidden">
+              <p className="text-white/80">External Links</p>
+              <div className="flex h-10 w-full flex-row items-center overflow-hidden">
+                {data.tmdbId && (
+                  <a
+                    target="_blank"
+                    href={`https://www.themoviedb.org/${data.category === "tv_show" ? "tv" : "movie"}/${data.tmdbId}`}
+                    className="h-auto w-1/2"
+                  >
+                    <img
+                      src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+                      height="39"
+                      width="300"
+                    />
+                  </a>
+                )}
+                {data.tvdbId && (
+                  <a
+                    target="_blank"
+                    href={`https://www.thetvdb.com/${data.category === "tv_show" ? "series" : "movies"}/${slugify(data.title)}`}
+                    className="flex h-full w-auto"
+                  >
+                    <img
+                      src="https://www.thetvdb.com/images/logo.svg"
+                      height="54"
+                      width="100"
+                    />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </section>
         <section className="flex h-full w-full flex-col justify-start pt-5 sm:w-3/4 sm:pt-0">
           <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
