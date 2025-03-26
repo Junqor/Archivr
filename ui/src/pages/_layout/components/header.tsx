@@ -8,25 +8,22 @@ import { is_user_banned } from "@/api/moderation";
 import { BANner } from "./ban-alert";
 
 export default function Header() {
-
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   // get banned data
-  const {
-    data: banData
-  } = useQuery({
+  const { data: banData } = useQuery({
     queryKey: ["headerIsUserBanned"],
     queryFn: async () => {
       if (user) {
         const data = await is_user_banned(user.id);
         return data;
       }
-      return undefined;
-    }
-  })
+      return null; // Changed to null to avoid browser warning
+    },
+  });
 
   return (
-    <header className="sticky outline left-0 top-0 z-50 outline-gray-secondary/50">
+    <header className="sticky left-0 top-0 z-50 outline outline-gray-secondary/50">
       <header className="flex h-auto w-full flex-row items-center justify-between bg-black px-6 py-3">
         <Link
           to="/"
@@ -38,11 +35,7 @@ export default function Header() {
         <DesktopNav className="hidden md:flex" />
         <MobileNav className="flex md:hidden" />
       </header>
-      {(banData && banData.is_banned ?
-        <BANner banData={banData}/>
-        :
-        null
-      )}
+      {banData && banData.is_banned ? <BANner banData={banData} /> : null}
     </header>
   );
 }
