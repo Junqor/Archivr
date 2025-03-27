@@ -45,6 +45,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import MediaCarousel from "@/components/MediaCarousel";
 import { Separator } from "@/components/ui/separator";
 import { slugify } from "@/utils/slugify";
+import { LoadingScreen } from "../loadingScreen";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -129,7 +130,7 @@ export function MediaPage() {
     updateLikes();
   };
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <LoadingScreen />;
   if (error) return <div>Error: {error.message}</div>;
 
   // Get the watch provider data for the selected region
