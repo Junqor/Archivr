@@ -150,11 +150,19 @@ export function MediaPage() {
           }}
         >
           <div
-            className="h-full w-full"
+            className="absolute h-full w-full"
             style={{
               // Vignette effect
               background:
-                "radial-gradient(ellipse at center, rgba(13,13,13,0) 0%,rgba(13,13,13,0.8) 70%,rgba(13,13,13,1) 100%)",
+                "radial-gradient(ellipse at center, rgba(13,13,13,0) 0%,rgba(13,13,13,0.8) 80%,rgba(13,13,13,1) 100%)",
+            }}
+          />
+          <div
+            className="absolute h-full w-full"
+            style={{
+              // Bottom fade
+              background:
+                "linear-gradient(to top, rgba(13,13,13,1) 0%,rgba(13,13,13,0) 30%",
             }}
           />
         </div>
@@ -199,11 +207,11 @@ export function MediaPage() {
             {data.description}
           </p>
           {/* Play Methbreaker */}
-          {
-            data.id === 10014 && <div className="hidden md:flex">
-            <PlayMethbreaker/>
+          {data.id === 10014 && (
+            <div className="hidden md:flex">
+              <PlayMethbreaker />
             </div>
-          }
+          )}
           <div className="flex flex-row">
             <Button
               className="mr-2 flex-row space-x-2 pl-0"
