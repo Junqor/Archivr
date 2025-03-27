@@ -5,7 +5,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { tryLogin, trySignup } from "@/api/auth";
 import { requestPasswordReset } from "@/api/email";
@@ -14,6 +13,11 @@ import {
   NotificationsActiveRounded,
 } from "@mui/icons-material";
 import loginBackground from "@/assets/login-bg.png";
+import { LazyMotion } from "motion/react";
+import * as m from "motion/react-m";
+
+const loadFeatures = () =>
+  import("../lib/motion.js").then((res) => res.default); // Dynamic import for code splitting since we only use it on this page
 
 // LoginPopUp component
 export function Login() {
@@ -116,67 +120,169 @@ export function Login() {
         </div>
       </section>
       <section className="flex h-full w-full flex-col items-center justify-center gap-4 bg-login-bg bg-cover bg-left bg-no-repeat px-8 py-4 sm:w-fit sm:border-l-2 sm:border-gray sm:px-32 sm:py-8">
-        <motion.div
-          className="w-max max-w-sm overflow-hidden rounded-lg bg-black p-0"
-          layout
-          transition={{ duration: 0.1 }}
-        >
-          {isForgotPassword ? (
-            <>
-              {isResetEmailSent ? (
-                <motion.div
-                  layout
-                  className="flex flex-col items-start space-y-4 p-5"
-                >
-                  <motion.div
+        <LazyMotion strict features={loadFeatures}>
+          <m.div
+            className="w-max max-w-sm overflow-hidden rounded-lg bg-black p-0"
+            layout
+            transition={{ duration: 0.1 }}
+          >
+            {isForgotPassword ? (
+              <>
+                {isResetEmailSent ? (
+                  <m.div
                     layout
-                    className="flex flex-col items-center space-y-2"
+                    className="flex flex-col items-start space-y-4 p-5"
                   >
-                    <div className="flex items-center justify-center text-8xl">
-                      <NotificationsActiveRounded fontSize="inherit" />
-                    </div>
-                    <h2>Check Your Email</h2>
-                    <p>
-                      We've sent a password reset link to your email. Follow the
-                      instructions in the email to reset your password.
-                    </p>
-                  </motion.div>
-                  <motion.div layout className="flex w-full flex-col space-y-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsResetEmailSent(false);
-                        setIsForgotPassword(false);
-                      }}
-                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                    <m.div
+                      layout
+                      className="flex flex-col items-center space-y-2"
                     >
-                      Return to Sign In
-                    </button>
-                  </motion.div>
-                </motion.div>
-              ) : (
-                <motion.div
+                      <div className="flex items-center justify-center text-8xl">
+                        <NotificationsActiveRounded fontSize="inherit" />
+                      </div>
+                      <h2>Check Your Email</h2>
+                      <p>
+                        We've sent a password reset link to your email. Follow
+                        the instructions in the email to reset your password.
+                      </p>
+                    </m.div>
+                    <m.div layout className="flex w-full flex-col space-y-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsResetEmailSent(false);
+                          setIsForgotPassword(false);
+                        }}
+                        className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                      >
+                        Return to Sign In
+                      </button>
+                    </m.div>
+                  </m.div>
+                ) : (
+                  <m.div
+                    layout
+                    className="flex flex-col items-start space-y-4 p-5"
+                  >
+                    <m.div
+                      layout
+                      className="flex flex-col items-center space-y-2"
+                    >
+                      <div className="flex items-center justify-center text-8xl">
+                        <LockResetRounded fontSize="inherit" />
+                      </div>
+                      <h2>Forgot Password?</h2>
+                      <p>
+                        Enter your email address, and we'll send you
+                        instructions to reset your password.
+                      </p>
+                    </m.div>
+                    <m.form
+                      layout
+                      transition={{ duration: 0.1 }}
+                      className="align-center flex w-full flex-col space-y-4"
+                    >
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="e.g., name@example.com"
+                          autoComplete="off"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          if (!email) {
+                            toast.error("Please enter your email");
+                            return;
+                          }
+
+                          try {
+                            await requestPasswordReset(email);
+                            toast.success("Password reset email sent!");
+                            setIsResetEmailSent(true);
+                          } catch (error) {
+                            console.error(error);
+                            toast.error("Failed to send password reset email");
+                          }
+                        }}
+                      >
+                        Send Reset Instructions
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsForgotPassword(false)}
+                        className="text-center underline"
+                      >
+                        Back to Sign In
+                      </button>
+                    </m.form>
+                  </m.div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="flex w-full flex-row">
+                  <button
+                    className={`${
+                      isOnLogin ? "bg-purple" : "bg-black"
+                    } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
+                    onClick={() => setIsOnLogin(true)}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    className={`${
+                      isOnLogin ? "bg-black" : "bg-purple"
+                    } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
+                    onClick={() => setIsOnLogin(false)}
+                  >
+                    Sign Up
+                  </button>
+                </div>
+                <m.form
                   layout
-                  className="flex flex-col items-start space-y-4 p-5"
+                  transition={{ duration: 0.1 }}
+                  onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
+                  className="flex flex-col space-y-4 px-6 py-6"
                 >
-                  <motion.div
-                    layout
-                    className="flex flex-col items-center space-y-2"
-                  >
-                    <div className="flex items-center justify-center text-8xl">
-                      <LockResetRounded fontSize="inherit" />
-                    </div>
-                    <h2>Forgot Password?</h2>
-                    <p>
-                      Enter your email address, and we'll send you instructions
-                      to reset your password.
-                    </p>
-                  </motion.div>
-                  <motion.form
-                    layout
-                    transition={{ duration: 0.1 }}
-                    className="align-center flex w-full flex-col space-y-4"
-                  >
+                  <h2 className="text-center font-bold leading-tight">
+                    {isOnLogin ? (
+                      <>
+                        Welcome back
+                        <br />
+                        to <span className="text-purple">Archivr</span>
+                      </>
+                    ) : (
+                      <>
+                        Join the <span className="text-purple">Archivr</span>
+                        <br />
+                        Community
+                      </>
+                    )}
+                  </h2>
+                  <p className="text-left">
+                    Discover trending movies, top-rated shows, and personalized
+                    picks chosen just for you.
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="e.g., john_doe123"
+                      autoComplete="off"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  {!isOnLogin && (
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
                       <Input
@@ -188,166 +294,66 @@ export function Login() {
                         onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
-                    <button
-                      type="submit"
-                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        if (!email) {
-                          toast.error("Please enter your email");
-                          return;
-                        }
-
-                        try {
-                          await requestPasswordReset(email);
-                          toast.success("Password reset email sent!");
-                          setIsResetEmailSent(true);
-                        } catch (error) {
-                          console.error(error);
-                          toast.error("Failed to send password reset email");
-                        }
-                      }}
-                    >
-                      Send Reset Instructions
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsForgotPassword(false)}
-                      className="text-center underline"
-                    >
-                      Back to Sign In
-                    </button>
-                  </motion.form>
-                </motion.div>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="flex w-full flex-row">
-                <button
-                  className={`${
-                    isOnLogin ? "bg-purple" : "bg-black"
-                  } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
-                  onClick={() => setIsOnLogin(true)}
-                >
-                  Sign In
-                </button>
-                <button
-                  className={`${
-                    isOnLogin ? "bg-black" : "bg-purple"
-                  } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
-                  onClick={() => setIsOnLogin(false)}
-                >
-                  Sign Up
-                </button>
-              </div>
-              <motion.form
-                layout
-                transition={{ duration: 0.1 }}
-                onSubmit={isOnLogin ? handleLogInSubmit : handleSignUpSubmit}
-                className="flex flex-col space-y-4 px-6 py-6"
-              >
-                <h2 className="text-center font-bold leading-tight">
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="At least 8 characters"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  {!isOnLogin && (
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        placeholder="Re-enter your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                  )}
                   {isOnLogin ? (
                     <>
-                      Welcome back
-                      <br />
-                      to <span className="text-purple">Archivr</span>
+                      <button
+                        type="submit"
+                        className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                      >
+                        Continue to Archivr
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsForgotPassword(true)}
+                        className="text-center underline"
+                      >
+                        Forgot your password?
+                      </button>
                     </>
                   ) : (
                     <>
-                      Join the <span className="text-purple">Archivr</span>
-                      <br />
-                      Community
+                      <button
+                        type="submit"
+                        className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                      >
+                        Start on Archivr
+                      </button>
+                      <p className="text-center">
+                        Free to join. By clicking Sign Up, you agree to our{" "}
+                        <Link to="/tos" className="underline">
+                          Terms of Service
+                        </Link>
+                      </p>
                     </>
                   )}
-                </h2>
-                <p className="text-left">
-                  Discover trending movies, top-rated shows, and personalized
-                  picks chosen just for you.
-                </p>
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="e.g., john_doe123"
-                    autoComplete="off"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                {!isOnLogin && (
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="e.g., name@example.com"
-                      autoComplete="off"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="At least 8 characters"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                {!isOnLogin && (
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="Re-enter your password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-                )}
-                {isOnLogin ? (
-                  <>
-                    <button
-                      type="submit"
-                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
-                    >
-                      Continue to Archivr
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsForgotPassword(true)}
-                      className="text-center underline"
-                    >
-                      Forgot your password?
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="submit"
-                      className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
-                    >
-                      Start on Archivr
-                    </button>
-                    <p className="text-center">
-                      Free to join. By clicking Sign Up, you agree to our{" "}
-                      <Link to="/tos" className="underline">
-                        Terms of Service
-                      </Link>
-                    </p>
-                  </>
-                )}
-              </motion.form>
-            </>
-          )}
-        </motion.div>
+                </m.form>
+              </>
+            )}
+          </m.div>
+        </LazyMotion>
         <Link to="/" className="block text-white underline sm:hidden">
           Go back to the home page
         </Link>
