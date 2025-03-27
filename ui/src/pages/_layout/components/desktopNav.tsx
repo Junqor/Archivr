@@ -6,11 +6,12 @@ import {
   DropdownTrigger,
   DropdownContent,
   DropdownItem,
+  DropdownSeparator,
 } from "@/components/ui/dropdown";
 import { useAuth } from "@/context/auth";
 import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";
-import { LoginRounded, ShieldRounded } from "@mui/icons-material";
+import { LoginRounded, SecurityOutlined } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -134,19 +135,24 @@ export const DesktopNav = ({
               <DropdownItem asChild>
                 <Link to="/settings">Settings</Link>
               </DropdownItem>
+              <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
               {user.role === "admin" && (
+                <>
+                <DropdownSeparator/>
                 <DropdownItem asChild>
                   <Link to="/admin">
-                    Admin
-                    <ShieldRounded
-                      sx={{
-                        fontSize: "1.25rem",
-                      }}
-                    />
+                    <SecurityOutlined sx={{fontSize: "1.25rem",}}/>
+                    Admin Panel
                   </Link>
                 </DropdownItem>
+                <DropdownItem asChild>
+                  <Link to="/mod">
+                    <SecurityOutlined sx={{fontSize: "1.25rem",}}/>
+                    Mod Panel
+                  </Link>
+                </DropdownItem>
+                </>
               )}
-              <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
             </DropdownContent>
           </Dropdown>
         ) : (

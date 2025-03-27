@@ -38,7 +38,7 @@ export default function ModPortal() {
 
   return (
     <div className="container p-4 mx-auto">
-      <h1 className="text-2xl font-bold">Mod Portal</h1>
+      <h1 className="text-2xl font-bold">Mod Panel</h1>
       <h2 className="mb-4 text-lg font-bold text-neutral-500">Oh, you are SO getting banned</h2>
       <div className="flex mb-4 space-x-4">
         <SearchBar />
