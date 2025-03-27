@@ -31,6 +31,8 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
                   title: activity.media?.title || "",
                   thumbnail_url: activity.media?.thumbnail_url || "",
                   rating: activity.media?.rating || 0,
+                  likes: activity.media?.like_count || 0,
+                  userRating: activity.media?.userRating || null,
                 }}
                 className="w-full"
               />
@@ -107,6 +109,8 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
                   title: activity.media?.title || "",
                   thumbnail_url: activity.media?.thumbnail_url || "",
                   rating: activity.media?.rating || 0,
+                  likes: activity.media?.like_count || 0,
+                  userRating: activity.media?.userRating || null,
                 }}
                 className="w-full"
               />
