@@ -1,94 +1,131 @@
 import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { TMedia } from "@/types/media";
-import { getMediaBackground, searchMedias } from "@/api/media";
-import { useDebouncedCallback } from "use-debounce";
-import { ChevronLeftRounded, ChevronRightRounded } from "@mui/icons-material";
+import { searchMediasFiltered } from "@/api/media";
+import {
+  ChevronLeftRounded,
+  ChevronRightRounded,
+  SwapVertRounded,
+} from "@mui/icons-material";
 import { Separator } from "@radix-ui/react-separator";
 import ThumbnailPreview from "@/components/ThumbnailPreview";
+import { useSearchParams } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function SearchBar() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<TMedia[]>([]);
   const [offSet, setOffSet] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [_, setSearchParams] = useSearchParams();
+  const { sortBy, order, query } = mainSearchParams();
 
-  /*
-  const debouncedSearch = useDebouncedCallback(async (value) => {
-    const searchResults = await searchMedias(value);
-    setResults(searchResults);
-
-    setIsLoading(false);
-  }, 300);
-*/
-
-  const fetchSearchResults = async (query: string, newOffset: number) => {
-    if (!query) return;
-    const results = await searchMedias(query, 30, newOffset);
-    const media = await Promise.all(
-      results.map(async (media: TMedia) => {
-        const background = await getMediaBackground(media.id);
-        return { ...media, background };
-      }),
-    );
-    setResults(media);
-  };
-
-  const debouncedSearch = useDebouncedCallback((query, newOffset) => {
-    fetchSearchResults(query, newOffset);
-  }, 500);
+  const {
+    data: results,
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["search", query, offSet, sortBy, order],
+    queryFn: () => searchMediasFiltered(query, 30, offSet, sortBy, order),
+  });
 
   useEffect(() => {
     setOffSet(0);
   }, [query]);
 
-  useEffect(() => {
-    debouncedSearch(query, offSet);
-  }, [query, offSet]);
-  /*
-  const handleKeyDown = (event: { key: string }) => {
-    if (event.key === "Enter") {
-      //console.log("Enter key pressed");
-      const data = results;
-      navigate("/browse", { state: data });
-      setShowResults(true);
-      // Perform action
-    }
+  const handleSearch = useDebouncedCallback((val: string) => {
+    setSearchParams((prev) => {
+      prev.set("q", val);
+      return prev;
+    });
+  }, 300);
+
+  const handleChangeSortBy = (
+    newSortBy: "alphabetical" | "release_date" | "popularity",
+  ) => {
+    setSearchParams((prev) => {
+      prev.set("sort", newSortBy);
+      return prev;
+    });
   };
-  */
+
+  const handleChangeOrder = (newOrder: "asc" | "desc") => {
+    setSearchParams((prev) => {
+      prev.set("order", newOrder);
+      return prev;
+    });
+  };
+
+  if (isError) throw "500";
 
   return (
     <>
-      <div className="mx-auto w-full max-w-2xl" ref={inputRef}>
-        <Input
-          placeholder="Start typing to see results..."
-          value={query}
-          onChange={(e) => {
-            setIsLoading(true);
-            setQuery(e.target.value);
-          }}
-          // onKeyDown={handleKeyDown}
-          className="peer border-white/70 pl-2 focus:border-white"
-        />
-        <Search className="peer absolute right-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="relative" ref={inputRef}>
+          <Input
+            placeholder="Start typing to see results..."
+            defaultValue={query}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="peer border-white/70 pl-2 focus:border-white"
+          />
+          <Search className="peer absolute right-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
+        </div>
       </div>
-      <section className="flex">
-        {results.length === 0 ? (
-          <h3> No Search Results </h3>
-        ) : (
-          <h3> Results for "{query}" </h3>
-        )}
-      </section>
+      {query.length !== 0 && (
+        <div className="max-w-960px flex items-center justify-between self-stretch">
+          {results?.length === 0 ? (
+            <h3> No Search Results </h3>
+          ) : (
+            <h3> Results for "{query}" </h3>
+          )}
+
+          <form className="flex items-center gap-5">
+            <fieldset className="flex items-center gap-3">
+              <h4>
+                <label htmlFor="sort">Sort by</label>
+              </h4>
+              <select
+                name="sort"
+                id="sort"
+                value={sortBy}
+                onChange={(e) => handleChangeSortBy(e.target.value as any)}
+                className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+              >
+                <option value="alphabetical">Alphabetical</option>
+                <option value="release_date">Release Date</option>
+                <option value="popularity">Popularity</option>
+              </select>
+              <button
+                type="button"
+                onClick={() =>
+                  handleChangeOrder(order === "asc" ? "desc" : "asc")
+                }
+                className={`flex items-center justify-center p-1 transition-transform duration-300 ${
+                  order === "asc" ? "rotate-0" : "rotate-180"
+                }`}
+              >
+                <SwapVertRounded />
+              </button>
+            </fieldset>
+          </form>
+        </div>
+      )}
+
       <section className="mt-6 grid w-full grid-cols-3 gap-4 md:grid-cols-5">
-        {results.map((media) => (
-          <ThumbnailPreview key={media.id} media={media} />
-        ))}
+        {isLoading || isPending
+          ? [...Array(30)].map((_, i) => (
+              <Skeleton
+                key={i}
+                className="aspect-[2/3] h-full w-full rounded-sm outline outline-1 outline-white/10"
+              />
+            ))
+          : results.map((media) => (
+              <ThumbnailPreview key={media.id} media={media} />
+            ))}
       </section>
 
-      {results.length > 0 && (
+      {results && results.length > 0 && (
         <div className="mt-4 flex w-full justify-center gap-3">
           <button
             onClick={() => setOffSet((prev) => Math.max(prev - 30, 0))}
@@ -121,4 +158,38 @@ export default function SearchBar() {
       )}
     </>
   );
+}
+
+function mainSearchParams() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // useSearchParams for sorting and ordering
+  const sortBy = searchParams.get("sort") as
+    | "alphabetical"
+    | "release_date"
+    | "popularity";
+  const order = searchParams.get("order") as "asc" | "desc";
+  const query = searchParams.get("q") || "";
+
+  useEffect(() => {
+    if (
+      sortBy !== "alphabetical" &&
+      sortBy !== "release_date" &&
+      sortBy !== "popularity"
+    ) {
+      setSearchParams((prev) => {
+        prev.set("sort", "popularity"); // default to popularity
+        return prev;
+      });
+    }
+
+    if (order !== "asc" && order !== "desc") {
+      setSearchParams((prev) => {
+        prev.set("order", "desc"); // default to descending order
+        return prev;
+      });
+    }
+  }, [sortBy, order, searchParams]);
+
+  return { sortBy, order, query };
 }

@@ -3,7 +3,7 @@ import SearchBar from "./components/searchBarBrowse";
 export default function BrowsePage() {
   return (
     <>
-      <div className="flex h-full w-full max-w-2xl flex-col items-center justify-center gap-2 sm:max-w-[960px]">
+      <div className="max-w-960px pt-60px pr-0px pb-20px pl-0px flex flex-col items-center gap-[16px] self-stretch">
         <h1>
           Search <span className="text-[#5616EC]">Archivr</span>
         </h1>

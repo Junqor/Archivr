@@ -2,6 +2,49 @@ import { TMedia } from "@/types/media";
 import { getAuthHeader } from "@/utils/authHeader";
 
 // Search for media(s) by title
+export const searchMediasFiltered = async (
+  query: string,
+  limit: number = 5,
+  offset: number = 0,
+  sortBy: "alphabetical" | "release_date" | "popularity",
+  order: "asc" | "desc",
+) => {
+  if (!query) {
+    return []; // Do not search if no query is provided
+  }
+
+  const url =
+    import.meta.env.VITE_API_URL +
+    `/search/media/filter?q=${query}&limit=${limit}&offset=${offset}&sortBy=${sortBy}&order=${order}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch media");
+    }
+
+    const data = (await response.json()) satisfies {
+      status: string;
+      media: TMedia[];
+    };
+
+    if (data.status !== "success") {
+      throw new Error("Failed to fetch media");
+    }
+
+    return data.media as TMedia[];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+// Search for media(s) by title
 export const searchMedias = async (
   query: string,
   limit: number = 5,
@@ -35,7 +78,7 @@ export const searchMedias = async (
       throw new Error("Failed to fetch media");
     }
 
-    return data.media;
+    return data.media as TMedia[];
   } catch (error) {
     console.error(error);
     return [];
