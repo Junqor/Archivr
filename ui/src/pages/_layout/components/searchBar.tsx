@@ -85,12 +85,16 @@ export default function SearchBar() {
                     key={media.id}
                     onSelect={() => {
                       setQuery("");
-                      2;
                       navigate(`/media/${media.id}`);
                     }}
                   >
                     <div className="flex h-12 w-full flex-row gap-2">
-                      <img src={media.thumbnail_url} className="h-full" />
+                      <img
+                        src={media.thumbnail_url}
+                        className="h-full rounded-md"
+                        width="29"
+                        height="42"
+                      />
                       <p>
                         {media.title}{" "}
                         <span className="text-muted hover:text-black/70">
