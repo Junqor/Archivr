@@ -70,6 +70,7 @@ export default function SearchPage() {
           <div className="mx-auto w-full max-w-2xl">
             <div className="relative" ref={inputRef}>
               <Input
+                name="disable-password-autofill"
                 placeholder="Start typing to see results..."
                 defaultValue={query}
                 onChange={(e) => handleSearch(e.target.value)}

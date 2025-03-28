@@ -55,7 +55,7 @@ export const MembersPage = () => {
         <p>Search for Archivr users by their username</p>
         <div className="relative flex w-3/4 items-center space-x-2">
           <Input
-            autoComplete="off"
+            name="disable-password-autofill"
             placeholder="Start typing to see results..."
             onChange={(e) => handleSearch(e.target.value)}
             defaultValue={searchParams.get("q")?.toString()}
