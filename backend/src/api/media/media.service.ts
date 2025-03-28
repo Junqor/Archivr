@@ -710,7 +710,7 @@ export async function get_recommended_for_you(user_id: number) {
     .leftJoin(likes, eq(likes.mediaId, media.id))
     .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(not(inArray(media.id, interactedMediaIds))) // filter out already interacted media
-    .groupBy(media.id, mediaGenre.mediaId)
+    .groupBy(media.id)
     .orderBy(desc(finalWeight))
     .limit(24);
 
