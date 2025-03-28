@@ -68,26 +68,6 @@ export async function searchMediaFilter(
   };
 }
 
-// Search for media by name
-export async function searchMedia(
-  query: string,
-  limit: number,
-  offset: number
-) {
-  const rows = await db
-    .select()
-    .from(media)
-    .where(sql`${media.title} LIKE ${"%" + query + "%"}`)
-    .orderBy(desc(media.rating))
-    .limit(limit)
-    .offset(offset);
-
-  return {
-    status: "success",
-    media: rows,
-  };
-}
-
 // Search for users by name
 export async function searchUsersModPortal(
   query: string,
