@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StarRatings } from "../../components/starRatings";
+import { PlayMethbreaker } from "./components/special/playMethbreaker";
 import {
   Tabs,
   TabsContent,
@@ -197,6 +198,12 @@ export function MediaPage() {
           <p className="hidden overflow-hidden overflow-y-scroll text-ellipsis py-3 font-light leading-tight no-scrollbar sm:block">
             {data.description}
           </p>
+          {/* Play Methbreaker */}
+          {
+            data.id === 10014 && <div className="hidden md:flex">
+            <PlayMethbreaker/>
+            </div>
+          }
           <div className="flex flex-row">
             <Button
               className="mr-2 flex-row space-x-2 pl-0"
