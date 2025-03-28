@@ -8,6 +8,7 @@ import {
   DropdownItem,
   DropdownSeparator,
 } from "@/components/ui/dropdown";
+import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { useAuth } from "@/context/auth";
 import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,7 @@ export const DesktopNav = ({
       {...props}
     >
       <div className="flex flex-row items-center justify-center gap-6">
+        <ThemeSwitch/>
         <Link
           to="/"
           className="font-medium transition-colors hover:text-purple"

@@ -30,9 +30,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const userSettings = await getUserSettingsForSettingsContext();
       if (userSettings) {
-        document.body.classList.remove("light");
-        document.body.classList.remove("dark");
-        document.body.classList.add(userSettings.theme);
+        if (true) {
+          document.body.classList.remove("light");
+          document.body.classList.remove("dark");
+          document.body.classList.add(userSettings.theme);
+        }
         return userSettings;
       } else {
         return null;

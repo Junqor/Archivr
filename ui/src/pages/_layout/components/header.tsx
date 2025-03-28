@@ -6,11 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth";
 import { is_user_banned } from "@/api/moderation";
 import { BANner } from "./ban-alert";
-import { useSettings } from "@/context/settings";
 
 export default function Header() {
   const { user } = useAuth();
-  const { settings } = useSettings();
 
   // get banned data
   const { data: banData } = useQuery({
@@ -20,7 +18,7 @@ export default function Header() {
         const data = await is_user_banned(user.id);
         return data;
       }
-      return null; // Changed to null to avoid browser warning
+      return null;
     },
   });
 
@@ -31,7 +29,7 @@ export default function Header() {
           to="/"
           className="flex h-full flex-row items-center justify-start gap-3 dark:text-white text-black transition-colors hover:text-purple dark:hover:text-purple"
         >
-          <ArchivrIcon className="dark:flex hidden" sx={{ fontSize: "2.25rem", color: (settings?.theme == "light" ? "#020202" : "#f2f2f0") }}/>
+          <ArchivrIcon className="dark:flex hidden" sx={{ fontSize: "2.25rem" }}/>
           <h3 className="font-bold"> Archivr </h3>
         </Link>
         <DesktopNav className="hidden md:flex" />
