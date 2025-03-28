@@ -20,6 +20,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.light {
+  color: rgba(0, 0, 0, 0.937);
+  background-color: #f2f2f2; 
+  border-color: black;
+}
+
 @media (min-width: 640px) {
   :root {
     font-size: 14px;

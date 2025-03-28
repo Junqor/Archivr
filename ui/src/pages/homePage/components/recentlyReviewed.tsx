@@ -25,14 +25,14 @@ export function RecentlyReviewed() {
                   <ThumbnailPreview key={item.media.id} media={item.media} />
                 </div>
                 <div className="flex w-3/4 min-w-0 flex-col items-start justify-start gap-3">
-                  <div className="flex flex-col items-start gap-x-1 gap-y-1 overflow-hidden text-ellipsis text-nowrap font-bold text-white">
+                  <div className="flex flex-col items-start gap-x-1 gap-y-1 overflow-hidden text-ellipsis text-nowrap font-bold">
                     <Link
                       to={`/profile/${item.user.username}`}
                       className="group inline-flex items-center gap-x-2"
                     >
                       <UserAvatar user={item.user} size="small" />
                       <div>
-                        <h4 className="text-ellipsis whitespace-nowrap text-white/80 no-scrollbar group-hover:underline">
+                        <h4 className="text-ellipsis whitespace-nowrap dark:text-white/80 text-black/80 no-scrollbar group-hover:underline">
                           {item.user.display_name
                             ? item.user.display_name
                             : item.user.username}
@@ -43,7 +43,7 @@ export function RecentlyReviewed() {
                       reviewed{" "}
                       <Link
                         to={`/media/${item.media.id}`}
-                        className="text-wrap text-white/80 hover:underline"
+                        className="text-wrap dark:text-white/80 text-black/80 hover:underline"
                       >
                         {item.media.title}
                       </Link>
@@ -59,16 +59,16 @@ export function RecentlyReviewed() {
                     </div>
                   </div>
                   {item.review && (
-                    <p className="line-clamp-4 overflow-hidden text-ellipsis text-white/80">
+                    <p className="line-clamp-4 overflow-hidden text-ellipsis dark:text-white/80 text-black/80">
                       {item.review.reviewText}
                     </p>
                   )}
-                  <p className="text-white/70">
+                  <p className="dark:text-white/70 text-black/70">
                     {formatDate(item.review.created_at, true)}
                   </p>
                 </div>
               </div>
-              <Separator className="text-white/80" />
+              <Separator className="dark:text-white/80 text-black/80" />
             </div>
           ))
         : [...Array(8)].map(() => (
@@ -77,7 +77,7 @@ export function RecentlyReviewed() {
               key={crypto.randomUUID()}
             >
               <div className="w-1/4">
-                <Skeleton className="relative aspect-2/3 h-full w-full rounded-sm outline outline-1 -outline-offset-1 outline-white/10" />
+                <Skeleton className="relative aspect-2/3 h-full w-full rounded-sm outline outline-1 -outline-offset-1 dark:outline-white/10 outline-black/10" />
               </div>
               <div className="flex w-3/4 flex-col gap-3 py-4">
                 <Skeleton className="h-5 w-1/2 rounded-sm" />

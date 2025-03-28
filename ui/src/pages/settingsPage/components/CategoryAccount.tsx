@@ -14,31 +14,31 @@ export function ProfileSettingsCategoryAccount() {
       <Input
         disabled
         value={email ? email : "???"}
-        className="flex items-start gap-3 self-stretch rounded-xl border border-[#7F7F7E] bg-black px-4 py-2 text-[#7F7F7E]"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
       ></Input>
       <h3>Change Password</h3>
-      <hr className="h-px self-stretch bg-[#7F7F7E]"></hr>
+      <div className="h-px self-stretch dark:bg-[#7F7F7E] bg-black"></div>
       <Label>Current Password</Label>
       <Input
         type="password"
         placeholder="Enter current password"
-        className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
       ></Input>
       <Label>New Password</Label>
       <Input
         type="password"
         placeholder="Enter new password"
-        className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
       ></Input>
       <Label>Confirm New Password</Label>
       <Input
         type="password"
         placeholder="Enter new password again"
-        className="flex items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
       ></Input>
       <Button className="w-fit self-center">Save Changes</Button>
       <h3>Account Data</h3>
-      <hr className="h-px self-stretch bg-[#7F7F7E]"></hr>
+      <div className="h-px self-stretch dark:bg-[#7F7F7E] bg-black"></div>
       {/*
             Uneeded as all the settings are on the glorious MySQL database
             <div className="flex gap-3">

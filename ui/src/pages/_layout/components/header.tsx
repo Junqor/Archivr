@@ -6,9 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth";
 import { is_user_banned } from "@/api/moderation";
 import { BANner } from "./ban-alert";
+import { useSettings } from "@/context/settings";
 
 export default function Header() {
   const { user } = useAuth();
+  const { settings } = useSettings();
 
   // get banned data
   const { data: banData } = useQuery({
@@ -24,12 +26,12 @@ export default function Header() {
 
   return (
     <header className="sticky left-0 top-0 z-50 outline outline-gray-secondary/50">
-      <header className="flex h-auto w-full flex-row items-center justify-between bg-black px-6 py-3">
+      <header className="flex h-auto w-full flex-row items-center justify-between dark:bg-black bg-white px-6 py-3">
         <Link
           to="/"
-          className="flex h-full flex-row items-center justify-start gap-3 text-white transition-colors hover:text-purple"
+          className="flex h-full flex-row items-center justify-start gap-3 dark:text-white text-black transition-colors hover:text-purple dark:hover:text-purple"
         >
-          <ArchivrIcon sx={{ fontSize: "2.25rem" }} />
+          <ArchivrIcon className="dark:flex hidden" sx={{ fontSize: "2.25rem", color: (settings?.theme == "light" ? "#020202" : "#f2f2f0") }}/>
           <h3 className="font-bold"> Archivr </h3>
         </Link>
         <DesktopNav className="hidden md:flex" />

@@ -49,7 +49,7 @@ export const DesktopNav = ({
       <div className="flex flex-row items-center justify-center gap-6">
         <Link
           to="/"
-          className="font-medium text-white transition-colors hover:text-purple"
+          className="font-medium transition-colors hover:text-purple"
         >
           Home
         </Link>
@@ -74,7 +74,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/trending"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Trending
               </Link>
@@ -82,7 +82,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/popular"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Popular
               </Link>
@@ -90,7 +90,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/activity"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Activity
               </Link>
@@ -98,7 +98,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/members"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Members
               </Link>
@@ -111,7 +111,7 @@ export const DesktopNav = ({
         {user ? (
           <Dropdown modal={false}>
             <DropdownTrigger
-              className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple"
+              className="flex flex-row items-center gap-3 transition-colors hover:text-purple"
               indicator
             >
               <UserAvatar
@@ -158,7 +158,7 @@ export const DesktopNav = ({
         ) : (
           <Link
             to="/login"
-            className="flex flex-row items-center gap-2 text-white transition-colors hover:text-purple"
+            className="flex flex-row items-center gap-2 transition-colors hover:text-purple"
           >
             <LoginRounded sx={{ fontSize: "1.5rem" }} />
             Login

@@ -1,3 +1,4 @@
+import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";
 import { TMedia } from "@/types/media";
 
@@ -8,6 +9,7 @@ export const PostersBackground = ({
   media: TMedia[];
   className?: string;
 }) => {
+  const {settings} = useSettings();
   return (
     <div
       className={cn(
@@ -19,7 +21,7 @@ export const PostersBackground = ({
       <div
         className="absolute bottom-0 h-full w-full"
         style={{
-          background: `linear-gradient(180deg, rgba(13,13,13,0) 0%, rgba(13,13,13,1) 100%)`,
+          background: `linear-gradient(180deg, ${settings?.theme == "dark" ? "rgba(13,13,13,0) 0%, rgba(13,13,13,1) 100%" : "rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%"})`,
         }}
       />
       {media.slice(40).map((m) => (
