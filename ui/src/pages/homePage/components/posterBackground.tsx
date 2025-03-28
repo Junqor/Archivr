@@ -22,7 +22,7 @@ export const PostersBackground = ({
           background: `linear-gradient(180deg, rgba(13,13,13,0) 0%, rgba(13,13,13,1) 100%)`,
         }}
       />
-      {media.slice(40).map((m) => (
+      {media.slice(0, 40).map((m) => (
         <div
           className="flex aspect-[17/25] max-w-[12%] overflow-hidden rounded-md sm:max-w-[8.5%] md:max-w-[7%] lg:max-w-[4.5%]"
           key={m.id}
