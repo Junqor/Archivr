@@ -52,6 +52,12 @@ export const DesktopNav = ({
         >
           Home
         </Link>
+        <Link
+          to="/browse"
+          className="font-medium text-white transition-colors hover:text-purple"
+        >
+          Browse
+        </Link>
         <Dropdown modal={false}>
           <DropdownTrigger indicator>Genres</DropdownTrigger>
           <DropdownContent>
