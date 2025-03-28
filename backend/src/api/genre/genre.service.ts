@@ -1,8 +1,8 @@
 import { db } from "../../db/database.js";
 import { slugify } from "../../utils/slugify.js";
-import { mediaGenre, media } from "../../db/schema.js";
+import { mediaGenre, media, likes, ratings } from "../../db/schema.js";
 import { desc, inArray, eq, asc } from "drizzle-orm/expressions";
-import { aliasedTable, getTableColumns, sql } from "drizzle-orm";
+import { aliasedTable, avg, count, getTableColumns, sql } from "drizzle-orm";
 
 // Get 5 most popular media of a certain genre
 export async function get_popular_media_genre(genre: string) {
@@ -52,8 +52,14 @@ export async function get_media_genre(
   }
 
   let rows = await db
-    .select()
+    .select({
+      ...getTableColumns(media),
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
+    })
     .from(media)
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(
       inArray(
         media.id,
@@ -64,6 +70,7 @@ export async function get_media_genre(
       )
     )
     .orderBy(order === "desc" ? desc(sortByClause) : asc(sortByClause))
+    .groupBy(media.id)
     .limit(30)
     .offset(offset);
 

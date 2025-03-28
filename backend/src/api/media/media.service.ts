@@ -16,7 +16,7 @@ import {
 import { desc, eq, and, inArray, not, gte, asc } from "drizzle-orm/expressions";
 import { count, sql, avg, getTableColumns } from "drizzle-orm";
 import { serverConfig } from "../../configs/secrets.js";
-import { union } from "drizzle-orm/mysql-core";
+import { alias, union } from "drizzle-orm/mysql-core";
 import { getTvdbToken } from "../../utils/tvdbToken.js";
 import { logger } from "../../configs/logger.js";
 
@@ -176,15 +176,25 @@ export async function get_likes(media_id: number): Promise<number> {
 
 export async function getMostPopular() {
   const rows = await db
-    .select()
+    .select({
+      ...getTableColumns(media),
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
+    })
     .from(media)
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .orderBy(desc(media.rating))
+    .groupBy(media.id)
     .limit(15);
 
   return rows;
 }
 
 export async function get_recently_reviewed() {
+  const likesAlias = alias(likes, "likesAlias");
+  const ratingsAlias = alias(ratings, "ratingsAlias");
+
   let rows = await db
     .selectDistinct({
       media: {
@@ -192,6 +202,8 @@ export async function get_recently_reviewed() {
         title: media.title,
         thumbnail_url: media.thumbnail_url,
         rating: media.rating,
+        likes: count(likesAlias.id),
+        userRating: avg(ratingsAlias.rating),
       },
       user: {
         userId: users.id,
@@ -212,6 +224,8 @@ export async function get_recently_reviewed() {
     .innerJoin(userReviews, eq(media.id, userReviews.mediaId))
     .innerJoin(users, eq(users.id, userReviews.userId))
     .innerJoin(ratings, eq(ratings.id, userReviews.ratingId))
+    .leftJoin(likesAlias, eq(likesAlias.mediaId, media.id))
+    .leftJoin(ratingsAlias, eq(ratingsAlias.mediaId, media.id))
     .leftJoin(
       likes,
       and(
@@ -227,6 +241,7 @@ export async function get_recently_reviewed() {
         WHERE r.media_id = UserReviews.media_id
       )`
     )
+    .groupBy(userReviews.mediaId)
     .orderBy(desc(userReviews.createdAt))
     .limit(8);
 
@@ -284,11 +299,15 @@ export async function getTopRatedPicks() {
       num_rating: WeightedMovies.num_ratings,
       weighted_rating: WeightedMovies.weighted_rating,
       final_weighted_score: WeightedMovies.final_weighted_score,
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
     })
     .from(WeightedMovies)
+    .leftJoin(likes, eq(likes.mediaId, WeightedMovies.mediaId))
+    .leftJoin(ratings, eq(ratings.mediaId, WeightedMovies.mediaId))
+    .groupBy(WeightedMovies.mediaId)
     .orderBy(desc(WeightedMovies.final_weighted_score))
     .limit(15);
-
   return {
     status: "success",
     media: rows,
@@ -333,10 +352,15 @@ export const getTrending = async (type: "movie" | "tv") => {
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       runtime: media.runtime,
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
     })
     .from(media)
     .leftJoin(remoteId, eq(media.id, remoteId.id))
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(inArray(remoteId.tmdbId, trendingIds))
+    .groupBy(media.id)
     .orderBy(
       asc(sql`FIELD(${remoteId.tmdbId}, ${sql.join(trendingIds, sql`,`)})`)
     ); // https://www.w3schools.com/sql/func_mysql_field.asp
@@ -377,10 +401,15 @@ export const getTrendingPaginated = async (
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       runtime: media.runtime,
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
     })
     .from(media)
     .leftJoin(remoteId, eq(media.id, remoteId.id))
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(inArray(remoteId.tmdbId, trendingIds))
+    .groupBy(media.id)
     .orderBy(
       asc(sql`FIELD(${remoteId.tmdbId}, ${sql.join(trendingIds, sql`,`)})`)
     );
@@ -390,8 +419,14 @@ export const getTrendingPaginated = async (
 
 export async function get_new_for_you(user_id: number) {
   const data = await db
-    .selectDistinct()
+    .selectDistinct({
+      ...getTableColumns(media),
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
+    })
     .from(media)
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(
       and(
         not(
@@ -418,6 +453,7 @@ export async function get_new_for_you(user_id: number) {
         sql`${media.release_date} <= CURDATE()`
       )
     )
+    .groupBy(media.id)
     .orderBy(sql`RAND()`)
     .limit(15);
 
@@ -654,10 +690,10 @@ export async function get_recommended_for_you(user_id: number) {
     )`;
 
   const weightFactor = 10_000_000; // Maybe tweak this if user interactions start being too much when we get more users
-  const finalWeight = sql`( ${similarUserInteractions} * ${genreFactor} * ${weightFactor} ) + ( ${genreFactor} * ${media.rating} )`;
+  const finalWeight = sql<number>`( ${similarUserInteractions} * ${genreFactor} * ${weightFactor} ) + ( ${genreFactor} * ${media.rating} )`;
 
   const recommendedMedia = await db
-    .selectDistinct({
+    .select({
       id: media.id,
       category: media.category,
       title: media.title,
@@ -666,10 +702,13 @@ export async function get_recommended_for_you(user_id: number) {
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       runtime: media.runtime,
-      weight: finalWeight,
+      likes: count(sql`DISTINCT ${likes.id}`),
+      userRating: avg(ratings.rating),
     })
     .from(media)
     .leftJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(not(inArray(media.id, interactedMediaIds))) // filter out already interacted media
     .groupBy(media.id)
     .orderBy(desc(finalWeight))
@@ -679,6 +718,7 @@ export async function get_recommended_for_you(user_id: number) {
 }
 
 // Because you watched...
+// TODO: switch this to use tmdb api
 export async function get_similar_to_watched(user_id: number) {
   if (!user_id || isNaN(user_id)) {
     throw new Error("Invalid user_id provided");
@@ -750,9 +790,13 @@ export async function get_similar_to_watched(user_id: number) {
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       runtime: media.runtime,
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
     })
     .from(media)
     .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .where(
       and(
         inArray(mediaGenre.genre, genreList),
@@ -776,9 +820,13 @@ export async function get_similar_to_watched(user_id: number) {
         thumbnail_url: media.thumbnail_url,
         rating: media.rating,
         runtime: media.runtime,
+        likes: count(likes.id),
+        userRating: avg(ratings.rating),
       })
       .from(media)
       .innerJoin(mediaGenre, eq(media.id, mediaGenre.mediaId))
+      .leftJoin(likes, eq(likes.mediaId, media.id))
+      .leftJoin(ratings, eq(ratings.mediaId, media.id))
       .where(
         and(
           inArray(mediaGenre.genre, genreList),
@@ -816,6 +864,7 @@ export async function getRandomMedia() {
   return data;
 }
 
+//
 export async function getRecommendations(mediaId: number) {
   const [{ tmdbId, type }] = await db
     .select({ tmdbId: remoteId.tmdbId, type: media.category })
@@ -848,10 +897,18 @@ export async function getRecommendations(mediaId: number) {
   const tmdbRecommendations = data.results.map((r: any) => Number(r.id));
 
   const ourRecommendations = await db
-    .select({ ...getTableColumns(media), tmdbId: remoteId.tmdbId })
+    .select({
+      ...getTableColumns(media),
+      tmdbId: remoteId.tmdbId,
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
+    })
     .from(media)
     .innerJoin(remoteId, eq(media.id, remoteId.id))
-    .where(inArray(remoteId.tmdbId, tmdbRecommendations));
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
+    .where(inArray(remoteId.tmdbId, tmdbRecommendations))
+    .groupBy(media.id);
 
   return ourRecommendations.sort(
     (a, b) =>

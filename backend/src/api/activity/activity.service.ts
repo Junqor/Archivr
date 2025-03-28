@@ -11,8 +11,10 @@ import {
   likes,
 } from "../../db/schema.js";
 import { and, desc, eq, inArray, or } from "drizzle-orm/expressions";
+
 const PAGESIZE = 15;
 const usersAliased = aliasedTable(users, "usersAliased");
+const ratingsAliased = aliasedTable(ratings, "ratingsAliased");
 
 function createBaseQuery(currentUserId?: number) {
   return db
@@ -32,6 +34,7 @@ function createBaseQuery(currentUserId?: number) {
         rating: media.rating,
         release_date: media.release_date,
         like_count: count(likes.id).as("like_count"),
+        userRating: avg(ratingsAliased.rating),
         is_liked: currentUserId
           ? exists(
               db
@@ -139,6 +142,7 @@ function createBaseQuery(currentUserId?: number) {
         eq(ratings.mediaId, userReviews.mediaId)
       )
     )
+    .leftJoin(ratingsAliased, eq(ratingsAliased.mediaId, media.id))
     .leftJoin(likes, eq(likes.mediaId, media.id))
     .leftJoin(
       likesReviewsTable,
@@ -260,10 +264,12 @@ export const getTopUserMedia = async (limit = 10) => {
       title: media.title,
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
+      likes: count(likes.id),
       userRating: sql<number>`avg(${ratings.rating})`,
     })
     .from(media)
     .leftJoin(ratings, eq(media.id, ratings.mediaId))
+    .leftJoin(likes, eq(media.id, likes.mediaId))
     .orderBy(
       desc(avg(ratings.rating)),
       desc(count(ratings.rating)),
@@ -287,10 +293,12 @@ export const getUserTopMedia = async (userId: number, limit = 10) => {
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
       userRating: ratings.rating,
+      likes: count(likes.id),
       ratedAt: ratings.ratedAt,
     })
     .from(media)
     .leftJoin(ratings, eq(media.id, ratings.mediaId))
+    .leftJoin(likes, eq(media.id, likes.mediaId))
     .where(eq(ratings.userId, userId))
     .orderBy(desc(avg(ratings.rating)), desc(ratings.ratedAt))
     .groupBy(media.id, ratings.ratedAt)

@@ -2,7 +2,6 @@ import { Router } from "express";
 import z from "zod";
 import {
   getMediaById,
-  searchMedia,
   searchMediaFilter,
   searchUsers,
   searchUsersModPortal,
@@ -17,18 +16,6 @@ const searchBodySchema = z.object({
 });
 
 const searchRouter = Router();
-
-// (POST /api/search)
-// Search for media by name with specified limit
-searchRouter.post(
-  "/media",
-  asyncHandler(async (req, res) => {
-    const parsed = searchBodySchema.parse(req.body);
-    const { query, limit, offset } = parsed;
-    const result = await searchMedia(query, limit, offset);
-    res.status(200).json(result);
-  })
-);
 
 const searchBodyFilterSchema = z.object({
   q: z.string().min(1),

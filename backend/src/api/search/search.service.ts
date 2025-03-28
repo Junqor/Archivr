@@ -8,12 +8,14 @@ import {
   or,
   asc,
   getTableColumns,
+  avg,
 } from "drizzle-orm";
 import {
   follows,
   likes,
   media,
   mediaGenre,
+  ratings,
   remoteId,
   userReviews,
   users,
@@ -30,8 +32,14 @@ export async function searchMediaFilter(
   order: "asc" | "desc"
 ) {
   const rows = await db
-    .select()
+    .select({
+      ...getTableColumns(media),
+      userRating: avg(ratings.rating),
+      likes: count(likes.id),
+    })
     .from(media)
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
+    .leftJoin(likes, eq(likes.mediaId, media.id))
     .where(sql`${media.title} LIKE ${"%" + query + "%"}`)
     .orderBy(
       order === "asc"
@@ -50,26 +58,7 @@ export async function searchMediaFilter(
               : media.rating
           )
     )
-    .limit(limit)
-    .offset(offset);
-
-  return {
-    status: "success",
-    media: rows,
-  };
-}
-
-// Search for media by name
-export async function searchMedia(
-  query: string,
-  limit: number,
-  offset: number
-) {
-  const rows = await db
-    .select()
-    .from(media)
-    .where(sql`${media.title} LIKE ${"%" + query + "%"}`)
-    .orderBy(desc(media.rating))
+    .groupBy(media.id)
     .limit(limit)
     .offset(offset);
 

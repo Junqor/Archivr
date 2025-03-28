@@ -1,4 +1,4 @@
-import { TMedia } from "@/types/media";
+import { TMedia, TMediaStats } from "@/types/media";
 import { TGenre } from "@/types/genre";
 import { getAuthHeader } from "@/utils/authHeader";
 
@@ -39,7 +39,7 @@ export const getMediaGenre = async (
   offset: number,
   sortBy: "alphabetical" | "release_date" | "popularity",
   order: "asc" | "desc",
-): Promise<TMedia[]> => {
+): Promise<(TMedia & TMediaStats)[]> => {
   const url =
     import.meta.env.VITE_API_URL +
     `/genre/media?genre=${genre}&offset=${offset}&sortBy=${sortBy}&order=${order}`;
@@ -53,16 +53,13 @@ export const getMediaGenre = async (
       throw new Error("Failed to fetch media");
     }
 
-    const data = (await response.json()) as {
-      status: string;
-      media: TMedia[];
-    };
+    const data = await response.json();
 
     if (data.status !== "success") {
       throw new Error("Failed to fetch media");
     }
 
-    return data.media;
+    return data.media as (TMedia & TMediaStats)[];
   } catch (error) {
     console.error(error);
     return [];

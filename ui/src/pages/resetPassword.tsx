@@ -6,7 +6,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { resetPassword, verifyResetToken } from "@/api/email";
 import { LockResetRounded } from "@mui/icons-material";
-import { motion } from "framer-motion";
+import { LazyMotion } from "motion/react";
+import * as m from "motion/react-m";
+
+const loadFeatures = () =>
+  import("../lib/motion.js").then((res) => res.default); // Dynamic import for code splitting since we only use it on this page
 
 export function ResetPassword() {
   const navigate = useNavigate();
@@ -105,59 +109,63 @@ export function ResetPassword() {
   return (
     <main className="flex h-screen w-screen flex-col items-center justify-center gap-4 overflow-y-auto bg-login-bg bg-cover bg-left bg-no-repeat px-8 py-4 font-normal">
       <link rel="preload" as="image" href="/assets/login-bg.png"></link>
-      <motion.div
-        className="w-max max-w-md overflow-hidden rounded-lg bg-black p-0"
-        layout
-        transition={{ duration: 0.1 }}
-      >
-        <motion.div layout className="flex flex-col items-start space-y-4 p-5">
-          <motion.div layout className="flex flex-col items-center space-y-2">
-            <div className="flex items-center justify-center text-8xl">
-              <LockResetRounded fontSize="inherit" />
-            </div>
-            <h2>
-              Reset <span className="text-purple">Archivr</span> Password
-            </h2>
-            <p>Enter a new password for your account</p>
-          </motion.div>
-          <motion.form
-            layout
-            transition={{ duration: 0.1 }}
-            className="align-center flex w-full flex-col space-y-4"
-            onSubmit={handleSubmit}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                placeholder="Enter new password"
-                autoComplete="new-password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-new-password">Confirm New Password</Label>
-              <Input
-                id="confirm-new-password"
-                type="password"
-                placeholder="Confirm new password"
-                autoComplete="new-password"
-                value={confirmNewPassword}
-                onChange={(e) => setConfirmNewPassword(e.target.value)}
-              />
-            </div>
-            <button
-              type="submit"
-              className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
-              disabled={isPending}
+      <LazyMotion strict features={loadFeatures}>
+        <m.div
+          className="w-max max-w-md overflow-hidden rounded-lg bg-black p-0"
+          layout
+          transition={{ duration: 0.1 }}
+        >
+          <m.div layout className="flex flex-col items-start space-y-4 p-5">
+            <m.div layout className="flex flex-col items-center space-y-2">
+              <div className="flex items-center justify-center text-8xl">
+                <LockResetRounded fontSize="inherit" />
+              </div>
+              <h2>
+                Reset <span className="text-purple">Archivr</span> Password
+              </h2>
+              <p>Enter a new password for your account</p>
+            </m.div>
+            <m.form
+              layout
+              transition={{ duration: 0.1 }}
+              className="align-center flex w-full flex-col space-y-4"
+              onSubmit={handleSubmit}
             >
-              {isPending ? "Resetting..." : "Reset Password"}
-            </button>
-          </motion.form>
-        </motion.div>
-      </motion.div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="Enter new password"
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-new-password">
+                  Confirm New Password
+                </Label>
+                <Input
+                  id="confirm-new-password"
+                  type="password"
+                  placeholder="Confirm new password"
+                  autoComplete="new-password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                />
+              </div>
+              <button
+                type="submit"
+                className="flex w-fit items-center justify-center self-center rounded-full bg-purple px-6 py-2 transition-colors hover:bg-purple/75"
+                disabled={isPending}
+              >
+                {isPending ? "Resetting..." : "Reset Password"}
+              </button>
+            </m.form>
+          </m.div>
+        </m.div>
+      </LazyMotion>
     </main>
   );
 }

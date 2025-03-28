@@ -18,6 +18,7 @@ export type TEnhancedActivity = {
     rating?: number;
     release_date?: string;
     like_count?: number;
+    userRating?: number | null;
     is_liked?: boolean;
   };
   user: {
@@ -96,6 +97,7 @@ export type TUserRatedMedia = {
   title: string;
   thumbnail_url: string | null;
   rating: number | null;
+  likes: number;
   userRating: number;
   ratedAt?: string;
 };

@@ -46,6 +46,8 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                   title: review.media.title,
                   thumbnail_url: review.media.thumbnail_url,
                   rating: review.media.rating,
+                  likes: review.media.like_count,
+                  userRating: review.media.avg_rating,
                 }}
                 className="w-full"
               />

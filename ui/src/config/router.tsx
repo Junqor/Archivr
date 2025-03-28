@@ -3,7 +3,6 @@ import { Login } from "@/pages/login";
 import ErrorPage from "@/pages/errorPage";
 import HomePage from "@/pages/homePage/homePage";
 import GenrePage from "@/pages/genrePage/genrePage";
-import BrowsePage from "@/pages/browsePage/browsePage";
 import { Layout } from "@/pages/_layout/layout";
 import { MediaPage } from "@/pages/mediaPage/mediaPage";
 import { createBrowserRouter } from "react-router-dom";
@@ -23,6 +22,7 @@ import { ActivityPage } from "@/pages/activityPage/activityPage";
 import ModPortal from "@/pages/modPortal/modPortal";
 import { GenresList } from "@/pages/genrePage/genresList";
 import { MembersPage } from "@/pages/membersPage/membersPage";
+import SearchPage from "@/pages/searchPage/searchPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -47,11 +47,6 @@ const router = createBrowserRouter([
             <AdminPortal />
           </ProtectedRoute>
         ),
-      },
-      //Browse Page
-      {
-        path: "/browse",
-        element: <BrowsePage />,
       },
       // Error Pages
       {
@@ -120,7 +115,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/search",
-        element: <UnderConstruction />,
+        element: <SearchPage />,
       },
       {
         path: "/settings",
