@@ -60,6 +60,7 @@ export const MembersPage = () => {
             onChange={(e) => handleSearch(e.target.value)}
             defaultValue={searchParams.get("q")?.toString()}
             className="rounded-[28px] px-5 py-3 pr-16 text-xl"
+            autoFocus
           />
           <div className="absolute right-3 top-[0.4rem] z-10">
             <SearchRounded sx={{ fontSize: "2.5rem" }} />

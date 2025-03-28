@@ -1,5 +1,5 @@
 import { getGenres } from "@/api/genre";
-import SearchBar from "@/components/searchBar";
+import SearchBar from "@/pages/_layout/components/searchBar";
 import { UserAvatar } from "@/components/ui/avatar";
 import {
   Dropdown,
@@ -51,12 +51,6 @@ export const DesktopNav = ({
           className="font-medium text-white transition-colors hover:text-purple"
         >
           Home
-        </Link>
-        <Link
-          to="/browse"
-          className="font-medium text-white transition-colors hover:text-purple"
-        >
-          Browse
         </Link>
         <Dropdown modal={false}>
           <DropdownTrigger indicator>Genres</DropdownTrigger>

@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function BrowsePage() {
+export default function SearchPage() {
   const [offSet, setOffSet] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const [_, setSearchParams] = useSearchParams();
@@ -74,6 +74,7 @@ export default function BrowsePage() {
                 defaultValue={query}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="peer border-white/70 pl-2 focus:border-white"
+                autoFocus
               />
               <Search className="peer absolute right-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
             </div>
