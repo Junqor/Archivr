@@ -22,6 +22,44 @@ import {
 import { getMediaBackground } from "../media/media.service.js";
 
 // Search for media by name
+export async function searchMediaFilter(
+  query: string,
+  limit: number,
+  offset: number,
+  sortBy: "alphabetical" | "release_date" | "popularity",
+  order: "asc" | "desc"
+) {
+  const rows = await db
+    .select()
+    .from(media)
+    .where(sql`${media.title} LIKE ${"%" + query + "%"}`)
+    .orderBy(
+      order === "asc"
+        ? asc(
+            sortBy === "alphabetical"
+              ? media.title
+              : sortBy === "release_date"
+              ? media.release_date
+              : media.rating
+          )
+        : desc(
+            sortBy === "alphabetical"
+              ? media.title
+              : sortBy === "release_date"
+              ? media.release_date
+              : media.rating
+          )
+    )
+    .limit(limit)
+    .offset(offset);
+
+  return {
+    status: "success",
+    media: rows,
+  };
+}
+
+// Search for media by name
 export async function searchMedia(
   query: string,
   limit: number,

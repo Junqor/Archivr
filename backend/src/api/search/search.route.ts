@@ -3,6 +3,7 @@ import z from "zod";
 import {
   getMediaById,
   searchMedia,
+  searchMediaFilter,
   searchUsers,
   searchUsersModPortal,
 } from "./search.service.js";
@@ -25,6 +26,26 @@ searchRouter.post(
     const parsed = searchBodySchema.parse(req.body);
     const { query, limit, offset } = parsed;
     const result = await searchMedia(query, limit, offset);
+    res.status(200).json(result);
+  })
+);
+
+const searchBodyFilterSchema = z.object({
+  q: z.string().min(1),
+  limit: z.coerce.number().min(1).max(100),
+  offset: z.coerce.number().min(0),
+  sortBy: z.enum(["alphabetical", "release_date", "popularity"]),
+  order: z.enum(["asc", "desc"]),
+});
+
+// (GET /api/search/media/filter)
+// Search for media by name with specified limit
+searchRouter.get(
+  "/media/filter",
+  asyncHandler(async (req, res) => {
+    const parsed = searchBodyFilterSchema.parse(req.query);
+    const { q, limit, offset, sortBy, order } = parsed;
+    const result = await searchMediaFilter(q, limit, offset, sortBy, order);
     res.status(200).json(result);
   })
 );
