@@ -14,6 +14,7 @@ import {
   Sparkles,
   TrendingUp,
   UserSearch,
+  TextSearch,
 } from "lucide-react";
 import { forwardRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -72,7 +73,7 @@ export const MobileNav = ({
             <House /> Home
           </NavLink>
           <NavLink to="/browse" onClick={() => setIsOpen(false)}>
-            <House /> Browse
+            <TextSearch /> Browse
           </NavLink>
           <NavLink to="/search" onClick={() => setIsOpen(false)}>
             <Search /> Search

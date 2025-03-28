@@ -53,11 +53,6 @@ const router = createBrowserRouter([
         path: "/browse",
         element: <BrowsePage />,
       },
-      //Browse Page
-      {
-        path: "/browse",
-        element: <BrowsePage />,
-      },
       // Error Pages
       {
         path: "/mod",
