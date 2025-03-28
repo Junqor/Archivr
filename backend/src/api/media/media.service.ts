@@ -308,8 +308,6 @@ export async function getTopRatedPicks() {
     .groupBy(WeightedMovies.mediaId)
     .orderBy(desc(WeightedMovies.final_weighted_score))
     .limit(15);
-  console.log(rows);
-
   return {
     status: "success",
     media: rows,
