@@ -12,7 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "./ui/loading-spinner";
 import { TMedia } from "@/types/media";
-import { searchMedias } from "@/api/media";
+import { searchMediasFiltered } from "@/api/media";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
@@ -23,7 +23,7 @@ export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const debouncedSearch = useDebouncedCallback(async (value) => {
-    const searchResults = await searchMedias(value);
+    const searchResults = await searchMediasFiltered(value);
     setResults(searchResults);
     setIsLoading(false);
   }, 300);

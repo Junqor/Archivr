@@ -6,8 +6,8 @@ export const searchMediasFiltered = async (
   query: string,
   limit: number = 5,
   offset: number = 0,
-  sortBy: "alphabetical" | "release_date" | "popularity",
-  order: "asc" | "desc",
+  sortBy: "alphabetical" | "release_date" | "popularity" = "popularity",
+  order: "asc" | "desc" = "desc",
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided
@@ -37,48 +37,7 @@ export const searchMediasFiltered = async (
       throw new Error("Failed to fetch media");
     }
 
-    return data.media as TMedia[];
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
-
-// Search for media(s) by title
-export const searchMedias = async (
-  query: string,
-  limit: number = 5,
-  offset: number = 0,
-) => {
-  if (!query) {
-    return []; // Do not search if no query is provided
-  }
-
-  const url = import.meta.env.VITE_API_URL + "/search/media";
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query, limit, offset }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch media");
-    }
-
-    const data = (await response.json()) satisfies {
-      status: string;
-      media: TMedia[];
-    };
-
-    if (data.status !== "success") {
-      throw new Error("Failed to fetch media");
-    }
-
-    return data.media as TMedia[];
+    return data.media as (TMedia & TMediaStats)[];
   } catch (error) {
     console.error(error);
     return [];

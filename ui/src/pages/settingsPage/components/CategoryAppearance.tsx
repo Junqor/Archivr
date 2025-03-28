@@ -9,7 +9,7 @@ import { TUserSettings } from "../settingsPage";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { addFavorite, removeFavorite, getFavorites } from "@/api/user";
-import { getMediaBackground, searchMedias } from "@/api/media";
+import { getMediaBackground, searchMediasFiltered } from "@/api/media";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
@@ -88,7 +88,7 @@ export function ProfileSettingsCategoryAppearance({
 
   const fetchSearchResults = async (query: string, newOffset: number) => {
     if (!query) return;
-    const results = await searchMedias(query, 6, newOffset);
+    const results = await searchMediasFiltered(query, 6, newOffset);
     const mediaWithBackground = await Promise.all(
       results.map(async (media: MediaWithBackground) => {
         const background = await getMediaBackground(media.id);
