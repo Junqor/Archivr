@@ -88,7 +88,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
           <div className="flex w-1/4 flex-col items-start gap-1 sm:w-2/12">
             <ThumbnailPreview
               media={{
-                id: activity.activity.targetId,
+                id: activity.activity.relatedId ?? -1,
                 title: activity.media?.title || "",
                 thumbnail_url: activity.media?.thumbnail_url || "",
                 rating: activity.media?.rating || 0,
