@@ -274,6 +274,28 @@ export const userSettings = mysqlTable(
   ]
 );
 
+export const lists = mysqlTable(
+  "User_Media_Lists",
+  {
+    user_id: int()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    media_id: int()
+      .notNull()
+      .references(() => media.id, { onDelete: "cascade" }),
+    list_name: varchar({ length: 20 }).notNull(),
+    created_at: timestamp({ mode: "string" }).defaultNow().notNull(),
+    updated_at: timestamp({ mode: "string" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("media_id").on(table.media_id),
+    primaryKey({
+      columns: [table.user_id, table.media_id, table.list_name],
+      name: "User_Media_Lists_user_id_media_id_list_name",
+    }),
+  ]
+);
+
 export const users = mysqlTable(
   "Users",
   {
