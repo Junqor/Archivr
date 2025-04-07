@@ -94,14 +94,14 @@ export function ProfileSettingsCategoryProfile({
             </div>
           </DialogTrigger>
           <DialogPortal>
-            <DialogOverlay className="fixed inset-0 bg-[#111111AA]" />
+            <DialogOverlay className="fixed inset-0 dark:bg-[#111111AA] bg-[#EEEEEEAA]" />
             <DialogContent>
-              <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-[400px] max-h-[90%] min-w-[360px] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col items-center justify-center rounded-2xl border border-white bg-black">
+              <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-[400px] max-h-[90%] min-w-[360px] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col items-center justify-center rounded-2xl border dark:border-white dark:bg-black border-black bg-white">
                 <DialogTitle className="absolute top-5">Set Avatar</DialogTitle>
                 <div className="flex flex-col items-center py-10">
                   <div
                     ref={pfp_upload_preview}
-                    className="h-[200px] w-[200px] rounded-[256px] bg-neutral-900 bg-cover bg-center"
+                    className="h-[200px] w-[200px] rounded-[256px] dark:bg-neutral-900 bg-neutral-300 bg-cover bg-center"
                   ></div>
                   <DialogDescription asChild>
                     <h4>Preview</h4>

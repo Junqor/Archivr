@@ -1,6 +1,6 @@
 export default function TermsOfServicePage() {
   return (
-    <div className="flex w-full flex-col justify-center gap-4 text-white">
+    <div className="flex w-full flex-col justify-center gap-4">
       <h1 className="m-5 flex justify-center">
         Terms of Service for{" "}
         <span className="text-purple">&nbsp;Archivr&#8482;</span>

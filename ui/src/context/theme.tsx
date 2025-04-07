@@ -35,8 +35,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.body.classList.remove("dark")
       document.body.classList.add("light")
     }
-    
-    
   }
 
   if (themeState == undefined) {
