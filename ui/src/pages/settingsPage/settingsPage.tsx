@@ -128,10 +128,7 @@ export function ProfileSettings() {
             <ProfileSettingsCategoryAccount></ProfileSettingsCategoryAccount>
           ) : null}
           {selectedMenu == "Appearance" ? (
-            <ProfileSettingsCategoryAppearance
-              updateSetting={updateSetting}
-              settings={newSettings}
-            ></ProfileSettingsCategoryAppearance>
+            <ProfileSettingsCategoryAppearance></ProfileSettingsCategoryAppearance>
           ) : null}
           {selectedMenu == "Activity" ? (
             <ProfileSettingsCategoryActivity

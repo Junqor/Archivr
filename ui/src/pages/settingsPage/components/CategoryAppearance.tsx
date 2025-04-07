@@ -1,12 +1,3 @@
-import {
-  Dropdown,
-  DropdownContent,
-  DropdownItem,
-  DropdownTrigger,
-} from "@/components/ui/dropdown";
-import { ChevronDown } from "lucide-react";
-import { TUserSettings } from "../settingsPage";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { addFavorite, removeFavorite, getFavorites } from "@/api/user";
 import { getMediaBackground, searchMedias } from "@/api/media";
@@ -34,13 +25,7 @@ interface MediaWithBackground {
   background?: string;
 }
 
-export function ProfileSettingsCategoryAppearance({
-  updateSetting,
-  settings,
-}: {
-  updateSetting: (key: keyof TUserSettings, value: string) => void;
-  settings: TUserSettings;
-}) {
+export function ProfileSettingsCategoryAppearance() {
   const { user } = useAuth();
   const username = user?.username;
   const [updatedFavorites, setUpdatedFavorites] = useState<
@@ -112,6 +97,7 @@ export function ProfileSettingsCategoryAppearance({
 
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
+      {/*
       <div className="flex flex-col items-start gap-2 self-stretch sm:flex-row">
         <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
           <Label>Theme</Label>
@@ -179,6 +165,7 @@ export function ProfileSettingsCategoryAppearance({
           </Dropdown>
         </div>
       </div>
+      */}
       <div className="flex flex-col items-start gap-3 self-stretch">
         <div className="flex flex-col items-start gap-1 self-stretch">
           <h3>Favorite Media</h3>
