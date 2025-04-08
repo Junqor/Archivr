@@ -12,11 +12,12 @@ import {
   userReviews,
   likes,
   userFavorites,
+  ratings,
 } from "../../db/schema.js";
 import { logger } from "../../configs/logger.js";
 import { z } from "zod";
 import { updateSettingsSchema } from "./user.route.js";
-import { count, sql } from "drizzle-orm";
+import { avg, count, getTableColumns, sql } from "drizzle-orm";
 import { getUserLikes } from "../likes/likes.service.js";
 import { getUserReviews } from "../reviews/reviews.service.js";
 import { getUserActivity } from "../activity/activity.service.js";
@@ -542,14 +543,18 @@ export async function getUserFavorites(user_id: number) {
   // Get the user's favorites
   return db
     .select({
+      ...getTableColumns(media),
       id: userFavorites.id,
       media_id: userFavorites.mediaId,
-      title: media.title,
-      thumbnail_url: media.thumbnail_url,
+      likes: count(likes.id),
+      userRating: avg(ratings.rating),
       added_at: userFavorites.addedAt,
     })
     .from(userFavorites)
     .innerJoin(media, eq(media.id, userFavorites.mediaId))
+    .leftJoin(likes, eq(likes.mediaId, media.id))
+    .leftJoin(ratings, eq(ratings.mediaId, media.id))
+    .groupBy(media.id)
     .where(eq(userFavorites.userId, user_id))
     .orderBy(desc(userFavorites.addedAt));
 }

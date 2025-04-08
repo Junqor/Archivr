@@ -9,6 +9,8 @@ interface MediaGridProps {
     title: string;
     thumbnail_url: string;
     rating: number;
+    likes: number;
+    userRating: number | null;
   }[];
   onViewAll?: () => void;
 }
@@ -42,6 +44,8 @@ export default function MediaGrid({ title, items, onViewAll }: MediaGridProps) {
                 title: item.title,
                 thumbnail_url: item.thumbnail_url,
                 rating: item.rating,
+                likes: item.likes,
+                userRating: item.userRating,
               }}
             />
           );

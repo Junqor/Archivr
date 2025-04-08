@@ -66,8 +66,8 @@ interface likedMediaProps {
   title: string;
   thumbnail_url: string;
   rating: number;
-  like_count: number;
-  avg_rating: number;
+  likes: number;
+  userRating: number; // avg rating
   user_rating: number;
   is_liked: number;
 }
@@ -954,6 +954,8 @@ export default function ProfilePage() {
                             title: media.title,
                             thumbnail_url: media.thumbnail_url,
                             rating: media.rating,
+                            likes: media.likes,
+                            userRating: media.userRating,
                           }}
                           className="w-10/12"
                         />
@@ -1078,7 +1080,11 @@ export default function ProfilePage() {
                     >
                       <ThumbnailPreview
                         key={likedMedia.id}
-                        media={likedMedia}
+                        media={{
+                          ...likedMedia,
+                          likes: likedMedia.likes,
+                          userRating: likedMedia.userRating,
+                        }}
                         className="w-full"
                       />
                       <div className="flex items-center gap-1 text-xl sm:text-2xl">

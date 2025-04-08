@@ -1,14 +1,14 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar, Mousewheel, Autoplay } from "swiper/modules";
 import ThumbnailPreview from "./ThumbnailPreview";
-import { TMedia } from "@/types/media";
+import { TMedia, TMediaStats } from "@/types/media";
 
 import "swiper/css";
 import "swiper/css/scrollbar";
 import { Skeleton } from "./ui/skeleton";
 
 export interface MediaCarouselProps {
-  media: TMedia[] | undefined;
+  media: (TMedia & TMediaStats)[] | undefined;
   spaceBetweenMobile?: number;
   spaceBetweenDesktop: number;
   slidesPerViewMobile?: number;

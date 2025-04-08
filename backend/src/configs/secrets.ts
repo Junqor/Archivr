@@ -1,4 +1,4 @@
-import z, { EMPTY_PATH } from "zod";
+import z from "zod";
 import dotenv from "dotenv";
 dotenv.config();
 

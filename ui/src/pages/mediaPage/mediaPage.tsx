@@ -45,6 +45,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import MediaCarousel from "@/components/MediaCarousel";
 import { Separator } from "@/components/ui/separator";
 import { slugify } from "@/utils/slugify";
+import { LoadingScreen } from "../loadingScreen";
+import { ListDropdown } from "./components/listDropdown";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -98,7 +100,7 @@ export function MediaPage() {
   });
 
   const { data: ratingAndReview } = useQuery({
-    queryKey: ["media", id, "ratingAndReview"],
+    queryKey: ["media", id, "ratingAndReview", user?.id],
     queryFn: () => getUserReviewAndRating(parseInt(id as string)),
     enabled: !!user,
   });
@@ -129,7 +131,7 @@ export function MediaPage() {
     updateLikes();
   };
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <LoadingScreen />;
   if (error) return <div>Error: {error.message}</div>;
 
   // Get the watch provider data for the selected region
@@ -150,25 +152,34 @@ export function MediaPage() {
           }}
         >
           <div
-            className="h-full w-full"
+            className="absolute h-full w-full"
             style={{
               // Vignette effect
               background:
-                "radial-gradient(ellipse at center, rgba(13,13,13,0) 0%,rgba(13,13,13,0.8) 70%,rgba(13,13,13,1) 100%)",
+                "radial-gradient(ellipse at center, rgba(13,13,13,0) 0%,rgba(13,13,13,0.8) 80%,rgba(13,13,13,1) 100%)",
+            }}
+          />
+          <div
+            className="absolute h-full w-full"
+            style={{
+              // Bottom fade
+              background:
+                "linear-gradient(to top, rgba(13,13,13,1) 0%,rgba(13,13,13,0) 30%",
             }}
           />
         </div>
       )}
-      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:h-96">
+      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:min-h-96">
         {/* Poster Image */}
-        <div className="relative z-10 order-2 w-1/3 sm:order-1 sm:w-1/4">
+        <div className="relative z-10 order-2 flex h-full w-1/3 flex-col gap-2 sm:order-1 sm:w-1/4">
           <img
             src={data.thumbnail_url}
             alt="Poster Thumbnail"
-            className="max-h-full max-w-full rounded-lg object-scale-down shadow-lg"
+            className="max-w-full rounded-lg border border-gray/25 object-scale-down"
             width="680"
             height="1000"
           />
+          {!!user && <ListDropdown className="hidden sm:flex" />}
         </div>
         {/* Media Info Section */}
         <section className="relative order-1 flex w-2/3 flex-col items-start justify-start overflow-hidden sm:order-2 sm:w-1/2">
@@ -199,11 +210,11 @@ export function MediaPage() {
             {data.description}
           </p>
           {/* Play Methbreaker */}
-          {
-            data.id === 10014 && <div className="hidden md:flex">
-            <PlayMethbreaker/>
+          {data.id === 10014 && (
+            <div className="hidden md:flex">
+              <PlayMethbreaker />
             </div>
-          }
+          )}
           <div className="flex flex-row">
             <Button
               className="mr-2 flex-row space-x-2 pl-0"
@@ -229,6 +240,7 @@ export function MediaPage() {
               <h4>Tell a Friend</h4>
             </Button>
           </div>
+          {!!user && <ListDropdown className="my-2 flex w-2/3 sm:hidden" />}
         </section>
         {/* Write Review Section */}
         <section className="relative z-10 order-3 hidden h-full w-1/4 flex-col space-y-2 sm:flex">
@@ -259,7 +271,11 @@ export function MediaPage() {
           <Textarea
             placeholder={"Write your thoughts and opinions for others to see"}
             className={cn(
+<<<<<<< HEAD
               "h-full resize-none border-neutral-500",
+=======
+              "h-full resize-none border-neutral-500 focus:border-white sm:min-h-56",
+>>>>>>> a851d936347f7c247b85c6e46e8e753eb938c2ab
               userWasSilly && "border-red-500",
             )}
             value={review}

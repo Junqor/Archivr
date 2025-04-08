@@ -1,7 +1,4 @@
 // ThumbnailPreview.tsx
-
-import { useEffect, useState } from "react";
-import { getLikes, getUserRating } from "@/api/media";
 import { Link } from "react-router-dom";
 import {
   FavoriteRounded,
@@ -10,7 +7,6 @@ import {
 } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
 import { cn } from "@/lib/utils";
-import { LoadingSpinner } from "./ui/loading-spinner";
 
 export type TThumbnailPreview = {
   media: {
@@ -18,29 +14,13 @@ export type TThumbnailPreview = {
     title: string;
     thumbnail_url: string | null;
     rating: number | null;
+    likes: number;
+    userRating: number | null;
   };
   className?: string;
 };
 
 function ThumbnailPreview({ media, className }: TThumbnailPreview) {
-  const [likes, setLikes] = useState<number | null>(null);
-  const [userRating, setUserRating] = useState<number | null | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    async function fetchLikes() {
-      const likes = await getLikes({ mediaId: media.id.toString() });
-      setLikes(likes);
-    }
-    async function fetchUserRating() {
-      const userRating = await getUserRating({ mediaId: media.id.toString() });
-      setUserRating(userRating);
-    }
-    fetchLikes();
-    fetchUserRating();
-  }, [media.id]);
-
   return (
     <div
       title={media.title}
@@ -67,19 +47,16 @@ function ThumbnailPreview({ media, className }: TThumbnailPreview) {
         </h4>
         <div className="grid grid-cols-2 place-items-center gap-1">
           <SignalCellularAlt fontSize="medium" />
-          <p>{media.rating ? formatInteger(media.rating) : "~"}</p>
+          <p>{media.rating ? formatInteger(media.rating) : "-"}</p>
           <StarRounded fontSize="medium" />
-          {userRating !== undefined ? (
-            <p>{userRating ? userRating / 2 : "~"}/5</p>
-          ) : (
-            <LoadingSpinner size="small" />
-          )}
+          <p>
+            {media.userRating
+              ? Math.round((media.userRating / 2) * 10) / 10
+              : "-"}
+            /5
+          </p>
           <FavoriteRounded fontSize="medium" />
-          {likes !== null ? (
-            <p>{likes.toString()}</p>
-          ) : (
-            <LoadingSpinner size="small" />
-          )}
+          {media.likes.toString()}
         </div>
       </Link>
     </div>

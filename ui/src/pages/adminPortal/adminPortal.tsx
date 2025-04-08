@@ -3,7 +3,7 @@ import { SearchBar } from "@/pages/adminPortal/components/search-bar";
 import { ActionButtons } from "@/pages/adminPortal/components/action-buttons";
 import { DataTable } from "@/pages/adminPortal/components/data-table";
 import { TMedia } from "@/types/media";
-import { searchMedias } from "@/api/media";
+import { searchMediasFiltered } from "@/api/media";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "./components/data-table-skeleton";
@@ -18,7 +18,7 @@ export default function AdminPortal() {
   const { data: searchResults, isFetching } = useQuery<TMedia[]>({
     queryKey: ["adminSearch", query, pageNumber],
     queryFn: async () => {
-      const data = await searchMedias(query, 10, pageNumber - 1);
+      const data = await searchMediasFiltered(query, 10, pageNumber - 1);
       return data;
     },
   });

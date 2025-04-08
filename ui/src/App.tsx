@@ -1,16 +1,13 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./config/router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./context/auth";
 import { Toaster } from "./components/ui/sonner";
 import { useEffect, useState } from "react";
 import { LoadingScreen } from "./pages/loadingScreen";
 import { SettingsProvider } from "./context/settings";
 import { ThemeProvider } from "./context/theme";
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { refetchOnWindowFocus: false } },
-});
+import { queryClient } from "./utils/trpc";
 
 function App() {
   return (

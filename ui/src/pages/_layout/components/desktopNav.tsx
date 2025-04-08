@@ -1,5 +1,5 @@
 import { getGenres } from "@/api/genre";
-import SearchBar from "@/components/searchBar";
+import SearchBar from "@/pages/_layout/components/searchBar";
 import { UserAvatar } from "@/components/ui/avatar";
 import {
   Dropdown,

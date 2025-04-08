@@ -35,7 +35,7 @@ export async function getUserLikes(
   const avgRatingsSubquery = db
     .select({
       mediaId: ratings.mediaId,
-      avg_rating: sql<number>`ROUND(AVG(${ratings.rating}))`.as("avg_rating"), // Ensuring whole number avg rating
+      avg_rating: sql<number>`AVG(${ratings.rating})`.as("avg_rating"),
     })
     .from(ratings)
     .groupBy(ratings.mediaId)
@@ -47,8 +47,8 @@ export async function getUserLikes(
       title: media.title,
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
-      like_count: count(likes.id).as("like_count"),
-      avg_rating: avgRatingsSubquery.avg_rating,
+      likes: count(likes.id).as("like_count"),
+      userRating: avgRatingsSubquery.avg_rating,
       user_rating: ratings.rating,
       is_liked: exists(
         db

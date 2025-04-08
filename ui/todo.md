@@ -35,7 +35,7 @@
 - ~~add red outline for incorrect sign in details instead of erasing inputs~~
 - ~~use react query for fetching movies~~
 - ~~Loading screen~~
-- show movie poster in search bar
+- ~~show movie poster in search bar~~
 
 - ~~FIX SIGN UP~~
 - ~~LIKING RERENDERING~~
@@ -53,7 +53,8 @@
 - ~~(maybe) add more padding/spacing to home page~~
 - make stats clickable
 - ~~change dropdown order (move admin/mod portal to bottom)~~
-- [bug] profile page favorites not getting popularity score
+- ~~[bug] profile page favorites not getting popularity score~~
 - ~~[bug] loading screen on activity page~~
 - Recommendations page
   - 3+ recommended carousels for most recent highly rated media
+- switch 'because you watched' to use tmdb api

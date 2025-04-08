@@ -10,3 +10,8 @@ export type TMedia = {
   category: string;
   runtime: number;
 };
+
+export type TMediaStats = {
+  likes: number;
+  userRating: number | null; // average user rating
+};

@@ -43,6 +43,8 @@ export default function FullActivity({
                         title: media?.title || "",
                         thumbnail_url: media?.thumbnail_url || "",
                         rating: media?.rating || 0,
+                        userRating: media?.userRating || null,
+                        likes: media?.like_count || 0,
                       }}
                       className="w-full"
                     />
@@ -129,6 +131,8 @@ export default function FullActivity({
                         title: media?.title || "",
                         thumbnail_url: media?.thumbnail_url || "",
                         rating: media?.rating || 0,
+                        userRating: media?.userRating || 0,
+                        likes: media?.like_count || 0,
                       }}
                       className="w-full"
                     />

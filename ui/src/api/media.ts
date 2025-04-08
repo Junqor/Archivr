@@ -1,25 +1,27 @@
-import { TMedia } from "@/types/media";
+import { TMedia, TMediaStats } from "@/types/media";
 import { getAuthHeader } from "@/utils/authHeader";
 
 // Search for media(s) by title
-export const searchMedias = async (
+export const searchMediasFiltered = async (
   query: string,
   limit: number = 5,
   offset: number = 0,
+  sortBy: "alphabetical" | "release_date" | "popularity" = "popularity",
+  order: "asc" | "desc" = "desc",
 ) => {
   if (!query) {
     return []; // Do not search if no query is provided
   }
 
-  const url = import.meta.env.VITE_API_URL + "/search/media";
+  const url =
+    import.meta.env.VITE_API_URL +
+    `/search/media/filter?q=${query}&limit=${limit}&offset=${offset}&sortBy=${sortBy}&order=${order}`;
 
   try {
     const response = await fetch(url, {
-      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query, limit, offset }),
     });
 
     if (!response.ok) {
@@ -35,7 +37,7 @@ export const searchMedias = async (
       throw new Error("Failed to fetch media");
     }
 
-    return data.media;
+    return data.media as (TMedia & TMediaStats)[];
   } catch (error) {
     console.error(error);
     return [];
@@ -61,10 +63,10 @@ export const searchMedia = async ({ id }: { id: string }) =>
     },
   );
 
-export const getMostPopular = async (): Promise<TMedia[]> => {
+export const getMostPopular = async () => {
   const response = await fetch(import.meta.env.VITE_API_URL + "/media/popular");
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media as (TMedia & TMediaStats)[];
 };
 
 export type TRecentlyReviewed = {
@@ -73,6 +75,8 @@ export type TRecentlyReviewed = {
     title: string;
     thumbnail_url: string;
     rating: number;
+    userRating: number | null;
+    likes: number;
   };
   user: {
     userId: number;
@@ -99,8 +103,8 @@ export const getRecentlyReviewed = async (): Promise<TRecentlyReviewed> => {
 };
 
 type TrendingResponse = {
-  movies: TMedia[];
-  shows: TMedia[];
+  movies: (TMedia & TMediaStats)[];
+  shows: (TMedia & TMediaStats)[];
 };
 
 export const getTrending = async (): Promise<TrendingResponse> => {
@@ -114,7 +118,7 @@ export const getTrending = async (): Promise<TrendingResponse> => {
 export const getTrendingPaginated = async (
   type: "movie" | "tv",
   page: number,
-): Promise<TMedia[]> => {
+): Promise<(TMedia & TMediaStats)[]> => {
   const response = await fetch(
     import.meta.env.VITE_API_URL +
       `/media/trending-paginated?type=${type}&page=${page}`,
@@ -123,20 +127,20 @@ export const getTrendingPaginated = async (
   return data.media;
 };
 
-export const getTopRatedPicks = async (): Promise<TMedia[]> => {
+export const getTopRatedPicks = async () => {
   const response = await fetch(
     import.meta.env.VITE_API_URL + "/media/top-rated-picks",
   );
   const data = await response.json();
-  return data.media;
+  return data.media as (TMedia & TMediaStats)[];
 };
 
-export const getNewForYou = async (userId: number): Promise<TMedia[]> => {
+export const getNewForYou = async (userId: number) => {
   const response = await fetch(
     import.meta.env.VITE_API_URL + "/media/new-for-you" + `?user_id=${userId}`,
   );
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media as (TMedia & TMediaStats)[];
 };
 
 export const getUserStats = async (userId: number) => {
@@ -294,7 +298,7 @@ export const getRecommendedForYou = async (userId: number) => {
       `/media/recommended-for-you/?user_id=${userId}`,
   );
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media as (TMedia & TMediaStats)[];
 };
 
 export const getSimilarToWatched = async (userId: number) => {
@@ -304,7 +308,7 @@ export const getSimilarToWatched = async (userId: number) => {
   );
   const data = await response.json();
   return {
-    media: data.media as TMedia[],
+    media: data.media as (TMedia & TMediaStats)[],
     basedOn: data.basedOn as string,
   };
 };
@@ -314,5 +318,5 @@ export const getRecommendations = async (mediaId: number) => {
     import.meta.env.VITE_API_URL + `/media/recommended/${mediaId}`,
   );
   const data = await response.json();
-  return data.media as TMedia[];
+  return data.media as (TMedia & TMediaStats)[];
 };

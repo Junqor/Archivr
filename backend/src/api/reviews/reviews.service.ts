@@ -7,6 +7,7 @@ import {
   Replies,
   media,
   likes,
+  lists,
 } from "../../db/schema.js";
 import { desc, asc, eq, and, lte, or } from "drizzle-orm/expressions";
 import { UnauthorizedError } from "../../utils/error.class.js";
@@ -46,6 +47,14 @@ export async function updateReview(
           ratingId: ratingId.id,
           createdAt: sql`CURRENT_TIMESTAMP`,
         },
+      });
+
+    // Mark as completed
+    await tx
+      .insert(lists)
+      .values({ user_id: user_id, media_id: media_id, list_name: "completed" })
+      .onDuplicateKeyUpdate({
+        set: { list_name: "completed", updated_at: sql`CURRENT_TIMESTAMP` },
       });
 
     // Try to update the review activity

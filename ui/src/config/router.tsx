@@ -22,6 +22,7 @@ import { ActivityPage } from "@/pages/activityPage/activityPage";
 import ModPortal from "@/pages/modPortal/modPortal";
 import { GenresList } from "@/pages/genrePage/genresList";
 import { MembersPage } from "@/pages/membersPage/membersPage";
+import SearchPage from "@/pages/searchPage/searchPage";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // Error Pages
       {
         path: "/mod",
         element: (
@@ -113,7 +115,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/search",
-        element: <UnderConstruction />,
+        element: <SearchPage />,
       },
       {
         path: "/settings",
