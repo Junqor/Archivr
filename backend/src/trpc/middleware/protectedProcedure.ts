@@ -7,7 +7,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
     logger.info("Missing access token");
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Missing access token",
+      message: "Unauthorized",
     });
   }
 

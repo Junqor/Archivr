@@ -9,14 +9,18 @@ export const createContext = async ({
   res,
 }: trpcExpress.CreateExpressContextOptions) => {
   function getUserFromHeader() {
-    if (req.headers.authorization) {
-      const token = jwt.verify(
-        req.headers.authorization.split(" ")[1],
-        serverConfig.JWT_SECRET
-      ) as TAuthToken;
-      return token.user;
+    try {
+      if (req.headers.authorization) {
+        const token = jwt.verify(
+          req.headers.authorization.split(" ")[1],
+          serverConfig.JWT_SECRET
+        ) as TAuthToken;
+        return token.user;
+      }
+      return null;
+    } catch (error) {
+      return null;
     }
-    return null;
   }
   const user = getUserFromHeader();
 

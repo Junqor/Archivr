@@ -275,7 +275,7 @@ export const userSettings = mysqlTable(
 );
 
 export const lists = mysqlTable(
-  "User_Media_Lists",
+  "Lists",
   {
     user_id: int()
       .notNull()
@@ -283,7 +283,7 @@ export const lists = mysqlTable(
     media_id: int()
       .notNull()
       .references(() => media.id, { onDelete: "cascade" }),
-    list_name: varchar({ length: 20 }).notNull(),
+    list_name: mysqlEnum(["completed", "planning", "watching"]).notNull(),
     created_at: timestamp({ mode: "string" }).defaultNow().notNull(),
     updated_at: timestamp({ mode: "string" }).defaultNow().notNull(),
   },
