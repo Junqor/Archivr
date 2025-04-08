@@ -271,11 +271,7 @@ export function MediaPage() {
           <Textarea
             placeholder={"Write your thoughts and opinions for others to see"}
             className={cn(
-<<<<<<< HEAD
-              "h-full resize-none border-neutral-500",
-=======
-              "h-full resize-none border-neutral-500 focus:border-white sm:min-h-56",
->>>>>>> a851d936347f7c247b85c6e46e8e753eb938c2ab
+              "h-full resize-none border-neutral-500 sm:min-h-56",
               userWasSilly && "border-red-500",
             )}
             value={review}
