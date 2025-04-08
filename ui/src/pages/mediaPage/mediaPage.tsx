@@ -46,6 +46,7 @@ import MediaCarousel from "@/components/MediaCarousel";
 import { Separator } from "@/components/ui/separator";
 import { slugify } from "@/utils/slugify";
 import { LoadingScreen } from "../loadingScreen";
+import { ListDropdown } from "./components/listDropdown";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -99,7 +100,7 @@ export function MediaPage() {
   });
 
   const { data: ratingAndReview } = useQuery({
-    queryKey: ["media", id, "ratingAndReview"],
+    queryKey: ["media", id, "ratingAndReview", user?.id],
     queryFn: () => getUserReviewAndRating(parseInt(id as string)),
     enabled: !!user,
   });
@@ -168,16 +169,17 @@ export function MediaPage() {
           />
         </div>
       )}
-      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:h-96">
+      <section className="relative flex h-auto w-full flex-row gap-x-5 sm:min-h-96">
         {/* Poster Image */}
-        <div className="relative z-10 order-2 w-1/3 sm:order-1 sm:w-1/4">
+        <div className="relative z-10 order-2 flex h-full w-1/3 flex-col gap-2 sm:order-1 sm:w-1/4">
           <img
             src={data.thumbnail_url}
             alt="Poster Thumbnail"
-            className="max-h-full max-w-full rounded-lg object-scale-down shadow-lg"
+            className="max-w-full rounded-lg border border-gray/25 object-scale-down"
             width="680"
             height="1000"
           />
+          {!!user && <ListDropdown className="hidden sm:flex" />}
         </div>
         {/* Media Info Section */}
         <section className="relative order-1 flex w-2/3 flex-col items-start justify-start overflow-hidden sm:order-2 sm:w-1/2">
@@ -238,6 +240,7 @@ export function MediaPage() {
               <h4>Tell a Friend</h4>
             </Button>
           </div>
+          {!!user && <ListDropdown className="my-2 flex w-2/3 sm:hidden" />}
         </section>
         {/* Write Review Section */}
         <section className="relative z-10 order-3 hidden h-full w-1/4 flex-col space-y-2 sm:flex">
@@ -268,7 +271,7 @@ export function MediaPage() {
           <Textarea
             placeholder={"Write your thoughts and opinions for others to see"}
             className={cn(
-              "h-full resize-none border-neutral-500 focus:border-white",
+              "h-full resize-none border-neutral-500 focus:border-white sm:min-h-56",
               userWasSilly && "border-red-500",
             )}
             value={review}

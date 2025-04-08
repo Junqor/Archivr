@@ -10,7 +10,7 @@ import {
 export function PlayMethbreaker() {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button className="bg-[#0088FF]">Play Methbreaker</Button>
       </DialogTrigger>
       <DialogPortal>

@@ -1,0 +1,4 @@
+*.tsx linguist-language=TypeScript
+*.jsx linguist-language=JavaScript
+/dist/* linguist-vendored
+/build/* linguist-vendored

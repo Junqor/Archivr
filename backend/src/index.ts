@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { router } from "./configs/router.js";
 import { logger } from "./configs/logger.js";
+import { trpcMiddleware } from "./trpc/baseRouter.js";
 
 const app = express();
 
@@ -18,12 +19,12 @@ app.use(cors({ origin: "*" }));
 //app.use(loggerMiddleware);
 
 app.use("/api", router); // set base url to /api
+app.use("/api/trpc", trpcMiddleware); // set base url to /api/trpc
 app.use(errorHandler); // Error logging middleware
 
 // Test db connection
 try {
   await testConnection();
-  logger.info("Database connection successful");
   app.listen(PORT, () => {
     logger.info(`ARCHIVR is active and listing on on port ${PORT}`);
   });
