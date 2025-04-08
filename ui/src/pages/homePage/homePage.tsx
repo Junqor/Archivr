@@ -98,7 +98,7 @@ export default function HomePage() {
                 <Info />
               </PopoverTrigger>
               <PopoverContent
-                className="inline-flex w-72 border-white text-sm text-white"
+                className="inline-flex w-72 text-sm"
                 side="top"
                 align="end"
               >

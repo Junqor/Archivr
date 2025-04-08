@@ -109,7 +109,7 @@ export default function ProfileHero({
         </div>
         <div className="flex w-full items-start justify-between gap-5 self-stretch py-1 sm:w-auto sm:flex-col sm:justify-normal">
           {profilePage.instagram && (
-            <div className="flex items-center gap-3 text-[1.2rem] font-medium text-white/75 transition-colors hover:text-white">
+            <div className="flex items-center gap-3 text-[1.2rem] font-medium dark:text-white/75 transition-colors dark:hover:text-white text-black/75 hover:text-purple">
               <Instagram color="inherit" />
               <Link to={profilePage.instagram} target="_blank" rel="noreferrer">
                 Instagram
@@ -117,7 +117,7 @@ export default function ProfileHero({
             </div>
           )}
           {profilePage.youtube && (
-            <div className="flex items-center gap-3 text-[1.2rem] font-medium text-white/75 transition-colors hover:text-white">
+            <div className="flex items-center gap-3 text-[1.2rem] font-medium dark:text-white/75 transition-colors dark:hover:text-white text-black/75 hover:text-purple">
               <YouTube color="inherit" />
               <Link to={profilePage.youtube} target="_blank" rel="noreferrer">
                 YouTube
@@ -125,7 +125,7 @@ export default function ProfileHero({
             </div>
           )}
           {profilePage.tiktok && (
-            <div className="flex items-center gap-3 text-[1.2rem] font-medium text-white/75 transition-colors hover:text-white">
+            <div className="flex items-center gap-3 text-[1.2rem] font-medium dark:text-white/75 transition-colors dark:hover:text-white text-black/75 hover:text-purple">
               <MusicNoteRounded color="inherit" />
               <Link to={profilePage.tiktok} target="_blank" rel="noreferrer">
                 TikTok

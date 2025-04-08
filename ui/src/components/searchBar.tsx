@@ -65,16 +65,16 @@ export default function SearchBar() {
             setIsLoading(true);
             handleSearch(e.target.value);
           }}
-          className="peer border-white/70 pl-8 focus:border-white"
+          className="peer dark:border-white/70 pl-8 dark:focus:border-white border-black/70 focus:border-black"
         />
-        <Search className="peer absolute left-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
+        <Search className="peer absolute left-2 top-1/4 size-5 dark:text-white/70 text-black/70 transition-all dark:peer-focus:text-white peer-focus:text-black" />
         {query && showResults && (
-          <Command className="absolute right-0 top-full mt-1 h-max w-96 rounded-lg border bg-black text-white shadow-md">
+          <Command className="absolute right-0 top-full mt-1 h-max w-96 rounded-lg border dark:bg-black dark:text-white bg-white text-black dark:border-white border-black shadow-md">
             <CommandList>
               <CommandGroup heading="Media">
                 {results.map((media) => (
                   <CommandItem
-                    className="bg-black text-white"
+                    className="dark:bg-black dark:text-white bg-white text-black data-[selected=true]:bg-purple data-[selected=true]:text-white dark:data-[selected=true]:bg-purple dark:data-[selected=true]:text-white"
                     key={media.id}
                     onSelect={() => {
                       setQuery("");
@@ -87,7 +87,7 @@ export default function SearchBar() {
                 {isLoading && (
                   <div className="flex justify-center pt-1.5">
                     <LoadingSpinner
-                      className="items-center justify-center py-1 text-sm text-white/70"
+                      className="items-center justify-center py-1 text-sm dark:text-white/70 text-black/70"
                       size="small"
                     />
                   </div>

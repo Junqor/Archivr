@@ -24,7 +24,7 @@ export function QRCodeDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onClose} modal={false}>
-      <DialogContent className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-min w-fit translate-x-[-50%] translate-y-[-50%] flex-col items-start gap-5 rounded-xl border border-white bg-black p-6 sm:p-8">
+      <DialogContent className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-min w-fit translate-x-[-50%] translate-y-[-50%] flex-col items-start gap-5 rounded-xl border p-6 sm:p-8">
         <DialogTitle className="w-full text-center text-3xl font-light">
           Profile QR Code
         </DialogTitle>

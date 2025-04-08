@@ -178,7 +178,7 @@ export default function FullActivity({
             )}
 
             {act.activityType === "like_review" && (
-              <div className="flex w-full items-center gap-3 self-stretch bg-[#1B1B1A] px-3 py-4">
+              <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-neutral-300 px-3 py-4">
                 {!isSelf && (
                   <div className="flex items-center">
                     <Link
@@ -189,7 +189,7 @@ export default function FullActivity({
                     </Link>
                   </div>
                 )}
-                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
+                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch dark:text-white/75 text-black/75">
                   <p>
                     {isSelf ? (
                       <span className="font-bold">
@@ -224,7 +224,7 @@ export default function FullActivity({
             )}
 
             {act.activityType === "like_media" && (
-              <div className="flex w-full items-center gap-3 self-stretch bg-[#1B1B1A] px-3 py-4">
+              <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-neutral-300 px-3 py-4">
                 {!isSelf && (
                   <div className="flex items-center">
                     <Link
@@ -235,7 +235,7 @@ export default function FullActivity({
                     </Link>
                   </div>
                 )}
-                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
+                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch dark:text-white/75 text-black/75">
                   <p>
                     {isSelf ? (
                       <span className="font-bold">
@@ -263,7 +263,7 @@ export default function FullActivity({
             )}
 
             {act.activityType === "follow" && (
-              <div className="flex w-full items-center gap-3 self-stretch bg-[#1B1B1A] px-3 py-4">
+              <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-neutral-300 px-3 py-4">
                 {!isSelf && (
                   <div className="flex items-center">
                     <Link
@@ -274,7 +274,7 @@ export default function FullActivity({
                     </Link>
                   </div>
                 )}
-                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
+                <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch dark:text-white/75 text-black/75">
                   <p>
                     {isSelf ? (
                       <span className="font-bold">

@@ -47,6 +47,8 @@ import { ratingToStars, ratingToTextStars } from "@/utils/ratingToStars";
 import ReviewList from "./components/reviewList";
 import MiniActivity from "./components/miniActivity";
 import FullActivity from "./components/fullActivity";
+import { useTheme } from "@/context/theme";
+import { THEME } from "@/types/theme";
 
 type Palette = Awaited<ReturnType<typeof getColorPalette>>;
 
@@ -144,6 +146,7 @@ function useFollowingActivityState() {
 export default function ProfilePage() {
   const { user } = useAuth();
   const { username } = useParams();
+  const { theme } = useTheme();
   const mediaLikesParams = useMediaLikesState();
   const mediaReviewsParams = useMediaReviewsState();
   const userActivityParams = useUserActivityState();
@@ -556,14 +559,14 @@ export default function ProfilePage() {
                   <TabList className="flex w-full items-start gap-2 self-stretch sm:w-auto">
                     <TabTrigger
                       value="self"
-                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "self" ? "bg-purple text-white" : "bg-[#1B1B1A] text-muted"} transition-all hover:scale-105 hover:no-underline`}
+                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "self" ? "bg-purple text-white" : "dark:bg-[#1B1B1A] dark:text-muted bg-neutral-300 text-[#1B1B1A]"} transition-all hover:scale-105 hover:no-underline`}
                     >
                       <PersonRounded />
                       {profilePage.displayName || profilePage.username}
                     </TabTrigger>
                     <TabTrigger
                       value="following"
-                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "following" ? "bg-purple text-white" : "bg-[#1B1B1A] text-muted"} transition-all hover:scale-105 hover:no-underline`}
+                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "following" ? "bg-purple text-white" : "dark:bg-[#1B1B1A] dark:text-muted bg-neutral-300 text-[#1B1B1A]"} transition-all hover:scale-105 hover:no-underline`}
                     >
                       <GroupsRounded />
                       Following
@@ -610,12 +613,12 @@ export default function ProfilePage() {
                             )
                           }
                           disabled={userActivityParams.page === 0}
-                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${userActivityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                          className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${userActivityParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
                         >
                           <ChevronLeftRounded />
                         </button>
                         <h3
-                          className={`${userActivityParams.page === 0 ? "text-muted" : "text-white"}`}
+                          className={`${userActivityParams.page === 0 ? "text-muted" : ""}`}
                         >
                           Previous
                         </h3>
@@ -627,7 +630,7 @@ export default function ProfilePage() {
                       />
                       <div className="flex items-center gap-3">
                         <h3
-                          className={`${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : "text-white"}`}
+                          className={`${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : ""}`}
                         >
                           Next
                         </h3>
@@ -641,7 +644,7 @@ export default function ProfilePage() {
                             !userActivity ||
                             userActivity.length < ACTIVITY_PAGE_SIZE
                           } // Disable if no more media
-                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                          className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
                         >
                           <ChevronRightRounded />
                         </button>
@@ -780,7 +783,7 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         handleChangeReviewRating(e.target.value as any)
                       }
-                      className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+                      className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
                     >
                       <option value="">All</option>
                       <option value="10">{ratingToTextStars(10)}</option>
@@ -801,7 +804,7 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         handleChangeReviewSortBy(e.target.value as any)
                       }
-                      className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+                      className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
                     >
                       <option value="when-reviewed">When Reviewed</option>
                       <option value="title">Media Title</option>
@@ -863,12 +866,12 @@ export default function ProfilePage() {
                       )
                     }
                     disabled={mediaReviewsParams.page === 0}
-                    className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${mediaReviewsParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                    className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${mediaReviewsParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
                   >
                     <ChevronLeftRounded />
                   </button>
                   <h3
-                    className={`${mediaReviewsParams.page === 0 ? "text-muted" : "text-white"}`}
+                    className={`${mediaReviewsParams.page === 0 ? "text-muted" : ""}`}
                   >
                     Previous
                   </h3>
@@ -883,7 +886,7 @@ export default function ProfilePage() {
                     className={`${
                       !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
                         ? "text-muted"
-                        : "text-white"
+                        : ""
                     }`}
                   >
                     Next
@@ -895,10 +898,10 @@ export default function ProfilePage() {
                     disabled={
                       !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
                     }
-                    className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${
+                    className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${
                       !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
                         ? "cursor-not-allowed opacity-50"
-                        : "hover:bg-white hover:text-black"
+                        : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"
                     }`}
                   >
                     <ChevronRightRounded />
@@ -938,7 +941,7 @@ export default function ProfilePage() {
                         <div className="pointer-events-none absolute left-0 top-0 z-10 flex size-9 items-center justify-center font-extrabold leading-[2.25rem] md:size-16 md:leading-[2.75rem]">
                           <StarBadgeSVG
                             className="absolute z-10 size-14"
-                            fill={media.pallette.DarkVibrant}
+                            fill={theme == THEME.DARK ? media.pallette.DarkVibrant : media.pallette.LightVibrant}
                           />
                           <h4 className="absolute z-20 font-bold">
                             #{index + 1}
@@ -978,7 +981,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handleChangeLikeRating(e.target.value as any)
                     }
-                    className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+                    className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
                   >
                     <option value="">All</option>
                     <option value="10">{ratingToTextStars(10)}</option>
@@ -999,7 +1002,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handleChangeLikeGenre(e.target.value as any)
                     }
-                    className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+                    className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
                   >
                     <option value="">All</option>
                     {genres?.map((genre) => (
@@ -1020,7 +1023,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handleChangeLikeSortBy(e.target.value as any)
                     }
-                    className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+                    className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
                   >
                     <option value="When Liked">When Liked</option>
                     <option value="Media Title">Media Title</option>
@@ -1099,12 +1102,12 @@ export default function ProfilePage() {
                     handleChangeLikePage(Math.max(0, mediaLikesParams.page - 1))
                   }
                   disabled={mediaLikesParams.page === 0}
-                  className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                  className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:border-white dark:bg-black border-black bg-white"}`}
                 >
                   <ChevronLeftRounded />
                 </button>
                 <h3
-                  className={`${mediaLikesParams.page === 0 ? "text-muted" : "text-white"}`}
+                  className={`${mediaLikesParams.page === 0 ? "text-muted" : ""}`}
                 >
                   Previous
                 </h3>
@@ -1115,7 +1118,7 @@ export default function ProfilePage() {
                   className={`${
                     !mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE
                       ? "text-muted"
-                      : "text-white"
+                      : ""
                   }`}
                 >
                   Next
@@ -1125,7 +1128,7 @@ export default function ProfilePage() {
                     handleChangeLikePage(mediaLikesParams.page + 1)
                   }
                   disabled={!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE} // Disable if no more media
-                  className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                  className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "dark:border-white dark:bg-black border-black bg-white"}`}
                 >
                   <ChevronRightRounded />
                 </button>
