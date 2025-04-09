@@ -5,7 +5,6 @@ import ThumbnailPreview from "@/components/ThumbnailPreview";
 import { ratingToStars, ratingToTextStars } from "@/utils/ratingToStars";
 import { FavoriteBorderRounded, FavoriteRounded } from "@mui/icons-material";
 import { formatInteger } from "@/utils/formatInteger";
-import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { TEnhancedActivity } from "@/api/activity";
 import { cn } from "@/lib/utils";
@@ -172,7 +171,9 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
                 {activity.media?.title}
               </Link>
             </p>
-            <p>{formatDate(activity.activity.createdAt, true)}</p>
+            <p className="text-nowrap">
+              {formatDate(activity.activity.createdAt, true)}
+            </p>
           </div>
         </div>
       )}
@@ -203,7 +204,9 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
                 {activity.media?.title}
               </Link>
             </p>
-            <p>{formatDate(activity.activity.createdAt, true)}</p>
+            <p className="text-nowrap">
+              {formatDate(activity.activity.createdAt, true)}
+            </p>
           </div>
         </div>
       )}
@@ -234,11 +237,12 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
                 {activity.followee?.display_name || activity.followee?.username}
               </Link>
             </p>
-            <p>{formatDate(activity.activity.createdAt, true)}</p>
+            <p className="text-nowrap">
+              {formatDate(activity.activity.createdAt, true)}
+            </p>
           </div>
         </div>
       )}
-      <Separator />
     </React.Fragment>
   );
 }
