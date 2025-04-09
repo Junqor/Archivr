@@ -90,7 +90,9 @@ export default function FullActivity({
                         <h3>{media?.title}</h3>
                       </Link>
                       <p className="hidden w-full leading-loose text-muted sm:block">
-                        {formatDateYear(media?.release_date || "")}
+                        {media?.release_date
+                          ? formatDateYear(media.release_date)
+                          : ""}
                       </p>
                     </div>
                     <p className="w-full flex-[1_0_0] self-stretch text-ellipsis break-words">
