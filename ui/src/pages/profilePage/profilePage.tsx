@@ -148,7 +148,7 @@ export default function ProfilePage() {
   const mediaReviewsParams = useMediaReviewsState();
   const userActivityParams = useUserActivityState();
   const followingActivityParams = useFollowingActivityState();
-  const [background, setBackground] = useState<string>("");
+  const [background, setBackground] = useState<string | undefined>(undefined);
   const [tab, setTab] = useState("profile");
   const [subActivityTab, setActivitySubTab] = useState("self");
 
@@ -176,15 +176,18 @@ export default function ProfilePage() {
         } catch (error) {
           if ((error as Error).name !== "AbortError") {
             console.error("Failed to fetch background:", error);
+            setBackground(undefined);
           }
         }
+      } else {
+        setBackground(undefined);
       }
     };
 
     fetchMediaBackground();
 
     return () => controller.abort(); // Cleanup on unmount
-  }, [favorites]);
+  }, [favorites, username]);
 
   // When tab = "profile", fetch profile tab data
   const { data: profileTab } = useQuery({
