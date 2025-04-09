@@ -36,7 +36,7 @@ export default function ErrorPage() {
   }[error.status ?? 404];
 
   return (
-    <main className="flex flex-col items-center justify-center w-full h-screen gap-2 text-white bg-black">
+    <main className="flex flex-col items-center justify-center w-full h-screen gap-2">
       <section className="flex flex-col items-center justify-center max-w-screen-sm gap-1">
         <section className="flex flex-col items-center justify-center gap-2">
           <h1 className="font-bold">

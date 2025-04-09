@@ -8,7 +8,7 @@ import {
   DropdownItem,
   DropdownSeparator,
 } from "@/components/ui/dropdown";
-import { ThemeSwitch } from "@/components/ui/theme-switch";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { useAuth } from "@/context/auth";
 import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";

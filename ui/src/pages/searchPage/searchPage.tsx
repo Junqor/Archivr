@@ -98,7 +98,7 @@ export default function SearchPage() {
                     id="sort"
                     value={sortBy}
                     onChange={(e) => handleChangeSortBy(e.target.value as any)}
-                    className="border-b-2 border-white bg-black px-2 py-1 hover:cursor-pointer"
+                    className="border-b-2 dark:border-white border-black dark:bg-black bg-white px-2 py-1 hover:cursor-pointer"
                   >
                     <option value="alphabetical">Alphabetical</option>
                     <option value="release_date">Release Date</option>
@@ -141,12 +141,12 @@ export default function SearchPage() {
                 disabled={offSet <= 0}
               >
                 <div
-                  className={`flex items-center justify-center rounded-md border p-1 transition-all duration-300 ${offSet <= 1 ? "cursor-not-allowed border-muted text-muted" : "hover:bg-white hover:text-black"}`}
+                  className={`flex items-center justify-center rounded-md border p-1 transition-all duration-300 ${offSet <= 1 ? "cursor-not-allowed border-muted text-muted" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white border-black dark:border-white"}`}
                 >
                   <ChevronLeftRounded />
                 </div>
                 <h3
-                  className={`${offSet <= 0 ? "cursor-not-allowed text-muted" : "text-white"}`}
+                  className={`${offSet <= 0 ? "cursor-not-allowed text-muted" : ""}`}
                 >
                   Previous
                 </h3>
@@ -157,8 +157,8 @@ export default function SearchPage() {
                 className="flex items-center gap-3"
                 disabled={results.length < 30}
               >
-                <h3 className="text-white">Next</h3>
-                <div className="flex items-center justify-center rounded-md border p-1 transition-all duration-300 hover:bg-white hover:text-black">
+                <h3 className="dark:text-white text-black">Next</h3>
+                <div className="flex items-center justify-center rounded-md border p-1 transition-all duration-300 dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white border-black dark:border-white">
                   <ChevronRightRounded />
                 </div>
               </button>

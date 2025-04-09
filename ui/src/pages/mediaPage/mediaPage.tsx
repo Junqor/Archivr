@@ -47,6 +47,8 @@ import { Separator } from "@/components/ui/separator";
 import { slugify } from "@/utils/slugify";
 import { LoadingScreen } from "../loadingScreen";
 import { ListDropdown } from "./components/listDropdown";
+import { useTheme } from "@/context/theme";
+import { THEME } from "@/types/theme";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -55,6 +57,7 @@ export function MediaPage() {
     return <Navigate to="/404" />;
   }
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState("");
   const [userWasSilly, setUserWasSilly] = useState(false);
@@ -459,12 +462,10 @@ export function MediaPage() {
                   <a
                     target="_blank"
                     href={`https://www.thetvdb.com/${data.category === "tv_show" ? "series" : "movies"}/${slugify(data.title)}`}
-                    className="flex h-full w-auto"
+                    className="flex h-full w-auto pl-4"
                   >
                     <img
-                      src="https://www.thetvdb.com/images/logo.svg"
-                      height="54"
-                      width="100"
+                      src={theme == THEME.DARK?"https://www.thetvdb.com/images/attribution/logo1.png":"https://www.thetvdb.com/images/attribution/logo2.png"}
                     />
                   </a>
                 )}

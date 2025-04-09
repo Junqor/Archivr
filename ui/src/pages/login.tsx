@@ -93,9 +93,9 @@ export function Login() {
 
   // Return the login popup component
   return (
-    <main className="flex h-screen w-screen flex-row overflow-y-auto bg-black font-normal">
+    <main className="flex h-screen w-screen flex-row overflow-y-auto font-normal">
       <link rel="preload" as="image" href={loginBackground}></link>
-      <section className="hidden h-full w-full bg-black sm:block">
+      <section className="hidden h-full w-full sm:block">
         <div className="flex h-full w-full flex-col items-center justify-center gap-4">
           <div className="flex flex-col items-center">
             <h1 className="font-bold">
@@ -112,7 +112,7 @@ export function Login() {
             </Link>
             <Link
               to="/random" // Link to the random media page
-              className="box-border flex items-center justify-center rounded-full border border-white bg-transparent px-6 py-1 transition-colors hover:bg-white hover:text-black"
+              className="box-border flex items-center justify-center rounded-full border dark:border-white border-black bg-transparent px-6 py-1 transition-colors dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"
             >
               Random Media
             </Link>
@@ -122,7 +122,7 @@ export function Login() {
       <section className="flex h-full w-full flex-col items-center justify-center gap-4 bg-login-bg bg-cover bg-left bg-no-repeat px-8 py-4 sm:w-fit sm:border-l-2 sm:border-gray sm:px-32 sm:py-8">
         <LazyMotion strict features={loadFeatures}>
           <m.div
-            className="w-max max-w-sm overflow-hidden rounded-lg bg-black p-0"
+            className="w-max max-w-sm overflow-hidden rounded-lg dark:bg-black bg-white p-0"
             layout
             transition={{ duration: 0.1 }}
           >
@@ -231,16 +231,16 @@ export function Login() {
                 <div className="flex w-full flex-row">
                   <button
                     className={`${
-                      isOnLogin ? "bg-purple" : "bg-black"
-                    } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
+                      isOnLogin ? "bg-purple text-white" : "dark:bg-black bg-white"
+                    } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple hover:text-white`}
                     onClick={() => setIsOnLogin(true)}
                   >
                     Sign In
                   </button>
                   <button
                     className={`${
-                      isOnLogin ? "bg-black" : "bg-purple"
-                    } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple`}
+                      isOnLogin ? "dark:bg-black bg-white" : "bg-purple text-white"
+                    } m-0 h-10 w-1/2 rounded-none transition-colors hover:bg-purple hover:text-white`}
                     onClick={() => setIsOnLogin(false)}
                   >
                     Sign Up

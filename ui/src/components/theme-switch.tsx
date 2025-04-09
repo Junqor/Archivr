@@ -1,17 +1,17 @@
 import { useTheme } from "@/context/theme";
 import { THEME } from "@/types/theme";
 import { DarkMode, LightMode, Stars } from "@mui/icons-material";
-import { Badge } from "./badge";
+import { Badge } from "./ui/badge";
 
 const styleLeft = {
     animationName: "to-left",
-    animationDuration: "0.5s",
+    animationDuration: "0.25s",
     animationIterationCount: "1",    
 }
 
 const styleRight = {
     animationName: "to-right",
-    animationDuration: "0.5s",
+    animationDuration: "0.25s",
     animationIterationCount: "1",
     paddingLeft: "1.361rem",
 }
@@ -46,12 +46,12 @@ export function ThemeSwitch(){
                 100% {padding-left: 0.125rem;}
             }
             @keyframes appear {
-                0% {scale: 0 0;}
-                50% {scale: 1.2 1.2;}
-                100% {scale: 1 1;}
+                0% {scale: 0 0; padding-right:0rem;}
+                50% {scale: 2 2; padding-right:5rem;}
+                100% {scale: 1 1; padding-right:0rem;}
             }
         "/>
-        {theme==THEME.LIGHT?<span style={styleAppear} className="text-green-500"><Stars></Stars><b>New!</b> Light Mode <Badge className="bg-green-500">BETA</Badge></span>:null}
+        {theme==THEME.LIGHT?<span style={styleAppear} className="text-green-500"><Stars></Stars><b>New!</b> Light Mode <Badge className="bg-green-500 hover:bg-green-500">BETA</Badge></span>:null}
         <div onClick={onClick} style={theme==THEME.DARK?styleRight:styleLeft} className={"flex items-center transition-transform px-[.125rem] w-[3.236rem] h-[2rem] rounded-full outline outline-1 dark:outline-white/5 outline-black/50 cursor-pointer shadow-inner shadow-black/50 dark:shadow-black/100 bg-white dark:bg-white/15"}>
             <div className="flex items-center justify-center w-[1.75rem] h-[1.75rem] bg-white dark:bg-black/0 rounded-full shadow-sm shadow-black/50 dark:shadow-black/100">
                 {

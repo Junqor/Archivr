@@ -29,7 +29,7 @@ export default function Header() {
           to="/"
           className="flex h-full flex-row items-center justify-start gap-3 dark:text-white text-black transition-colors hover:text-purple dark:hover:text-purple"
         >
-          <ArchivrIcon className="dark:flex hidden" sx={{ fontSize: "2.25rem" }}/>
+          <ArchivrIcon sx={{ fontSize: "2.25rem" }}/>
           <h3 className="font-bold"> Archivr </h3>
         </Link>
         <DesktopNav className="hidden md:flex" />
