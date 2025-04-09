@@ -544,7 +544,7 @@ export default function ProfilePage() {
                   Following
                 </button>
               </section>
-              <section className="flex w-full flex-col items-start">
+              <section className="flex w-full flex-col items-start gap-5">
                 <div className="flex w-full flex-col items-start">
                   {activityError ? (
                     <div className="flex w-full items-center justify-center gap-3">
@@ -566,49 +566,49 @@ export default function ProfilePage() {
                       </React.Fragment>
                     ))
                   )}
-                  <section className="flex w-full justify-center gap-5">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() =>
-                          handleChangeActivityPage(
-                            Math.max(0, activityParams.page - 1),
-                          )
-                        }
-                        disabled={activityParams.page === 0}
-                        className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${activityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
-                      >
-                        <ChevronLeftRounded />
-                      </button>
-                      <h3
-                        className={`${activityParams.page === 0 ? "text-muted" : "text-white"}`}
-                      >
-                        Previous
-                      </h3>
-                    </div>
-                    <Separator
-                      orientation="vertical"
-                      className="h-auto"
-                      decorative
-                    />
-                    <div className="flex items-center gap-3">
-                      <h3
-                        className={`${!activity || activity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : "text-white"}`}
-                      >
-                        Next
-                      </h3>
-                      <button
-                        onClick={() =>
-                          handleChangeActivityPage(activityParams.page + 1)
-                        }
-                        disabled={
-                          !activity || activity.length < ACTIVITY_PAGE_SIZE
-                        } // Disable if no more media
-                        className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!activity || activity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
-                      >
-                        <ChevronRightRounded />
-                      </button>
-                    </div>
-                  </section>
+                </div>
+                <div className="flex w-full justify-center gap-5">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() =>
+                        handleChangeActivityPage(
+                          Math.max(0, activityParams.page - 1),
+                        )
+                      }
+                      disabled={activityParams.page === 0}
+                      className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${activityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                    >
+                      <ChevronLeftRounded />
+                    </button>
+                    <h3
+                      className={`${activityParams.page === 0 ? "text-muted" : "text-white"}`}
+                    >
+                      Previous
+                    </h3>
+                  </div>
+                  <Separator
+                    orientation="vertical"
+                    className="h-auto"
+                    decorative
+                  />
+                  <div className="flex items-center gap-3">
+                    <h3
+                      className={`${!activity || activity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : "text-white"}`}
+                    >
+                      Next
+                    </h3>
+                    <button
+                      onClick={() =>
+                        handleChangeActivityPage(activityParams.page + 1)
+                      }
+                      disabled={
+                        !activity || activity.length < ACTIVITY_PAGE_SIZE
+                      } // Disable if no more media
+                      className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!activity || activity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
+                    >
+                      <ChevronRightRounded />
+                    </button>
+                  </div>
                 </div>
               </section>
             </div>
