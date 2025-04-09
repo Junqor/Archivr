@@ -22,7 +22,7 @@ export default function ProfileStats({
   following_count,
 }: ProfilePageProps) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="ml-auto flex items-center gap-4">
       <div className="flex items-end gap-2 sm:flex-col sm:items-start">
         <h3>{formatInteger(review_count || 0)}</h3>
         <p className="leading-loose text-muted sm:leading-normal">Reviews</p>

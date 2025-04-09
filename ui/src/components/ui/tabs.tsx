@@ -1,13 +1,13 @@
 import * as React from "react";
-import * as Tabs from "@radix-ui/react-tabs";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "@/lib/utils";
 
 const TabTrigger = React.forwardRef<
-  React.ElementRef<typeof Tabs.Trigger>,
-  React.ComponentPropsWithoutRef<typeof Tabs.Trigger>
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
-  <Tabs.Trigger
+  <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
       "tab-trigger flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium hover:underline",
@@ -19,10 +19,10 @@ const TabTrigger = React.forwardRef<
 TabTrigger.displayName = "TabTrigger";
 
 const TabList = React.forwardRef<
-  React.ElementRef<typeof Tabs.List>,
-  React.ComponentPropsWithoutRef<typeof Tabs.List>
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
-  <Tabs.List
+  <TabsPrimitive.List
     ref={ref}
     className={cn("tab-list flex self-stretch", className)}
     {...props}
@@ -31,23 +31,27 @@ const TabList = React.forwardRef<
 TabList.displayName = "TabList";
 
 const TabContent = React.forwardRef<
-  React.ElementRef<typeof Tabs.Content>,
-  React.ComponentPropsWithoutRef<typeof Tabs.Content>
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
-  <Tabs.Content ref={ref} className={cn("tab-content", className)} {...props} />
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn("tab-content data-[state=active]:pt-5", className)}
+    {...props}
+  />
 ));
 TabContent.displayName = "TabContent";
 
-const TabsContainer = React.forwardRef<
-  React.ElementRef<typeof Tabs.Root>,
-  React.ComponentPropsWithoutRef<typeof Tabs.Root>
+const Tabs = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <Tabs.Root
+  <TabsPrimitive.Root
     ref={ref}
     className={cn("tabs-container flex w-full flex-col items-start", className)}
     {...props}
   />
 ));
-TabsContainer.displayName = "TabsContainer";
+Tabs.displayName = "TabsContainer";
 
-export { TabsContainer, TabTrigger, TabList, TabContent };
+export { Tabs, TabTrigger, TabList, TabContent };

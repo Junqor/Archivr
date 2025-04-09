@@ -138,6 +138,7 @@ export const getUserTopMedia = async (username: string, limit = 10) => {
 
 export const getUserActivity = async (
   username: string,
+  type: "self" | "following",
   limit = 15,
   offset = 0,
 ) => {
@@ -152,38 +153,7 @@ export const getUserActivity = async (
   const { userId } = await userIdResponse.json();
 
   const url = new URL(
-    `${import.meta.env.VITE_API_URL}/activity/user/${userId}`,
-  );
-  url.searchParams.append("limit", limit.toString());
-  url.searchParams.append("offset", offset.toString());
-
-  const result = await fetch(url.toString());
-
-  if (!result.ok) {
-    throw { status: 404, message: "User not found" };
-  }
-
-  const data = await result.json();
-  return data.activity as TEnhancedActivity[];
-};
-
-export const getUserFollowingActivity = async (
-  username: string,
-  limit = 15,
-  offset = 0,
-) => {
-  const userIdResponse = await fetch(
-    import.meta.env.VITE_API_URL + `/user/${username}/id`,
-  );
-
-  if (!userIdResponse.ok) {
-    throw { status: 404, message: "User not found" };
-  }
-
-  const { userId } = await userIdResponse.json();
-
-  const url = new URL(
-    `${import.meta.env.VITE_API_URL}/activity/user/${userId}/following`,
+    `${import.meta.env.VITE_API_URL}/activity/user/${userId}${type === "self" ? "" : `/following`}`,
   );
   url.searchParams.append("limit", limit.toString());
   url.searchParams.append("offset", offset.toString());

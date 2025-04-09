@@ -1,7 +1,7 @@
 import { getPaginatedActivity } from "@/api/activity";
 import { Button } from "@/components/ui/button";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { ActivityBox } from "./activityBox";
+import { ActivityBox } from "../../../components/activityBox";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
