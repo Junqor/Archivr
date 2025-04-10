@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
-import { ArchivrIcon } from "@/components/archivrIcon";
 import { DesktopNav } from "./desktopNav";
 import { MobileNav } from "./mobileNav";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth";
 import { is_user_banned } from "@/api/moderation";
 import { BANner } from "./ban-alert";
+import { ArchivrLogo } from "./archivr-logo";
 
 export default function Header() {
   const { user } = useAuth();
@@ -25,13 +24,7 @@ export default function Header() {
   return (
     <header className="sticky left-0 top-0 z-50 outline outline-gray-secondary/50">
       <header className="flex h-auto w-full flex-row items-center justify-between dark:bg-black bg-white px-6 py-3">
-        <Link
-          to="/"
-          className="flex h-full flex-row items-center justify-start gap-3 dark:text-white text-black transition-colors hover:text-purple dark:hover:text-purple"
-        >
-          <ArchivrIcon sx={{ fontSize: "2.25rem" }}/>
-          <h3 className="font-bold"> Archivr </h3>
-        </Link>
+        <ArchivrLogo/>
         <DesktopNav className="hidden md:flex" />
         <MobileNav className="flex md:hidden" />
       </header>
