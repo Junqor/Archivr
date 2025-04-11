@@ -1,4 +1,3 @@
-import { followUser } from "@/api/activity";
 import { TReview } from "@/api/reviews";
 import { deleteReview } from "@/api/reviews";
 import { Button } from "@/components/ui/button";
@@ -8,10 +7,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuth } from "@/context/auth";
+import { useFollowActions } from "@/hooks/useFollowActions";
 import {
   DeleteOutlineOutlined,
   OutlinedFlag,
   PersonAdd,
+  PersonRemove,
 } from "@mui/icons-material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EllipsisVertical } from "lucide-react";
@@ -37,6 +38,12 @@ export const ReviewKebab = ({ review }: ReviewKebabProps) => {
     },
   });
 
+  const { isFollowing, followUser, unfollowUser } = useFollowActions(
+    review.user_id,
+    review.username,
+    user !== null,
+  );
+
   return (
     <Popover>
       <PopoverTrigger>
@@ -56,16 +63,27 @@ export const ReviewKebab = ({ review }: ReviewKebabProps) => {
             <hr className="my-1 w-10/12 self-center justify-self-center" />
           </>
         )}
-        {user && user.id !== review.user_id && (
+        {user && user.id !== review.user_id && isFollowing ? (
+          <>
+            <Button
+              variant="outline"
+              className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+              onClick={() => {
+                unfollowUser({ id: review.user_id });
+              }}
+            >
+              <PersonRemove className="mr-1" /> {`Unfollow ${review.username}`}
+            </Button>
+            <hr className="my-1 w-10/12 self-center justify-self-center" />
+          </>
+        ) : (
           // DO NOT show follow button if the user is the reviewer
           <>
             <Button
               variant="outline"
               className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
               onClick={() => {
-                followUser(review.user_id).then(() =>
-                  toast.success("Followed " + review.username),
-                );
+                followUser({ id: review.user_id });
               }}
             >
               <PersonAdd className="mr-1" /> {`Follow ${review.username}`}
