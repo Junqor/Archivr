@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { protectedProcedure } from "../middleware/protectedProcedure.js";
 import { db } from "../../db/database.js";
-import { activity, follows, lists, users } from "../../db/schema.js";
-import { eq, and, sql } from "drizzle-orm";
+import { activity, follows } from "../../db/schema.js";
+import { eq, and } from "drizzle-orm";
 import { router } from "../init.js";
 import { TRPCError } from "@trpc/server";
 
