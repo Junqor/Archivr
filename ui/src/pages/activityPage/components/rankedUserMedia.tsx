@@ -2,7 +2,7 @@ import { getTopUserMedia, TUserRatedMedia } from "@/api/activity";
 import { StarBadgeSVG } from "@/components/svg/starBadgeSVG";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { MediaPoster } from "./activityBox";
+import { MediaPoster } from "../../../components/activityBox";
 import { Vibrant } from "node-vibrant/browser";
 import { useEffect, useState } from "react";
 

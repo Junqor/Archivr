@@ -1,6 +1,4 @@
 import { UserAvatar } from "@/components/ui/avatar";
-import { followUser } from "@/api/activity";
-import { toast } from "sonner";
 import { ProfileKebab } from "./profileKebab";
 import {
   PublicRounded,
@@ -10,6 +8,7 @@ import {
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { TUser } from "@/types/user";
+import { useFollowActions } from "@/hooks/useFollowActions";
 
 interface ProfileHeroProps {
   user: TUser | null;
@@ -36,6 +35,12 @@ export default function ProfileHero({
   profilePage,
   background,
 }: ProfileHeroProps) {
+  const { isFollowing, followUser, unfollowUser } = useFollowActions(
+    profilePage.id,
+    profilePage.username,
+    user !== null,
+  );
+
   return (
     <section
       className={`flex ${background ? "aspect-video" : ""} w-full items-end gap-5 self-stretch p-5 sm:p-10`}
@@ -69,16 +74,25 @@ export default function ProfileHero({
                 )}
                 <div className="flex items-center justify-center gap-1 self-stretch">
                   {user && user.username !== profilePage.username ? (
-                    <button
-                      className="box-border flex items-center justify-center rounded-full bg-purple px-5 py-1 text-white transition-colors hover:bg-purple/75"
-                      onClick={() => {
-                        followUser(profilePage.id).then(() =>
-                          toast.success("Followed @" + profilePage.username),
-                        );
-                      }}
-                    >
-                      Follow
-                    </button>
+                    isFollowing ? (
+                      <button
+                        className="box-border flex items-center justify-center rounded-full bg-purple px-5 py-1 text-white transition-colors hover:bg-purple/75"
+                        onClick={() => {
+                          unfollowUser({ id: profilePage.id });
+                        }}
+                      >
+                        Following
+                      </button>
+                    ) : (
+                      <button
+                        className="box-border flex items-center justify-center rounded-full bg-purple px-5 py-1 text-white transition-colors hover:bg-purple/75"
+                        onClick={() => {
+                          followUser({ id: profilePage.id });
+                        }}
+                      >
+                        Follow
+                      </button>
+                    )
                   ) : user ? null : (
                     <button
                       className="box-border flex items-center justify-center rounded-full bg-purple px-5 py-1 text-white transition-colors hover:bg-purple/75"
