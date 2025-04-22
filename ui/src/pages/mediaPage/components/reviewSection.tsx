@@ -239,7 +239,7 @@ export const ReviewSection = ({
                   <CollapsedText text={reply.text} max_length={400} />
                   <div className="flex flex-row items-center justify-start gap-x-4">
                     <p className="text-sm text-gray-400">
-                      {formatDate(review.created_at, true)}
+                      {formatDate(reply.created_at, true)}
                     </p>
                     <Button
                       variant="ghost"
