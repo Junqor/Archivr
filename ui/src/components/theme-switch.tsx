@@ -51,7 +51,8 @@ export function ThemeSwitch(){
                 100% {scale: 1 1; padding-right:0rem;}
             }
         "/>
-        {theme==THEME.LIGHT?<span style={styleAppear} className="text-green-500"><Stars></Stars><b>New!</b> Light Mode <Badge className="bg-green-500 hover:bg-green-500">BETA</Badge></span>:null}
+        {/* I suppose this is a little silly */}
+        {/*theme==THEME.LIGHT?<span style={styleAppear} className="text-green-500"><Stars></Stars><b>New!</b> Light Mode <Badge className="bg-green-500 hover:bg-green-500">BETA</Badge></span>:null*/}
         <div onClick={onClick} style={theme==THEME.DARK?styleRight:styleLeft} className={"flex items-center transition-transform px-[.125rem] w-[3.236rem] h-[2rem] rounded-full outline outline-1 dark:outline-white/5 outline-black/50 cursor-pointer shadow-inner shadow-black/50 dark:shadow-black/100 bg-white dark:bg-white/15"}>
             <div className="flex items-center justify-center w-[1.75rem] h-[1.75rem] bg-white dark:bg-black/0 rounded-full shadow-sm shadow-black/50 dark:shadow-black/100">
                 {

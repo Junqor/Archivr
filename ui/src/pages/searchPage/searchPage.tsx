@@ -74,10 +74,10 @@ export default function SearchPage() {
                 placeholder="Start typing to see results..."
                 defaultValue={query}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="peer border-white/70 pl-2 focus:border-white"
+                className="peer dark:border-white/70 pl-2 dark:focus:border-white border-black/70 focus:border-black"
                 autoFocus
               />
-              <Search className="peer absolute right-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
+              <Search className="peer absolute right-2 top-1/4 size-5 dark:text-white/70 text-black/70 transition-all peer-focus:text-black dark:peer-focus:text-white" />
             </div>
           </div>
           {query.length !== 0 && (
