@@ -40,15 +40,12 @@ import MediaGrid from "./components/media4Grid";
 import { ratingToStars, ratingToTextStars } from "@/utils/ratingToStars";
 import ReviewList from "./components/reviewList";
 import MiniActivity from "./components/miniActivity";
-<<<<<<< HEAD
 import FullActivity from "./components/fullActivity";
 import { useTheme } from "@/context/theme";
 import { THEME } from "@/types/theme";
-=======
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import React from "react";
 import { ActivityBox } from "../../components/activityBox";
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
 
 type Palette = Awaited<ReturnType<typeof getColorPalette>>;
 
@@ -421,385 +418,6 @@ export default function ProfilePage() {
               Likes
             </TabTrigger>
           </TabList>
-<<<<<<< HEAD
-        </TabsContainer>
-        <ProfileStats {...profilePage} />
-      </section>
-      <section className="flex w-full items-start gap-5">
-        <TabsContainer value={tab} onValueChange={setTab}>
-          <TabContent value="profile" className="flex w-full items-start gap-5">
-            <div className="flex w-full flex-shrink-0 flex-col items-start gap-5 sm:w-3/4">
-              {favorites && favorites.length > 0 && (
-                <MediaGrid title="Favorite Media" items={favorites} />
-              )}
-              {profileTab && profileTab.likes.length > 0 && (
-                <MediaGrid
-                  title="Likes"
-                  items={profileTab.likes}
-                  onViewAll={() => setTab("likes")}
-                />
-              )}
-              {profileTab && profileTab.recentReviews.length > 0 && (
-                <div className="flex w-full flex-col items-start self-stretch">
-                  <div className="flex flex-col items-start gap-1 self-stretch">
-                    <div className="flex w-full items-start justify-between gap-2 self-stretch">
-                      <h4 className="text-muted">Recent Reviews</h4>
-                      <button
-                        className="text-muted hover:underline"
-                        onClick={() => setTab("reviews")}
-                      >
-                        <h4>More</h4>
-                      </button>
-                    </div>
-                    <Separator orientation="horizontal" />
-                  </div>
-                  <ReviewList reviews={profileTab.recentReviews} />
-                </div>
-              )}
-              {profileTab && profileTab.popularReviews && (
-                <div className="flex w-full flex-col items-start self-stretch">
-                  <div className="flex flex-col items-start gap-1 self-stretch">
-                    <div className="flex w-full items-start justify-between gap-2 self-stretch">
-                      <h4 className="text-muted">Popular Reviews</h4>
-                      <button
-                        className="text-muted hover:underline"
-                        onClick={() => setTab("reviews")}
-                      >
-                        <h4>More</h4>
-                      </button>
-                    </div>
-                    <Separator orientation="horizontal" />
-                  </div>
-                  <ReviewList reviews={profileTab.popularReviews} />
-                </div>
-              )}
-            </div>
-            <div className="hidden w-1/4 flex-[1_0_0] flex-col items-start gap-3 sm:flex">
-              {profileTab && profileTab.recentActivity && (
-                <div className="flex w-full flex-col items-start gap-3 self-stretch">
-                  <div className="flex flex-col items-start gap-1 self-stretch">
-                    <div className="flex w-full items-start justify-between gap-2 self-stretch">
-                      <h4 className="text-muted">Activity</h4>
-                      <button
-                        className="text-muted hover:underline"
-                        onClick={() => setTab("activity")}
-                      >
-                        <h4>More</h4>
-                      </button>
-                    </div>
-                    <Separator orientation="horizontal" />
-                  </div>
-                  <MiniActivity activity={profileTab.recentActivity} />
-                </div>
-              )}
-              {userFollows && userFollows.length > 0 && (
-                <div className="flex w-full flex-col items-start gap-3 self-stretch">
-                  <div className="flex flex-col items-start gap-1 self-stretch">
-                    <div className="flex w-full items-start justify-between gap-2 self-stretch">
-                      <h4 className="text-muted">Following</h4>
-                      <button
-                        className="text-muted hover:underline"
-                        onClick={() => setTab("activity")}
-                      >
-                        <h4>More</h4>
-                      </button>
-                    </div>
-                    <Separator orientation="horizontal" />
-                  </div>
-                  <div className="flex w-full flex-wrap content-start items-start gap-2 self-stretch">
-                    {userFollows.map((follow: followProps) => (
-                      <Link
-                        to={`/profile/${follow.username}`}
-                        key={follow.id}
-                        className="flex items-center gap-2"
-                        title={follow.displayName || follow.username}
-                      >
-                        <UserAvatar
-                          user={{
-                            username: follow.username,
-                            avatar_url: follow.avatarUrl,
-                            role: follow.role,
-                          }}
-                          className="size-[2.9rem] border border-muted"
-                        />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </TabContent>
-          <TabContent
-            value="activity"
-            className="flex w-full items-start gap-5"
-          >
-            <div className="flex w-full flex-shrink-0 flex-col items-start gap-5 sm:w-3/4">
-              <section className="flex w-full items-center justify-end self-stretch">
-                <TabsContainer
-                  value={subActivityTab}
-                  onValueChange={setActivitySubTab}
-                >
-                  <TabList className="flex w-full items-start gap-2 self-stretch sm:w-auto">
-                    <TabTrigger
-                      value="self"
-                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "self" ? "bg-purple text-white" : "dark:bg-[#1B1B1A] dark:text-muted bg-neutral-300 text-[#1B1B1A]"} transition-all hover:scale-105 hover:no-underline`}
-                    >
-                      <PersonRounded />
-                      {profilePage.displayName || profilePage.username}
-                    </TabTrigger>
-                    <TabTrigger
-                      value="following"
-                      className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${subActivityTab === "following" ? "bg-purple text-white" : "dark:bg-[#1B1B1A] dark:text-muted bg-neutral-300 text-[#1B1B1A]"} transition-all hover:scale-105 hover:no-underline`}
-                    >
-                      <GroupsRounded />
-                      Following
-                    </TabTrigger>
-                  </TabList>
-                </TabsContainer>
-              </section>
-              <section className="flex w-full flex-col items-start">
-                <TabsContainer
-                  value={subActivityTab}
-                  onValueChange={setActivitySubTab}
-                >
-                  <TabContent
-                    value="self"
-                    className="flex w-full flex-col items-start gap-5"
-                  >
-                    {activityError && (
-                      <div className="flex w-full items-center justify-center gap-3">
-                        <h4 className="text-red">Failed to fetch activity</h4>
-                        <button
-                          onClick={() => activityRefetch()}
-                          className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
-                        >
-                          Retry
-                        </button>
-                      </div>
-                    )}
-                    {isActivityFetching || isActivityPending ? (
-                      [...Array(15)].map((_, i) => (
-                        <Skeleton
-                          key={i}
-                          className="flex w-full items-start gap-3"
-                        />
-                      ))
-                    ) : (
-                      <FullActivity activity={userActivity || []} isSelf />
-                    )}
-                    <section className="flex w-full justify-center gap-5">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() =>
-                            handleChangeActivityPage(
-                              Math.max(0, userActivityParams.page - 1),
-                            )
-                          }
-                          disabled={userActivityParams.page === 0}
-                          className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${userActivityParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
-                        >
-                          <ChevronLeftRounded />
-                        </button>
-                        <h3
-                          className={`${userActivityParams.page === 0 ? "text-muted" : ""}`}
-                        >
-                          Previous
-                        </h3>
-                      </div>
-                      <Separator
-                        orientation="vertical"
-                        className="h-auto"
-                        decorative
-                      />
-                      <div className="flex items-center gap-3">
-                        <h3
-                          className={`${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : ""}`}
-                        >
-                          Next
-                        </h3>
-                        <button
-                          onClick={() =>
-                            handleChangeActivityPage(
-                              userActivityParams.page + 1,
-                            )
-                          }
-                          disabled={
-                            !userActivity ||
-                            userActivity.length < ACTIVITY_PAGE_SIZE
-                          } // Disable if no more media
-                          className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${!userActivity || userActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
-                        >
-                          <ChevronRightRounded />
-                        </button>
-                      </div>
-                    </section>
-                  </TabContent>
-                  <TabContent
-                    value="following"
-                    className="flex w-full flex-col items-start gap-5"
-                  >
-                    {followingActivityError && (
-                      <div className="flex w-full items-center justify-center gap-3">
-                        <h4 className="text-red">Failed to fetch activity</h4>
-                        <button
-                          onClick={() => followingActivityRefetch()}
-                          className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
-                        >
-                          Retry
-                        </button>
-                      </div>
-                    )}
-                    {isFollowingActivityFetching ||
-                    isFollowingActivityPending ? (
-                      [...Array(15)].map((_, i) => (
-                        <Skeleton
-                          key={i}
-                          className="flex w-full items-start gap-3"
-                        />
-                      ))
-                    ) : (
-                      <FullActivity
-                        activity={followingActivity || []}
-                        isSelf={false}
-                      />
-                    )}
-                    <section className="flex w-full justify-center gap-5">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() =>
-                            followingActivityParams.setPage(
-                              Math.max(0, followingActivityParams.page - 1),
-                            )
-                          }
-                          disabled={followingActivityParams.page === 0}
-                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${followingActivityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
-                        >
-                          <ChevronLeftRounded />
-                        </button>
-                        <h3
-                          className={`${followingActivityParams.page === 0 ? "text-muted" : "text-white"}`}
-                        >
-                          Previous
-                        </h3>
-                      </div>
-                      <Separator
-                        orientation="vertical"
-                        className="h-auto"
-                        decorative
-                      />
-                      <div className="flex items-center gap-3">
-                        <h3
-                          className={`${!followingActivity || followingActivity.length < ACTIVITY_PAGE_SIZE ? "text-muted" : "text-white"}`}
-                        >
-                          Next
-                        </h3>
-                        <button
-                          onClick={() =>
-                            followingActivityParams.setPage(
-                              followingActivityParams.page + 1,
-                            )
-                          }
-                          disabled={
-                            !followingActivity ||
-                            followingActivity.length < ACTIVITY_PAGE_SIZE
-                          } // Disable if no more media
-                          className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${!followingActivity || followingActivity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
-                        >
-                          <ChevronRightRounded />
-                        </button>
-                      </div>
-                    </section>
-                  </TabContent>
-                </TabsContainer>
-              </section>
-            </div>
-            <div className="hidden w-1/4 flex-[1_0_0] flex-col items-start gap-3 sm:flex">
-              {userFollows && userFollows.length > 0 && (
-                <div className="flex w-full flex-col items-start gap-3 self-stretch">
-                  <div className="flex flex-col items-start gap-1 self-stretch">
-                    <div className="flex w-full items-start justify-between gap-2 self-stretch">
-                      <h4 className="text-muted">Following</h4>
-                      <button
-                        className="text-muted hover:underline"
-                        onClick={() => setTab("activity")}
-                      >
-                        <h4>More</h4>
-                      </button>
-                    </div>
-                    <Separator orientation="horizontal" />
-                  </div>
-                  <div className="flex w-full flex-wrap content-start items-start gap-2 self-stretch">
-                    {userFollows.map((follow: followProps) => (
-                      <Link
-                        to={`/profile/${follow.username}`}
-                        key={follow.id}
-                        className="flex items-center gap-2"
-                        title={follow.displayName || follow.username}
-                      >
-                        <UserAvatar
-                          user={{
-                            username: follow.username,
-                            avatar_url: follow.avatarUrl,
-                            role: follow.role,
-                          }}
-                          className="size-[2.9rem] border border-muted"
-                        />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </TabContent>
-          <TabContent value="reviews" className="flex w-full items-start gap-5">
-            <div className="flex w-full flex-col items-start gap-5 sm:w-3/4">
-              <section className="flex w-full items-center justify-end self-stretch">
-                <form className="flex flex-col items-center gap-5 sm:flex-row">
-                  <fieldset className="flex items-center gap-3">
-                    <h4>
-                      <label htmlFor="reviewRating">Rating</label>
-                    </h4>
-                    <select
-                      name="reviewRating"
-                      id="reviewRating"
-                      value={mediaReviewsParams.rating ?? ""}
-                      onChange={(e) =>
-                        handleChangeReviewRating(e.target.value as any)
-                      }
-                      className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
-                    >
-                      <option value="">All</option>
-                      <option value="10">{ratingToTextStars(10)}</option>
-                      <option value="8">{ratingToTextStars(8)}</option>
-                      <option value="6">{ratingToTextStars(6)}</option>
-                      <option value="4">{ratingToTextStars(4)}</option>
-                      <option value="2">{ratingToTextStars(2)}</option>
-                    </select>
-                  </fieldset>
-                  <fieldset className="flex items-center gap-3">
-                    <h4>
-                      <label htmlFor="reviewSort">Sort by</label>
-                    </h4>
-                    <select
-                      name="reviewSort"
-                      id="reviewSort"
-                      value={mediaReviewsParams.sortBy}
-                      onChange={(e) =>
-                        handleChangeReviewSortBy(e.target.value as any)
-                      }
-                      className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
-                    >
-                      <option value="when-reviewed">When Reviewed</option>
-                      <option value="title">Media Title</option>
-                      <option value="rating">Media Rating</option>
-                      <option value="release-date">Release Date</option>
-                      <option value="runtime">Runtime</option>
-                      <option value="user-rating">
-                        {profilePage.displayName || profilePage.username}'s
-                        Rating
-                      </option>
-                    </select>
-=======
           <ProfileStats {...profilePage} />
         </section>
 
@@ -820,7 +438,6 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-start gap-1 self-stretch">
                   <div className="flex w-full items-start justify-between gap-2 self-stretch">
                     <h4 className="text-muted">Recent Reviews</h4>
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                     <button
                       className="text-muted hover:underline"
                       onClick={() => setTab("reviews")}
@@ -828,69 +445,6 @@ export default function ProfilePage() {
                       <h4>More</h4>
                     </button>
                   </div>
-<<<<<<< HEAD
-                )}
-                {isReviewsFetching || isReviewsPending ? (
-                  [...Array(15)].map((_, i) => (
-                    <Skeleton
-                      key={i}
-                      className="flex w-full items-start gap-3"
-                    />
-                  ))
-                ) : (
-                  <ReviewList reviews={mediaReviews} />
-                )}
-              </section>
-              <section className="flex w-full justify-center gap-5">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() =>
-                      handleChangeReviewPage(
-                        Math.max(0, mediaReviewsParams.page - 1),
-                      )
-                    }
-                    disabled={mediaReviewsParams.page === 0}
-                    className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${mediaReviewsParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
-                  >
-                    <ChevronLeftRounded />
-                  </button>
-                  <h3
-                    className={`${mediaReviewsParams.page === 0 ? "text-muted" : ""}`}
-                  >
-                    Previous
-                  </h3>
-                </div>
-                <Separator
-                  orientation="vertical"
-                  className="h-auto"
-                  decorative
-                />
-                <div className="flex items-center gap-3">
-                  <h3
-                    className={`${
-                      !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
-                        ? "text-muted"
-                        : ""
-                    }`}
-                  >
-                    Next
-                  </h3>
-                  <button
-                    onClick={() =>
-                      handleChangeReviewPage(mediaReviewsParams.page + 1)
-                    }
-                    disabled={
-                      !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
-                    }
-                    className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${
-                      !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
-                        ? "cursor-not-allowed opacity-50"
-                        : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"
-                    }`}
-                  >
-                    <ChevronRightRounded />
-                  </button>
-=======
                   <Separator orientation="horizontal" />
                 </div>
                 <ReviewList reviews={profileTab.recentReviews} />
@@ -909,7 +463,6 @@ export default function ProfilePage() {
                     </button>
                   </div>
                   <Separator orientation="horizontal" />
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                 </div>
                 <ReviewList reviews={profileTab.popularReviews} />
               </div>
@@ -1004,31 +557,6 @@ export default function ProfilePage() {
                         onClick={() => activityRefetch()}
                         className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
                       >
-<<<<<<< HEAD
-                        <div className="pointer-events-none absolute left-0 top-0 z-10 flex size-9 items-center justify-center font-extrabold leading-[2.25rem] md:size-16 md:leading-[2.75rem]">
-                          <StarBadgeSVG
-                            className="absolute z-10 size-14"
-                            fill={theme == THEME.DARK ? media.pallette.DarkVibrant : media.pallette.LightVibrant}
-                          />
-                          <h4 className="absolute z-20 font-bold">
-                            #{index + 1}
-                          </h4>
-                        </div>
-                        <ThumbnailPreview
-                          key={media.id}
-                          media={{
-                            id: media.id,
-                            title: media.title,
-                            thumbnail_url: media.thumbnail_url,
-                            rating: media.rating,
-                            likes: media.likes,
-                            userRating: media.userRating,
-                          }}
-                          className="w-10/12"
-                        />
-                      </div>
-                    ),
-=======
                         Retry
                       </button>
                     </div>
@@ -1041,7 +569,6 @@ export default function ProfilePage() {
                         <Separator />
                       </React.Fragment>
                     ))
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                   )}
                 </div>
                 <div className="flex w-full justify-center gap-5">
@@ -1166,42 +693,12 @@ export default function ProfilePage() {
                     }
                     className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
                   >
-<<<<<<< HEAD
-                    <option value="">All</option>
-                    {genres?.map((genre) => (
-                      <option key={genre.genre} value={genre.genre}>
-                        {genre.genre}
-                      </option>
-                    ))}
-                  </select>
-                </fieldset>
-                <fieldset className="flex items-center gap-3">
-                  <h4>
-                    <label htmlFor="likeSort">Sort by</label>
-                  </h4>
-                  <select
-                    name="likeSort"
-                    id="likeSort"
-                    value={mediaLikesParams.sortBy}
-                    onChange={(e) =>
-                      handleChangeLikeSortBy(e.target.value as any)
-                    }
-                    className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
-                  >
-                    <option value="When Liked">When Liked</option>
-                    <option value="Media Title">Media Title</option>
-                    <option value="Media Rating">Media Rating</option>
-                    <option value="Media Release Date">Release Date</option>
-                    <option value="Media Runtime">Runtime</option>
-                    <option value="Rating">
-=======
                     <option value="when-reviewed">When Reviewed</option>
                     <option value="title">Media Title</option>
                     <option value="rating">Media Rating</option>
                     <option value="release-date">Release Date</option>
                     <option value="runtime">Runtime</option>
                     <option value="user-rating">
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                       {profilePage.displayName || profilePage.username}'s Rating
                     </option>
                   </select>
@@ -1249,22 +746,13 @@ export default function ProfilePage() {
                       Math.max(0, mediaReviewsParams.page - 1),
                     )
                   }
-<<<<<<< HEAD
-                  disabled={mediaLikesParams.page === 0}
-                  className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:border-white dark:bg-black border-black bg-white"}`}
-=======
                   disabled={mediaReviewsParams.page === 0}
                   className={`flex items-center justify-center rounded-md border border-white p-1 transition-all duration-300 ${mediaReviewsParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-white hover:text-black"}`}
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                 >
                   <ChevronLeftRounded />
                 </button>
                 <h3
-<<<<<<< HEAD
-                  className={`${mediaLikesParams.page === 0 ? "text-muted" : ""}`}
-=======
                   className={`${mediaReviewsParams.page === 0 ? "text-muted" : "text-white"}`}
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                 >
                   Previous
                 </h3>
@@ -1284,10 +772,6 @@ export default function ProfilePage() {
                   onClick={() =>
                     handleChangeReviewPage(mediaReviewsParams.page + 1)
                   }
-<<<<<<< HEAD
-                  disabled={!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE} // Disable if no more media
-                  className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "dark:border-white dark:bg-black border-black bg-white"}`}
-=======
                   disabled={
                     !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
                   }
@@ -1296,7 +780,6 @@ export default function ProfilePage() {
                       ? "cursor-not-allowed opacity-50"
                       : "hover:bg-white hover:text-black"
                   }`}
->>>>>>> aa2f81877c74dbcde6713e51c2e315ddb7735a33
                 >
                   <ChevronRightRounded />
                 </button>
