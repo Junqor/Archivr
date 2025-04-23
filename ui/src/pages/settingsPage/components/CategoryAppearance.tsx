@@ -115,13 +115,17 @@ export function ProfileSettingsCategoryAppearance() {
               onClick={() => handleRemoveFavorite(media)}
             >
               <div
-                className="flex aspect-video w-full flex-[1-0-0] flex-col items-start gap-3 rounded-sm bg-cover bg-center"
+                className="relative flex aspect-video w-full flex-[1-0-0] flex-col items-start gap-3 rounded-sm bg-cover bg-center"
                 style={{
                   backgroundImage: media.background
                     ? `url(${media.background})`
                     : "none",
                 }}
-              ></div>
+              >
+                <div className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/60 opacity-0 transition-opacity hover:opacity-100">
+                  <p className="text-lg font-bold">Remove</p>
+                </div>
+              </div>
               <p>{media.title}</p>
             </div>
           ))}
@@ -161,12 +165,12 @@ export function ProfileSettingsCategoryAppearance() {
                           className="flex flex-col items-start gap-3"
                           onClick={() => handleFavoriteClick(media)}
                         >
-                          <div
-                            className="flex aspect-video w-full rounded-sm bg-muted bg-cover bg-center"
-                            style={{
-                              backgroundImage: `url(${media.background})`,
-                            }}
-                          ></div>
+                          <img
+                            className="flex aspect-video w-full cursor-pointer rounded-sm bg-muted bg-cover bg-center transition-transform duration-300 ease-in-out hover:scale-105"
+                            height="1080"
+                            width="1920"
+                            src={media.background}
+                          />
                           <p>{media.title}</p>
                         </div>
                       ))}
