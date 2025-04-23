@@ -107,7 +107,7 @@ export function ProfileSettingsCategoryAppearance() {
           spot to add a media item to your favorites. You can have a maximum of
           4 favorite media items.
         </p>
-        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid w-full grid-cols-2 gap-3">
           {updatedFavorites.map((media: MediaWithBackground) => (
             <div
               key={media.id}
