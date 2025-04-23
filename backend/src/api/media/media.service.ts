@@ -196,7 +196,7 @@ export async function get_recently_reviewed() {
   const ratingsAlias = alias(ratings, "ratingsAlias");
 
   let rows = await db
-    .selectDistinct({
+    .select({
       media: {
         id: media.id,
         title: media.title,
@@ -233,15 +233,7 @@ export async function get_recently_reviewed() {
         eq(likes.userId, userReviews.userId)
       )
     )
-    .where(
-      // Ensure only the most recent reviews for each media is selected. Still have to write raw sql for this one 🤕
-      sql`UserReviews.created_at = (
-        SELECT MAX(r.created_at)
-        FROM UserReviews r
-        WHERE r.media_id = UserReviews.media_id
-      )`
-    )
-    .groupBy(userReviews.mediaId)
+    .groupBy(media.id, users.id, userReviews.id)
     .orderBy(desc(userReviews.createdAt))
     .limit(8);
 
