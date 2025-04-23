@@ -88,20 +88,20 @@ export function ProfileSettingsCategoryProfile({
                 "h-[200px] w-[200px] cursor-pointer rounded-[200px] bg-neutral-900 bg-cover bg-center"
               }
             >
-              <div className="flex h-[200px] w-[200px] items-center justify-center rounded-[200px] dark:bg-[#44444488] bg-[#CCCCCC88] opacity-0 transition-opacity hover:opacity-100">
+              <div className="flex h-[200px] w-[200px] items-center justify-center rounded-[200px] bg-[#CCCCCC88] opacity-0 transition-opacity hover:opacity-100 dark:bg-[#44444488]">
                 <ImageUp className="size-20"></ImageUp>
               </div>
             </div>
           </DialogTrigger>
           <DialogPortal>
-            <DialogOverlay className="fixed inset-0 dark:bg-[#111111AA] bg-[#EEEEEEAA]" />
+            <DialogOverlay className="fixed inset-0 bg-[#EEEEEEAA] dark:bg-[#111111AA]" />
             <DialogContent>
-              <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-[400px] max-h-[90%] min-w-[360px] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col items-center justify-center rounded-2xl border dark:border-white dark:bg-black border-black bg-white">
+              <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-[400px] max-h-[90%] min-w-[360px] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col items-center justify-center rounded-2xl border border-black bg-white dark:border-white dark:bg-black">
                 <DialogTitle className="absolute top-5">Set Avatar</DialogTitle>
                 <div className="flex flex-col items-center py-10">
                   <div
                     ref={pfp_upload_preview}
-                    className="h-[200px] w-[200px] rounded-[256px] dark:bg-neutral-900 bg-neutral-300 bg-cover bg-center"
+                    className="h-[200px] w-[200px] rounded-[256px] bg-neutral-300 bg-cover bg-center dark:bg-neutral-900"
                   ></div>
                   <DialogDescription asChild>
                     <h4>Preview</h4>
@@ -132,7 +132,7 @@ export function ProfileSettingsCategoryProfile({
               }}
               defaultValue={settings.displayName || ""}
               placeholder={user?.username}
-              className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+              className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500"
               id="display_name"
             />
           </div>
@@ -144,7 +144,7 @@ export function ProfileSettingsCategoryProfile({
             <Input
               disabled
               value={"@" + user?.username}
-              className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+              className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500"
               id="username"
             />
           </div>
@@ -158,7 +158,7 @@ export function ProfileSettingsCategoryProfile({
               }}
               defaultValue={settings.status || ""}
               placeholder="What's on your mind?"
-              className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+              className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500"
               id="status"
             />
           </div>
@@ -173,7 +173,7 @@ export function ProfileSettingsCategoryProfile({
           }}
           defaultValue={settings.bio || ""}
           placeholder="Tell us a little about yourself..."
-          className="flex min-h-[67px] items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+          className="flex min-h-[67px] items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500"
           id="bio"
         ></Textarea>
       </div>
@@ -187,7 +187,7 @@ export function ProfileSettingsCategoryProfile({
             }}
             defaultValue={settings.pronouns || ""}
             placeholder="e.g. She/Her, He/Him, They/Them"
-            className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+            className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
             id="pronouns"
           ></Input>
         </div>
@@ -201,7 +201,7 @@ export function ProfileSettingsCategoryProfile({
             }}
             defaultValue={settings.location || ""}
             placeholder="Earth"
-            className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+            className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
             id="location"
           ></Input>
         </div>
@@ -229,7 +229,7 @@ export function ProfileSettingsCategoryProfile({
         </div>
       </div>
       <h3>Socials</h3>
-      <div className="h-px self-stretch dark:bg-[#7F7F7E] bg-black"></div>
+      <div className="h-px self-stretch bg-black dark:bg-[#7F7F7E]"></div>
       <div className="flex items-start gap-3 self-stretch py-3">
         <div className="flex w-full flex-col gap-[26px] self-stretch py-[5px]">
           <div className="flex w-full flex-col gap-5">
@@ -245,7 +245,7 @@ export function ProfileSettingsCategoryProfile({
                 }}
                 defaultValue={settings.social_instagram || ""}
                 placeholder="https://www.instagram.com/username/"
-                className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+                className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
                 id="social_instagram"
               />
             </div>
@@ -261,7 +261,7 @@ export function ProfileSettingsCategoryProfile({
                 }}
                 defaultValue={settings.social_youtube || ""}
                 placeholder="https://www.youtube.com/@username/"
-                className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+                className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
                 id="social_youtube"
               />
             </div>
@@ -277,7 +277,7 @@ export function ProfileSettingsCategoryProfile({
                 }}
                 defaultValue={settings.social_tiktok || ""}
                 placeholder="https://www.tiktok.com/@username/"
-                className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+                className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
                 id="social_tiktok"
               />
             </div>

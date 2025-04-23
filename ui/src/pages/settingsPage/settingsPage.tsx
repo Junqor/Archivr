@@ -117,39 +117,44 @@ export function ProfileSettings() {
     <>
       <div
         className={
-          "flex min-h-[calc(100vh-100px)] w-full flex-col items-start rounded-3xl border border-black dark:border-white sm:flex-row" +
+          "flex min-h-[calc(100vh-100px)] w-full flex-col items-start rounded-lg border-black sm:flex-row" +
           (isPending ? " hidden" : "")
         }
       >
         <ProfileSettingsMenu
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
-        ></ProfileSettingsMenu>
-        <div className="w-px self-stretch bg-black dark:bg-white"></div>
-        <div className="flex flex-col items-start gap-1 gap-y-5 self-stretch p-5 sm:w-[67%]">
-          <div className="w-full">
-            <h3>{selectedMenu}</h3>
-            <Separator decorative />
+        />
+        <div className="flex flex-col items-start gap-1 gap-y-5 self-stretch p-5 sm:w-3/4">
+          <ProfileSettingsMenuMobile
+            selectedMenu={selectedMenu}
+            setSelectedMenu={setSelectedMenu}
+          />
+          <div className="flex flex-col items-start gap-1 gap-y-5 self-stretch rounded-md p-5 dark:bg-neutral-800">
+            <div className="w-full">
+              <h3>{selectedMenu}</h3>
+              <Separator decorative />
+            </div>
+            {selectedMenu == "Profile" ? (
+              <ProfileSettingsCategoryProfile
+                updateSetting={updateSetting}
+                settings={newSettings}
+              />
+            ) : null}
+            {selectedMenu == "Account" && <ProfileSettingsCategoryAccount />}
+            {selectedMenu == "Appearance" && (
+              <ProfileSettingsCategoryAppearance />
+            )}
+            {selectedMenu == "Activity" && (
+              <ProfileSettingsCategoryActivity
+                updateSetting={updateSetting}
+                settings={newSettings}
+              />
+            )}
+            {selectedMenu == "Help & Support" && (
+              <ProfileSettingsCategoryHelpAndSupport />
+            )}
           </div>
-          {selectedMenu == "Profile" ? (
-            <ProfileSettingsCategoryProfile
-              updateSetting={updateSetting}
-              settings={newSettings}
-            />
-          ) : null}
-          {selectedMenu == "Account" && <ProfileSettingsCategoryAccount />}
-          {selectedMenu == "Appearance" && (
-            <ProfileSettingsCategoryAppearance />
-          )}
-          {selectedMenu == "Activity" && (
-            <ProfileSettingsCategoryActivity
-              updateSetting={updateSetting}
-              settings={newSettings}
-            />
-          )}
-          {selectedMenu == "Help & Support" && (
-            <ProfileSettingsCategoryHelpAndSupport />
-          )}
         </div>
       </div>
       {changedSettingsKeys.size > 0 ? (
@@ -181,41 +186,14 @@ function ProfileSettingsMenu({
   selectedMenu: string;
   setSelectedMenu: (a: (typeof categories)[number]) => void;
 }) {
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
-
   return (
-    <div className="flex min-w-full flex-shrink-0 flex-col sm:min-w-[33%]">
-      <div className="flex items-center justify-between self-stretch border-b border-black px-3 py-5 dark:border-white">
-        <h3>Settings</h3>
+    <div className="hidden min-w-full flex-shrink-0 flex-col sm:flex sm:min-w-[25%]">
+      <div className="flex items-center justify-start gap-2 self-stretch">
         <Settings className="hidden h-[21px] w-[21px] sm:block"></Settings>
-        <Button
-          variant="ghost"
-          className={cn(
-            "bg-white/10 px-1 sm:hidden",
-            categoriesOpen && "text-primary",
-          )}
-          onClick={() => {
-            setCategoriesOpen((categoriesOpen) => !categoriesOpen);
-          }}
-        >
-          <Ellipsis />
-        </Button>
+        <h4>Settings</h4>
       </div>
-      {/* Mobile */}
-      {categoriesOpen && (
-        <div className="flex flex-col gap-y-2 p-2 sm:hidden">
-          {categories.map((category) => (
-            <ProfileSettingsMenuButtonMobile
-              key={category + "-mobile"}
-              category={category}
-              selectedMenu={selectedMenu}
-              setSelectedMenu={setSelectedMenu}
-            />
-          ))}
-        </div>
-      )}
       {/* Desktop */}
-      <div className="hidden flex-col items-start self-stretch sm:flex">
+      <div className="flex-col items-start self-stretch p-2">
         {categories.map((category) => (
           <Fragment key={category + "-desktop"}>
             <ProfileSettingsMenuButton
@@ -227,6 +205,48 @@ function ProfileSettingsMenu({
           </Fragment>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ProfileSettingsMenuMobile({
+  selectedMenu,
+  setSelectedMenu,
+}: {
+  selectedMenu: string;
+  setSelectedMenu: (a: (typeof categories)[number]) => void;
+}) {
+  const [categoriesOpen, setCategoriesOpen] = useState(false); // For mobile
+  return (
+    <div className="relative flex w-full flex-col sm:hidden">
+      <div className="flex">
+        <h4>Settings</h4>
+        <Button
+          variant="ghost"
+          className={cn(
+            "ml-auto bg-white/10 px-1 sm:hidden",
+            categoriesOpen && "text-primary",
+          )}
+          onClick={() => {
+            setCategoriesOpen((categoriesOpen) => !categoriesOpen);
+          }}
+        >
+          <Ellipsis />
+        </Button>
+      </div>
+      {/* Mobile */}
+      {categoriesOpen && (
+        <div className="flex flex-col gap-y-2 overflow-hidden rounded-md p-2 sm:hidden">
+          {categories.map((category) => (
+            <ProfileSettingsMenuButtonMobile
+              key={category + "-mobile"}
+              category={category}
+              selectedMenu={selectedMenu}
+              setSelectedMenu={setSelectedMenu}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -246,11 +266,11 @@ function ProfileSettingsMenuButton({
         setSelectedMenu(category);
       }}
       className={
-        "flex cursor-pointer items-center gap-3 self-stretch border-r-8 border-solid px-3 py-5 transition-colors duration-300 hover:bg-neutral-300 dark:hover:bg-neutral-900 " +
-        (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")
+        "flex cursor-pointer items-center gap-3 self-stretch p-2 transition-colors duration-300 hover:bg-neutral-300 dark:hover:bg-neutral-900 " +
+        (category == selectedMenu ? " bg-neutral-800" : " border-[#7F7F7E]")
       }
     >
-      <h4>{category}</h4>
+      <p>{category}</p>
     </div>
   );
 }

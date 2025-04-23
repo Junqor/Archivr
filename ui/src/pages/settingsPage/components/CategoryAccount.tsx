@@ -15,7 +15,7 @@ export function ProfileSettingsCategoryAccount() {
       <Input
         disabled
         value={email ? email : "???"}
-        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
       ></Input>
       <div className="w-full">
         <h3>Change Password</h3>
@@ -25,19 +25,19 @@ export function ProfileSettingsCategoryAccount() {
       <Input
         type="password"
         placeholder="Enter current password"
-        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
       ></Input>
       <Label>New Password</Label>
       <Input
         type="password"
         placeholder="Enter new password"
-        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
       ></Input>
       <Label>Confirm New Password</Label>
       <Input
         type="password"
         placeholder="Enter new password again"
-        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2"
+        className="flex items-start gap-3 self-stretch rounded-xl border px-4 py-2 dark:placeholder:text-neutral-500 dark:disabled:bg-black/80"
       ></Input>
       <Button className="w-fit self-center">Save Changes</Button>
       <h3>Account Data</h3>
