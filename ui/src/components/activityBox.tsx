@@ -50,7 +50,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               >
                 <UserAvatar user={activity.user} size="small" />
                 <div>
-                  <h4 className="text-ellipsis whitespace-nowrap dark:text-white/80 text-black/80 no-scrollbar group-hover:underline">
+                  <h4 className="text-ellipsis whitespace-nowrap text-black/80 no-scrollbar group-hover:underline dark:text-white/80">
                     {activity.user.display_name || activity.user.username}
                   </h4>
                 </div>
@@ -63,7 +63,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               reviewed{" "}
               <Link
                 to={`/media/${activity.activity.targetId}`}
-                className="text-wrap dark:text-white/80 text-black/80 hover:underline"
+                className="text-wrap text-black/80 hover:underline dark:text-white/80"
               >
                 {activity.media?.title}{" "}
               </Link>
@@ -105,7 +105,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               >
                 <UserAvatar user={activity.user} size="small" />
                 <div>
-                  <h4 className="text-ellipsis whitespace-nowrap dark:text-white/80 text-black/80 no-scrollbar group-hover:underline">
+                  <h4 className="text-ellipsis whitespace-nowrap text-black/80 no-scrollbar group-hover:underline dark:text-white/80">
                     {activity.user.display_name || activity.user.username}
                   </h4>
                 </div>
@@ -118,15 +118,15 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               replied to{" "}
               <Link
                 to={`/profile/${activity.reply?.username}`}
-                className="font-bold dark:text-white/80 text-black/80 hover:underline"
+                className="font-bold text-black/80 hover:underline dark:text-white/80"
               >
                 {activity.reply?.display_name || activity.reply?.username}
                 's
               </Link>{" "}
               {ratingToTextStars(activity.reply?.rating || 0)} review of{" "}
               <Link
-                to={`/media/${activity.activity.targetId}`}
-                className="text-wrap dark:text-white/80 text-black/80 hover:underline"
+                to={`/media/${activity.activity.relatedId}`}
+                className="text-wrap text-black/80 hover:underline dark:text-white/80"
               >
                 {activity.media?.title}{" "}
               </Link>
@@ -139,7 +139,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
       )}
 
       {activity.activity.activityType === "like_review" && (
-        <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-[#E4E4E5] px-3 py-4">
+        <div className="flex w-full items-center gap-3 self-stretch bg-[#E4E4E5] px-3 py-4 dark:bg-[#1B1B1A]">
           <div className="flex items-center">
             <Link
               to={`/profile/${activity.user.username}`}
@@ -179,7 +179,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
       )}
 
       {activity.activity.activityType === "like_media" && (
-        <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-[#E4E4E5] px-3 py-4">
+        <div className="flex w-full items-center gap-3 self-stretch bg-[#E4E4E5] px-3 py-4 dark:bg-[#1B1B1A]">
           <div className="flex items-center">
             <Link
               to={`/profile/${activity.user.username}`}
@@ -212,7 +212,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
       )}
 
       {activity.activity.activityType === "follow" && (
-        <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-[#E4E4E5] px-3 py-4">
+        <div className="flex w-full items-center gap-3 self-stretch bg-[#E4E4E5] px-3 py-4 dark:bg-[#1B1B1A]">
           <div className="flex items-center">
             <Link
               to={`/profile/${activity.user.username}`}

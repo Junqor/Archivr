@@ -14,6 +14,7 @@ import {
   PersonAdd,
   PersonRemove,
 } from "@mui/icons-material";
+import { PopoverClose } from "@radix-ui/react-popover";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EllipsisVertical } from "lucide-react";
 import { toast } from "sonner";
@@ -63,40 +64,48 @@ export const ReviewKebab = ({ review }: ReviewKebabProps) => {
             <hr className="my-1 w-10/12 self-center justify-self-center" />
           </>
         )}
-        {user && user.id !== review.user_id && isFollowing ? (
-          <>
-            <Button
-              variant="outline"
-              className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-              onClick={() => {
-                unfollowUser({ id: review.user_id });
-              }}
-            >
-              <PersonRemove className="mr-1" /> {`Unfollow ${review.username}`}
-            </Button>
-            <hr className="my-1 w-10/12 self-center justify-self-center" />
-          </>
-        ) : (
-          // DO NOT show follow button if the user is the reviewer
-          <>
-            <Button
-              variant="outline"
-              className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-              onClick={() => {
-                followUser({ id: review.user_id });
-              }}
-            >
-              <PersonAdd className="mr-1" /> {`Follow ${review.username}`}
-            </Button>
-            <hr className="my-1 w-10/12 self-center justify-self-center" />
-          </>
-        )}
-        <Button
-          variant="outline"
-          className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-        >
-          <OutlinedFlag className="mr-1" /> Report Post
-        </Button>
+        {user &&
+          user.id !== review.user_id &&
+          (isFollowing ? (
+            <>
+              <Button
+                variant="outline"
+                className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+                onClick={() => {
+                  unfollowUser({ id: review.user_id });
+                }}
+              >
+                <PersonRemove className="mr-1" />{" "}
+                {`Unfollow ${review.username}`}
+              </Button>
+              <hr className="my-1 w-10/12 self-center justify-self-center" />
+            </>
+          ) : (
+            // DO NOT show follow button if the user is the reviewer
+            <>
+              <Button
+                variant="outline"
+                className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+                onClick={() => {
+                  followUser({ id: review.user_id });
+                }}
+              >
+                <PersonAdd className="mr-1" /> {`Follow ${review.username}`}
+              </Button>
+              <hr className="my-1 w-10/12 self-center justify-self-center" />
+            </>
+          ))}
+        <PopoverClose asChild>
+          <Button
+            variant="outline"
+            className="justify-start rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+            onClick={() => {
+              toast.info(`Reported ${review.username}'s post`);
+            }}
+          >
+            <OutlinedFlag className="mr-1" /> Report Post
+          </Button>
+        </PopoverClose>
       </PopoverContent>
     </Popover>
   );

@@ -6,6 +6,7 @@ import {
 } from "@/api/media";
 import { getReviews, updateReview } from "@/api/reviews";
 import { useAuth } from "@/context/auth";
+import { trpc } from "@/utils/trpc";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -106,6 +107,12 @@ export const useMedia = (mediaId: string, userId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["media", mediaId, "reviews"],
         exact: true,
+      });
+      // Refetch list status since it should be completed now
+      queryClient.invalidateQueries({
+        queryKey: trpc.lists.getUsersMediaList.queryOptions({
+          mediaId: parseInt(mediaId),
+        }).queryKey,
       });
     },
   });

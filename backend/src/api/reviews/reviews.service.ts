@@ -28,6 +28,14 @@ export async function updateReview(
       })
       .$returningId();
 
+    // Mark as completed
+    await tx
+      .insert(lists)
+      .values({ user_id: user_id, media_id: media_id, list_name: "completed" })
+      .onDuplicateKeyUpdate({
+        set: { list_name: "completed", updated_at: sql`CURRENT_TIMESTAMP` },
+      });
+
     // Exit early if it was just a rating
     if (new_comment.trim().length < 1) {
       return;
@@ -47,14 +55,6 @@ export async function updateReview(
           ratingId: ratingId.id,
           createdAt: sql`CURRENT_TIMESTAMP`,
         },
-      });
-
-    // Mark as completed
-    await tx
-      .insert(lists)
-      .values({ user_id: user_id, media_id: media_id, list_name: "completed" })
-      .onDuplicateKeyUpdate({
-        set: { list_name: "completed", updated_at: sql`CURRENT_TIMESTAMP` },
       });
 
     // Try to update the review activity

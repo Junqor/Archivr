@@ -7,13 +7,15 @@ import {
 import {
   CopyAllRounded,
   QrCodeRounded,
-  BlockRounded,
   OutlinedFlagRounded,
   MoreVertRounded,
 } from "@mui/icons-material";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
+import { PopoverClose } from "@radix-ui/react-popover";
+import { toast } from "sonner";
+import { useAuth } from "@/context/auth";
 
 export function QRCodeDialog({
   open,
@@ -44,8 +46,9 @@ export function QRCodeDialog({
   );
 }
 
-export function ProfileKebab() {
+export function ProfileKebab({ username }: { username: string }) {
   const [isQRCodeDialogOpen, setIsQRCodeDialogOpen] = useState(false);
+  const { user } = useAuth();
   return (
     <>
       <Popover>
@@ -53,14 +56,19 @@ export function ProfileKebab() {
           <MoreVertRounded />
         </PopoverTrigger>
         <PopoverContent className="flex w-auto flex-col" align="end">
-          <Button
-            variant="outline"
-            className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-            onClick={() => navigator.clipboard.writeText(window.location.href)}
-          >
-            <CopyAllRounded />
-            Copy Profile Link
-          </Button>
+          <PopoverClose asChild>
+            <Button
+              variant="outline"
+              className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Copied to clipboard");
+              }}
+            >
+              <CopyAllRounded />
+              Copy Profile Link
+            </Button>
+          </PopoverClose>
           <Button
             variant="outline"
             className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
@@ -69,20 +77,23 @@ export function ProfileKebab() {
             <QrCodeRounded />
             Show QR Code
           </Button>
-          <Button
-            variant="outline"
-            className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-          >
-            <BlockRounded />
-            Block This Member
-          </Button>
-          <Button
-            variant="outline"
-            className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
-          >
-            <OutlinedFlagRounded />
-            Report This Member
-          </Button>
+          {user &&
+            user.username !== username && ( // Not if user is on their own page
+              <PopoverClose asChild>
+                <Button
+                  variant="outline"
+                  className="flex justify-start gap-2 rounded-sm border-none px-2 py-1 hover:bg-opacity-75"
+                  onClick={() => {
+                    toast.info(
+                      "A firing squad has been dispatched to this member's location",
+                    );
+                  }}
+                >
+                  <OutlinedFlagRounded />
+                  Report This Member
+                </Button>
+              </PopoverClose>
+            )}
         </PopoverContent>
       </Popover>
       <QRCodeDialog

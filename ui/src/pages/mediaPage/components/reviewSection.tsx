@@ -5,7 +5,7 @@ import { ReviewKebab } from "./reviewKebab";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/formatDate";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { likeReview, postReply } from "@/api/reviews";
+import { likeReview, postReply, TReviewResponse } from "@/api/reviews";
 import { toast } from "sonner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -41,29 +41,56 @@ export const ReviewSection = ({
         exact: true,
       });
 
-      const previousData = queryClient.getQueryData<number[]>([
+      const currentUserLikes = queryClient.getQueryData<number[]>([
         "media",
         id,
         "reviews/check-likes",
       ]);
 
-      if (previousData) {
-        queryClient.setQueryData(
-          ["media", id, "reviews/check-likes"],
-          previousData.includes(review.id)
-            ? previousData.filter((id) => id !== review.id)
-            : [...previousData, review.id],
-        );
+      const reviewData = queryClient.getQueryData<TReviewResponse>([
+        "media",
+        id,
+        "reviews",
+      ]);
+
+      if (currentUserLikes && reviewData) {
+        if (currentUserLikes.includes(review.id)) {
+          // If the current user has it liked, then unlike
+          queryClient.setQueryData(
+            ["media", id, "reviews/check-likes"],
+            currentUserLikes.filter((id) => id !== review.id),
+          );
+          queryClient.setQueryData<TReviewResponse>(["media", id, "reviews"], {
+            ...reviewData,
+            reviews: reviewData.reviews.map(
+              (r) =>
+                r.id === userReview.id ? { ...r, likes: r.likes - 1 } : r, // remove a like
+            ),
+          });
+        } else {
+          // Else like it
+          queryClient.setQueryData(
+            ["media", id, "reviews/check-likes"],
+            [...currentUserLikes, review.id],
+          );
+          queryClient.setQueryData<TReviewResponse>(["media", id, "reviews"], {
+            ...reviewData,
+            reviews: reviewData.reviews.map(
+              (r) =>
+                r.id === userReview.id ? { ...r, likes: r.likes + 1 } : r, // add a like
+            ),
+          });
+        }
       }
 
-      return { previousData };
+      return { currentUserLikes };
     },
     onError: (_err, _variables, context) => {
       // If the mutation fails, roll back to the previous value
-      if (context?.previousData) {
+      if (context?.currentUserLikes) {
         queryClient.setQueryData(
           ["media", id, "reviews/check-likes"],
-          context.previousData,
+          context.currentUserLikes,
         );
       }
       if (_err.message === "Unauthorized") {
@@ -146,7 +173,7 @@ export const ReviewSection = ({
   return (
     <section className="flex flex-col">
       {/* Review */}
-      <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary text-white p-4">
+      <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4 text-white">
         <div className="flex flex-row items-center gap-x-2 space-y-0">
           <UserAvatar user={user} size="small" />
           <Link to={`/profile/${user.username}`}>
@@ -220,7 +247,7 @@ export const ReviewSection = ({
                   className="ml-12 h-8 w-px bg-gray-secondary"
                   key={crypto.randomUUID()}
                 />
-                <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary text-white p-4">
+                <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4 text-white">
                   <div
                     key={reply.id}
                     className="flex flex-row items-center gap-x-2 space-y-0"

@@ -85,7 +85,7 @@ export const ListDropdown = ({ className }: { className?: string }) => {
         <SelectItem value="planning">Plan To Watch</SelectItem>
         <button
           onClick={handleRemoveFromList}
-          className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-neutral-100 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-50"
+          className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-neutral-100 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-50 dark:hover:bg-neutral-800 dark:hover:text-neutral-50"
           disabled={!currList}
         >
           Remove From List

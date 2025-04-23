@@ -263,7 +263,7 @@ export function MediaPage() {
               }
               emptyIcon={
                 <StarBorderRounded
-                  className="m-[-3px] dark:text-white/90 text-black/90"
+                  className="m-[-3px] text-black/90 dark:text-white/90"
                   fontSize="inherit"
                 />
               }
@@ -328,7 +328,7 @@ export function MediaPage() {
                 }
                 emptyIcon={
                   <StarBorderRounded
-                    className="m-[-3px] dark:text-white/90 text-black/90"
+                    className="m-[-3px] text-black/90 dark:text-white/90"
                     fontSize="inherit"
                   />
                 }
@@ -364,26 +364,26 @@ export function MediaPage() {
       <section className="relative flex w-full flex-col gap-x-5 sm:flex-row">
         <section className="flex h-full w-full flex-col justify-start sm:w-1/4">
           {/* Media Stats */}
-          <div className="flex flex-row justify-center space-x-4 dark:text-gray-300 text-neutral-800">
+          <div className="flex flex-row justify-center space-x-4 text-neutral-800 dark:text-gray-300">
             <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
-              <AccessTimeRounded className="dark:fill-gray-300 text-neutral-800" />
+              <AccessTimeRounded className="text-neutral-800 dark:fill-gray-300" />
               <h4>{data.runtime}m</h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
-              <CalendarMonthRounded className="dark:fill-gray-300 text-neutral-800" />
+              <CalendarMonthRounded className="text-neutral-800 dark:fill-gray-300" />
               <h4>{formatDateYear(data.release_date)}</h4>
             </div>
             <div className="pr-4 sm:hidden" />
             <div className="flex flex-row items-center justify-center space-x-1">
-              <SignalCellularAlt className="size-5 dark:fill-gray-300 text-neutral-800" />
+              <SignalCellularAlt className="size-5 text-neutral-800 dark:fill-gray-300" />
               <h4>{formatInteger(data.rating)}</h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1">
-              <StarRounded className="size-4 dark:fill-gray-300 text-neutral-800" />
+              <StarRounded className="size-4 text-neutral-800 dark:fill-gray-300" />
               <h4>{userRating ? userRating / 2 : "~"}</h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1">
-              <Heart className="size-4 dark:fill-gray-300 text-neutral-800" />
+              <Heart className="size-4 text-neutral-800 dark:fill-gray-300" />
               <h4>{formatInteger(numLikes)}</h4>
             </div>
           </div>
@@ -465,7 +465,11 @@ export function MediaPage() {
                     className="flex h-full w-auto pl-4"
                   >
                     <img
-                      src={theme == THEME.DARK?"https://www.thetvdb.com/images/attribution/logo1.png":"https://www.thetvdb.com/images/attribution/logo2.png"}
+                      src={
+                        theme == THEME.DARK
+                          ? "https://www.thetvdb.com/images/attribution/logo1.png"
+                          : "https://www.thetvdb.com/images/attribution/logo2.png"
+                      }
                     />
                   </a>
                 )}
@@ -486,9 +490,7 @@ export function MediaPage() {
                 <div className="mt-3 flex flex-col gap-y-4">
                   {!reviewData.reviews.length ? (
                     <>
-                      <h4>
-                        Be the first to write a review!
-                      </h4>
+                      <h4>Be the first to write a review!</h4>
                       <img
                         src={empty}
                         className="w-3/4 justify-self-center sm:h-1/3 sm:w-1/3"
