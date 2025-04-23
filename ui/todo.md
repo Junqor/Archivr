@@ -59,3 +59,5 @@
   - 3+ recommended carousels for most recent highly rated media
 - switch 'because you watched' to use tmdb api
 - Add dynamic "follow" button to user profile
+
+- More favorites

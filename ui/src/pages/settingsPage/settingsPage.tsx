@@ -1,5 +1,5 @@
-import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Ellipsis, Settings } from "lucide-react";
+import { Fragment, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getUserSettings, setUserSettings } from "@/api/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,6 +13,8 @@ import { useAuth } from "@/context/auth";
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useSettings } from "@/context/settings";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -30,6 +32,14 @@ export type TUserSettings = {
   grant_personal_data: number | null;
   show_personalized_content: number | null;
 };
+
+const categories = [
+  "Profile",
+  "Account",
+  "Appearance",
+  "Activity",
+  "Help & Support",
+] as const;
 
 export function ProfileSettings() {
   const [newSettings, setNewSettings] = useState<TUserSettings>({
@@ -51,7 +61,8 @@ export function ProfileSettings() {
   const [changedSettingsKeys, setChangedSettingsKeys] = useState<
     Set<keyof TUserSettings>
   >(new Set());
-  const [selectedMenu, setSelectedMenu] = useState("Profile");
+  const [selectedMenu, setSelectedMenu] =
+    useState<(typeof categories)[number]>("Profile");
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { refetchSettings } = useSettings();
@@ -106,43 +117,48 @@ export function ProfileSettings() {
     <>
       <div
         className={
-          "flex min-h-[calc(100vh-100px)] w-full items-start rounded-3xl border dark:border-white border-black" +
+          "flex min-h-[calc(100vh-100px)] w-full flex-col items-start rounded-lg border-black sm:flex-row" +
           (isPending ? " hidden" : "")
         }
       >
         <ProfileSettingsMenu
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
-        ></ProfileSettingsMenu>
-        <div className="w-px self-stretch dark:bg-white bg-black"></div>
-        <div className="flex w-[67%] flex-col items-start gap-1 self-stretch p-5">
-          <h3>{selectedMenu}</h3>
-          <div className="h-px self-stretch dark:bg-[#7F7F7E] bg-black"></div>
-          {selectedMenu == "Profile" ? (
-            <ProfileSettingsCategoryProfile
-              updateSetting={updateSetting}
-              settings={newSettings}
-            />
-          ) : null}
-          {selectedMenu == "Account" ? (
-            <ProfileSettingsCategoryAccount></ProfileSettingsCategoryAccount>
-          ) : null}
-          {selectedMenu == "Appearance" ? (
-            <ProfileSettingsCategoryAppearance></ProfileSettingsCategoryAppearance>
-          ) : null}
-          {selectedMenu == "Activity" ? (
-            <ProfileSettingsCategoryActivity
-              updateSetting={updateSetting}
-              settings={newSettings}
-            ></ProfileSettingsCategoryActivity>
-          ) : null}
-          {selectedMenu == "Help & Support" ? (
-            <ProfileSettingsCategoryHelpAndSupport></ProfileSettingsCategoryHelpAndSupport>
-          ) : null}
+        />
+        <div className="flex flex-col items-start gap-1 gap-y-5 self-stretch p-5 sm:w-3/4">
+          <ProfileSettingsMenuMobile
+            selectedMenu={selectedMenu}
+            setSelectedMenu={setSelectedMenu}
+          />
+          <div className="flex flex-col items-start gap-1 gap-y-5 self-stretch rounded-md p-5 dark:bg-neutral-800">
+            <div className="w-full">
+              <h3>{selectedMenu}</h3>
+              <Separator decorative />
+            </div>
+            {selectedMenu == "Profile" ? (
+              <ProfileSettingsCategoryProfile
+                updateSetting={updateSetting}
+                settings={newSettings}
+              />
+            ) : null}
+            {selectedMenu == "Account" && <ProfileSettingsCategoryAccount />}
+            {selectedMenu == "Appearance" && (
+              <ProfileSettingsCategoryAppearance />
+            )}
+            {selectedMenu == "Activity" && (
+              <ProfileSettingsCategoryActivity
+                updateSetting={updateSetting}
+                settings={newSettings}
+              />
+            )}
+            {selectedMenu == "Help & Support" && (
+              <ProfileSettingsCategoryHelpAndSupport />
+            )}
+          </div>
         </div>
       </div>
       {changedSettingsKeys.size > 0 ? (
-        <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border dark:border-white dark:bg-black border-black bg-white p-3">
+        <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border border-black bg-white p-3 dark:border-white dark:bg-black">
           <h4 className="flex self-center">
             {changedSettingsKeys.size}{" "}
             {changedSettingsKeys.size != 1
@@ -168,46 +184,69 @@ function ProfileSettingsMenu({
   setSelectedMenu,
 }: {
   selectedMenu: string;
-  setSelectedMenu: (a: string) => void;
+  setSelectedMenu: (a: (typeof categories)[number]) => void;
 }) {
   return (
-    <div className="flex min-w-[33%] flex-shrink-0 flex-col">
-      <div className="flex items-center justify-between self-stretch border-b dark:border-white border-black px-3 py-5">
-        <h3>Settings</h3>
-        <Search className="h-[21px] w-[21px]"></Search>
+    <div className="hidden min-w-full flex-shrink-0 flex-col sm:flex sm:min-w-[25%]">
+      <div className="flex items-center justify-start gap-2 self-stretch">
+        <Settings className="hidden h-[21px] w-[21px] sm:block"></Settings>
+        <h4>Settings</h4>
       </div>
-      <div className="flex flex-col items-start self-stretch">
-        <ProfileSettingsMenuButton
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          category="Profile"
-        ></ProfileSettingsMenuButton>
-        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
-        <ProfileSettingsMenuButton
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          category="Account"
-        ></ProfileSettingsMenuButton>
-        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
-        <ProfileSettingsMenuButton
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          category="Appearance"
-        ></ProfileSettingsMenuButton>
-        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
-        <ProfileSettingsMenuButton
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          category="Activity"
-        ></ProfileSettingsMenuButton>
-        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
-        <ProfileSettingsMenuButton
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          category="Help & Support"
-        ></ProfileSettingsMenuButton>
-        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
+      {/* Desktop */}
+      <div className="flex-col items-start self-stretch p-2">
+        {categories.map((category) => (
+          <Fragment key={category + "-desktop"}>
+            <ProfileSettingsMenuButton
+              category={category}
+              selectedMenu={selectedMenu}
+              setSelectedMenu={setSelectedMenu}
+            />
+            <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
+          </Fragment>
+        ))}
       </div>
+    </div>
+  );
+}
+
+function ProfileSettingsMenuMobile({
+  selectedMenu,
+  setSelectedMenu,
+}: {
+  selectedMenu: string;
+  setSelectedMenu: (a: (typeof categories)[number]) => void;
+}) {
+  const [categoriesOpen, setCategoriesOpen] = useState(false); // For mobile
+  return (
+    <div className="relative flex w-full flex-col sm:hidden">
+      <div className="flex">
+        <h4>Settings</h4>
+        <Button
+          variant="ghost"
+          className={cn(
+            "ml-auto bg-white/10 px-1 sm:hidden",
+            categoriesOpen && "text-primary",
+          )}
+          onClick={() => {
+            setCategoriesOpen((categoriesOpen) => !categoriesOpen);
+          }}
+        >
+          <Ellipsis />
+        </Button>
+      </div>
+      {/* Mobile */}
+      {categoriesOpen && (
+        <div className="flex flex-col gap-y-2 overflow-hidden rounded-md p-2 sm:hidden">
+          {categories.map((category) => (
+            <ProfileSettingsMenuButtonMobile
+              key={category + "-mobile"}
+              category={category}
+              selectedMenu={selectedMenu}
+              setSelectedMenu={setSelectedMenu}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -217,9 +256,9 @@ function ProfileSettingsMenuButton({
   selectedMenu,
   setSelectedMenu,
 }: {
-  category: string;
+  category: (typeof categories)[number];
   selectedMenu: string;
-  setSelectedMenu: (a: string) => void;
+  setSelectedMenu: (a: (typeof categories)[number]) => void;
 }) {
   return (
     <div
@@ -227,11 +266,37 @@ function ProfileSettingsMenuButton({
         setSelectedMenu(category);
       }}
       className={
-        "flex items-center gap-3 self-stretch border-r-8 border-solid px-3 py-5 transition-colors dark:hover:bg-neutral-900 hover:bg-neutral-300 " +
-        (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")
+        "flex cursor-pointer items-center gap-3 self-stretch p-2 transition-colors duration-300 hover:bg-neutral-300 dark:hover:bg-neutral-900 " +
+        (category == selectedMenu ? " bg-neutral-800" : " border-[#7F7F7E]")
       }
     >
-      <h4>{category}</h4>
+      <p>{category}</p>
     </div>
+  );
+}
+
+function ProfileSettingsMenuButtonMobile({
+  category,
+  selectedMenu,
+  setSelectedMenu,
+}: {
+  category: (typeof categories)[number];
+  selectedMenu: string;
+  setSelectedMenu: (a: (typeof categories)[number]) => void;
+}) {
+  return (
+    <Button
+      variant="secondary"
+      onClick={() => {
+        setSelectedMenu(category);
+      }}
+      className={cn(
+        "w-full justify-start rounded-md border border-gray-secondary py-5 text-left",
+        category == selectedMenu &&
+          "bg-neutral-100 dark:bg-black dark:hover:bg-black",
+      )}
+    >
+      <h4>{category}</h4>
+    </Button>
   );
 }

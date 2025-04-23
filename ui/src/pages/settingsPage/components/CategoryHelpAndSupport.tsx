@@ -7,7 +7,7 @@ export function ProfileSettingsCategoryHelpAndSupport() {
   const feedback = useRef<HTMLTextAreaElement>(null);
 
   return (
-    <div className="flex flex-col gap-2 self-stretch">
+    <div className="flex flex-col gap-2 gap-y-4 self-stretch">
       <Label>Helpful Links</Label>
       <div className="flex items-start gap-3">
         <p className="cursor-pointer text-sm font-normal leading-normal underline decoration-solid transition-colors hover:text-purple">

@@ -97,78 +97,9 @@ export function ProfileSettingsCategoryAppearance() {
 
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
-      {/*
-      <div className="flex flex-col items-start gap-2 self-stretch sm:flex-row">
-        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
-          <Label>Theme</Label>
-          <Dropdown modal={false}>
-            <DropdownTrigger className="w-full">
-              <div className="flex min-h-9 w-full items-center justify-between gap-3 self-stretch rounded-xl border dark:border-white border-black px-4 py-2">
-                <p className="text-base font-medium capitalize leading-normal">
-                  {settings.theme || ""}
-                </p>
-                <ChevronDown />
-              </div>
-            </DropdownTrigger>
-            <DropdownContent>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("theme", "dark");
-                }}
-              >
-                Dark
-              </DropdownItem>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("theme", "light");
-                }}
-              >
-                Light
-              </DropdownItem>
-            </DropdownContent>
-          </Dropdown>
-        </div>
-        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
-          <Label>Font</Label>
-          <Dropdown modal={false}>
-            <DropdownTrigger className="w-full">
-              <div className="flex min-h-9 w-full items-center justify-between gap-3 self-stretch rounded-xl border dark:border-white border-black px-4 py-2">
-                <p className="text-base font-medium capitalize leading-normal">
-                  {settings.font_size || ""}
-                </p>
-                <ChevronDown></ChevronDown>
-              </div>
-            </DropdownTrigger>
-            <DropdownContent>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("font_size", "small");
-                }}
-              >
-                Small
-              </DropdownItem>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("font_size", "normal");
-                }}
-              >
-                Normal
-              </DropdownItem>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("font_size", "large");
-                }}
-              >
-                Large
-              </DropdownItem>
-            </DropdownContent>
-          </Dropdown>
-        </div>
-      </div>
-      */}
       <div className="flex flex-col items-start gap-3 self-stretch">
         <div className="flex flex-col items-start gap-1 self-stretch">
-          <h3>Favorite Media</h3>
+          <h4>Favorite Media</h4>
           <Separator decorative />
         </div>
         <p className="text-muted">
@@ -176,7 +107,7 @@ export function ProfileSettingsCategoryAppearance() {
           spot to add a media item to your favorites. You can have a maximum of
           4 favorite media items.
         </p>
-        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid w-full grid-cols-2 gap-3">
           {updatedFavorites.map((media: MediaWithBackground) => (
             <div
               key={media.id}
@@ -184,13 +115,17 @@ export function ProfileSettingsCategoryAppearance() {
               onClick={() => handleRemoveFavorite(media)}
             >
               <div
-                className="flex aspect-video w-full flex-[1-0-0] flex-col items-start gap-3 rounded-sm bg-cover bg-center"
+                className="relative flex aspect-video w-full flex-[1-0-0] flex-col items-start gap-3 rounded-sm bg-cover bg-center"
                 style={{
                   backgroundImage: media.background
                     ? `url(${media.background})`
                     : "none",
                 }}
-              ></div>
+              >
+                <div className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/60 opacity-0 transition-opacity hover:opacity-100">
+                  <p className="text-lg font-bold">Remove</p>
+                </div>
+              </div>
               <p>{media.title}</p>
             </div>
           ))}
@@ -200,7 +135,7 @@ export function ProfileSettingsCategoryAppearance() {
                 !open && setSearchQuery("") && setSearchResults([])
               }
             >
-              <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed dark:bg-white/10 bg-black/10 dark:hover:bg-white/25 hover:bg-black/25">
+              <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed bg-black/10 hover:bg-black/25 dark:bg-white/10 dark:hover:bg-white/25">
                 <h3>Add New Favorite</h3>
               </DialogTrigger>
               <DialogPortal>
@@ -230,12 +165,12 @@ export function ProfileSettingsCategoryAppearance() {
                           className="flex flex-col items-start gap-3"
                           onClick={() => handleFavoriteClick(media)}
                         >
-                          <div
-                            className="flex aspect-video w-full rounded-sm bg-muted bg-cover bg-center"
-                            style={{
-                              backgroundImage: `url(${media.background})`,
-                            }}
-                          ></div>
+                          <img
+                            className="flex aspect-video w-full cursor-pointer rounded-sm bg-muted bg-cover bg-center transition-transform duration-300 ease-in-out hover:scale-105"
+                            height="1080"
+                            width="1920"
+                            src={media.background}
+                          />
                           <p>{media.title}</p>
                         </div>
                       ))}
