@@ -97,78 +97,9 @@ export function ProfileSettingsCategoryAppearance() {
 
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
-      {/*
-      <div className="flex flex-col items-start gap-2 self-stretch sm:flex-row">
-        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
-          <Label>Theme</Label>
-          <Dropdown modal={false}>
-            <DropdownTrigger className="w-full">
-              <div className="flex min-h-9 w-full items-center justify-between gap-3 self-stretch rounded-xl border dark:border-white border-black px-4 py-2">
-                <p className="text-base font-medium capitalize leading-normal">
-                  {settings.theme || ""}
-                </p>
-                <ChevronDown />
-              </div>
-            </DropdownTrigger>
-            <DropdownContent>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("theme", "dark");
-                }}
-              >
-                Dark
-              </DropdownItem>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("theme", "light");
-                }}
-              >
-                Light
-              </DropdownItem>
-            </DropdownContent>
-          </Dropdown>
-        </div>
-        <div className="flex flex-col items-start justify-center gap-2 self-stretch sm:flex-1">
-          <Label>Font</Label>
-          <Dropdown modal={false}>
-            <DropdownTrigger className="w-full">
-              <div className="flex min-h-9 w-full items-center justify-between gap-3 self-stretch rounded-xl border dark:border-white border-black px-4 py-2">
-                <p className="text-base font-medium capitalize leading-normal">
-                  {settings.font_size || ""}
-                </p>
-                <ChevronDown></ChevronDown>
-              </div>
-            </DropdownTrigger>
-            <DropdownContent>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("font_size", "small");
-                }}
-              >
-                Small
-              </DropdownItem>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("font_size", "normal");
-                }}
-              >
-                Normal
-              </DropdownItem>
-              <DropdownItem
-                onSelect={() => {
-                  updateSetting("font_size", "large");
-                }}
-              >
-                Large
-              </DropdownItem>
-            </DropdownContent>
-          </Dropdown>
-        </div>
-      </div>
-      */}
       <div className="flex flex-col items-start gap-3 self-stretch">
         <div className="flex flex-col items-start gap-1 self-stretch">
-          <h3>Favorite Media</h3>
+          <h4>Favorite Media</h4>
           <Separator decorative />
         </div>
         <p className="text-muted">
@@ -200,7 +131,7 @@ export function ProfileSettingsCategoryAppearance() {
                 !open && setSearchQuery("") && setSearchResults([])
               }
             >
-              <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed dark:bg-white/10 bg-black/10 dark:hover:bg-white/25 hover:bg-black/25">
+              <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed bg-black/10 hover:bg-black/25 dark:bg-white/10 dark:hover:bg-white/25">
                 <h3>Add New Favorite</h3>
               </DialogTrigger>
               <DialogPortal>

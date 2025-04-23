@@ -13,6 +13,7 @@ import { useAuth } from "@/context/auth";
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useSettings } from "@/context/settings";
+import { Separator } from "@/components/ui/separator";
 
 export type TUserSettings = {
   displayName: string | null;
@@ -106,7 +107,7 @@ export function ProfileSettings() {
     <>
       <div
         className={
-          "flex min-h-[calc(100vh-100px)] w-full items-start rounded-3xl border dark:border-white border-black" +
+          "flex min-h-[calc(100vh-100px)] w-full items-start rounded-3xl border border-black dark:border-white" +
           (isPending ? " hidden" : "")
         }
       >
@@ -114,35 +115,35 @@ export function ProfileSettings() {
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
         ></ProfileSettingsMenu>
-        <div className="w-px self-stretch dark:bg-white bg-black"></div>
-        <div className="flex w-[67%] flex-col items-start gap-1 self-stretch p-5">
-          <h3>{selectedMenu}</h3>
-          <div className="h-px self-stretch dark:bg-[#7F7F7E] bg-black"></div>
+        <div className="w-px self-stretch bg-black dark:bg-white"></div>
+        <div className="flex w-[67%] flex-col items-start gap-1 gap-y-5 self-stretch p-5">
+          <div className="w-full">
+            <h3>{selectedMenu}</h3>
+            <Separator decorative />
+          </div>
           {selectedMenu == "Profile" ? (
             <ProfileSettingsCategoryProfile
               updateSetting={updateSetting}
               settings={newSettings}
             />
           ) : null}
-          {selectedMenu == "Account" ? (
-            <ProfileSettingsCategoryAccount></ProfileSettingsCategoryAccount>
-          ) : null}
-          {selectedMenu == "Appearance" ? (
-            <ProfileSettingsCategoryAppearance></ProfileSettingsCategoryAppearance>
-          ) : null}
-          {selectedMenu == "Activity" ? (
+          {selectedMenu == "Account" && <ProfileSettingsCategoryAccount />}
+          {selectedMenu == "Appearance" && (
+            <ProfileSettingsCategoryAppearance />
+          )}
+          {selectedMenu == "Activity" && (
             <ProfileSettingsCategoryActivity
               updateSetting={updateSetting}
               settings={newSettings}
-            ></ProfileSettingsCategoryActivity>
-          ) : null}
-          {selectedMenu == "Help & Support" ? (
-            <ProfileSettingsCategoryHelpAndSupport></ProfileSettingsCategoryHelpAndSupport>
-          ) : null}
+            />
+          )}
+          {selectedMenu == "Help & Support" && (
+            <ProfileSettingsCategoryHelpAndSupport />
+          )}
         </div>
       </div>
       {changedSettingsKeys.size > 0 ? (
-        <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border dark:border-white dark:bg-black border-black bg-white p-3">
+        <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border border-black bg-white p-3 dark:border-white dark:bg-black">
           <h4 className="flex self-center">
             {changedSettingsKeys.size}{" "}
             {changedSettingsKeys.size != 1
@@ -172,7 +173,7 @@ function ProfileSettingsMenu({
 }) {
   return (
     <div className="flex min-w-[33%] flex-shrink-0 flex-col">
-      <div className="flex items-center justify-between self-stretch border-b dark:border-white border-black px-3 py-5">
+      <div className="flex items-center justify-between self-stretch border-b border-black px-3 py-5 dark:border-white">
         <h3>Settings</h3>
         <Search className="h-[21px] w-[21px]"></Search>
       </div>
@@ -227,7 +228,7 @@ function ProfileSettingsMenuButton({
         setSelectedMenu(category);
       }}
       className={
-        "flex items-center gap-3 self-stretch border-r-8 border-solid px-3 py-5 transition-colors dark:hover:bg-neutral-900 hover:bg-neutral-300 " +
+        "flex items-center gap-3 self-stretch border-r-8 border-solid px-3 py-5 transition-colors duration-300 hover:bg-neutral-300 dark:hover:bg-neutral-900 " +
         (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")
       }
     >
