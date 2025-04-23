@@ -1,7 +1,6 @@
 import { useTheme } from "@/context/theme";
 import { THEME } from "@/types/theme";
-import { DarkMode, LightMode, Stars } from "@mui/icons-material";
-import { Badge } from "./ui/badge";
+import { DarkMode, LightMode } from "@mui/icons-material";
 
 const styleLeft = {
     animationName: "to-left",
@@ -14,12 +13,6 @@ const styleRight = {
     animationDuration: "0.25s",
     animationIterationCount: "1",
     paddingLeft: "1.361rem",
-}
-
-const styleAppear = {
-    animationName: "appear",
-    animationDuration: "0.5s",
-    animationIterationCount: "1",
 }
 
 export function ThemeSwitch(){
