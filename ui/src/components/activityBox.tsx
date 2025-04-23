@@ -50,7 +50,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               >
                 <UserAvatar user={activity.user} size="small" />
                 <div>
-                  <h4 className="text-ellipsis whitespace-nowrap text-white/80 no-scrollbar group-hover:underline">
+                  <h4 className="text-ellipsis whitespace-nowrap dark:text-white/80 text-black/80 no-scrollbar group-hover:underline">
                     {activity.user.display_name || activity.user.username}
                   </h4>
                 </div>
@@ -63,12 +63,12 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               reviewed{" "}
               <Link
                 to={`/media/${activity.activity.targetId}`}
-                className="text-wrap text-white/80 hover:underline"
+                className="text-wrap dark:text-white/80 text-black/80 hover:underline"
               >
                 {activity.media?.title}{" "}
               </Link>
             </p>
-            <p className="line-clamp-4 w-full overflow-hidden text-ellipsis break-words text-white/80">
+            <p className="line-clamp-4 w-full overflow-hidden text-ellipsis break-words text-black/80 dark:text-white/80">
               {activity.activity.content}
             </p>
             <div className="mt-auto flex items-center gap-2 self-end text-muted">
@@ -105,7 +105,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               >
                 <UserAvatar user={activity.user} size="small" />
                 <div>
-                  <h4 className="text-ellipsis whitespace-nowrap text-white/80 no-scrollbar group-hover:underline">
+                  <h4 className="text-ellipsis whitespace-nowrap dark:text-white/80 text-black/80 no-scrollbar group-hover:underline">
                     {activity.user.display_name || activity.user.username}
                   </h4>
                 </div>
@@ -118,7 +118,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               replied to{" "}
               <Link
                 to={`/profile/${activity.reply?.username}`}
-                className="font-bold text-white/80 hover:underline"
+                className="font-bold dark:text-white/80 text-black/80 hover:underline"
               >
                 {activity.reply?.display_name || activity.reply?.username}
                 's
@@ -126,7 +126,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               {ratingToTextStars(activity.reply?.rating || 0)} review of{" "}
               <Link
                 to={`/media/${activity.activity.targetId}`}
-                className="text-wrap text-white/80 hover:underline"
+                className="text-wrap dark:text-white/80 text-black/80 hover:underline"
               >
                 {activity.media?.title}{" "}
               </Link>
@@ -139,7 +139,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
       )}
 
       {activity.activity.activityType === "like_review" && (
-        <div className="flex w-full items-center gap-3 self-stretch bg-[#1B1B1A] px-3 py-4">
+        <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-[#E4E4E5] px-3 py-4">
           <div className="flex items-center">
             <Link
               to={`/profile/${activity.user.username}`}
@@ -148,7 +148,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               <UserAvatar user={activity.user} className="size-8" />
             </Link>
           </div>
-          <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
+          <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-black/75 dark:text-white/75">
             <p>
               <Link
                 to={`/profile/${activity.user.username}`}
@@ -179,7 +179,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
       )}
 
       {activity.activity.activityType === "like_media" && (
-        <div className="flex w-full items-center gap-3 self-stretch bg-[#1B1B1A] px-3 py-4">
+        <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-[#E4E4E5] px-3 py-4">
           <div className="flex items-center">
             <Link
               to={`/profile/${activity.user.username}`}
@@ -188,7 +188,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               <UserAvatar user={activity.user} className="size-8" />
             </Link>
           </div>
-          <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
+          <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-black/75 dark:text-white/75">
             <p>
               <Link
                 to={`/profile/${activity.user.username}`}
@@ -212,7 +212,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
       )}
 
       {activity.activity.activityType === "follow" && (
-        <div className="flex w-full items-center gap-3 self-stretch bg-[#1B1B1A] px-3 py-4">
+        <div className="flex w-full items-center gap-3 self-stretch dark:bg-[#1B1B1A] bg-[#E4E4E5] px-3 py-4">
           <div className="flex items-center">
             <Link
               to={`/profile/${activity.user.username}`}
@@ -221,7 +221,7 @@ export function ActivityBox({ activity }: { activity: TEnhancedActivity }) {
               <UserAvatar user={activity.user} className="size-8" />
             </Link>
           </div>
-          <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-white/75">
+          <div className="flex w-full flex-[1_0_0] items-center justify-between gap-3 self-stretch text-black/75 dark:text-white/75">
             <p>
               <Link
                 to={`/profile/${activity.user.username}`}
@@ -265,7 +265,7 @@ export function MediaPoster({
         <img
           title={media.title}
           src={`${media.thumbnail_url?.replace(".jpg", "_t.jpg")}`}
-          className="outline outline-1 -outline-offset-1 outline-white/10"
+          className="outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
         />
       </Link>
     </div>

@@ -13,11 +13,18 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.937);
   background-color: #0d0d0d;
+  border-color: #f2f2f0;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.light {
+  color: rgba(0, 0, 0, 0.937);
+  background-color: #f2f2f0; 
+  border-color: black;
 }
 
 @media (min-width: 640px) {

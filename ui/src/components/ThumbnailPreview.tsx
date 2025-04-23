@@ -56,7 +56,7 @@ function ThumbnailPreview({ media, className }: TThumbnailPreview) {
             /5
           </p>
           <FavoriteRounded fontSize="medium" />
-          {media.likes.toString()}
+          {media.likes && media.likes.toString()}
         </div>
       </Link>
     </div>

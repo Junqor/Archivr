@@ -146,7 +146,7 @@ export const ReviewSection = ({
   return (
     <section className="flex flex-col">
       {/* Review */}
-      <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
+      <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary text-white p-4">
         <div className="flex flex-row items-center gap-x-2 space-y-0">
           <UserAvatar user={user} size="small" />
           <Link to={`/profile/${user.username}`}>
@@ -220,7 +220,7 @@ export const ReviewSection = ({
                   className="ml-12 h-8 w-px bg-gray-secondary"
                   key={crypto.randomUUID()}
                 />
-                <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary p-4">
+                <div className="flex flex-col gap-y-2 rounded-xl border-none bg-gray-secondary text-white p-4">
                   <div
                     key={reply.id}
                     className="flex flex-row items-center gap-x-2 space-y-0"
@@ -239,7 +239,7 @@ export const ReviewSection = ({
                   <CollapsedText text={reply.text} max_length={400} />
                   <div className="flex flex-row items-center justify-start gap-x-4">
                     <p className="text-sm text-gray-400">
-                      {formatDate(review.created_at, true)}
+                      {formatDate(reply.created_at, true)}
                     </p>
                     <Button
                       variant="ghost"

@@ -6,11 +6,13 @@ import {
   DropdownTrigger,
   DropdownContent,
   DropdownItem,
+  DropdownSeparator,
 } from "@/components/ui/dropdown";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { useAuth } from "@/context/auth";
 import { useSettings } from "@/context/settings";
 import { cn } from "@/lib/utils";
-import { LoginRounded, ShieldRounded } from "@mui/icons-material";
+import { LoginRounded, SecurityOutlined } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -46,9 +48,10 @@ export const DesktopNav = ({
       {...props}
     >
       <div className="flex flex-row items-center justify-center gap-6">
+        <ThemeSwitch/>
         <Link
           to="/"
-          className="font-medium text-white transition-colors hover:text-purple"
+          className="font-medium transition-colors hover:text-purple"
         >
           Home
         </Link>
@@ -73,7 +76,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/trending"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Trending
               </Link>
@@ -81,7 +84,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/popular"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Popular
               </Link>
@@ -89,7 +92,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/activity"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Activity
               </Link>
@@ -97,7 +100,7 @@ export const DesktopNav = ({
             <DropdownItem asChild>
               <Link
                 to="/members"
-                className="text-white transition-colors hover:text-purple"
+                className="transition-colors hover:text-purple"
               >
                 Members
               </Link>
@@ -110,7 +113,7 @@ export const DesktopNav = ({
         {user ? (
           <Dropdown modal={false}>
             <DropdownTrigger
-              className="flex flex-row items-center gap-3 text-white transition-colors hover:text-purple"
+              className="flex flex-row items-center gap-3 transition-colors hover:text-purple"
               indicator
             >
               <UserAvatar
@@ -134,25 +137,30 @@ export const DesktopNav = ({
               <DropdownItem asChild>
                 <Link to="/settings">Settings</Link>
               </DropdownItem>
+              <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
               {user.role === "admin" && (
+                <>
+                <DropdownSeparator/>
                 <DropdownItem asChild>
                   <Link to="/admin">
-                    Admin
-                    <ShieldRounded
-                      sx={{
-                        fontSize: "1.25rem",
-                      }}
-                    />
+                    <SecurityOutlined sx={{fontSize: "1.25rem",}}/>
+                    Admin Panel
                   </Link>
                 </DropdownItem>
+                <DropdownItem asChild>
+                  <Link to="/mod">
+                    <SecurityOutlined sx={{fontSize: "1.25rem",}}/>
+                    Mod Panel
+                  </Link>
+                </DropdownItem>
+                </>
               )}
-              <DropdownItem onSelect={handleLogout}>Logout</DropdownItem>
             </DropdownContent>
           </Dropdown>
         ) : (
           <Link
             to="/login"
-            className="flex flex-row items-center gap-2 text-white transition-colors hover:text-purple"
+            className="flex flex-row items-center gap-2 transition-colors hover:text-purple"
           >
             <LoginRounded sx={{ fontSize: "1.5rem" }} />
             Login

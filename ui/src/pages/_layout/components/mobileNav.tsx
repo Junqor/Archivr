@@ -1,3 +1,4 @@
+import { ThemeSwitch } from "@/components/theme-switch";
 import { UserAvatar } from "@/components/ui/avatar";
 import { BurgerIcon } from "@/components/ui/burger-icon";
 import { Button } from "@/components/ui/button";
@@ -59,14 +60,14 @@ export const MobileNav = ({
       <div
         className={cn(
           isOpen ? "block opacity-100" : "pointer-events-none block opacity-0",
-          "flex flex-col items-center justify-center gap-4 bg-black/95 pb-40",
+          "flex flex-col items-center justify-center gap-4 dark:bg-black/95 bg-white/90 pb-40",
           "fixed left-0 top-16 z-0 h-dvh w-dvw transition-opacity duration-300",
         )}
       >
         <div className="flex flex-col items-start justify-center gap-4">
           <div className="w-full">
             <h2> Explore </h2>
-            <Separator className="bg-white bg-none" />
+            <Separator className="bg-none" />
           </div>
           <NavLink to="/" onClick={() => setIsOpen(false)}>
             <House /> Home
@@ -89,11 +90,12 @@ export const MobileNav = ({
           <NavLink to="/members" onClick={() => setIsOpen(false)}>
             <UserSearch /> Members
           </NavLink>
+          <ThemeSwitch/>
           {user && (
             <>
               <div className="w-full items-center">
                 <h2> Account </h2>
-                <Separator className="bg-white bg-none" />
+                <Separator className="bg-none" />
               </div>
               <NavLink to="/settings" onClick={() => setIsOpen(false)}>
                 <Settings /> Settings

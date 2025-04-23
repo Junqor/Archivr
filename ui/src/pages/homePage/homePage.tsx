@@ -62,7 +62,7 @@ export default function HomePage() {
             <h4>Trending this week...</h4>
             <Link
               to="trending"
-              className="ml-auto text-white/80 hover:underline"
+              className="ml-auto dark:text-white/80 text-black/80 hover:underline"
             >
               See More
             </Link>
@@ -79,7 +79,7 @@ export default function HomePage() {
             <h4>All time most popular...</h4>
             <Link
               to="popular"
-              className="ml-auto text-white/80 hover:underline"
+              className="ml-auto dark:text-white/80 text-black/80 hover:underline"
             >
               See More
             </Link>
@@ -98,7 +98,7 @@ export default function HomePage() {
                 <Info />
               </PopoverTrigger>
               <PopoverContent
-                className="inline-flex w-72 border-white text-sm text-white"
+                className="inline-flex w-72 text-sm"
                 side="top"
                 align="end"
               >
@@ -120,7 +120,7 @@ export default function HomePage() {
             <h4>Recent Reviews...</h4>
             <Link
               to="activity"
-              className="ml-auto text-white/80 hover:underline"
+              className="ml-auto dark:text-white/80 text-black/80 hover:underline"
             >
               See More
             </Link>

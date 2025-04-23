@@ -4,11 +4,9 @@ import { ActionButtons } from "@/pages/adminPortal/components/action-buttons";
 import { DataTable } from "@/pages/adminPortal/components/data-table";
 import { TMedia } from "@/types/media";
 import { searchMediasFiltered } from "@/api/media";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "./components/data-table-skeleton";
-import { Button } from "@/components/ui/button";
-import { FlagCircleRounded } from "@mui/icons-material";
 
 export default function AdminPortal() {
   const [searchParams] = useSearchParams();
@@ -38,12 +36,7 @@ export default function AdminPortal() {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-4 flex flex-col gap-2">
-        <h1 className="text-2xl font-bold">Admin Portal</h1>
-        <Button asChild className="w-fit rounded-md px-2">
-          <Link to="/mod">
-            <FlagCircleRounded /> Go To Moderation
-          </Link>
-        </Button>
+        <h1 className="text-2xl font-bold">Admin Panel</h1>
       </div>
       <div className="mb-4 flex space-x-4">
         <SearchBar />

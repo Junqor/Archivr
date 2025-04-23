@@ -38,7 +38,7 @@ export const ReplyForm = React.forwardRef<HTMLDivElement, ReplyFormProps>(
       <div
         className={cn(
           className,
-          "flex flex-col gap-y-3 rounded-xl border border-white bg-black p-4",
+          "flex flex-col gap-y-3 rounded-xl border dark:border-white border-black p-4",
         )}
         {...props}
         ref={ref}

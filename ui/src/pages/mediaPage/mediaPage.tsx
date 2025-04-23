@@ -47,6 +47,8 @@ import { Separator } from "@/components/ui/separator";
 import { slugify } from "@/utils/slugify";
 import { LoadingScreen } from "../loadingScreen";
 import { ListDropdown } from "./components/listDropdown";
+import { useTheme } from "@/context/theme";
+import { THEME } from "@/types/theme";
 
 export function MediaPage() {
   const { id } = useParams();
@@ -55,6 +57,7 @@ export function MediaPage() {
     return <Navigate to="/404" />;
   }
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState("");
   const [userWasSilly, setUserWasSilly] = useState(false);
@@ -142,7 +145,7 @@ export function MediaPage() {
     : null;
 
   return (
-    <div className="flex h-fit w-full flex-col items-start justify-center gap-4 bg-black px-4 py-8 text-gray-100 sm:px-6 lg:px-8">
+    <div className="flex h-fit w-full flex-col items-start justify-center gap-4 px-4 py-8 sm:px-6 lg:px-8">
       {/* blurred background image */}
       {data.background && (
         <div
@@ -260,7 +263,7 @@ export function MediaPage() {
               }
               emptyIcon={
                 <StarBorderRounded
-                  className="m-[-3px] text-white/90"
+                  className="m-[-3px] dark:text-white/90 text-black/90"
                   fontSize="inherit"
                 />
               }
@@ -271,7 +274,7 @@ export function MediaPage() {
           <Textarea
             placeholder={"Write your thoughts and opinions for others to see"}
             className={cn(
-              "h-full resize-none border-neutral-500 focus:border-white sm:min-h-56",
+              "h-full resize-none border-neutral-500 sm:min-h-56",
               userWasSilly && "border-red-500",
             )}
             value={review}
@@ -325,7 +328,7 @@ export function MediaPage() {
                 }
                 emptyIcon={
                   <StarBorderRounded
-                    className="m-[-3px] text-white/90"
+                    className="m-[-3px] dark:text-white/90 text-black/90"
                     fontSize="inherit"
                   />
                 }
@@ -361,32 +364,32 @@ export function MediaPage() {
       <section className="relative flex w-full flex-col gap-x-5 sm:flex-row">
         <section className="flex h-full w-full flex-col justify-start sm:w-1/4">
           {/* Media Stats */}
-          <div className="flex flex-row justify-center space-x-4 text-gray-300">
+          <div className="flex flex-row justify-center space-x-4 dark:text-gray-300 text-neutral-800">
             <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
-              <AccessTimeRounded className="fill-gray-300" />
+              <AccessTimeRounded className="dark:fill-gray-300 text-neutral-800" />
               <h4>{data.runtime}m</h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1 sm:hidden">
-              <CalendarMonthRounded className="fill-gray-300" />
+              <CalendarMonthRounded className="dark:fill-gray-300 text-neutral-800" />
               <h4>{formatDateYear(data.release_date)}</h4>
             </div>
             <div className="pr-4 sm:hidden" />
             <div className="flex flex-row items-center justify-center space-x-1">
-              <SignalCellularAlt className="size-5 fill-gray-300" />
+              <SignalCellularAlt className="size-5 dark:fill-gray-300 text-neutral-800" />
               <h4>{formatInteger(data.rating)}</h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1">
-              <StarRounded className="size-4 fill-gray-300" />
+              <StarRounded className="size-4 dark:fill-gray-300 text-neutral-800" />
               <h4>{userRating ? userRating / 2 : "~"}</h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1">
-              <Heart className="size-4 fill-gray-300" />
+              <Heart className="size-4 dark:fill-gray-300 text-neutral-800" />
               <h4>{formatInteger(numLikes)}</h4>
             </div>
           </div>
           {/* Watch Providers */}
           <div className="mt-2 flex max-h-64 flex-col rounded-md outline outline-gray-secondary">
-            <h4 className="rounded-t-md bg-gray-secondary p-2 font-bold">
+            <h4 className="rounded-t-md bg-gray-secondary p-2 font-bold text-white">
               Where to Watch
             </h4>
             <Select
@@ -440,7 +443,7 @@ export function MediaPage() {
           {/* External Links */}
           {(data.tmdbId || data.tvdbId) && (
             <div className="my-2 flex w-full flex-col items-start justify-center overflow-hidden">
-              <p className="text-white/80">External Links</p>
+              <p>External Links</p>
               <div className="flex h-10 w-full flex-row items-center overflow-hidden">
                 {data.tmdbId && (
                   <a
@@ -459,12 +462,10 @@ export function MediaPage() {
                   <a
                     target="_blank"
                     href={`https://www.thetvdb.com/${data.category === "tv_show" ? "series" : "movies"}/${slugify(data.title)}`}
-                    className="flex h-full w-auto"
+                    className="flex h-full w-auto pl-4"
                   >
                     <img
-                      src="https://www.thetvdb.com/images/logo.svg"
-                      height="54"
-                      width="100"
+                      src={theme == THEME.DARK?"https://www.thetvdb.com/images/attribution/logo1.png":"https://www.thetvdb.com/images/attribution/logo2.png"}
                     />
                   </a>
                 )}
@@ -485,7 +486,7 @@ export function MediaPage() {
                 <div className="mt-3 flex flex-col gap-y-4">
                   {!reviewData.reviews.length ? (
                     <>
-                      <h4 className="text-gray-400">
+                      <h4>
                         Be the first to write a review!
                       </h4>
                       <img

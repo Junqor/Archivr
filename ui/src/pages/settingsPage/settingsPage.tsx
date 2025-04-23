@@ -106,7 +106,7 @@ export function ProfileSettings() {
     <>
       <div
         className={
-          "flex min-h-[calc(100vh-100px)] w-full items-start rounded-3xl border border-white bg-black" +
+          "flex min-h-[calc(100vh-100px)] w-full items-start rounded-3xl border dark:border-white border-black" +
           (isPending ? " hidden" : "")
         }
       >
@@ -114,10 +114,10 @@ export function ProfileSettings() {
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
         ></ProfileSettingsMenu>
-        <div className="w-px self-stretch bg-white"></div>
+        <div className="w-px self-stretch dark:bg-white bg-black"></div>
         <div className="flex w-[67%] flex-col items-start gap-1 self-stretch p-5">
           <h3>{selectedMenu}</h3>
-          <div className="mb-3 h-px self-stretch bg-[#7F7F7E]"></div>
+          <div className="h-px self-stretch dark:bg-[#7F7F7E] bg-black"></div>
           {selectedMenu == "Profile" ? (
             <ProfileSettingsCategoryProfile
               updateSetting={updateSetting}
@@ -128,10 +128,7 @@ export function ProfileSettings() {
             <ProfileSettingsCategoryAccount></ProfileSettingsCategoryAccount>
           ) : null}
           {selectedMenu == "Appearance" ? (
-            <ProfileSettingsCategoryAppearance
-              updateSetting={updateSetting}
-              settings={newSettings}
-            ></ProfileSettingsCategoryAppearance>
+            <ProfileSettingsCategoryAppearance></ProfileSettingsCategoryAppearance>
           ) : null}
           {selectedMenu == "Activity" ? (
             <ProfileSettingsCategoryActivity
@@ -145,7 +142,7 @@ export function ProfileSettings() {
         </div>
       </div>
       {changedSettingsKeys.size > 0 ? (
-        <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border border-white bg-black p-3">
+        <div className="fixed bottom-5 flex items-center justify-center gap-3 rounded-2xl border dark:border-white dark:bg-black border-black bg-white p-3">
           <h4 className="flex self-center">
             {changedSettingsKeys.size}{" "}
             {changedSettingsKeys.size != 1
@@ -175,7 +172,7 @@ function ProfileSettingsMenu({
 }) {
   return (
     <div className="flex min-w-[33%] flex-shrink-0 flex-col">
-      <div className="flex items-center justify-between self-stretch border-b border-white px-3 py-5">
+      <div className="flex items-center justify-between self-stretch border-b dark:border-white border-black px-3 py-5">
         <h3>Settings</h3>
         <Search className="h-[21px] w-[21px]"></Search>
       </div>
@@ -185,31 +182,31 @@ function ProfileSettingsMenu({
           setSelectedMenu={setSelectedMenu}
           category="Profile"
         ></ProfileSettingsMenuButton>
-        <hr className="h-[1px] self-stretch bg-[#7F7F7E]"></hr>
+        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
         <ProfileSettingsMenuButton
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
           category="Account"
         ></ProfileSettingsMenuButton>
-        <hr className="h-[1px] self-stretch bg-[#7F7F7E]"></hr>
+        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
         <ProfileSettingsMenuButton
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
           category="Appearance"
         ></ProfileSettingsMenuButton>
-        <hr className="h-[1px] self-stretch bg-[#7F7F7E]"></hr>
+        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
         <ProfileSettingsMenuButton
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
           category="Activity"
         ></ProfileSettingsMenuButton>
-        <hr className="h-[1px] self-stretch bg-[#7F7F7E]"></hr>
+        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
         <ProfileSettingsMenuButton
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
           category="Help & Support"
         ></ProfileSettingsMenuButton>
-        <hr className="h-[1px] self-stretch bg-[#7F7F7E]"></hr>
+        <div className="h-[1px] self-stretch bg-[#7F7F7E]"></div>
       </div>
     </div>
   );
@@ -230,7 +227,7 @@ function ProfileSettingsMenuButton({
         setSelectedMenu(category);
       }}
       className={
-        "flex items-center gap-3 self-stretch border-r-8 border-solid px-3 py-5 transition-colors hover:bg-neutral-900 " +
+        "flex items-center gap-3 self-stretch border-r-8 border-solid px-3 py-5 transition-colors dark:hover:bg-neutral-900 hover:bg-neutral-300 " +
         (category == selectedMenu ? " border-purple" : " border-[#7F7F7E]")
       }
     >

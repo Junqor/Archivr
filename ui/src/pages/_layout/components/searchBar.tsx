@@ -81,17 +81,17 @@ export default function SearchBar() {
               navigate(`/search?q=${query}`);
             }
           }}
-          className="peer border-white/70 pl-8 focus:border-white"
+          className="peer dark:border-white/70 border-black/70 pl-8 dark:focus:border-white focus:border-black"
         />
-        <Search className="peer absolute left-2 top-1/4 size-5 text-white/70 transition-all peer-focus:text-white" />
+        <Search className="peer absolute left-2 top-1/4 size-5 dark:text-white/70 text-black/70 transition-all peer-focus:text-black dark:peer-focus:text-white" />
         {query && showResults && (
-          <Command className="absolute right-0 top-full mt-1 h-max w-96 rounded-lg border bg-black text-white shadow-md">
+          <Command className="absolute right-0 top-full mt-1 h-max w-96 rounded-lg border dark:bg-black bg-white dark:text-white text-black border-black dark:border-white shadow-md">
             <CommandList className="max-h-full">
               <CommandGroup heading="Media">
                 {isFetching || isPending ? (
                   <div className="flex justify-center pt-1.5">
                     <LoadingSpinner
-                      className="items-center justify-center py-1 text-sm text-white/70"
+                      className="items-center justify-center py-1 text-sm dark:text-white/70 text-black/70"
                       size="small"
                     />
                   </div>
@@ -101,7 +101,7 @@ export default function SearchBar() {
                     <>
                       {results.map((media) => (
                         <CommandItem
-                          className="cursor-pointer bg-black text-white"
+                          className="cursor-pointer dark:bg-black dark:text-white bg-white text-black"
                           key={media.id}
                           onSelect={() => {
                             clearSearch();
@@ -124,10 +124,10 @@ export default function SearchBar() {
                           </div>
                         </CommandItem>
                       ))}
-                      <CommandItem className="data-[selected=true]:bg-black">
+                      <CommandItem className="dark:data-[selected=true]:bg-black data-[selected=true]:bg-white">
                         <Link
                           to={`/search?q=${query}`}
-                          className="relative w-full self-center justify-self-center text-center text-white/70 hover:border-none hover:bg-black hover:underline"
+                          className="relative w-full self-center justify-self-center text-center dark:text-white/70 text-black/70 hover:border-none dark:hover:bg-black hover:bg-white hover:underline"
                           onClick={clearSearch}
                         >
                           View all

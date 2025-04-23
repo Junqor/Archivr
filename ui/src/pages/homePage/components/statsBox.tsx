@@ -19,10 +19,10 @@ export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
   });
 
   return (
-    <div className="mx-0 grid w-full grid-cols-3 gap-6 text-white md:mx-auto">
+    <div className="mx-0 grid w-full grid-cols-3 gap-6 md:mx-auto">
       <div className="mx-auto flex w-fit max-w-xs flex-row items-center justify-start gap-4">
         <div className="flex flex-row items-center justify-center rounded-full bg-purple p-4">
-          <FavoriteRounded sx={{ fontSize: "3rem" }} />
+          <FavoriteRounded sx={{ fontSize: "3rem", color: "#f2f2f0" }} />
         </div>
         <div>
           {stats ? (
@@ -37,7 +37,7 @@ export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
       </div>
       <div className="mx-auto flex w-fit max-w-xs flex-row items-center justify-start gap-4">
         <div className="flex flex-row items-center justify-center rounded-full bg-purple p-4">
-          <QuestionAnswerRounded sx={{ fontSize: "3rem" }} />
+          <QuestionAnswerRounded sx={{ fontSize: "3rem", color: "#f2f2f0" }} />
         </div>
         <div>
           {stats ? (
@@ -54,7 +54,7 @@ export default function StatsBox({ userId }: StatsBoxProps): JSX.Element {
       </div>
       <div className="mx-auto flex w-fit max-w-xs flex-row items-center justify-start gap-4">
         <div className="flex flex-row items-center justify-center rounded-full bg-purple p-4">
-          <StarRounded sx={{ fontSize: "3rem" }} />
+          <StarRounded sx={{ fontSize: "3rem", color: "#f2f2f0" }} />
         </div>
         <div>
           {stats ? (

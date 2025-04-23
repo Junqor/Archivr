@@ -20,7 +20,7 @@ export function ProfileSettingsCategoryHelpAndSupport() {
       <Label>Give us Feedback</Label>
       <Textarea
         ref={feedback}
-        className="flex min-h-[67px] items-start gap-3 self-stretch rounded-xl border border-white bg-black px-4 py-2"
+        className="flex min-h-[67px] items-start gap-3 self-stretch rounded-xl border px-4 py-2"
         placeholder="Type your feedback here"
         id="feedback"
       ></Textarea>

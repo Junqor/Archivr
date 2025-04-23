@@ -67,7 +67,7 @@ export default function MiniActivity({
                     followed{" "}
                     <Link
                       to={`/profile/${activity.followee?.username}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.followee?.display_name ||
                         activity.followee?.username}
@@ -81,7 +81,7 @@ export default function MiniActivity({
                     liked{" "}
                     <Link
                       to={`/media/${activity.activity.targetId}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.media?.title}
                     </Link>{" "}
@@ -94,7 +94,7 @@ export default function MiniActivity({
                     reviewed{" "}
                     <Link
                       to={`/media/${activity.activity.targetId}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.media?.title}
                     </Link>{" "}
@@ -108,7 +108,7 @@ export default function MiniActivity({
                     replied to{" "}
                     <Link
                       to={`/profile/${activity.reply?.username}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.reply?.display_name || activity.reply?.username}
                       's
@@ -116,7 +116,7 @@ export default function MiniActivity({
                     review on{" "}
                     <Link
                       to={`/media/${activity.activity.targetId}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.media?.title}
                     </Link>{" "}
@@ -130,7 +130,7 @@ export default function MiniActivity({
                     liked{" "}
                     <Link
                       to={`/profile/${activity.reply?.username}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.reply?.display_name || activity.reply?.username}
                       's
@@ -138,7 +138,7 @@ export default function MiniActivity({
                     review on{" "}
                     <Link
                       to={`/media/${activity.activity.targetId}`}
-                      className="font-bold text-white/75 transition-colors hover:text-white"
+                      className="font-bold dark:text-white/75 text-black/75 transition-colors dark:hover:text-white hover:text-purple"
                     >
                       {activity.media?.title}
                     </Link>{" "}
