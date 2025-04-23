@@ -103,7 +103,7 @@ export default function ProfileHero({
                       Follow
                     </button>
                   )}
-                  <ProfileKebab />
+                  <ProfileKebab username={profilePage.username} />
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export default function ProfileHero({
         </div>
         <div className="flex w-full items-start justify-between gap-5 self-stretch py-1 sm:w-auto sm:flex-col sm:justify-normal">
           {profilePage.instagram && (
-            <div className="flex items-center gap-3 text-[1.2rem] font-medium dark:text-white/75 transition-colors dark:hover:text-white text-black/75 hover:text-purple">
+            <div className="flex items-center gap-3 text-[1.2rem] font-medium text-black/75 transition-colors hover:text-purple dark:text-white/75 dark:hover:text-white">
               <Instagram color="inherit" />
               <Link to={profilePage.instagram} target="_blank" rel="noreferrer">
                 Instagram
@@ -131,7 +131,7 @@ export default function ProfileHero({
             </div>
           )}
           {profilePage.youtube && (
-            <div className="flex items-center gap-3 text-[1.2rem] font-medium dark:text-white/75 transition-colors dark:hover:text-white text-black/75 hover:text-purple">
+            <div className="flex items-center gap-3 text-[1.2rem] font-medium text-black/75 transition-colors hover:text-purple dark:text-white/75 dark:hover:text-white">
               <YouTube color="inherit" />
               <Link to={profilePage.youtube} target="_blank" rel="noreferrer">
                 YouTube
@@ -139,7 +139,7 @@ export default function ProfileHero({
             </div>
           )}
           {profilePage.tiktok && (
-            <div className="flex items-center gap-3 text-[1.2rem] font-medium dark:text-white/75 transition-colors dark:hover:text-white text-black/75 hover:text-purple">
+            <div className="flex items-center gap-3 text-[1.2rem] font-medium text-black/75 transition-colors hover:text-purple dark:text-white/75 dark:hover:text-white">
               <MusicNoteRounded color="inherit" />
               <Link to={profilePage.tiktok} target="_blank" rel="noreferrer">
                 TikTok
