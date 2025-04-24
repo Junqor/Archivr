@@ -293,22 +293,18 @@ const sortFields = {
 };
 
 export async function getUserFollows(
-  user_id: number,
+  username: string,
   type: "followers" | "following" = "followers",
   limit = 30,
   offset = 0,
   sort_by = "follows.created_at",
   sort_order = "desc"
 ) {
-  if (!user_id || isNaN(user_id)) {
-    throw new Error("Invalid user id");
-  }
-
   // Check if user exists
   const user = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.id, user_id));
+    .where(eq(users.username, username));
 
   if (user.length === 0) {
     throw new Error("User not found");
@@ -338,29 +334,25 @@ export async function getUserFollows(
     })
     .from(follows)
     .innerJoin(users, eq(users.id, targetColumn))
-    .where(eq(userColumn, user_id))
+    .where(eq(userColumn, user[0].id))
     .orderBy(orderByClause)
     .limit(limit)
     .offset(offset);
 }
 
 export async function getUserFollowsExtended(
-  user_id: number,
+  username: string,
   type: "followers" | "following" = "followers",
   limit = 30,
   offset = 0,
   sort_by = "follows.created_at",
   sort_order = "desc"
 ) {
-  if (!user_id || isNaN(user_id)) {
-    throw new Error("Invalid user id");
-  }
-
   // Check if user exists
   const user = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.id, user_id));
+    .where(eq(users.username, username));
 
   if (user.length === 0) {
     throw new Error("User not found");
@@ -391,7 +383,7 @@ export async function getUserFollowsExtended(
     .from(follows)
     .innerJoin(users, eq(users.id, targetColumn))
     .leftJoin(userSettings, eq(users.id, userSettings.user_id))
-    .where(eq(userColumn, user_id))
+    .where(eq(userColumn, user[0].id))
     .orderBy(orderByClause)
     .limit(limit)
     .offset(offset);
@@ -529,12 +521,12 @@ export async function removeFavorite(user_id: number, media_id: number) {
 }
 
 // Get a user's favorites
-export async function getUserFavorites(user_id: number) {
+export async function getUserFavorites(username: string) {
   // Check if user exists
   const user = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.id, user_id));
+    .where(eq(users.username, username));
 
   if (user.length === 0) {
     throw new Error("User not found");
@@ -555,7 +547,7 @@ export async function getUserFavorites(user_id: number) {
     .leftJoin(likes, eq(likes.mediaId, media.id))
     .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .groupBy(media.id)
-    .where(eq(userFavorites.userId, user_id))
+    .where(eq(userFavorites.userId, user[0].id))
     .orderBy(desc(userFavorites.addedAt));
 }
 

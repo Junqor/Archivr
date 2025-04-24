@@ -217,19 +217,9 @@ export const getUserFollows = async (
   sort_by?: string,
   sort_order?: string,
 ) => {
-  const userIdResponse = await fetch(
-    import.meta.env.VITE_API_URL + `/user/${username}/id`,
-  );
-
-  if (!userIdResponse.ok) {
-    throw { status: 404, message: "User not found" };
-  }
-
-  const { userId } = await userIdResponse.json();
-
   const result = await fetch(
     import.meta.env.VITE_API_URL +
-      `/user/${userId}/${type}` +
+      `/user/${username}/${type}` +
       (extended ? "/extended" : "") +
       (limit || offset || sort_by || sort_order ? "?" : "") +
       (limit ? `limit=${limit}` : "") +
@@ -291,18 +281,8 @@ export const removeFavorite = async (mediaId: number) => {
 };
 
 export const getFavorites = async (username: string) => {
-  const userIdResponse = await fetch(
-    import.meta.env.VITE_API_URL + `/user/${username}/id`,
-  );
-
-  if (!userIdResponse.ok) {
-    throw { status: 404, message: "User not found" };
-  }
-
-  const { userId } = await userIdResponse.json();
-
   const result = await fetch(
-    import.meta.env.VITE_API_URL + `/user/get-favorites/${userId}`,
+    import.meta.env.VITE_API_URL + `/user/get-favorites/${username}`,
   );
 
   if (!result.ok) {
