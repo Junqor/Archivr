@@ -455,15 +455,15 @@ export async function addFavorite(user_id: number, media_id: number) {
     throw new Error("User not found");
   }
 
-  // Check if the user has less than 4 favorites
-  const favoriteCount = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(userFavorites)
-    .where(eq(userFavorites.userId, user_id));
+  // // Check if the user has less than 4 favorites
+  // const favoriteCount = await db
+  //   .select({ count: sql<number>`COUNT(*)` })
+  //   .from(userFavorites)
+  //   .where(eq(userFavorites.userId, user_id));
 
-  if (favoriteCount[0].count >= 4) {
-    throw new Error("You can only have 4 favorites at a time");
-  }
+  // if (favoriteCount[0].count >= 4) {
+  //   throw new Error("You can only have 4 favorites at a time");
+  // }
 
   // Check if the user already has the media favorited
   const existingFavorite = await db

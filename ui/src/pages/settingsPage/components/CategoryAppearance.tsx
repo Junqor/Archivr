@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useDebouncedCallback } from "use-debounce";
 import { ChevronLeftRounded, ChevronRightRounded } from "@mui/icons-material";
+import { DialogClose } from "@/components/ui/dialog";
 
 interface MediaWithBackground {
   id: number;
@@ -54,10 +55,6 @@ export function ProfileSettingsCategoryAppearance() {
   }, [favorites]);
 
   const handleFavoriteClick = async (media: MediaWithBackground) => {
-    if (favorites && favorites.length >= 4) {
-      toast.error("You can only have a maximum of 4 favorite media items");
-      return;
-    }
     try {
       await addFavorite(media.id || 0);
       refetch();
@@ -98,14 +95,13 @@ export function ProfileSettingsCategoryAppearance() {
   return (
     <div className="flex flex-1 flex-col gap-2 self-stretch">
       <div className="flex flex-col items-start gap-3 self-stretch">
-        <div className="flex flex-col items-start gap-1 self-stretch">
+        <div className="flex flex-col items-start gap-1">
           <h4>Favorite Media</h4>
           <Separator decorative />
         </div>
         <p className="text-muted">
           Click on a media item to remove it from the list. Click on an empty
-          spot to add a media item to your favorites. You can have a maximum of
-          4 favorite media items.
+          spot to add a media item to your favorites.
         </p>
         <div className="grid w-full grid-cols-2 gap-3">
           {updatedFavorites.map((media: MediaWithBackground) => (
@@ -129,37 +125,37 @@ export function ProfileSettingsCategoryAppearance() {
               <p>{media.title}</p>
             </div>
           ))}
-          {favorites?.length < 4 ? (
-            <Dialog
-              onOpenChange={(open) =>
-                !open && setSearchQuery("") && setSearchResults([])
-              }
-            >
-              <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed bg-black/10 hover:bg-black/25 dark:bg-white/10 dark:hover:bg-white/25">
-                <h3>Add New Favorite</h3>
-              </DialogTrigger>
-              <DialogPortal>
-                <DialogOverlay className="fixed inset-0 bg-[#111111AA]" />
-                <DialogContent>
-                  <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-min w-10/12 translate-x-[-50%] translate-y-[-50%] flex-col items-start gap-5 rounded-xl border border-white bg-black p-6 sm:w-2/3 sm:p-10">
-                    <div className="flex flex-col items-center gap-3 self-stretch">
-                      <div className="flex flex-col items-center gap-1">
-                        <h1>Search Archivr</h1>
-                        <p>
-                          Type in a Movie or TV Show to find what you're looking
-                          for.
-                        </p>
-                      </div>
-                      <Input
-                        placeholder="Start typing to see results"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-2 py-3 sm:w-3/4 sm:px-3 sm:py-5"
-                      />
+          <Dialog
+            onOpenChange={(open) =>
+              !open && setSearchQuery("") && setSearchResults([])
+            }
+          >
+            <DialogTrigger className="flex aspect-video w-full items-center justify-center rounded-sm border-dashed bg-black/10 hover:bg-black/25 dark:bg-white/10 dark:hover:bg-white/25">
+              <h3>Add New Favorite</h3>
+            </DialogTrigger>
+            <DialogPortal>
+              <DialogOverlay className="fixed inset-0 bg-[#111111AA]" />
+              <DialogContent>
+                <div className="fixed bottom-1/2 left-1/2 right-1/2 top-1/2 z-50 flex h-min w-10/12 translate-x-[-50%] translate-y-[-50%] flex-col items-start gap-5 rounded-xl border border-white bg-black p-6 sm:w-2/3 sm:p-10">
+                  <div className="flex flex-col items-center gap-3 self-stretch">
+                    <div className="flex flex-col items-center gap-1">
+                      <h1>Search Archivr</h1>
+                      <p>
+                        Type in a Movie or TV Show to find what you're looking
+                        for.
+                      </p>
                     </div>
-                    {searchResults.length === 0 && <h2>No search results</h2>}
-                    <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
-                      {searchResults.map((media) => (
+                    <Input
+                      placeholder="Start typing to see results"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full px-2 py-3 sm:w-3/4 sm:px-3 sm:py-5"
+                    />
+                  </div>
+                  {searchResults.length === 0 && <h2>No search results</h2>}
+                  <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
+                    {searchResults.map((media) => (
+                      <DialogClose>
                         <div
                           key={media.id}
                           className="flex flex-col items-start gap-3"
@@ -173,50 +169,50 @@ export function ProfileSettingsCategoryAppearance() {
                           />
                           <p>{media.title}</p>
                         </div>
-                      ))}
-                    </div>
-                    {searchResults.length > 0 && (
-                      <div className="mt-4 flex w-full justify-center gap-3">
-                        <button
-                          onClick={() =>
-                            setSearchOffset((prev) => Math.max(prev - 6, 0))
-                          }
-                          className="flex items-center gap-3"
-                          disabled={searchOffset <= 0}
-                        >
-                          <div
-                            className={`flex items-center justify-center rounded-md border p-1 transition-all duration-300 ${searchOffset <= 1 ? "cursor-not-allowed border-muted text-muted" : "hover:bg-white hover:text-black"}`}
-                          >
-                            <ChevronLeftRounded />
-                          </div>
-                          <h3
-                            className={`${searchOffset <= 0 ? "cursor-not-allowed text-muted" : "text-white"}`}
-                          >
-                            Previous
-                          </h3>
-                        </button>
-                        <Separator
-                          orientation="vertical"
-                          className="h-auto"
-                          decorative
-                        />
-                        <button
-                          onClick={() => setSearchOffset((prev) => prev + 6)}
-                          className="flex items-center gap-3"
-                          disabled={searchResults.length < 6}
-                        >
-                          <h3 className="text-white">Next</h3>
-                          <div className="flex items-center justify-center rounded-md border p-1 transition-all duration-300 hover:bg-white hover:text-black">
-                            <ChevronRightRounded />
-                          </div>
-                        </button>
-                      </div>
-                    )}
+                      </DialogClose>
+                    ))}
                   </div>
-                </DialogContent>
-              </DialogPortal>
-            </Dialog>
-          ) : null}
+                  {searchResults.length > 0 && (
+                    <div className="mt-4 flex w-full justify-center gap-3">
+                      <button
+                        onClick={() =>
+                          setSearchOffset((prev) => Math.max(prev - 6, 0))
+                        }
+                        className="flex items-center gap-3"
+                        disabled={searchOffset <= 0}
+                      >
+                        <div
+                          className={`flex items-center justify-center rounded-md border p-1 transition-all duration-300 ${searchOffset <= 1 ? "cursor-not-allowed border-muted text-muted" : "hover:bg-white hover:text-black"}`}
+                        >
+                          <ChevronLeftRounded />
+                        </div>
+                        <h3
+                          className={`${searchOffset <= 0 ? "cursor-not-allowed text-muted" : "text-white"}`}
+                        >
+                          Previous
+                        </h3>
+                      </button>
+                      <Separator
+                        orientation="vertical"
+                        className="h-auto"
+                        decorative
+                      />
+                      <button
+                        onClick={() => setSearchOffset((prev) => prev + 6)}
+                        className="flex items-center gap-3"
+                        disabled={searchResults.length < 6}
+                      >
+                        <h3 className="text-white">Next</h3>
+                        <div className="flex items-center justify-center rounded-md border p-1 transition-all duration-300 hover:bg-white hover:text-black">
+                          <ChevronRightRounded />
+                        </div>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </DialogPortal>
+          </Dialog>
         </div>
       </div>
     </div>
