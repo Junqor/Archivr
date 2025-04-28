@@ -329,7 +329,6 @@ userRouter.post(
   asyncHandler(async (req, res) => {
     const { user } = res.locals;
     const { movedId, prevId, nextId } = req.body;
-    console.log(user, movedId, prevId, nextId);
     await reorderFavorites(movedId, prevId, nextId, user.id);
     res.json({ status: "success" });
   })
