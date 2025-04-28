@@ -78,7 +78,7 @@ export async function getUserLikes(
           : sql`1=1`
       )
     )
-    .groupBy(media.id)
+    .groupBy(media.id, ratings.rating)
     .orderBy(orderByClause)
     .limit(limit)
     .offset(offset);
