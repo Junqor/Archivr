@@ -60,7 +60,10 @@ export async function getUserLikes(
     .from(media)
     .innerJoin(likes, eq(likes.mediaId, media.id))
     .leftJoin(avgRatingsSubquery, eq(media.id, avgRatingsSubquery.mediaId))
-    .leftJoin(ratings, eq(ratings.mediaId, media.id))
+    .leftJoin(
+      ratings,
+      and(eq(ratings.mediaId, media.id), eq(ratings.userId, user_id))
+    )
     .where(
       and(
         eq(likes.userId, user_id),
