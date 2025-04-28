@@ -423,7 +423,7 @@ export default function ProfilePage() {
         <TabContent value="profile" className="flex w-full items-start gap-5">
           <div className="flex w-full flex-shrink-0 flex-col items-start gap-5 sm:w-3/4">
             {favorites && favorites.length > 0 && (
-              <MediaGrid title="Favorite Media" items={favorites} />
+              <MediaGrid title="Favorite Media" items={favorites.slice(0, 4)} />
             )}
             {profileTab && profileTab.likes.length > 0 && (
               <MediaGrid
@@ -531,7 +531,7 @@ export default function ProfilePage() {
                     activityParams.setPage(0);
                     setActivityTab("self");
                   }}
-                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${activityTab === "self" ? "bg-purple text-white" : "dark:bg-[#1B1B1A] bg-[#E4E4E5] text-muted"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
+                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${activityTab === "self" ? "bg-purple text-white" : "bg-[#E4E4E5] text-muted dark:bg-[#1B1B1A]"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
                 >
                   <PersonRounded />
                   {profilePage.displayName || profilePage.username}
@@ -541,7 +541,7 @@ export default function ProfilePage() {
                     activityParams.setPage(0);
                     setActivityTab("following");
                   }}
-                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${activityTab === "following" ? "bg-purple text-white" : "dark:bg-[#1B1B1A] bg-[#E4E4E5] text-muted"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
+                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${activityTab === "following" ? "bg-purple text-white" : "bg-[#E4E4E5] text-muted dark:bg-[#1B1B1A]"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
                 >
                   <GroupsRounded />
                   Following
@@ -579,7 +579,7 @@ export default function ProfilePage() {
                         )
                       }
                       disabled={activityParams.page === 0}
-                      className={`flex items-center justify-center rounded-md border border-black dark:border-white p-1 transition-all duration-300 ${activityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"}`}
+                      className={`flex items-center justify-center rounded-md border border-black p-1 transition-all duration-300 dark:border-white ${activityParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"}`}
                     >
                       <ChevronLeftRounded />
                     </button>
@@ -607,7 +607,7 @@ export default function ProfilePage() {
                       disabled={
                         !activity || activity.length < ACTIVITY_PAGE_SIZE
                       } // Disable if no more media
-                      className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${!activity || activity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
+                      className={`flex items-center justify-center rounded-md border border-black p-1 transition-all duration-300 dark:border-white ${!activity || activity.length < ACTIVITY_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"}`}
                     >
                       <ChevronRightRounded />
                     </button>
@@ -669,7 +669,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handleChangeReviewRating(e.target.value as any)
                     }
-                    className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
+                    className="border-b-2 border-black bg-white px-2 py-1 hover:cursor-pointer dark:border-white dark:bg-black"
                   >
                     <option value="">All</option>
                     <option value="10">{ratingToTextStars(10)}</option>
@@ -690,7 +690,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handleChangeReviewSortBy(e.target.value as any)
                     }
-                    className="border-b-2 dark:border-white dark:bg-black border-black bg-white px-2 py-1 hover:cursor-pointer"
+                    className="border-b-2 border-black bg-white px-2 py-1 hover:cursor-pointer dark:border-white dark:bg-black"
                   >
                     <option value="when-reviewed">When Reviewed</option>
                     <option value="title">Media Title</option>
@@ -746,7 +746,7 @@ export default function ProfilePage() {
                     )
                   }
                   disabled={mediaReviewsParams.page === 0}
-                  className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${mediaReviewsParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
+                  className={`flex items-center justify-center rounded-md border border-black p-1 transition-all duration-300 dark:border-white ${mediaReviewsParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"}`}
                 >
                   <ChevronLeftRounded />
                 </button>
@@ -774,10 +774,10 @@ export default function ProfilePage() {
                   disabled={
                     !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
                   }
-                  className={`flex items-center justify-center rounded-md border hover:border-white border-black p-1 transition-all duration-300 ${
+                  className={`flex items-center justify-center rounded-md border border-black p-1 transition-all duration-300 hover:border-white ${
                     !mediaReviews || mediaReviews.length < REVIEW_PAGE_SIZE
                       ? "cursor-not-allowed opacity-50"
-                      : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"
+                      : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                   }`}
                 >
                   <ChevronRightRounded />
@@ -817,7 +817,11 @@ export default function ProfilePage() {
                       <div className="pointer-events-none absolute left-0 top-0 z-10 flex size-9 items-center justify-center font-extrabold leading-[2.25rem] md:size-16 md:leading-[2.75rem]">
                         <StarBadgeSVG
                           className="absolute z-10 size-14"
-                          fill={theme == THEME.DARK ? media.pallette.DarkVibrant : media.pallette.LightVibrant}
+                          fill={
+                            theme == THEME.DARK
+                              ? media.pallette.DarkVibrant
+                              : media.pallette.LightVibrant
+                          }
                         />
                         <h4 className="absolute z-20 font-bold">
                           #{index + 1}
@@ -859,7 +863,7 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     handleChangeLikeRating(e.target.value as any)
                   }
-                  className="border-b-2 dark:border-white border-black dark:bg-black bg-white px-2 py-1 hover:cursor-pointer"
+                  className="border-b-2 border-black bg-white px-2 py-1 hover:cursor-pointer dark:border-white dark:bg-black"
                 >
                   <option value="">All</option>
                   <option value="10">{ratingToTextStars(10)}</option>
@@ -878,7 +882,7 @@ export default function ProfilePage() {
                   id="likeGenre"
                   value={mediaLikesParams.genre}
                   onChange={(e) => handleChangeLikeGenre(e.target.value as any)}
-                  className="border-b-2 dark:border-white border-black dark:bg-black bg-white px-2 py-1 hover:cursor-pointer"
+                  className="border-b-2 border-black bg-white px-2 py-1 hover:cursor-pointer dark:border-white dark:bg-black"
                 >
                   <option value="">All</option>
                   {genres?.map((genre) => (
@@ -899,7 +903,7 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     handleChangeLikeSortBy(e.target.value as any)
                   }
-                  className="border-b-2 dark:border-white border-black dark:bg-black bg-white px-2 py-1 hover:cursor-pointer"
+                  className="border-b-2 border-black bg-white px-2 py-1 hover:cursor-pointer dark:border-white dark:bg-black"
                 >
                   <option value="When Liked">When Liked</option>
                   <option value="Media Title">Media Title</option>
@@ -980,7 +984,7 @@ export default function ProfilePage() {
                   handleChangeLikePage(Math.max(0, mediaLikesParams.page - 1))
                 }
                 disabled={mediaLikesParams.page === 0}
-                className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white"}`}
+                className={`flex items-center justify-center rounded-md border border-black p-1 transition-all duration-300 dark:border-white ${mediaLikesParams.page === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"}`}
               >
                 <ChevronLeftRounded />
               </button>
@@ -1004,7 +1008,7 @@ export default function ProfilePage() {
               <button
                 onClick={() => handleChangeLikePage(mediaLikesParams.page + 1)}
                 disabled={!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE} // Disable if no more media
-                className={`flex items-center justify-center rounded-md border dark:border-white border-black p-1 transition-all duration-300 ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "dark:hover:bg-white hover:bg-black dark:hover:text-black hover:text-white"}`}
+                className={`flex items-center justify-center rounded-md border border-black p-1 transition-all duration-300 dark:border-white ${!mediaLikes || mediaLikes.length < LIKES_PAGE_SIZE ? "cursor-not-allowed opacity-50" : "hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"}`}
               >
                 <ChevronRightRounded />
               </button>

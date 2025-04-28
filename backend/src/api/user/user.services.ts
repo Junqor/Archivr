@@ -455,16 +455,6 @@ export async function addFavorite(user_id: number, media_id: number) {
     throw new Error("User not found");
   }
 
-  // // Check if the user has less than 4 favorites
-  // const favoriteCount = await db
-  //   .select({ count: sql<number>`COUNT(*)` })
-  //   .from(userFavorites)
-  //   .where(eq(userFavorites.userId, user_id));
-
-  // if (favoriteCount[0].count >= 4) {
-  //   throw new Error("You can only have 4 favorites at a time");
-  // }
-
   // Check if the user already has the media favorited
   const existingFavorite = await db
     .select({ id: userFavorites.id })
@@ -480,8 +470,20 @@ export async function addFavorite(user_id: number, media_id: number) {
     throw new Error("Media already favorited");
   }
 
+  /* get max(order) for that user */
+  const [last] = await db
+    .select({ order: userFavorites.order })
+    .from(userFavorites)
+    .where(eq(userFavorites.userId, user_id))
+    .orderBy(desc(userFavorites.order))
+    .limit(1);
+
+  const newOrder = last ? Number(last.order) + 1000 : 1000; // order in increments of 1000
+
   // Add the favorite
-  await db.insert(userFavorites).values({ userId: user_id, mediaId: media_id });
+  await db
+    .insert(userFavorites)
+    .values({ userId: user_id, mediaId: media_id, order: newOrder });
 }
 
 // User removes a media from their favorites
@@ -548,7 +550,7 @@ export async function getUserFavorites(username: string) {
     .leftJoin(ratings, eq(ratings.mediaId, media.id))
     .groupBy(media.id)
     .where(eq(userFavorites.userId, user[0].id))
-    .orderBy(desc(userFavorites.addedAt));
+    .orderBy(userFavorites.order);
 }
 
 // Check if a user has favorited a media
@@ -589,4 +591,77 @@ export async function getUserIdFromUsername(username: string) {
   }
 
   return user[0].id;
+}
+
+export async function reorderFavorites(
+  movedId: number,
+  prevId: number,
+  nextId: number,
+  userId: number
+) {
+  try {
+    await db.transaction(async (trx) => {
+      /* lock the neighbours so we read stable values */
+      const [prev] = prevId
+        ? await trx
+            .select({ order: userFavorites.order })
+            .from(userFavorites)
+            .where(eq(userFavorites.id, prevId))
+            .for("update")
+        : [null];
+
+      const [next] = nextId
+        ? await trx
+            .select({ order: userFavorites.order })
+            .from(userFavorites)
+            .where(eq(userFavorites.id, nextId))
+            .for("update")
+        : [null];
+
+      /* ---- convert strings to numbers once ---- */
+      const prevVal = prev ? Number(prev.order) : undefined;
+      const nextVal = next ? Number(next.order) : undefined;
+
+      let newPos: number;
+      if (prevVal !== undefined && nextVal !== undefined)
+        newPos = (prevVal + nextVal) / 2;
+      else if (prevVal === undefined && nextVal !== undefined)
+        newPos = nextVal - 1;
+      else if (prevVal !== undefined && nextVal === undefined)
+        newPos = prevVal + 1;
+      else newPos = 1;
+
+      /* update only the moved row */
+      await trx
+        .update(userFavorites)
+        .set({ order: newPos })
+        .where(eq(userFavorites.id, movedId));
+
+      /* if the gap became too tight, renumber */
+      const gapOK =
+        prevVal === undefined ||
+        (Math.abs(newPos - prevVal) > 1e-6 &&
+          (nextVal === undefined || Math.abs(nextVal - newPos) > 1e-6));
+
+      if (!gapOK) {
+        const rows = await trx
+          .select({ id: userFavorites.id })
+          .from(userFavorites)
+          .where(eq(userFavorites.userId, userId))
+          .orderBy(asc(userFavorites.order));
+
+        let pos = 1000;
+        for (const r of rows) {
+          await trx
+            .update(userFavorites)
+            .set({ order: pos })
+            .where(eq(userFavorites.id, r.id));
+          pos += 1000;
+        }
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

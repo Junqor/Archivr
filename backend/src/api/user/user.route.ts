@@ -16,6 +16,7 @@ import {
   getUserFavorites,
   checkFavorite,
   getUserIdFromUsername,
+  reorderFavorites,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -317,5 +318,19 @@ userRouter.get(
         message: (error as Error).message,
       });
     }
+  })
+);
+
+// POST /user/favorites/reorder
+// Reorder a user's favorites
+userRouter.post(
+  "/favorites/reorder",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { movedId, prevId, nextId } = req.body;
+    console.log(user, movedId, prevId, nextId);
+    await reorderFavorites(movedId, prevId, nextId, user.id);
+    res.json({ status: "success" });
   })
 );
