@@ -41,13 +41,23 @@ export async function getUserLikes(
     .groupBy(ratings.mediaId)
     .as("avgRatings");
 
+  // Total like count for media
+  const likeCountsSub = db
+    .select({
+      mediaId: likes.mediaId,
+      like_count: count(likes.id).as("like_count"),
+    })
+    .from(likes)
+    .groupBy(likes.mediaId)
+    .as("likeCounts");
+
   const likedMedia = await db
     .select({
       id: media.id,
       title: media.title,
       thumbnail_url: media.thumbnail_url,
       rating: media.rating,
-      likes: count(likes.id).as("like_count"),
+      likes: likeCountsSub.like_count,
       userRating: avgRatingsSubquery.avg_rating,
       user_rating: ratings.rating,
       is_liked: exists(
@@ -58,15 +68,18 @@ export async function getUserLikes(
       ),
     })
     .from(media)
-    .innerJoin(likes, eq(likes.mediaId, media.id))
+    .innerJoin(
+      likes,
+      and(eq(likes.mediaId, media.id), eq(likes.userId, user_id))
+    )
     .leftJoin(avgRatingsSubquery, eq(media.id, avgRatingsSubquery.mediaId))
+    .leftJoin(likeCountsSub, eq(media.id, likeCountsSub.mediaId))
     .leftJoin(
       ratings,
       and(eq(ratings.mediaId, media.id), eq(ratings.userId, user_id))
     )
     .where(
       and(
-        eq(likes.userId, user_id),
         ratingMax < 10
           ? or(lte(ratings.rating, ratingMax), isNull(ratings.rating))
           : sql`1=1`,
