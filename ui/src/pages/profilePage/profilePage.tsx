@@ -423,7 +423,11 @@ export default function ProfilePage() {
         <TabContent value="profile" className="flex w-full items-start gap-5">
           <div className="flex w-full flex-shrink-0 flex-col items-start gap-5 sm:w-3/4">
             {favorites && favorites.length > 0 && (
-              <MediaGrid title="Favorite Media" items={favorites.slice(0, 4)} />
+              <MediaGrid
+                title="Favorite Media"
+                items={favorites.slice(0, 4)}
+                onViewAll={() => setTab("favorites")}
+              />
             )}
             {profileTab && profileTab.likes.length > 0 && (
               <MediaGrid
@@ -1013,6 +1017,28 @@ export default function ProfilePage() {
                 <ChevronRightRounded />
               </button>
             </div>
+          </section>
+        </TabContent>
+        <TabContent
+          value="favorites"
+          className="flex w-full flex-col items-start gap-5"
+        >
+          <section className="grid w-full grid-cols-3 gap-4 md:grid-cols-5">
+            {favorites.map((item: any) => {
+              return (
+                <ThumbnailPreview
+                  key={item.media_id}
+                  media={{
+                    id: item.media_id ?? 0,
+                    title: item.title,
+                    thumbnail_url: item.thumbnail_url,
+                    rating: item.rating,
+                    likes: item.likes,
+                    userRating: item.userRating,
+                  }}
+                />
+              );
+            })}
           </section>
         </TabContent>
       </Tabs>
