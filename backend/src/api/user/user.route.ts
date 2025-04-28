@@ -16,6 +16,7 @@ import {
   getUserFavorites,
   checkFavorite,
   getUserIdFromUsername,
+  reorderFavorites,
 } from "./user.services.js";
 import bodyParser from "body-parser";
 import { authenticateToken } from "../../middleware/authenticateToken.js";
@@ -158,20 +159,20 @@ userRouter.get(
   })
 );
 
-// (GET /user/:userId/:type?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
+// (GET /user/:username/:type?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
 // Get a user's follows
 userRouter.get(
-  "/:userId/:type(followers|following)",
+  "/:username/:type(followers|following)",
   asyncHandler(async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const username = req.params.username;
       const type = req.params.type as "followers" | "following";
       const limit = parseInt(req.query.limit as string) || 15;
       const offset = parseInt(req.query.offset as string) || 0;
       const sort_by = req.query.sort_by as "follows.createdAt";
       const sort_order = req.query.sort_order as "desc";
       const follows = await getUserFollows(
-        userId,
+        username,
         type,
         limit,
         offset,
@@ -189,20 +190,20 @@ userRouter.get(
   })
 );
 
-// (GET /user/:userId/:type/extended?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
+// (GET /user/:username/:type/extended?limit=15&offset=0&sort_by=follows.createdAt&sort_order=desc)
 // Get a user's follows with extended info
 userRouter.get(
-  "/:userId/:type(followers|following)/extended",
+  "/:username/:type(followers|following)/extended",
   asyncHandler(async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const username = req.params.username;
       const type = req.params.type as "followers" | "following";
       const limit = parseInt(req.query.limit as string) || 15;
       const offset = parseInt(req.query.offset as string) || 0;
       const sort_by = req.query.sort_by as "follows.createdAt";
       const sort_order = req.query.sort_order as "desc";
       const follows = await getUserFollowsExtended(
-        userId,
+        username,
         type,
         limit,
         offset,
@@ -262,14 +263,14 @@ userRouter.post(
   })
 );
 
-// (GET /user/get-favorites/:userId)
+// (GET /user/get-favorites/:username)
 // Get a user's favorite media
 userRouter.get(
-  "/get-favorites/:userId",
+  "/get-favorites/:username",
   asyncHandler(async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
-      const favorites = await getUserFavorites(userId);
+      const username = req.params.username;
+      const favorites = await getUserFavorites(username);
       res.json({ status: "success", favorites });
     } catch (error) {
       console.error(error);
@@ -317,5 +318,18 @@ userRouter.get(
         message: (error as Error).message,
       });
     }
+  })
+);
+
+// POST /user/favorites/reorder
+// Reorder a user's favorites
+userRouter.post(
+  "/favorites/reorder",
+  authenticateToken,
+  asyncHandler(async (req, res) => {
+    const { user } = res.locals;
+    const { movedId, prevId, nextId } = req.body;
+    await reorderFavorites(movedId, prevId, nextId, user.id);
+    res.json({ status: "success" });
   })
 );

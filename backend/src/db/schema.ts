@@ -15,6 +15,7 @@ import {
   smallint,
   char,
   tinyint,
+  double,
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
@@ -323,6 +324,7 @@ export const userFavorites = mysqlTable(
       .notNull()
       .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
     addedAt: timestamp("added_at", { mode: "string" }).defaultNow().notNull(),
+    order: double("order").notNull(),
   },
   (table) => [
     index("user_id_idx").on(table.userId),
