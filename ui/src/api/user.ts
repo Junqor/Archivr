@@ -57,6 +57,12 @@ export const getUserSettingsForSettingsContext = async () => {
       },
     );
     const val = await result.json();
+    for (const key in val.settings) {
+      if (key === "avatar_url") {
+        val.settings["avatar_url"] =
+          val.settings["avatar_url"] + `?${new Date().getTime()}`; // Force refresh of pfp image in memory
+      }
+    }
     return val.settings;
   } catch (error) {
     console.error(error);
@@ -114,10 +120,11 @@ export const uploadPfp = async (file: File) => {
     },
     body: formData,
   });
-  if (!response.ok) {
-    throw new Error("Failed to upload avatar");
-  }
+
   const data = await response.json();
+  if (data.status !== "success") {
+    throw new Error(data.message || "Failed to upload avatar");
+  }
   return data.avatarUrl as string;
 };
 

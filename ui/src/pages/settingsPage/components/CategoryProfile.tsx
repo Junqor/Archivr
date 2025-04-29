@@ -46,7 +46,7 @@ export function ProfileSettingsCategoryProfile({
       refetchSettings();
       toast.success("Avatar Updated");
     } catch (error) {
-      toast.error("Failed to upload avatar");
+      toast.error((error as Error).message);
     }
   };
 

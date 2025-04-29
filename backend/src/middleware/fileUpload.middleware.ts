@@ -1,5 +1,6 @@
 import multer from "multer";
 import { tmpDir } from "../utils/tmpDir.js";
+import { ClientError } from "../utils/error.class.js";
 
 export const fileUploadMiddleware = multer({
   storage: multer.diskStorage({
@@ -12,20 +13,14 @@ export const fileUploadMiddleware = multer({
     },
   }),
   fileFilter: function (req, file, cb) {
-    const allowedMimes = [
-      "image/jpeg",
-      "image/bmp",
-      "image/png",
-      "image/tiff",
-      "image/webp",
-    ];
+    const allowedMimes = ["image/jpeg", "image/bmp", "image/png", "image/tiff"];
 
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(
-        new Error(
-          "Invalid file type. Only jpg, png and webp image files are allowed."
+        new ClientError(
+          "Invalid file type. Only jpg & png image files are allowed."
         )
       );
     }
