@@ -187,7 +187,7 @@ export async function searchUsers(
           ),
       orderBy === "desc" ? desc(users.username) : asc(users.username) // incase they don't have a display name
     )
-    .groupBy(users.id)
+    .groupBy(users.id, userSettings.pronouns)
     .limit(limit)
     .offset(offset * limit);
 
