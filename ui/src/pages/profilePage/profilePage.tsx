@@ -45,6 +45,8 @@ import React from "react";
 import { ActivityBox } from "../../components/activityBox";
 import { useTheme } from "@/context/theme";
 import { THEME } from "@/types/theme";
+import { Check, Clock, Tv } from "lucide-react";
+import { trpc } from "@/utils/trpc";
 
 type Palette = Awaited<ReturnType<typeof getColorPalette>>;
 
@@ -140,6 +142,22 @@ export default function ProfilePage() {
   const [background, setBackground] = useState<string | undefined>(undefined);
   const [tab, setTab] = useState("profile");
   const [activityTab, setActivityTab] = useState<"self" | "following">("self");
+  const [listsTab, setListsTab] = useState<
+    "completed" | "watching" | "planning"
+  >("completed");
+
+  const {
+    data: lists,
+    isLoading: isListsLoading,
+    isPending: isListsPending,
+    error: listsError,
+    refetch: listsRefetch,
+  } = useQuery(
+    trpc.lists.getLists.queryOptions(
+      { userName: username as string, listType: listsTab },
+      { enabled: tab === "lists" },
+    ),
+  );
 
   // Fetch profile data
   const { data: profilePage, isLoading: isProfilePageLoading } = useQuery({
@@ -412,9 +430,16 @@ export default function ProfilePage() {
             <Separator orientation="vertical" className="h-auto" decorative />
             <TabTrigger
               value="likes"
-              className="w-full py-4 data-[state=active]:underline sm:w-auto sm:py-0"
+              className="hidden w-full py-4 data-[state=active]:underline sm:block sm:w-auto sm:py-0"
             >
               Likes
+            </TabTrigger>
+            <Separator orientation="vertical" className="h-auto" decorative />
+            <TabTrigger
+              value="lists"
+              className="w-full py-4 data-[state=active]:underline sm:w-auto sm:py-0"
+            >
+              Lists
             </TabTrigger>
           </TabList>
           <ProfileStats {...profilePage} />
@@ -1040,6 +1065,120 @@ export default function ProfilePage() {
               );
             })}
           </section>
+        </TabContent>
+        <TabContent value="lists" className="flex w-full items-start gap-5">
+          <div className="flex w-full flex-shrink-0 flex-col items-start gap-5 sm:w-3/4">
+            <div className="flex w-full flex-col items-center justify-end gap-5 self-stretch">
+              <section className="flex w-full flex-col items-start gap-2 self-stretch sm:w-auto sm:flex-row">
+                <button
+                  onClick={() => {
+                    setListsTab("completed");
+                  }}
+                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${listsTab === "completed" ? "bg-purple text-white" : "bg-[#E4E4E5] text-muted dark:bg-[#1B1B1A]"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
+                >
+                  <Check />
+                  Completed
+                </button>
+                <button
+                  onClick={() => {
+                    setListsTab("watching");
+                  }}
+                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${listsTab === "watching" ? "bg-purple text-white" : "bg-[#E4E4E5] text-muted dark:bg-[#1B1B1A]"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
+                >
+                  <Tv />
+                  Watching
+                </button>
+                <button
+                  onClick={() => {
+                    setListsTab("planning");
+                  }}
+                  className={`w-full items-center gap-2 rounded-sm px-5 py-3 sm:w-auto ${listsTab === "planning" ? "bg-purple text-white" : "bg-[#E4E4E5] text-muted dark:bg-[#1B1B1A]"} flex items-center justify-center self-stretch px-2 text-[1.2rem] font-medium transition-all hover:scale-105 hover:no-underline`}
+                >
+                  <Clock />
+                  Planning
+                </button>
+              </section>
+              <section className="flex w-full flex-col items-start gap-5">
+                <div className="flex w-full flex-col items-start">
+                  {listsError ? (
+                    <div className="flex w-full items-center justify-center gap-3">
+                      <h4 className="text-red">Failed to fetch lists</h4>
+                      <button
+                        onClick={() => listsRefetch()}
+                        className="rounded-md bg-purple px-3 py-1 text-white transition-all duration-300 hover:bg-purple/80"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  ) : isListsLoading || isListsPending ? (
+                    <LoadingSpinner />
+                  ) : lists.length > 0 ? (
+                    <section className="grid w-full grid-cols-3 gap-4 md:grid-cols-5">
+                      {lists.map((m) => {
+                        return <ThumbnailPreview key={m.id} media={m} />;
+                      })}
+                    </section>
+                  ) : (
+                    <h2>No results</h2>
+                  )}
+                </div>
+              </section>
+            </div>
+          </div>
+          <div className="hidden w-1/4 flex-[1_0_0] flex-col items-start gap-3 sm:flex">
+            {profileTab && profileTab.recentActivity && (
+              <div className="flex w-full flex-col items-start gap-3 self-stretch">
+                <div className="flex flex-col items-start gap-1 self-stretch">
+                  <div className="flex w-full items-start justify-between gap-2 self-stretch">
+                    <h4 className="text-muted">Activity</h4>
+                    <button
+                      className="text-muted hover:underline"
+                      onClick={() => setTab("activity")}
+                    >
+                      <h4>More</h4>
+                    </button>
+                  </div>
+                  <Separator orientation="horizontal" />
+                </div>
+                <MiniActivity activity={profileTab.recentActivity} />
+              </div>
+            )}
+            {userFollows && userFollows.length > 0 && (
+              <div className="flex w-full flex-col items-start gap-3 self-stretch">
+                <div className="flex flex-col items-start gap-1 self-stretch">
+                  <div className="flex w-full items-start justify-between gap-2 self-stretch">
+                    <h4 className="text-muted">Following</h4>
+                    <button
+                      className="text-muted hover:underline"
+                      onClick={() => setTab("activity")}
+                    >
+                      <h4>More</h4>
+                    </button>
+                  </div>
+                  <Separator orientation="horizontal" />
+                </div>
+                <div className="flex w-full flex-wrap content-start items-start gap-2 self-stretch">
+                  {userFollows.map((follow: followProps) => (
+                    <Link
+                      to={`/profile/${follow.username}`}
+                      key={follow.id}
+                      className="flex items-center gap-2"
+                      title={follow.displayName || follow.username}
+                    >
+                      <UserAvatar
+                        user={{
+                          username: follow.username,
+                          avatar_url: follow.avatarUrl,
+                          role: follow.role,
+                        }}
+                        className="size-[2.9rem] border border-muted"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </TabContent>
       </Tabs>
     </>

@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { protectedProcedure } from "../middleware/protectedProcedure.js";
 import { db } from "../../db/database.js";
-import { lists } from "../../db/schema.js";
-import { eq, and, sql } from "drizzle-orm";
-import { router } from "../init.js";
+import { likes, lists, media, ratings, users } from "../../db/schema.js";
+import { eq, and, sql, getTableColumns, count, avg } from "drizzle-orm";
+import { publicProcedure, router } from "../init.js";
 
 export const listsRouter = router({
   getUsersMediaList: protectedProcedure // Get specific user's media list
@@ -52,5 +52,32 @@ export const listsRouter = router({
           .delete(lists)
           .where(and(eq(lists.media_id, mediaId), eq(lists.user_id, user.id)));
       });
+    }),
+
+  // Get all media in one of the lists for a user
+  getLists: publicProcedure
+    .input(
+      z.object({
+        userName: z.string(),
+        listType: z.enum(["completed", "watching", "planning"]),
+      })
+    )
+    .query(async ({ input }) => {
+      const { userName, listType } = input;
+
+      return db
+        .select({
+          ...getTableColumns(media),
+          id: media.id,
+          likes: count(likes.id),
+          userRating: avg(ratings.rating),
+        })
+        .from(lists)
+        .innerJoin(users, eq(users.username, userName))
+        .innerJoin(media, eq(media.id, lists.media_id))
+        .leftJoin(likes, eq(likes.mediaId, media.id))
+        .leftJoin(ratings, eq(ratings.mediaId, media.id))
+        .where(and(eq(lists.user_id, users.id), eq(lists.list_name, listType)))
+        .groupBy(media.id);
     }),
 });
