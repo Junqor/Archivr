@@ -15,12 +15,15 @@ export type TThumbnailPreview = {
     thumbnail_url: string | null;
     rating: number | null;
     likes: number;
-    userRating: number | null;
+    userRating: number | null | string;
   };
   className?: string;
 };
 
 function ThumbnailPreview({ media, className }: TThumbnailPreview) {
+  if (typeof media.userRating === "string") {
+    media.userRating = parseFloat(media.userRating);
+  }
   return (
     <div
       title={media.title}
