@@ -62,7 +62,7 @@ export default function HomePage() {
             <h4>Trending this week...</h4>
             <Link
               to="trending"
-              className="ml-auto dark:text-white/80 text-black/80 hover:underline"
+              className="ml-auto text-black/80 hover:underline dark:text-white/80"
             >
               See More
             </Link>
@@ -79,7 +79,7 @@ export default function HomePage() {
             <h4>All time most popular...</h4>
             <Link
               to="popular"
-              className="ml-auto dark:text-white/80 text-black/80 hover:underline"
+              className="ml-auto text-black/80 hover:underline dark:text-white/80"
             >
               See More
             </Link>
@@ -120,7 +120,7 @@ export default function HomePage() {
             <h4>Recent Reviews...</h4>
             <Link
               to="activity"
-              className="ml-auto dark:text-white/80 text-black/80 hover:underline"
+              className="ml-auto text-black/80 hover:underline dark:text-white/80"
             >
               See More
             </Link>
@@ -153,7 +153,7 @@ export default function HomePage() {
               Join the Community
             </Link>
             <Link
-              to="#"
+              to="/search"
               className="flex items-center justify-center rounded-full border border-white bg-transparent px-6 py-1 transition-colors hover:bg-white hover:text-black"
             >
               View the Collection
@@ -175,7 +175,7 @@ export default function HomePage() {
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           <IconBox
             iconName="TrendingUp"
-            description="Discover what's popular with real-time trending media across movies, shows, and more."
+            description="Discover what's popular with real-time trending media across movies and TV shows."
           />
           <IconBox
             iconName="Favorite"
@@ -183,11 +183,11 @@ export default function HomePage() {
           />
           <IconBox
             iconName="Star"
-            description="Share your thoughts! Rate and review your favorite movies, TV shows, and books."
+            description="Share your thoughts! Rate and review your favorite movies and TV shows."
           />
           <IconBox
             iconName="Browse"
-            description="Browse by category - movies, TV shows, books, and more - all in one place."
+            description="Browse by category - anime, movies, and TV - all in one place."
           />
           <IconBox
             iconName="Sparkles"
@@ -212,8 +212,8 @@ export default function HomePage() {
       </section>
       <section className="relative flex w-full flex-col justify-start gap-3">
         <h3>
-          Explore trending hits and hidden gems in movies, shows, music, and
-          more - just for you!
+          Explore trending hits and hidden gems in movies and TV shows - just
+          for you!
         </h3>
         <Separator />
         <h4>

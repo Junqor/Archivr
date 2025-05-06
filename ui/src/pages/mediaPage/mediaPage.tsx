@@ -380,7 +380,9 @@ export function MediaPage() {
             </div>
             <div className="flex flex-row items-center justify-center space-x-1">
               <StarRounded className="size-4 text-neutral-800 dark:fill-gray-300" />
-              <h4>{userRating ? userRating / 2 : "~"}</h4>
+              <h4>
+                {userRating ? Math.round((userRating / 2) * 10) / 10 : "~"}
+              </h4>
             </div>
             <div className="flex flex-row items-center justify-center space-x-1">
               <Heart className="size-4 text-neutral-800 dark:fill-gray-300" />

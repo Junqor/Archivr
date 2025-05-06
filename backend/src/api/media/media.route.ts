@@ -85,7 +85,6 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const mediaId = parseInt(req.params.mediaId);
     const rating = await get_media_rating(mediaId);
-    res.setHeader("Cache-Control", "max-age=" + 60 * 15); // Browser cache for 15 mins
     res.json({ status: "success", rating: rating });
   })
 );
