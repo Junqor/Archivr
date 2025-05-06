@@ -108,6 +108,10 @@ export const useMedia = (mediaId: string, userId: string) => {
         queryKey: ["media", mediaId, "reviews"],
         exact: true,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["media", mediaId, "rating"],
+        exact: true,
+      });
       // Refetch list status since it should be completed now
       queryClient.invalidateQueries({
         queryKey: trpc.lists.getUsersMediaList.queryOptions({
