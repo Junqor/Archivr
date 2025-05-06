@@ -43,7 +43,7 @@ export default function IconBox({
       <div className="flex items-center justify-center text-5xl">
         {getIcon(iconName)}
       </div>
-      <div className="flex h-full flex-col items-start justify-start gap-3">
+      <div className="flex h-full flex-col items-start justify-center gap-3">
         {title ? <h4>{title}</h4> : null}
         {description ? <p>{description}</p> : null}
       </div>
