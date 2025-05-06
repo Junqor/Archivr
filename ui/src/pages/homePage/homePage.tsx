@@ -153,7 +153,7 @@ export default function HomePage() {
               Join the Community
             </Link>
             <Link
-              to="#"
+              to="/search"
               className="flex items-center justify-center rounded-full border border-white bg-transparent px-6 py-1 transition-colors hover:bg-white hover:text-black"
             >
               View the Collection
