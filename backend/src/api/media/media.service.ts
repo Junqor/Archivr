@@ -38,12 +38,13 @@ export async function update_rating(
 export async function get_media_rating(
   media_id: number
 ): Promise<number | null> {
-  const [row] = await db
+  const rows = await db
     .select({ avg: avg(ratings.rating) })
     .from(ratings)
-    .where(eq(ratings.mediaId, media_id));
+    .where(eq(ratings.mediaId, media_id))
+    .groupBy(ratings.mediaId);
 
-  return row.avg === null ? null : parseInt(row.avg);
+  return rows[0].avg === null ? null : parseFloat(rows[0].avg);
 }
 
 // I disabled sql_mode=only_full_group_by to make this slop work with display_name
