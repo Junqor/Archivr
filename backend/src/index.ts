@@ -9,7 +9,7 @@ import { trpcMiddleware } from "./trpc/baseRouter.js";
 
 const app = express();
 
-const PORT = process.env.PORT || "8080";
+const PORT = Number(process.env.PORT) || 8080;
 
 // Middleware
 app.use(bodyParser.json());
@@ -22,12 +22,16 @@ app.use("/api", router); // set base url to /api
 app.use("/api/trpc", trpcMiddleware); // set base url to /api/trpc
 app.use(errorHandler); // Error logging middleware
 
+app.get("/health", (_, res) => {
+  res.send("ok");
+});
+
 // Test db connection
 try {
   await testConnection();
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     logger.info(`ARCHIVR is active and listing on on port ${PORT}`);
   });
 } catch (error) {
-  logger.error("Database connection failed", error);
+  logger.error(error, "Database connection failed");
 }
