@@ -1,10 +1,5 @@
-import { db } from "../db/database.js";
-import { users as UsersTable } from "../db/schema.js";
-import { eq } from "drizzle-orm/expressions";
+import { conn } from "../db/database.js";
 
 export async function testConnection() {
-  const user = await db
-    .select()
-    .from(UsersTable)
-    .where(eq(UsersTable.username, "testuser"));
+  await conn.query("select 1");
 }

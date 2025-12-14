@@ -1,0 +1,126 @@
+services:
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    container_name: archivr-ui
+    working_dir: /app/ui
+    develop:
+      watch:
+        - action: sync
+          path: ./ui
+          target: /app/ui
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount to preserve the same relative path structure as local dev
+      - ./ui:/app/ui
+      - ./backend:/app/backend
+      # Exclude node_modules to use container's installed deps
+      - /app/ui/node_modules
+      - /app/backend/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: archivr-backend
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app/backend
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    environment:
+      - FRONTEND_URL=http://localhost:5173
+      - JWT_SECRET=secret123
+      - REFRESH_TOKEN_SECRET=secret456
+      # Database
+      - DB_HOST=db
+      - DB_NAME=archivr
+      - DB_USER=user
+      - DB_PASSWORD=password
+      # S3 Configuration
+      - S3_USE_SSL=false
+      - S3_HOST=minio:9000
+      - S3_PUBLIC_HOST=localhost:9100
+      - S3_BUCKET=archivr
+      - S3_REGION=sfo1
+      - S3_ACCESS_TOKEN=user
+      - S3_SECRET_TOKEN=password
+      # HMR
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+    ports:
+      - "8080:8080"
+    working_dir: /app/backend
+    volumes:
+      - ./backend:/app/backend
+      - /app/backend/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: archivr-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=archivr
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - archivr-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9100:9000"
+      - "9101:9001"
+    environment:
+      - MINIO_ROOT_USER=user
+      - MINIO_ROOT_PASSWORD=password
+    volumes:
+      - archivr-minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+
+  # Creates the default bucket on startup
+  minio-init:
+    image: minio/mc:latest
+    container_name: archivr-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 user password;
+      mc mb myminio/archivr --ignore-existing;
+      mc anonymous set public myminio/archivr;
+      exit 0;
+      "
+
+volumes:
+  archivr-db-data:
+  archivr-minio-data:

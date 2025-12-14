@@ -14,14 +14,13 @@ import {
   userFavorites,
   ratings,
 } from "../../db/schema.js";
-import { logger } from "../../configs/logger.js";
 import { z } from "zod";
 import { updateSettingsSchema } from "./user.route.js";
 import { avg, count, getTableColumns, sql } from "drizzle-orm";
 import { getUserLikes } from "../likes/likes.service.js";
 import { getUserReviews } from "../reviews/reviews.service.js";
 import { getUserActivity } from "../activity/activity.service.js";
-import { serverConfig } from "../../configs/secrets.js";
+import { serverConfig, S3_ENDPOINT } from "../../configs/secrets.js";
 import { desc, asc, eq, inArray, and } from "drizzle-orm/expressions";
 import { ClientError } from "../../utils/error.class.js";
 
@@ -108,7 +107,7 @@ export async function getUserSettingsForSettingsContext(user_id: number) {
       "FROM User_Settings " +
       "INNER JOIN Users ON Users.id = User_Settings.user_id " +
       "WHERE user_id = ?;",
-    [user_id]
+    [user_id],
   );
   return result[0];
 }
@@ -123,7 +122,7 @@ export async function getAvatarUrl(user_id: number) {
 
 export async function setUserSettings(
   user_id: number,
-  settings: z.infer<typeof updateSettingsSchema>
+  settings: z.infer<typeof updateSettingsSchema>,
 ) {
   const { displayName, ...otherSettings } = settings;
 
@@ -153,7 +152,7 @@ export async function setUserSettings(
 
 export async function setPfp(
   user_id: number,
-  file: Express.Multer.File | undefined
+  file: Express.Multer.File | undefined,
 ) {
   try {
     if (!file) {
@@ -172,13 +171,13 @@ export async function setPfp(
     await s3Client.send(
       new PutObjectCommand({
         Body: blob,
-        Bucket: "archivr-pfp",
+        Bucket: serverConfig.S3_BUCKET,
         Key: "pfp-" + user_id + ".jpeg",
         ContentType: "image/jpeg",
-      })
+      }),
     );
 
-    const avatarUrl = `https://archivr-pfp.${serverConfig.S3_REGION}.${serverConfig.S3_HOST}/pfp-${user_id}.jpeg`;
+    const avatarUrl = `${S3_ENDPOINT}/${serverConfig.S3_BUCKET}/pfp-${user_id}.jpeg`;
 
     // Update the user's pfp in the database
     const rows = await db
@@ -298,7 +297,7 @@ export async function getUserFollows(
   limit = 30,
   offset = 0,
   sort_by = "follows.created_at",
-  sort_order = "desc"
+  sort_order = "desc",
 ) {
   // Check if user exists
   const user = await db
@@ -346,7 +345,7 @@ export async function getUserFollowsExtended(
   limit = 30,
   offset = 0,
   sort_by = "follows.created_at",
-  sort_order = "desc"
+  sort_order = "desc",
 ) {
   // Check if user exists
   const user = await db
@@ -421,16 +420,16 @@ export async function getUserFollowsExtended(
 
   // Convert counts to a lookup map for quick access
   const followerCountMap = Object.fromEntries(
-    followerCounts.map((item) => [item.userId, item.count])
+    followerCounts.map((item) => [item.userId, item.count]),
   );
   const followingCountMap = Object.fromEntries(
-    followingCounts.map((item) => [item.userId, item.count])
+    followingCounts.map((item) => [item.userId, item.count]),
   );
   const reviewCountMap = Object.fromEntries(
-    reviewCounts.map((item) => [item.userId, item.count])
+    reviewCounts.map((item) => [item.userId, item.count]),
   );
   const likeCountMap = Object.fromEntries(
-    likeCounts.map((item) => [item.userId, item.count])
+    likeCounts.map((item) => [item.userId, item.count]),
   );
 
   // Append individual counts to each follow
@@ -462,8 +461,8 @@ export async function addFavorite(user_id: number, media_id: number) {
     .where(
       and(
         eq(userFavorites.userId, user_id),
-        eq(userFavorites.mediaId, media_id)
-      )
+        eq(userFavorites.mediaId, media_id),
+      ),
     );
 
   if (existingFavorite.length > 0) {
@@ -504,8 +503,8 @@ export async function removeFavorite(user_id: number, media_id: number) {
     .where(
       and(
         eq(userFavorites.userId, user_id),
-        eq(userFavorites.mediaId, media_id)
-      )
+        eq(userFavorites.mediaId, media_id),
+      ),
     );
 
   if (existingFavorite.length === 0) {
@@ -517,8 +516,8 @@ export async function removeFavorite(user_id: number, media_id: number) {
     .where(
       and(
         eq(userFavorites.userId, user_id),
-        eq(userFavorites.mediaId, media_id)
-      )
+        eq(userFavorites.mediaId, media_id),
+      ),
     );
 }
 
@@ -572,8 +571,8 @@ export async function checkFavorite(user_id: number, media_id: number) {
     .where(
       and(
         eq(userFavorites.userId, user_id),
-        eq(userFavorites.mediaId, media_id)
-      )
+        eq(userFavorites.mediaId, media_id),
+      ),
     );
 
   return favorites.length > 0;
@@ -597,7 +596,7 @@ export async function reorderFavorites(
   movedId: number,
   prevId: number,
   nextId: number,
-  userId: number
+  userId: number,
 ) {
   try {
     await db.transaction(async (trx) => {
