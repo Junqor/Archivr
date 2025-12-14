@@ -40,7 +40,7 @@ export const activity = mysqlTable(
       .defaultNow()
       .notNull(),
   },
-  (table) => [primaryKey({ columns: [table.id], name: "Activity_id" })]
+  (table) => [primaryKey({ columns: [table.id], name: "Activity_id" })],
 );
 
 export const follows = mysqlTable(
@@ -59,7 +59,7 @@ export const follows = mysqlTable(
     index("followee_id").on(table.followeeId),
     primaryKey({ columns: [table.id], name: "Follows_id" }),
     unique("follower_id").on(table.followerId, table.followeeId),
-  ]
+  ],
 );
 
 export const likes = mysqlTable(
@@ -79,7 +79,7 @@ export const likes = mysqlTable(
     index("user_id").on(table.userId),
     primaryKey({ columns: [table.id], name: "Likes_id" }),
     unique("unique_media_user").on(table.mediaId, table.userId),
-  ]
+  ],
 );
 
 export const likesReviews = mysqlTable(
@@ -103,7 +103,7 @@ export const likesReviews = mysqlTable(
     index("Likes_Reviews_Reviews_FK").on(table.reviewId, table.userId),
     primaryKey({ columns: [table.id], name: "Likes_Reviews_id" }),
     unique("Likes_Reviews_UNIQUE").on(table.userId, table.reviewId),
-  ]
+  ],
 );
 
 export const media = mysqlTable(
@@ -132,7 +132,7 @@ export const media = mysqlTable(
     index("Media_rating_IDX").on(table.rating),
     primaryKey({ columns: [table.id], name: "Media_id" }),
     unique("unique_media").on(table.category, table.title, table.release_date),
-  ]
+  ],
 );
 
 export const mediaGenre = mysqlTable(
@@ -147,7 +147,7 @@ export const mediaGenre = mysqlTable(
   (table) => [
     primaryKey({ columns: [table.id], name: "Media_Genre_id" }),
     unique("Media_Genre_UNIQUE").on(table.genre, table.mediaId),
-  ]
+  ],
 );
 
 export const ratings = mysqlTable(
@@ -170,7 +170,7 @@ export const ratings = mysqlTable(
     primaryKey({ columns: [table.id], name: "Ratings_id" }),
     unique("unique_media_user").on(table.mediaId, table.userId),
     check("Ratings_CHECK", sql`((\`rating\` >= 1) and (\`rating\` <= 10))`),
-  ]
+  ],
 );
 
 export const remoteId = mysqlTable(
@@ -185,7 +185,7 @@ export const remoteId = mysqlTable(
   (table) => [
     index("RemoteId_tmdb_id_IDX").on(table.tmdbId),
     primaryKey({ columns: [table.id], name: "RemoteId_id" }),
-  ]
+  ],
 );
 
 export const Replies = mysqlTable(
@@ -206,7 +206,7 @@ export const Replies = mysqlTable(
     index("parent_id").on(table.parent_id),
     index("user_id").on(table.user_id),
     primaryKey({ columns: [table.id], name: "Replies_id" }),
-  ]
+  ],
 );
 
 export const userReviews = mysqlTable(
@@ -234,7 +234,7 @@ export const userReviews = mysqlTable(
     index("user_id").on(table.userId),
     primaryKey({ columns: [table.id], name: "UserReviews_id" }),
     unique("unique_media_user").on(table.mediaId, table.userId),
-  ]
+  ],
 );
 
 export const userSettings = mysqlTable(
@@ -269,7 +269,7 @@ export const userSettings = mysqlTable(
   (table) => [
     index("user_id").on(table.user_id),
     primaryKey({ columns: [table.id], name: "User_Settings_id" }),
-  ]
+  ],
 );
 
 export const lists = mysqlTable(
@@ -291,7 +291,7 @@ export const lists = mysqlTable(
       columns: [table.user_id, table.media_id, table.list_name],
       name: "User_Media_Lists_user_id_media_id_list_name",
     }),
-  ]
+  ],
 );
 
 export const users = mysqlTable(
@@ -310,7 +310,7 @@ export const users = mysqlTable(
     primaryKey({ columns: [table.id], name: "Users_id" }),
     unique("email").on(table.email),
     unique("username").on(table.username),
-  ]
+  ],
 );
 
 export const userFavorites = mysqlTable(
@@ -330,5 +330,16 @@ export const userFavorites = mysqlTable(
     index("user_id_idx").on(table.userId),
     index("media_id_idx").on(table.mediaId),
     unique("unique_user_media").on(table.userId, table.mediaId),
-  ]
+  ],
 );
+
+export const moderatorActions = mysqlTable("Moderator_Actions", {
+  id: int().autoincrement().notNull().primaryKey(),
+  user_id: int("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+  action_type: varchar("action_type", { length: 255 }).notNull(),
+  message: text("message"),
+  expiry_date: timestamp("expiry_date", { mode: "string" }),
+  pardon_timestamp: timestamp("pardon_timestamp", { mode: "string" }),
+});
