@@ -117,7 +117,7 @@ export const media = mysqlTable(
     thumbnail_url: varchar("thumbnail_url", { length: 255 }),
     rating: float(),
     runtime: int(),
-    updated_at: timestamp("updated_at", { mode: "string" }),
+    updated_at: timestamp("updated_at", { mode: "string" }).defaultNow(),
   },
   (table) => [
     index("Media_category_IDX").on(table.category),
