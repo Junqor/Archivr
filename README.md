@@ -45,24 +45,22 @@ See where you can watch media in your prefered form, whether it be owning or str
 ## Setup
 1. To run the development environment with a local database, use Docker Compose:
    ```bash
-   docker-compose up
+   docker compose up
    ```
 2. To migrate the database schema run the following command from the backend directory:
    ```bash
    npx drizzle-kit push
    ```
-   > [!NOTE]
-   > You must have the db connection variables in `.env`:
-   > ```env
-   > DB_HOST=localhost
-   > DB_NAME=archivr
-   > DB_USER=user
-   > DB_PASSWORD=password
-3. Access the application at `http://localhost:5173`.
-4. Populate the db with movie data using the tvdb scripts from [populate-tvdb-movies-series](https://github.com/Junqor/populate-tvdb-movies-series).
-5. `docker compose down` to stop the development environment.
-  > [!NOTE]
-  > Use -v flag to remove the database and s3 volumes.
+> [!NOTE]
+> You must have the db connection variables in `.env`:
+> ```env
+> DB_HOST=localhost
+> DB_NAME=archivr
+> DB_USER=user
+> DB_PASSWORD=password
+3. Populate the db with movie data using the tvdb scripts from [populate-tvdb-movies-series](https://github.com/Junqor/populate-tvdb-movies-series).
+4. Access the application at `http://localhost:5173`.
+5. `docker compose down` to stop the development environment. `docker compose down -v` to remove the database and s3 volumes.
 
 ## Team Members:
 
